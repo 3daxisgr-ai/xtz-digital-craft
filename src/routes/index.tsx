@@ -90,6 +90,13 @@ function Main() {
         align="right"
       />
       <PortfolioReel />
+      <div className="relative bg-black py-12 px-6 md:px-16 border-t border-border/10">
+        <div className="max-w-[1600px] mx-auto">
+          <p className="text-sm md:text-base text-foreground/50 leading-relaxed max-w-3xl">
+            Whether you need a prototype, a custom component or support bringing a new product to market, 3D AXIS provides the tools and expertise to help make it happen.
+          </p>
+        </div>
+      </div>
       <Process />
       <GlobalNetwork />
       <InquiryForm />

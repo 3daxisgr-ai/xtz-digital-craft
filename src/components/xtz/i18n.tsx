@@ -10,7 +10,7 @@ const en: Dict = {
   "nav.design": "02 / Design",
   "nav.prototype": "03 / Prototype",
   "nav.manufacture": "04 / Manufacture",
-  "nav.portfolio": "05 / Work",
+  "nav.portfolio": "05 / Capabilities",
   "nav.process": "06 / Process",
   "nav.inquiry": "07 / Inquiry",
   "nav.cta": "Start Project",
@@ -37,8 +37,8 @@ const en: Dict = {
   "ch.mfg.t": "Precision without compromise.",
   "ch.mfg.d": "Fiber laser cutting, engraving, press brake forming, welding and finishing — under one roof, to ±0.05mm tolerances.",
 
-  "portfolio.kicker": "Selected Work",
-  "portfolio.title": "Outcomes, not catalogues.",
+  "portfolio.kicker": "Capabilities",
+  "portfolio.title": "Examples of products, components and manufacturing solutions that can be developed through the 3D AXIS workflow.",
 
   "process.kicker": "The Journey",
   "process.title": "From idea to delivery.",
@@ -89,7 +89,7 @@ const gr: Dict = {
   "nav.design": "02 / Σχεδιασμός",
   "nav.prototype": "03 / Πρωτότυπο",
   "nav.manufacture": "04 / Κατασκευή",
-  "nav.portfolio": "05 / Έργα",
+  "nav.portfolio": "05 / Δυνατότητες",
   "nav.process": "06 / Διαδικασία",
   "nav.inquiry": "07 / Αίτημα",
   "nav.cta": "Ξεκίνα Έργο",
@@ -116,8 +116,8 @@ const gr: Dict = {
   "ch.mfg.t": "Ακρίβεια χωρίς συμβιβασμούς.",
   "ch.mfg.d": "Κοπή laser, χάραξη, στραντζάρισμα, συγκολλήσεις και φινίρισμα — όλα κάτω από μία στέγη, με ανοχές ±0.05mm.",
 
-  "portfolio.kicker": "Επιλεγμένα Έργα",
-  "portfolio.title": "Αποτελέσματα, όχι κατάλογοι.",
+  "portfolio.kicker": "Δυνατότητες",
+  "portfolio.title": "Παραδείγματα προϊόντων, εξαρτημάτων και λύσεων κατασκευής που μπορούν να αναπτυχθούν μέσω της διαδικασίας 3D AXIS.",
 
   "process.kicker": "Η Διαδρομή",
   "process.title": "Από την ιδέα στην παράδοση.",
