@@ -190,14 +190,14 @@ export function PortfolioReel() {
         {/* LEFT — Title */}
         <div className="col-span-12 lg:col-span-3 xl:col-span-3">
           <div className="flex items-center gap-3 mb-6">
-            <span className="font-mono text-[10px] tracking-[0.4em] text-[#00E5FF]">
+            <span className="font-mono text-[10px] tracking-[0.4em] text-[#05acff]">
               SECTION
             </span>
             <span className="h-px w-10 bg-[#00E5FF] shadow-[0_0_8px_#00E5FF]" />
           </div>
           <h2 className="font-display font-bold leading-[0.85] tracking-tighter text-white text-[clamp(2.4rem,5vw,4.5rem)] mb-6">
             05 /<br />
-            <span className="text-[#00E5FF] drop-shadow-[0_0_24px_rgba(0,229,255,0.45)] text-4xl">
+            <span className="drop-shadow-[0_0_24px_rgba(0,229,255,0.45)] text-4xl text-[#05acff]">
               CAPABILITIES
             </span>
           </h2>
@@ -207,7 +207,7 @@ export function PortfolioReel() {
 
           {/* Progress bar */}
           <div className="max-w-[260px]">
-            <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.3em] text-[#00E5FF]/80 mb-2">
+            <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.3em] mb-2 text-[#05acff]">
               <span>{String(active + 1).padStart(2, "0")}</span>
               <span className="text-white/40">
                 / {String(slides.length).padStart(2, "0")}
