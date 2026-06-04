@@ -22,19 +22,18 @@ export function IntroScene() {
         },
       });
 
-      tl.to(".scene-img", { scale: 4.8, ease: "power2.inOut" }, 0)
-        .to(".scene-img", { filter: "brightness(1.4) saturate(1.3) contrast(1.1)" }, 0)
-        .to(".intro-headline", { opacity: 0, y: -60, ease: "power2.in" }, 0)
+      tl.to(".scene-img", { scale: 3.6, ease: "power2.inOut" }, 0)
+        .to(".intro-headline", { scale: 1.4, opacity: 0, y: -40, ease: "power2.in" }, 0)
         .to(".scroll-hint", { opacity: 0 }, 0)
-        .to(".blue-wash", { opacity: 1 }, 0.15)
+        .to(".vignette", { opacity: 1, ease: "power2.out" }, 0.1)
+        .to(".blue-wash", { opacity: 0.45 }, 0.35)
         .to(".laser-beam", { scaleX: 1, opacity: 1, ease: "power3.out" }, 0.25)
         .to(".sparks", { opacity: 1 }, 0.4)
-        .to(".reveal-stage", { opacity: 1, ease: "power2.out" }, 0.55)
-        .to(".reveal-brand", { y: 0, opacity: 1, ease: "power3.out" }, 0.6)
-        .to(".reveal-slogan", { y: 0, opacity: 1, ease: "power3.out" }, 0.7)
-        .to(".reveal-xyz", { y: 0, opacity: 1, ease: "power3.out" }, 0.8)
-        .to(".scene-img", { opacity: 0.08 }, 0.9)
-        .to(".portal", { opacity: 1, scale: 1, ease: "power3.out" }, 0.85);
+        .to(".reveal-stage", { opacity: 1, ease: "power2.out" }, 0.6)
+        .to(".reveal-brand", { y: 0, opacity: 1, ease: "power3.out" }, 0.65)
+        .to(".reveal-slogan", { y: 0, opacity: 1, ease: "power3.out" }, 0.75)
+        .to(".reveal-xyz", { y: 0, opacity: 1, ease: "power3.out" }, 0.85)
+        .to(".portal", { opacity: 0.7, scale: 1, ease: "power3.out" }, 0.9);
     }, root);
     return () => ctx.revert();
   }, []);
@@ -56,11 +55,15 @@ export function IntroScene() {
           width={1920}
           height={1080}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/50" />
       </div>
 
-      <div className="blue-wash absolute inset-0 opacity-0 pointer-events-none mix-blend-screen"
-        style={{ background: "var(--gradient-blue-glow)" }} />
+      {/* Dark vignette deepens during push-in to preserve contrast */}
+      <div className="vignette absolute inset-0 opacity-0 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.85) 100%)" }} />
+
+      <div className="blue-wash absolute inset-0 opacity-0 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at center, oklch(0.55 0.22 245 / 0.35), transparent 60%)" }} />
 
       {/* Realistic laser beam */}
       <div className="laser-beam absolute top-1/2 left-0 w-full h-[2px] opacity-0 origin-left scale-x-0 pointer-events-none"
@@ -126,10 +129,10 @@ export function IntroScene() {
       </div>
 
       <div
-        className="portal absolute inset-0 z-30 opacity-0 scale-50 pointer-events-none"
+        className="portal absolute inset-0 z-30 opacity-0 scale-75 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse at center, oklch(0.72 0.18 245 / 0.5), oklch(0.05 0.005 240) 70%)",
+            "radial-gradient(ellipse at center, oklch(0.55 0.18 245 / 0.35), transparent 65%)",
         }}
       />
     </section>
