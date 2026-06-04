@@ -1,6 +1,4 @@
 import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import p1 from "@/assets/portfolio-1.jpg";
 import p2 from "@/assets/portfolio-2.jpg";
 import p3 from "@/assets/portfolio-3.jpg";
@@ -9,8 +7,6 @@ import chapterFab from "@/assets/chapter-fab.jpg";
 import chapterLaser from "@/assets/chapter-laser.jpg";
 import heroOffice from "@/assets/hero-office.jpg";
 import { useI18n } from "./i18n";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
   {
@@ -79,138 +75,119 @@ const projects = [
 ];
 
 export function PortfolioReel() {
-  const root = useRef<HTMLDivElement>(null);
-  const track = useRef<HTMLDivElement>(null);
+  const scroller = useRef<HTMLDivElement>(null);
   const { t } = useI18n();
 
+  // Translate vertical wheel into one-slide horizontal moves while in view
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const slides = gsap.utils.toArray<HTMLElement>(".pf-slide");
-      const total = slides.length;
+    const el = scroller.current;
+    if (!el) return;
 
-      gsap.to(track.current, {
-        xPercent: -100 * (total - 1),
-        ease: "none",
-        scrollTrigger: {
-          trigger: root.current,
-          pin: true,
-          scrub: 0.8,
-          end: () => `+=${(total - 1) * window.innerHeight * 1.1}`,
-          snap: {
-            snapTo: 1 / (total - 1),
-            duration: { min: 0.4, max: 0.8 },
-            ease: "power3.inOut",
-            delay: 0.05,
-          },
-        },
-      });
+    let animating = false;
+    let cooldown = 0;
 
-      // Per-slide cinematic reveal: zoom + parallax + text
-      slides.forEach((slide) => {
-        const img = slide.querySelector<HTMLElement>(".pf-img");
-        const content = slide.querySelectorAll<HTMLElement>(".pf-anim");
-        const accent = slide.querySelector<HTMLElement>(".pf-accent");
+    const slideWidth = () => el.clientWidth;
+    const maxScroll = () => el.scrollWidth - el.clientWidth;
+    const currentIndex = () => Math.round(el.scrollLeft / slideWidth());
 
-        if (img) {
-          gsap.fromTo(
-            img,
-            { scale: 1.18 },
-            {
-              scale: 1,
-              duration: 1.2,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: slide,
-                start: "left center",
-                toggleActions: "play none none reverse",
-              },
-            }
-          );
-        }
+    const goTo = (idx: number) => {
+      const target = Math.max(0, Math.min(projects.length - 1, idx)) * slideWidth();
+      animating = true;
+      el.scrollTo({ left: target, behavior: "smooth" });
+      window.clearTimeout(cooldown);
+      cooldown = window.setTimeout(() => {
+        animating = false;
+      }, 650);
+    };
 
-        if (content.length) {
-          gsap.from(content, {
-            y: 40,
-            opacity: 0,
-            duration: 0.9,
-            stagger: 0.08,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: slide,
-              start: "left center",
-              toggleActions: "play none none reverse",
-            },
-          });
-        }
+    const onWheel = (e: WheelEvent) => {
+      // Only intercept when the section roughly fills the viewport
+      const rect = el.getBoundingClientRect();
+      const inView = rect.top <= 10 && rect.bottom >= window.innerHeight - 10;
+      if (!inView) return;
 
-        if (accent) {
-          gsap.from(accent, {
-            scaleX: 0,
-            transformOrigin: "left",
-            duration: 1,
-            ease: "power2.inOut",
-            scrollTrigger: {
-              trigger: slide,
-              start: "left center",
-              toggleActions: "play none none reverse",
-            },
-          });
-        }
-      });
-    }, root);
-    return () => ctx.revert();
+      const dy = e.deltaY;
+      const dx = e.deltaX;
+      const delta = Math.abs(dy) > Math.abs(dx) ? dy : dx;
+      if (Math.abs(delta) < 4) return;
+
+      const dir = delta > 0 ? 1 : -1;
+      const idx = currentIndex();
+      const atStart = idx <= 0 && dir < 0;
+      const atEnd = el.scrollLeft >= maxScroll() - 2 && dir > 0;
+
+      // Let the page scroll vertically when we've reached either edge
+      if (atStart || atEnd) return;
+
+      e.preventDefault();
+      if (animating) return;
+      goTo(idx + dir);
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      window.clearTimeout(cooldown);
+    };
   }, []);
 
   return (
-    <section id="portfolio" ref={root} className="relative h-screen w-full overflow-hidden bg-black">
-      <div className="absolute top-24 left-6 md:left-12 z-20 flex items-center gap-4">
+    <section id="portfolio" className="relative w-full bg-black">
+      <div className="absolute top-24 left-6 md:left-12 z-30 flex items-center gap-4 pointer-events-none">
         <span className="font-mono text-xs text-primary tracking-[0.3em]">05 /</span>
         <span className="h-px w-16 bg-primary" />
         <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
           {t("portfolio.kicker")}
         </span>
       </div>
-      <div className="absolute top-32 left-6 md:left-12 z-20 max-w-lg hidden md:block">
-        <p className="text-sm text-foreground/50 leading-relaxed">
-          {t("portfolio.title")}
-        </p>
+      <div className="absolute top-32 left-6 md:left-12 z-30 max-w-lg hidden md:block pointer-events-none">
+        <p className="text-sm text-foreground/50 leading-relaxed">{t("portfolio.title")}</p>
       </div>
-      <span className="absolute top-24 right-6 md:right-12 z-20 font-mono text-[10px] tracking-[0.4em] text-primary/60">X · Y · Z</span>
+      <span className="absolute top-24 right-6 md:right-12 z-30 font-mono text-[10px] tracking-[0.4em] text-primary/60 pointer-events-none">
+        X · Y · Z
+      </span>
 
-      <div ref={track} className="flex h-full will-change-transform" style={{ width: `${projects.length * 100}vw` }}>
+      <div
+        ref={scroller}
+        className="h-screen w-full overflow-x-auto overflow-y-hidden flex snap-x snap-mandatory scroll-smooth no-scrollbar"
+        style={{ scrollSnapType: "x mandatory" }}
+      >
         {projects.map((p, i) => (
-          <div key={p.index} className="pf-slide relative h-screen w-screen shrink-0 overflow-hidden">
+          <article
+            key={p.index}
+            className="relative h-full w-screen shrink-0 snap-center overflow-hidden"
+            style={{ scrollSnapAlign: "center", scrollSnapStop: "always" }}
+          >
             <img
               src={p.img}
               alt={p.alt}
               loading="lazy"
               width={1920}
               height={1080}
-              className="pf-img absolute inset-0 h-full w-full object-cover will-change-transform"
+              className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40" />
 
             <div className="relative z-10 h-full flex flex-col justify-end px-6 md:px-16 pb-20 max-w-[1600px] mx-auto">
-              <div className="pf-anim font-mono text-[11px] tracking-[0.3em] text-primary mb-4">
+              <div className="font-mono text-[11px] tracking-[0.3em] text-primary mb-4">
                 {p.category.toUpperCase()} · {p.index} / {String(projects.length).padStart(3, "0")}
               </div>
-              <div className="pf-accent h-px w-24 bg-primary blue-glow mb-6" />
-              <h3 className="pf-anim font-display font-bold leading-[0.9] text-[clamp(3rem,9vw,9rem)] tracking-tighter mb-8">
+              <div className="h-px w-24 bg-primary blue-glow mb-6" />
+              <h3 className="font-display font-bold leading-[0.9] text-[clamp(3rem,9vw,9rem)] tracking-tighter mb-8">
                 {p.title}
               </h3>
-              <div className="pf-anim grid grid-cols-2 md:grid-cols-3 gap-8 max-w-3xl border-t border-border/40 pt-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-3xl border-t border-border/40 pt-6">
                 <Spec label="Category" value={p.category} />
                 <Spec label="Material" value={p.material} />
                 <Spec label="Process" value={p.process} />
               </div>
             </div>
 
-            {/* Chapter counter */}
             <div className="absolute bottom-8 right-6 md:right-12 z-10 font-mono text-[10px] tracking-[0.4em] text-primary/70">
               {String(i + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
             </div>
-          </div>
+          </article>
         ))}
       </div>
     </section>
