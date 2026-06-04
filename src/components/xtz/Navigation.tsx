@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { useI18n, type Lang } from "./i18n";
+import xyzLogo from "@/assets/xyz-logo.png.asset.json";
 
 const chapters = [
   { id: "intro", k: "nav.intro" },
