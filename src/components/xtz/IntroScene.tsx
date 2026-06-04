@@ -11,90 +11,63 @@ export function IntroScene() {
   const { t } = useI18n();
 
   useEffect(() => {
+    const reduced = typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
     const ctx = gsap.context(() => {
-      // ----- Cinematic boot sequence -----
+      // Boot
       const boot = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-      // SCENE 01 — faint electric blue light in darkness
       boot
-        .to(".ambient-blue", { opacity: 1, duration: 1.4 }, 0.2)
-        .to(".ambient-particles", { opacity: 1, duration: 1.2 }, 0.4)
-
-        // SCENE 02 — zoomed-in image revealed, then settles to full view
+        .to(".ambient-blue", { opacity: 1, duration: 1.0 }, 0.1)
         .fromTo(
           ".scene-img-wrap",
-          { opacity: 0, scale: 1.8 },
-          { opacity: 1, scale: 1.4, duration: 1.8, ease: "power2.out" },
-          0.9
+          { opacity: 0, scale: reduced ? 1 : 1.25 },
+          { opacity: 1, scale: 1, duration: reduced ? 0.6 : 1.6, ease: "power2.out" },
+          0.2,
         )
-
-        // SCENE 03 — laser cuts: beam + sparks + smoke
         .fromTo(
-          ".laser-beam",
-          { opacity: 0, scaleX: 0 },
-          { opacity: 1, scaleX: 1, duration: 0.9, ease: "power3.out" },
-          1.6
+          ".hero-headline",
+          { y: 30, opacity: 0, filter: "blur(12px)" },
+          { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.0 },
+          0.6,
         )
-        .to(".sparks", { opacity: 1, duration: 0.5 }, "<0.1")
-        .to(".smoke", { opacity: 0.55, duration: 1.2 }, "<")
-
-        // settle to fully unzoomed
-        .to(".scene-img-wrap", { scale: 1, duration: 2.4, ease: "power2.out" }, 1.8)
-
-        // SCENE 04 — logo engraves out of darkness
         .fromTo(
-          ".logo-engrave",
-          { opacity: 0, filter: "blur(18px)", letterSpacing: "0.3em" },
-          { opacity: 1, filter: "blur(0px)", letterSpacing: "-0.02em", duration: 1.4, ease: "power2.out" },
-          2.6
-        )
-        .to(".laser-beam", { opacity: 0, duration: 0.8 }, "-=0.5")
-        .to(".sparks", { opacity: 0, duration: 0.8 }, "<")
-
-        // SCENE 05 — slogan + xyz
-        .fromTo(
-          ".intro-slogan",
-          { y: 18, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.9 },
-          "-=0.3"
+          ".hero-sub",
+          { y: 14, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.7 },
+          "-=0.4",
         )
         .fromTo(
           ".intro-xyz",
-          { y: 12, opacity: 0 },
-          { y: 0, opacity: 0.9, duration: 0.8 },
-          "-=0.5"
+          { y: 10, opacity: 0 },
+          { y: 0, opacity: 0.7, duration: 0.6 },
+          "-=0.3",
         )
-
-        // SCENE 06 / 07 — fire event so Navigation, lang, CTA, scroll hint reveal
         .add(() => {
           window.dispatchEvent(new CustomEvent("intro:ready"));
-        }, "+=0.1")
-
-        // SCENE 07 — scroll indicator
+        }, "+=0.05")
         .fromTo(
           ".scroll-hint",
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.8 },
-          "+=0.6"
+          { opacity: 0, y: 8 },
+          { opacity: 1, y: 0, duration: 0.6 },
+          "+=0.3",
         );
 
-      // ----- Scroll camera push-in (no fades to gray) -----
+      if (reduced) return;
+
+      // Subtle parallax + fade on scroll
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: "#intro",
           start: "top top",
-          end: "+=220%",
-          scrub: 1.2,
+          end: "+=120%",
+          scrub: 1,
           pin: true,
         },
       });
-
-      tl.to(".scene-img-wrap", { scale: 1.3, ease: "none" }, 0);
-      tl.to(".layer-logo", { scale: 0.55, y: -40, opacity: 0, ease: "power2.in" }, 0);
-      tl.to(".intro-slogan", { y: -60, opacity: 0, ease: "power2.in" }, 0);
-      tl.to(".intro-xyz", { y: -40, opacity: 0, ease: "power2.in" }, 0.02);
-      tl.to(".layer-fg", { scale: 1.9, y: 60, opacity: 0, ease: "power2.in" }, 0);
-      tl.to(".scroll-hint", { opacity: 0, y: 20 }, 0);
+      tl.to(".scene-img-wrap", { scale: 1.12, ease: "none" }, 0);
+      tl.to(".hero-layer", { y: -60, opacity: 0, ease: "power2.in" }, 0);
+      tl.to(".scroll-hint", { opacity: 0, y: 16 }, 0);
       tl.to(".vignette", { opacity: 1, ease: "power2.out" }, 0);
     }, root);
     return () => ctx.revert();
@@ -106,159 +79,56 @@ export function IntroScene() {
       ref={root}
       className="relative h-screen w-full overflow-hidden bg-black"
     >
-      {/* Scene 01 — faint blue ambient */}
-      <div className="ambient-blue absolute inset-0 opacity-0 pointer-events-none"
+      {/* Ambient blue */}
+      <div
+        className="ambient-blue absolute inset-0 opacity-0 pointer-events-none"
         style={{
           background:
             "radial-gradient(ellipse at 50% 55%, oklch(0.45 0.18 245 / 0.28) 0%, transparent 55%)",
-        }} />
+        }}
+      />
 
-      {/* Scene 01 — ambient particles */}
-      <div className="ambient-particles absolute inset-0 opacity-0 pointer-events-none">
-        {Array.from({ length: 24 }).map((_, i) => (
-          <span
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${1 + Math.random() * 1.5}px`,
-              height: `${1 + Math.random() * 1.5}px`,
-              background: "oklch(0.85 0.18 245)",
-              opacity: 0.25 + Math.random() * 0.35,
-              boxShadow: "0 0 6px oklch(0.7 0.22 245 / 0.5)",
-              animation: `floatY ${6 + Math.random() * 6}s ${Math.random() * 4}s infinite ease-in-out`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Scene 02 — zoomed laser background */}
+      {/* Hero image */}
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
         <img
           src={heroOffice}
-          alt="Fiber laser cutting steel with electric blue sparks in a dark industrial environment"
+          alt="3D AXIS engineering and manufacturing workshop"
           className="h-full w-full object-cover"
           width={1920}
           height={1080}
+          fetchPriority="high"
+          decoding="async"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/55" />
       </div>
 
-      {/* Scene 03 — laser beam */}
-      <div className="laser-beam absolute top-1/2 left-0 w-full h-[2px] opacity-0 origin-left scale-x-0 pointer-events-none z-[6]"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, oklch(0.85 0.22 245), oklch(1 0 0), oklch(0.85 0.22 245), transparent)",
-          boxShadow:
-            "0 0 14px oklch(0.72 0.22 245 / 0.7), 0 0 40px oklch(0.72 0.22 245 / 0.35)",
-          filter: "blur(0.5px)",
-        }} />
-
-      {/* Subtle smoke */}
-      <div className="smoke absolute inset-x-0 top-1/2 h-[40%] opacity-0 pointer-events-none z-[5] mix-blend-screen"
-        style={{
-          background:
-            "radial-gradient(ellipse at 50% 0%, oklch(0.6 0.05 245 / 0.22), transparent 60%)",
-          filter: "blur(22px)",
-        }} />
-
-      {/* Sparks */}
-      <div className="sparks absolute inset-0 opacity-0 pointer-events-none z-[6]">
-        {Array.from({ length: 32 }).map((_, i) => {
-          const a = Math.random() * Math.PI * 2;
-          const d = 50 + Math.random() * 180;
-          return (
-            <span
-              key={i}
-              className="absolute h-[2px] w-[2px] rounded-full bg-primary"
-              style={{
-                left: `${49 + Math.random() * 2}%`,
-                top: `${49.5 + Math.random() * 1}%`,
-                boxShadow:
-                  "0 0 4px oklch(0.85 0.22 245), 0 0 10px oklch(0.85 0.22 245 / 0.5)",
-                ["--tx" as any]: `${Math.cos(a) * d}px`,
-                ["--ty" as any]: `${Math.sin(a) * d}px`,
-                animation: `spark ${0.6 + Math.random() * 1.4}s ${Math.random() * 0.8}s infinite ease-out`,
-              }}
-            />
-          );
-        })}
-      </div>
-
-      {/* Scene 04/05 — Logo engrave + texts */}
-      <div className="layer-logo absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center will-change-transform">
-        <div className="logo-engrave opacity-0 relative">
-          {/* Volumetric halo behind the wordmark */}
-          <span
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[260%] blur-3xl opacity-70"
-            style={{
-              background:
-                "radial-gradient(ellipse at center, oklch(0.65 0.22 245 / 0.55), oklch(0.45 0.2 245 / 0.18) 45%, transparent 70%)",
-            }}
-          />
-          {/* Metallic base layer */}
-          <span
-            className="logo-metallic logo-breathe relative block font-display font-bold leading-[0.85] text-[clamp(3rem,13vw,14rem)] tracking-tighter"
-            style={{
-              filter:
-                "drop-shadow(0 2px 0 oklch(0.2 0.02 245 / 0.6)) drop-shadow(0 0 22px oklch(0.7 0.22 245 / 0.55))",
-            }}
-          >
-            3D AXIS
-          </span>
-          {/* Sheen reflection sweeping across the wordmark */}
-          <span
-            aria-hidden
-            className="logo-sheen absolute inset-0 font-display font-bold leading-[0.85] text-[clamp(3rem,13vw,14rem)] tracking-tighter"
-          >
-            3D AXIS
-          </span>
-          {/* Thin baseline blue accent — engineered feel */}
-          <span
-            aria-hidden
-            className="absolute left-1/2 -bottom-3 -translate-x-1/2 h-px w-[55%] blue-glow"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, oklch(0.78 0.22 245), transparent)",
-            }}
-          />
-        </div>
-        <p className="intro-slogan opacity-0 mt-8 font-mono text-xs md:text-sm uppercase tracking-[0.5em] text-primary/90">
-          FROM CONCEPT TO REALITY
+      {/* Hero text layer */}
+      <div className="hero-layer absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center will-change-transform">
+        <h1
+          className="hero-headline font-display font-bold uppercase tracking-tighter leading-[0.9] text-[clamp(2.6rem,11vw,11rem)] max-w-[16ch]"
+          style={{
+            textShadow:
+              "0 0 24px oklch(0.65 0.22 245 / 0.45), 0 0 60px oklch(0.55 0.22 245 / 0.25)",
+          }}
+        >
+          {t("intro.headline")}
+        </h1>
+        <p className="hero-sub mt-6 max-w-2xl text-base md:text-lg text-foreground/80 font-light">
+          {t("intro.sub")}
         </p>
-        <p className="intro-xyz opacity-0 mt-4 font-mono text-[14px] uppercase tracking-[0.55em] text-muted-foreground">
-          XYZ — {t("intro.xyz")}
+        <p className="intro-xyz mt-6 font-mono text-[11px] md:text-[13px] uppercase tracking-[0.55em] text-primary/80">
+          {t("intro.xyz")}
         </p>
       </div>
 
-      {/* Vignette — used by scroll, never gray */}
-      <div className="vignette absolute inset-0 opacity-0 pointer-events-none z-[15]"
+      {/* Vignette */}
+      <div
+        className="vignette absolute inset-0 opacity-0 pointer-events-none z-[15]"
         style={{
           background:
-            "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.85) 100%)",
-        }} />
-
-      {/* Foreground particles (scroll parallax) */}
-      <div className="layer-fg absolute inset-0 pointer-events-none z-20 will-change-transform">
-        {Array.from({ length: 14 }).map((_, i) => (
-          <span
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${1 + Math.random() * 2}px`,
-              height: `${1 + Math.random() * 2}px`,
-              background: "oklch(0.85 0.18 245)",
-              opacity: 0.3 + Math.random() * 0.4,
-              boxShadow: "0 0 6px oklch(0.7 0.22 245 / 0.6)",
-              animation: `floatY ${6 + Math.random() * 6}s ${Math.random() * 4}s infinite ease-in-out`,
-            }}
-          />
-        ))}
-      </div>
+            "radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.8) 100%)",
+        }}
+      />
 
       {/* Scroll indicator */}
       <div className="scroll-hint absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-3 opacity-0">

@@ -1,61 +1,43 @@
 import { useEffect, useRef } from "react";
+import { Link } from "@tanstack/react-router";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const cards = [
-  {
-    n: "01",
-    title: "Product Development",
-    body: "Transform concepts into real products through design, prototyping and manufacturing.",
-  },
-  {
-    n: "02",
-    title: "Sheet Metal Components",
-    body: "Precision laser cut and formed metal parts for industrial and commercial applications.",
-  },
-  {
-    n: "03",
-    title: "Functional Prototypes",
-    body: "Rapid iteration and testing using advanced additive manufacturing.",
-  },
-  {
-    n: "04",
-    title: "Scalable Manufacturing",
-    body: "From single prototypes to production-ready solutions through trusted manufacturing partners.",
-  },
-];
+export type CapabilitySlug =
+  | "design-development"
+  | "fiber-laser-cutting"
+  | "sheet-metal"
+  | "3d-printing"
+  | "design-to-prototype"
+  | "global-network";
 
-const capabilities = [
-  "Design & Development",
-  "Fiber Laser Cutting",
-  "Sheet Metal Forming",
-  "Welding & Assembly",
-  "3D Printing",
-  "Custom Manufacturing",
-];
-
-const printingUses = [
-  "Rapid Prototyping",
-  "Functional Parts",
-  "Custom Components",
-  "Small Production Runs",
-  "Medium Production Runs",
+export const capabilities: { n: string; slug: CapabilitySlug; tKey: string; dKey: string }[] = [
+  { n: "01", slug: "design-development", tKey: "cap.01.t", dKey: "cap.01.d" },
+  { n: "02", slug: "fiber-laser-cutting", tKey: "cap.02.t", dKey: "cap.02.d" },
+  { n: "03", slug: "sheet-metal", tKey: "cap.03.t", dKey: "cap.03.d" },
+  { n: "04", slug: "3d-printing", tKey: "cap.04.t", dKey: "cap.04.d" },
+  { n: "05", slug: "design-to-prototype", tKey: "cap.05.t", dKey: "cap.05.d" },
+  { n: "06", slug: "global-network", tKey: "cap.06.t", dKey: "cap.06.d" },
 ];
 
 export function Capabilities() {
   const root = useRef<HTMLDivElement>(null);
+  const { t } = useI18n();
 
   useEffect(() => {
+    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
     const ctx = gsap.context(() => {
       gsap.from(".cap-card", {
-        opacity: 0, y: 60, duration: 0.9, stagger: 0.1, ease: "power3.out",
-        scrollTrigger: { trigger: ".cap-grid", start: "top 80%" },
-      });
-      gsap.from(".cap-row", {
-        opacity: 0, x: -30, duration: 0.8, stagger: 0.06, ease: "power3.out",
-        scrollTrigger: { trigger: ".cap-list", start: "top 80%" },
+        opacity: 0,
+        y: 40,
+        duration: 0.7,
+        stagger: 0.07,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".cap-grid", start: "top 85%" },
       });
     }, root);
     return () => ctx.revert();
@@ -65,7 +47,8 @@ export function Capabilities() {
     <section
       id="capabilities"
       ref={root}
-      className="relative w-full bg-black py-32 md:py-44 overflow-hidden"
+      className="relative w-full bg-black py-28 md:py-36 overflow-hidden"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "1200px" }}
     >
       <div
         className="absolute inset-0 opacity-30 pointer-events-none"
@@ -79,115 +62,49 @@ export function Capabilities() {
       </span>
 
       <div className="relative z-10 mx-auto max-w-[1500px] px-6 md:px-12">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-10">
+        <div className="flex items-center gap-4 mb-8">
           <span className="font-mono text-xs text-primary tracking-[0.3em]">— /</span>
           <span className="h-px w-16 bg-primary" />
           <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            What Can We Build Together?
+            {t("cap.kicker")}
           </span>
         </div>
-        <h2 className="font-display font-bold leading-[0.9] text-[clamp(2.4rem,6vw,5.5rem)] tracking-tighter mb-20 max-w-4xl">
-          What can we build<br />together?
+        <h2 className="font-display font-bold leading-[0.95] text-[clamp(2.2rem,5.5vw,4.5rem)] tracking-tighter mb-6 max-w-4xl">
+          {t("cap.title")}
         </h2>
+        <p className="text-foreground/65 max-w-xl mb-16">{t("cap.body")}</p>
 
-        {/* Premium cards */}
-        <div className="cap-grid grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-32">
-          {cards.map((c) => (
-            <article
-              key={c.n}
-              className="cap-card group relative p-8 border border-border/60 bg-gradient-to-b from-white/[0.02] to-transparent overflow-hidden transition-colors hover:border-primary/60"
+        <div className="cap-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {capabilities.map((c) => (
+            <Link
+              key={c.slug}
+              to="/capabilities/$slug"
+              params={{ slug: c.slug }}
+              className="cap-card group relative p-8 border border-border/60 bg-gradient-to-b from-white/[0.02] to-transparent overflow-hidden transition-colors hover:border-primary/60 block"
             >
               <div
                 aria-hidden
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                style={{ background: "radial-gradient(ellipse at top, oklch(0.5 0.2 245 / 0.25), transparent 60%)" }}
+                style={{ background: "radial-gradient(ellipse at top, oklch(0.5 0.2 245 / 0.2), transparent 60%)" }}
               />
               <div
                 aria-hidden
                 className="absolute -top-px left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full blue-glow"
               />
-              <div className="relative">
-                <div className="font-mono text-[10px] tracking-[0.4em] text-primary/80 mb-6">
+              <div className="relative flex flex-col h-full min-h-[180px]">
+                <div className="font-mono text-[10px] tracking-[0.4em] text-primary/80 mb-5">
                   {c.n}
                 </div>
-                <h3 className="font-display text-2xl md:text-[1.65rem] font-semibold leading-tight tracking-tight mb-4 group-hover:text-primary transition-colors">
-                  {c.title}
+                <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 group-hover:text-primary transition-colors">
+                  {t(c.tKey)}
                 </h3>
-                <p className="text-sm text-foreground/65 leading-relaxed">{c.body}</p>
+                <p className="text-sm text-foreground/65 leading-relaxed">{t(c.dKey)}</p>
+                <span className="mt-auto pt-6 font-mono text-[10px] tracking-[0.3em] text-primary opacity-70 group-hover:opacity-100 transition-opacity">
+                  {t("cap.cta")} →
+                </span>
               </div>
-            </article>
+            </Link>
           ))}
-        </div>
-
-        {/* Services list */}
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 mb-28">
-          <div className="lg:col-span-5">
-            <div className="font-mono text-[10px] uppercase tracking-[0.5em] text-primary mb-6">
-              Services / Capabilities
-            </div>
-            <h3 className="font-display font-bold leading-[0.95] text-[clamp(2rem,4.5vw,3.5rem)] tracking-tight mb-6">
-              A complete engineering partner.
-            </h3>
-            <p className="text-foreground/65 leading-relaxed max-w-md">
-              Not a laser shop. Not a print shop. A full-stack manufacturing partner taking
-              projects from concept to scalable production.
-            </p>
-          </div>
-          <ul className="cap-list lg:col-span-7 divide-y divide-border/50 border-y border-border/50">
-            {capabilities.map((s, i) => (
-              <li
-                key={s}
-                className="cap-row group flex items-center justify-between py-6 hover:bg-white/[0.015] transition-colors px-2"
-              >
-                <div className="flex items-center gap-6">
-                  <span className="font-mono text-[10px] text-primary/70 tracking-[0.3em] w-6">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="font-display text-xl md:text-2xl tracking-tight">{s}</span>
-                </div>
-                <span className="font-mono text-primary text-sm opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all">
-                  →
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* 3D Printing emphasis */}
-        <div className="relative grid lg:grid-cols-12 gap-10 lg:gap-16 p-8 md:p-12 border border-primary/20 bg-gradient-to-br from-primary/[0.06] via-transparent to-transparent overflow-hidden">
-          <div
-            aria-hidden
-            className="absolute -top-32 -right-32 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-40 pointer-events-none"
-            style={{ background: "radial-gradient(circle, oklch(0.55 0.22 245 / 0.6), transparent 70%)" }}
-          />
-          <div className="relative lg:col-span-5">
-            <div className="font-mono text-[10px] uppercase tracking-[0.5em] text-primary mb-5">
-              Additive Manufacturing
-            </div>
-            <h3 className="font-display font-bold text-[clamp(1.8rem,3.5vw,2.75rem)] leading-tight tracking-tight mb-5">
-              3D Printing — beyond prototypes.
-            </h3>
-            <p className="text-foreground/65 leading-relaxed max-w-md text-sm md:text-base">
-              Industrial additive manufacturing is no longer only for early-stage models. We deliver
-              functional, end-use components and small to medium production runs with engineering
-              polymers.
-            </p>
-          </div>
-          <ul className="relative lg:col-span-7 grid sm:grid-cols-2 gap-3 content-start">
-            {printingUses.map((u, i) => (
-              <li
-                key={u}
-                className="flex items-center gap-4 border border-border/50 px-4 py-3.5 bg-black/40"
-              >
-                <span className="font-mono text-[10px] text-primary tracking-[0.3em]">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="h-px w-4 bg-primary/60" />
-                <span className="font-display text-base">{u}</span>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </section>
