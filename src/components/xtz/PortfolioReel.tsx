@@ -101,9 +101,8 @@ export function PortfolioReel() {
     };
 
     const onWheel = (e: WheelEvent) => {
-      // Only intercept when the section roughly fills the viewport
       const rect = el.getBoundingClientRect();
-      const inView = rect.top <= 10 && rect.bottom >= window.innerHeight - 10;
+      const inView = rect.top <= 2 && rect.bottom >= window.innerHeight - 2;
       if (!inView) return;
 
       const dy = e.deltaY;
@@ -116,8 +115,12 @@ export function PortfolioReel() {
       const atStart = idx <= 0 && dir < 0;
       const atEnd = el.scrollLeft >= maxScroll() - 2 && dir > 0;
 
-      // Let the page scroll vertically when we've reached either edge
-      if (atStart || atEnd) return;
+      // At edges, release control: forward the scroll to the page vertically
+      if (atStart || atEnd) {
+        e.preventDefault();
+        window.scrollBy({ top: dy || dir * 80, behavior: "auto" });
+        return;
+      }
 
       e.preventDefault();
       if (animating) return;
