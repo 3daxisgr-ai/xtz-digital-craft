@@ -32,7 +32,7 @@ export function Process() {
   }, []);
 
   return (
-    <section id="process" ref={root} className="relative min-h-screen w-full bg-black py-32 overflow-hidden">
+    <section id="process" ref={root} className="relative min-h-screen w-full bg-black pt-36 pb-32 md:pt-44 md:pb-40 overflow-hidden">
       <div className="absolute inset-0 opacity-30"
         style={{ background: "radial-gradient(ellipse at 50% 0%, oklch(0.4 0.15 245 / 0.4), transparent 60%)" }} />
       <span className="absolute top-6 right-6 md:top-10 md:right-10 font-mono text-[10px] tracking-[0.4em] text-primary/60">XYZ</span>
