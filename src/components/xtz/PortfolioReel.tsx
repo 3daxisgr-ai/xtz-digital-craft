@@ -5,6 +5,7 @@ import chapterPrint from "@/assets/chapter-print.jpg";
 import chapterFab from "@/assets/chapter-fab.jpg";
 import chapterLaser from "@/assets/chapter-laser.jpg";
 import heroOffice from "@/assets/hero-office.jpg";
+import { useEffect, useRef } from "react";
 import { useI18n } from "./i18n";
 
 const projects = [
