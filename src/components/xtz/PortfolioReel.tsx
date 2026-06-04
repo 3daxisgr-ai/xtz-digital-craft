@@ -114,17 +114,15 @@ export function PortfolioReel() {
         if (img) {
           gsap.fromTo(
             img,
-            { scale: 1.15, xPercent: 6 },
+            { scale: 1.18 },
             {
               scale: 1,
-              xPercent: 0,
+              duration: 1.2,
               ease: "power2.out",
               scrollTrigger: {
                 trigger: slide,
-                containerAnimation: ScrollTrigger.getById("pf") ?? undefined,
-                start: "left right",
-                end: "right left",
-                scrub: true,
+                start: "left center",
+                toggleActions: "play none none reverse",
               },
             }
           );
