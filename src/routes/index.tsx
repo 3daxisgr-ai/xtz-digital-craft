@@ -86,7 +86,9 @@ function Main() {
         align="right"
       />
       <PortfolioReel />
+      <Stats />
       <Process />
+      <GlobalNetwork />
       <InquiryForm />
       <FAQ />
       <Finale />
