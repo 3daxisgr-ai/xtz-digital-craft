@@ -379,7 +379,7 @@ function NavButton({
         ${disabled ? "opacity-30 cursor-not-allowed" : "hover:border-[#00E5FF] hover:bg-[#00E5FF]/[0.12] hover:shadow-[0_0_20px_-4px_#00E5FF]"}
       `}
     >
-      <span className="absolute inset-0 flex items-center justify-center text-[#00E5FF] font-mono text-lg">
+      <span className="absolute inset-0 flex items-center justify-center font-mono text-lg text-[#05acff]">
         {dir === "left" ? "←" : "→"}
       </span>
     </button>
