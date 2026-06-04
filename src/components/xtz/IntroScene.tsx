@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import chapterLaser from "@/assets/chapter-laser.jpg";
+import heroOffice from "@/assets/hero-office.jpg";
 import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
