@@ -136,7 +136,7 @@ export function IntroScene() {
       {/* Scene 02 — zoomed laser background */}
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
         <img
-          src={chapterLaser}
+          src={heroOffice}
           alt="Fiber laser cutting steel with electric blue sparks in a dark industrial environment"
           className="h-full w-full object-cover"
           width={1920}
