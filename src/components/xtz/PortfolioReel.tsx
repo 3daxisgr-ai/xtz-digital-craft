@@ -190,14 +190,14 @@ export function PortfolioReel() {
         {/* LEFT — Title */}
         <div className="col-span-12 lg:col-span-3 xl:col-span-3">
           <div className="flex items-center gap-3 mb-6">
-            <span className="font-mono text-[10px] tracking-[0.4em] text-[#00E5FF]">
+            <span className="font-mono text-[10px] tracking-[0.4em] text-[#05acff]">
               SECTION
             </span>
             <span className="h-px w-10 bg-[#00E5FF] shadow-[0_0_8px_#00E5FF]" />
           </div>
           <h2 className="font-display font-bold leading-[0.85] tracking-tighter text-white text-[clamp(2.4rem,5vw,4.5rem)] mb-6">
             05 /<br />
-            <span className="text-[#00E5FF] drop-shadow-[0_0_24px_rgba(0,229,255,0.45)] text-4xl">
+            <span className="drop-shadow-[0_0_24px_rgba(0,229,255,0.45)] text-4xl text-[#05acff]">
               CAPABILITIES
             </span>
           </h2>
@@ -207,7 +207,7 @@ export function PortfolioReel() {
 
           {/* Progress bar */}
           <div className="max-w-[260px]">
-            <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.3em] text-[#00E5FF]/80 mb-2">
+            <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.3em] mb-2 text-[#05acff]">
               <span>{String(active + 1).padStart(2, "0")}</span>
               <span className="text-white/40">
                 / {String(slides.length).padStart(2, "0")}
@@ -215,7 +215,7 @@ export function PortfolioReel() {
             </div>
             <div className="relative h-[3px] w-full bg-white/10 overflow-hidden">
               <div
-                className="absolute inset-y-0 left-0 bg-[#00E5FF] shadow-[0_0_10px_#00E5FF] transition-all duration-500 ease-out"
+                className="absolute inset-y-0 left-0 shadow-[0_0_10px_#00E5FF] transition-all duration-500 ease-out bg-[#05acff]"
                 style={{
                   width: `${((active + 1) / slides.length) * 100}%`,
                 }}
@@ -293,13 +293,13 @@ export function PortfolioReel() {
                     <Corner className={`bottom-3 right-3 rotate-180 ${isActive ? "opacity-100" : "opacity-40"}`} />
 
                     {/* Index badge */}
-                    <div className="absolute top-5 left-5 font-mono text-[10px] tracking-[0.3em] text-[#00E5FF]">
+                    <div className="absolute top-5 left-5 font-mono text-[10px] tracking-[0.3em] text-[#05acff]">
                       {s.index}
                     </div>
 
                     {/* Content */}
                     <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <div className="font-mono text-[10px] tracking-[0.35em] text-[#00E5FF]/90 mb-3">
+                      <div className="font-mono text-[10px] tracking-[0.35em] mb-3 text-[#05acff]">
                         {s.category.toUpperCase()}
                       </div>
                       <h3 className="font-display font-bold leading-[0.95] tracking-tight text-white text-2xl md:text-3xl mb-3">
@@ -320,7 +320,7 @@ export function PortfolioReel() {
                         {s.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="font-mono text-[9px] tracking-[0.25em] uppercase px-2 py-1 border border-[#00E5FF]/40 text-[#00E5FF]/90 bg-[#00E5FF]/[0.05]"
+                            className="font-mono text-[9px] tracking-[0.25em] uppercase px-2 py-1 border border-[#00E5FF]/40 bg-[#00E5FF]/[0.05] text-[#05acff]"
                           >
                             {tag}
                           </span>
@@ -379,7 +379,7 @@ function NavButton({
         ${disabled ? "opacity-30 cursor-not-allowed" : "hover:border-[#00E5FF] hover:bg-[#00E5FF]/[0.12] hover:shadow-[0_0_20px_-4px_#00E5FF]"}
       `}
     >
-      <span className="absolute inset-0 flex items-center justify-center text-[#00E5FF] font-mono text-lg">
+      <span className="absolute inset-0 flex items-center justify-center font-mono text-lg text-[#05acff]">
         {dir === "left" ? "←" : "→"}
       </span>
     </button>
