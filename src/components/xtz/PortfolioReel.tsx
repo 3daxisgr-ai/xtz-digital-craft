@@ -12,58 +12,58 @@ gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
   {
-    img: p1,
-    alt: "Precision sheet metal assembly component",
-    index: "001",
-    title: "Precision Sheet Metal Assembly",
-    category: "Sheet Metal",
-    material: "Mild Steel / Stainless",
-    process: "Laser cut · formed · welded",
-  },
-  {
     img: p2,
-    alt: "Custom stainless steel fabricated part",
-    index: "002",
-    title: "Custom Stainless Fabrication",
+    alt: "Custom stainless steel components precision manufactured",
+    index: "001",
+    title: "Custom Stainless Steel Components",
     category: "Stainless Steel",
-    material: "316 Stainless · 3–6mm",
-    process: "Laser · press brake · finish",
-  },
-  {
-    img: chapterPrint,
-    alt: "Functional prototype system produced with additive manufacturing",
-    index: "003",
-    title: "Functional Prototype System",
-    category: "3D Printing",
-    material: "Engineering Polymer / Resin",
-    process: "SLS / FDM · functional fit",
+    material: "304 / 316 Stainless",
+    process: "Laser cut · form · finish",
   },
   {
     img: chapterFab,
-    alt: "Architectural metal feature for commercial application",
-    index: "004",
-    title: "Architectural Metal Feature",
+    alt: "Architectural metal feature for commercial and architectural projects",
+    index: "002",
+    title: "Architectural Metal Features",
     category: "Architectural",
     material: "Steel / Aluminium · 2–8mm",
     process: "Laser · form · weld · install",
   },
   {
-    img: p3,
-    alt: "Industrial formed component with CNC precision",
-    index: "005",
-    title: "Industrial Formed Component",
-    category: "Industrial",
-    material: "Mild Steel / Aluminium",
-    process: "Laser cut · CNC form · assembly",
+    img: p1,
+    alt: "Industrial sheet metal assembly precision built",
+    index: "003",
+    title: "Industrial Sheet Metal Assemblies",
+    category: "Sheet Metal",
+    material: "Mild Steel / Stainless",
+    process: "Laser cut · formed · assembled",
+  },
+  {
+    img: chapterPrint,
+    alt: "Functional 3D printed parts for prototyping and production",
+    index: "004",
+    title: "Functional 3D Printed Parts",
+    category: "3D Printing",
+    material: "Engineering Polymer / Resin",
+    process: "SLS / FDM · functional fit",
   },
   {
     img: p3,
-    alt: "Custom acrylic display and presentation solution",
-    index: "006",
-    title: "Acrylic Display System",
+    alt: "Acrylic display and custom presentation solution",
+    index: "005",
+    title: "Acrylic Displays & Custom Solutions",
     category: "Acrylic",
     material: "Cast Acrylic · 3–10mm",
     process: "Precision cut · polish · bond",
+  },
+  {
+    img: p3,
+    alt: "Custom fabrication project with integrated manufacturing",
+    index: "006",
+    title: "Custom Fabrication Projects",
+    category: "Integrated",
+    material: "Multiple materials",
+    process: "Design · laser · form · assembly",
   },
 ];
 
@@ -97,6 +97,11 @@ export function PortfolioReel() {
         <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
           {t("portfolio.kicker")}
         </span>
+      </div>
+      <div className="absolute top-32 left-6 md:left-12 z-20 max-w-lg hidden md:block">
+        <p className="text-sm text-foreground/50 leading-relaxed">
+          {t("portfolio.title")}
+        </p>
       </div>
       <span className="absolute top-24 right-6 md:right-12 z-20 font-mono text-[10px] tracking-[0.4em] text-primary/60">X · Y · Z</span>
 
