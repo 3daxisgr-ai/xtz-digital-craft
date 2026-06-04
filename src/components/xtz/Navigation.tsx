@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { useI18n, type Lang } from "./i18n";
+import xyzLogo from "@/assets/xyz-logo.png.asset.json";
 
 const chapters = [
   { id: "intro", k: "nav.intro" },
@@ -66,9 +67,13 @@ export function Navigation() {
     >
       <nav className="mx-auto flex max-w-[1600px] items-center justify-between px-6 md:px-12 gap-6">
         <a href="#intro" className="nav-brand flex items-center gap-3 group opacity-0 translate-y-2">
-          <span className="relative inline-block h-6 w-6">
-            <span className="absolute inset-0 bg-primary blur-md opacity-60 group-hover:opacity-100 transition-opacity" />
-            <span className="relative flex h-full w-full items-center justify-center brushed-metal border border-primary/40 font-mono text-[8px] text-primary">XYZ</span>
+          <span className="relative inline-block h-9 w-9">
+            <span className="absolute inset-0 bg-primary blur-lg opacity-50 group-hover:opacity-90 transition-opacity" />
+            <img
+              src={xyzLogo.url}
+              alt="3D AXIS XYZ logo"
+              className="relative h-full w-full object-contain"
+            />
           </span>
           <span className="font-display text-lg font-bold tracking-[0.3em]">3D&nbsp;AXIS</span>
         </a>
