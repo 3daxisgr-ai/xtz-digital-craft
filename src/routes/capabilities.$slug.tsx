@@ -70,9 +70,10 @@ const details: Record<CapabilitySlug, Detail> = {
 
 export const Route = createFileRoute("/capabilities/$slug")({
   loader: ({ params }) => {
-    const cap = capabilities.find((c) => c.slug === params.slug);
+    const cap = capabilities.find((c) => c.slug === (params.slug as CapabilitySlug));
     if (!cap) throw notFound();
-    return { cap, detail: details[cap.slug] };
+    const detail: Detail = details[cap.slug];
+    return { cap, detail };
   },
   head: ({ loaderData }) => {
     const title = loaderData?.cap ? `${enTitle(loaderData.cap.slug)} — 3D AXIS` : "Capability — 3D AXIS";
