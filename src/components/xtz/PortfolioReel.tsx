@@ -5,6 +5,7 @@ import chapterPrint from "@/assets/chapter-print.jpg";
 import chapterFab from "@/assets/chapter-fab.jpg";
 import chapterLaser from "@/assets/chapter-laser.jpg";
 import heroOffice from "@/assets/hero-office.jpg";
+import { useEffect, useRef } from "react";
 import { useI18n } from "./i18n";
 
 const projects = [
@@ -75,6 +76,34 @@ const projects = [
 
 export function PortfolioReel() {
   const { t } = useI18n();
+  const scroller = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      const dy = e.deltaY;
+      if (Math.abs(dy) < Math.abs(e.deltaX)) return; // user is already scrolling horizontally
+
+      const max = el.scrollWidth - el.clientWidth;
+      const atStart = el.scrollLeft <= 0;
+      const atEnd = el.scrollLeft >= max - 1;
+
+      // Allow vertical page scroll at the edges
+      if ((dy > 0 && atEnd) || (dy < 0 && atStart)) return;
+
+      // Only hijack when the section fills the viewport
+      const rect = el.getBoundingClientRect();
+      if (rect.top > 5 || rect.bottom < window.innerHeight - 5) return;
+
+      e.preventDefault();
+      el.scrollLeft += dy;
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
 
   return (
     <section id="portfolio" className="relative w-full bg-black">
@@ -93,6 +122,7 @@ export function PortfolioReel() {
       </span>
 
       <div
+        ref={scroller}
         className="h-screen w-full overflow-x-auto overflow-y-hidden flex snap-x snap-mandatory scroll-smooth no-scrollbar"
         style={{ scrollSnapType: "x mandatory" }}
       >
