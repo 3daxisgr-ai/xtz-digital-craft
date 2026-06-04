@@ -5,7 +5,6 @@ import { IntroScene } from "@/components/xtz/IntroScene";
 import { Chapter } from "@/components/xtz/Chapter";
 import { PortfolioReel } from "@/components/xtz/PortfolioReel";
 import { Process } from "@/components/xtz/Process";
-import { Stats } from "@/components/xtz/Stats";
 import { GlobalNetwork } from "@/components/xtz/GlobalNetwork";
 import { InquiryForm } from "@/components/xtz/InquiryForm";
 import { FAQ } from "@/components/xtz/FAQ";
@@ -86,7 +85,6 @@ function Main() {
         align="right"
       />
       <PortfolioReel />
-      <Stats />
       <Process />
       <GlobalNetwork />
       <InquiryForm />
