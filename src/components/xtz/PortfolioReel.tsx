@@ -293,13 +293,13 @@ export function PortfolioReel() {
                     <Corner className={`bottom-3 right-3 rotate-180 ${isActive ? "opacity-100" : "opacity-40"}`} />
 
                     {/* Index badge */}
-                    <div className="absolute top-5 left-5 font-mono text-[10px] tracking-[0.3em] text-[#00E5FF]">
+                    <div className="absolute top-5 left-5 font-mono text-[10px] tracking-[0.3em] text-[#05acff]">
                       {s.index}
                     </div>
 
                     {/* Content */}
                     <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <div className="font-mono text-[10px] tracking-[0.35em] text-[#00E5FF]/90 mb-3">
+                      <div className="font-mono text-[10px] tracking-[0.35em] mb-3 text-[#05acff]">
                         {s.category.toUpperCase()}
                       </div>
                       <h3 className="font-display font-bold leading-[0.95] tracking-tight text-white text-2xl md:text-3xl mb-3">
