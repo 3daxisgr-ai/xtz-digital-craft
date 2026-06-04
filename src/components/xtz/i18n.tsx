@@ -15,10 +15,10 @@ const en: Dict = {
   "nav.inquiry": "07 / Inquiry",
   "nav.cta": "Start Project",
 
-  "intro.kicker": "3D AXIS · EST. 2014",
+  "intro.kicker": "​",
   "intro.brand": "3D AXIS",
-  "intro.slogan": "From Concept to Reality",
-  "intro.xyz": "X · Y · Z — the coordinates behind every creation",
+  "intro.slogan": "Precision is not what we do. It's who we are.",
+  "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
   "intro.scroll": "Scroll to enter",
 
   "ch.idea.k": "Idea",
@@ -78,8 +78,8 @@ const en: Dict = {
   "finale.statement": "Precision is not what we do. It's who we are.",
   "finale.cta": "Start Your Project",
   "finale.foot1": "© 3D AXIS",
-  "finale.foot2": "From Concept to Reality",
-  "finale.foot3": "X · Y · Z",
+  "finale.foot2": "​",
+  "finale.foot3": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
 };
 
 const gr: Dict = {
@@ -93,10 +93,10 @@ const gr: Dict = {
   "nav.inquiry": "07 / Αίτημα",
   "nav.cta": "Ξεκίνα Έργο",
 
-  "intro.kicker": "3D AXIS · ΑΠΟ ΤΟ 2014",
+  "intro.kicker": "​",
   "intro.brand": "3D AXIS",
-  "intro.slogan": "Από την Ιδέα στην Πραγματικότητα",
-  "intro.xyz": "X · Y · Z — οι συντεταγμένες πίσω από κάθε δημιουργία",
+  "intro.slogan": "Η ακρίβεια δεν είναι αυτό που κάνουμε. Είναι αυτό που είμαστε.",
+  "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
   "intro.scroll": "Κύλιση για είσοδο",
 
   "ch.idea.k": "Ιδέα",
@@ -156,8 +156,8 @@ const gr: Dict = {
   "finale.statement": "Η ακρίβεια δεν είναι αυτό που κάνουμε. Είναι αυτό που είμαστε.",
   "finale.cta": "Ξεκινήστε το Έργο σας",
   "finale.foot1": "© 3D AXIS",
-  "finale.foot2": "Από την Ιδέα στην Πραγματικότητα",
-  "finale.foot3": "X · Y · Z",
+  "finale.foot2": "​",
+  "finale.foot3": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
 };
 
 const dicts: Record<Lang, Dict> = { EN: en, GR: gr };

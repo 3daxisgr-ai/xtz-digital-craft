@@ -73,7 +73,7 @@ export function InquiryForm() {
     <section id="inquiry" className="relative min-h-screen w-full bg-black py-32 overflow-hidden">
       <div className="absolute inset-0 opacity-40 pointer-events-none"
         style={{ background: "radial-gradient(ellipse at 80% 50%, oklch(0.45 0.2 245 / 0.5), transparent 60%)" }} />
-      <span className="absolute top-6 right-6 md:top-10 md:right-12 font-mono text-[10px] tracking-[0.4em] text-primary/60">X · Y · Z</span>
+      <span className="absolute top-6 right-6 md:top-10 md:right-12 font-mono text-[10px] tracking-[0.4em] text-primary/60">XYZ</span>
 
       <div className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12">
         <div className="flex items-center gap-4 mb-8">

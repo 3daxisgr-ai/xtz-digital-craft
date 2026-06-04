@@ -12,9 +12,9 @@ export function Finale() {
           style={{ background: "linear-gradient(to top, oklch(0.55 0.22 245 / 0.3), transparent)" }} />
       </div>
 
-      <span className="absolute top-10 left-10 font-mono text-[10px] tracking-[0.4em] text-primary/60">X · 0000</span>
-      <span className="absolute top-10 right-10 font-mono text-[10px] tracking-[0.4em] text-primary/60">Y · 0000</span>
-      <span className="absolute bottom-10 left-10 font-mono text-[10px] tracking-[0.4em] text-primary/60">Z · 0000</span>
+      <span className="absolute top-10 left-10 font-mono text-[10px] tracking-[0.4em] text-primary/60">XYZ</span>
+      <span className="absolute top-10 right-10 font-mono text-[10px] tracking-[0.4em] text-primary/60">XYZ</span>
+      <span className="absolute bottom-10 left-10 font-mono text-[10px] tracking-[0.4em] text-primary/60">XYZ</span>
 
       <div className="relative z-10 text-center px-6 max-w-5xl">
         <div className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-10 animate-pulse-glow">
@@ -27,7 +27,7 @@ export function Finale() {
           {t("intro.slogan")}
         </p>
         <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.5em] text-muted-foreground">
-          X · Y · Z
+          XYZ
         </p>
 
         <div className="mt-14 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-display text-2xl md:text-4xl font-light">
