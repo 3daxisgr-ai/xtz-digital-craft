@@ -3,13 +3,12 @@ import { z } from "zod";
 import { useI18n } from "./i18n";
 
 const services = [
-  "Laser Cutting",
-  "Laser Engraving",
-  "Metal Fabrication",
-  "Press Brake Forming",
-  "Welding",
+  "Design & Development",
+  "Fiber Laser Cutting",
+  "Sheet Metal Forming",
+  "Welding & Assembly",
   "3D Printing",
-  "Design Services",
+  "Custom Manufacturing",
 ];
 
 const materials = [
@@ -23,6 +22,13 @@ const materials = [
   "Other / Advise",
 ];
 
+const stages = [
+  "Idea",
+  "Design Ready",
+  "Prototype Needed",
+  "Production Needed",
+];
+
 const schema = z.object({
   name: z.string().trim().min(1).max(80),
   surname: z.string().trim().min(1).max(80),
@@ -31,6 +37,7 @@ const schema = z.object({
   company: z.string().trim().max(120).optional(),
   service: z.string().min(1).max(80),
   material: z.string().max(80).optional(),
+  stage: z.string().max(40).optional(),
   dimensions: z.string().max(120).optional(),
   quantity: z.string().max(40).optional(),
   description: z.string().trim().max(2000).optional(),
@@ -55,6 +62,7 @@ export function InquiryForm() {
       company: String(fd.get("company") || ""),
       service: String(fd.get("service") || ""),
       material: String(fd.get("material") || ""),
+      stage: String(fd.get("stage") || ""),
       dimensions: String(fd.get("dimensions") || ""),
       quantity: String(fd.get("quantity") || ""),
       description: String(fd.get("description") || ""),
@@ -102,6 +110,7 @@ export function InquiryForm() {
 
             <Select name="service" label={t("f.service")} options={services} placeholder={t("f.select")} required />
             <Select name="material" label={t("f.material")} options={materials} placeholder={t("f.select")} />
+            <Select name="stage" label={t("f.stage")} options={stages} placeholder={t("f.select")} />
             <Input name="dimensions" label={t("f.dimensions")} placeholder="e.g. 1200 × 800 × 4 mm" />
             <Input name="quantity" label={t("f.quantity")} placeholder="1" />
 

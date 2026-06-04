@@ -188,17 +188,44 @@ export function IntroScene() {
 
       {/* Scene 04/05 — Logo engrave + texts */}
       <div className="layer-logo absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center will-change-transform">
-        <div
-          className="logo-engrave font-display font-bold leading-[0.85] text-[clamp(3rem,13vw,14rem)] tracking-tighter opacity-0"
-          style={{
-            color: "oklch(0.96 0.02 245)",
-            textShadow:
-              "0 0 14px oklch(0.7 0.22 245 / 0.35), 0 0 32px oklch(0.55 0.2 245 / 0.18)",
-          }}
-        >
-          3D AXIS
+        <div className="logo-engrave opacity-0 relative">
+          {/* Volumetric halo behind the wordmark */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[260%] blur-3xl opacity-70"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, oklch(0.65 0.22 245 / 0.55), oklch(0.45 0.2 245 / 0.18) 45%, transparent 70%)",
+            }}
+          />
+          {/* Metallic base layer */}
+          <span
+            className="logo-metallic logo-breathe relative block font-display font-bold leading-[0.85] text-[clamp(3rem,13vw,14rem)] tracking-tighter"
+            style={{
+              filter:
+                "drop-shadow(0 2px 0 oklch(0.2 0.02 245 / 0.6)) drop-shadow(0 0 22px oklch(0.7 0.22 245 / 0.55))",
+            }}
+          >
+            3D AXIS
+          </span>
+          {/* Sheen reflection sweeping across the wordmark */}
+          <span
+            aria-hidden
+            className="logo-sheen absolute inset-0 font-display font-bold leading-[0.85] text-[clamp(3rem,13vw,14rem)] tracking-tighter"
+          >
+            3D AXIS
+          </span>
+          {/* Thin baseline blue accent — engineered feel */}
+          <span
+            aria-hidden
+            className="absolute left-1/2 -bottom-3 -translate-x-1/2 h-px w-[55%] blue-glow"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, oklch(0.78 0.22 245), transparent)",
+            }}
+          />
         </div>
-        <p className="intro-slogan opacity-0 mt-6 font-mono text-xs md:text-sm uppercase tracking-[0.5em] text-primary/90">
+        <p className="intro-slogan opacity-0 mt-8 font-mono text-xs md:text-sm uppercase tracking-[0.5em] text-primary/90">
           FROM CONCEPT TO REALITY
         </p>
         <p className="intro-xyz opacity-0 mt-4 font-mono text-[10px] uppercase tracking-[0.55em] text-muted-foreground">
