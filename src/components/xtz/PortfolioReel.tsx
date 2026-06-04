@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import p1 from "@/assets/portfolio-1.jpg";
 import p2 from "@/assets/portfolio-2.jpg";
 import p3 from "@/assets/portfolio-3.jpg";
@@ -75,64 +74,7 @@ const projects = [
 ];
 
 export function PortfolioReel() {
-  const scroller = useRef<HTMLDivElement>(null);
   const { t } = useI18n();
-
-  // Translate vertical wheel into one-slide horizontal moves while in view
-  useEffect(() => {
-    const el = scroller.current;
-    if (!el) return;
-
-    let animating = false;
-    let cooldown = 0;
-
-    const slideWidth = () => el.clientWidth;
-    const maxScroll = () => el.scrollWidth - el.clientWidth;
-    const currentIndex = () => Math.round(el.scrollLeft / slideWidth());
-
-    const goTo = (idx: number) => {
-      const target = Math.max(0, Math.min(projects.length - 1, idx)) * slideWidth();
-      animating = true;
-      el.scrollTo({ left: target, behavior: "smooth" });
-      window.clearTimeout(cooldown);
-      cooldown = window.setTimeout(() => {
-        animating = false;
-      }, 650);
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      const rect = el.getBoundingClientRect();
-      const inView = rect.top <= 2 && rect.bottom >= window.innerHeight - 2;
-      if (!inView) return;
-
-      const dy = e.deltaY;
-      const dx = e.deltaX;
-      const delta = Math.abs(dy) > Math.abs(dx) ? dy : dx;
-      if (Math.abs(delta) < 4) return;
-
-      const dir = delta > 0 ? 1 : -1;
-      const idx = currentIndex();
-      const atStart = idx <= 0 && dir < 0;
-      const atEnd = el.scrollLeft >= maxScroll() - 2 && dir > 0;
-
-      // At edges, release control: forward the scroll to the page vertically
-      if (atStart || atEnd) {
-        e.preventDefault();
-        window.scrollBy({ top: dy || dir * 80, behavior: "auto" });
-        return;
-      }
-
-      e.preventDefault();
-      if (animating) return;
-      goTo(idx + dir);
-    };
-
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => {
-      el.removeEventListener("wheel", onWheel);
-      window.clearTimeout(cooldown);
-    };
-  }, []);
 
   return (
     <section id="portfolio" className="relative w-full bg-black">
@@ -151,7 +93,6 @@ export function PortfolioReel() {
       </span>
 
       <div
-        ref={scroller}
         className="h-screen w-full overflow-x-auto overflow-y-hidden flex snap-x snap-mandatory scroll-smooth no-scrollbar"
         style={{ scrollSnapType: "x mandatory" }}
       >
