@@ -228,7 +228,7 @@ export function IntroScene() {
         <p className="intro-slogan opacity-0 mt-8 font-mono text-xs md:text-sm uppercase tracking-[0.5em] text-primary/90">
           FROM CONCEPT TO REALITY
         </p>
-        <p className="intro-xyz opacity-0 mt-4 font-mono text-[10px] uppercase tracking-[0.55em] text-muted-foreground">
+        <p className="intro-xyz opacity-0 mt-4 font-mono text-[14px] uppercase tracking-[0.55em] text-muted-foreground">
           XYZ — {t("intro.xyz")}
         </p>
       </div>
