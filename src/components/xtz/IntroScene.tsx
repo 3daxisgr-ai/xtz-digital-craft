@@ -138,10 +138,10 @@ export function IntroScene() {
 
 function CornerMarks() {
   const marks = [
-    { c: "top-6 left-6 md:top-10 md:left-10", l: "X · 0000" },
-    { c: "top-6 right-6 md:top-10 md:right-10 text-right", l: "Y · 0000" },
-    { c: "bottom-6 left-6 md:bottom-10 md:left-10", l: "Z · 0000" },
-    { c: "bottom-6 right-6 md:bottom-10 md:right-10 text-right", l: "AXIS · 3D" },
+    { c: "top-6 left-6 md:top-10 md:left-10", l: "XYZ" },
+    { c: "top-6 right-6 md:top-10 md:right-10 text-right", l: "XYZ" },
+    { c: "bottom-6 left-6 md:bottom-10 md:left-10", l: "XYZ" },
+    { c: "bottom-6 right-6 md:bottom-10 md:right-10 text-right", l: "XYZ" },
   ];
   return (
     <div className="pointer-events-none absolute inset-0 z-40">
