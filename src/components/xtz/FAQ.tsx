@@ -4,25 +4,25 @@ import { useI18n } from "./i18n";
 type QA = { q: string; a: string };
 
 const EN: QA[] = [
-  { q: "Do I need a finished design before contacting you?", a: "No. If you only have an idea, our team can help develop it into a manufacturable product." },
-  { q: "What file formats do you accept?", a: "We can work with CAD files, drawings, PDFs, sketches and reference images." },
-  { q: "Can you help with product design and development?", a: "Yes. We support projects from concept and design all the way to manufacturing." },
-  { q: "What materials do you work with?", a: "Stainless Steel, Aluminum, Steel, Acrylic, Engineering Plastics — and various custom materials depending on the application." },
-  { q: "Do you offer prototyping before production?", a: "Yes. Using our design and 3D printing capabilities we can create prototypes before final manufacturing." },
-  { q: "Can I request only manufacturing?", a: "Yes. We can manufacture from customer-provided files and designs." },
-  { q: "Can I request a complete project?", a: "Yes. We can handle the entire process — Design, Prototype, Manufacture and Delivery." },
-  { q: "How do I get a quote?", a: "Simply submit the project inquiry form. Our team will review the project requirements and contact you with a custom quotation." },
+  { q: "Do I need a finished design before contacting you?", a: "No. If you only have an idea, our team can help develop it into a manufacturable product — from sketch to engineered CAD." },
+  { q: "Is 3D printing only for prototypes?", a: "No. We use 3D printing for rapid prototypes, functional parts, custom components, and small to medium production runs." },
+  { q: "Can you help develop my idea?", a: "Yes. Our engineers work alongside you from concept and feasibility through design, prototype and final manufacturing." },
+  { q: "Can you support larger production volumes?", a: "Yes. For projects requiring large-scale production, we activate our trusted global manufacturing partners to scale from prototype to series production." },
+  { q: "What materials do you work with?", a: "Stainless Steel, Aluminum, Acrylic and Engineering Plastics — plus custom materials specified per application." },
+  { q: "Can I request only manufacturing?", a: "Yes. We can manufacture directly from customer-provided files and designs." },
+  { q: "Can I request a complete project from design to production?", a: "Yes. We handle the entire process — Design, Prototype, Manufacture and Deliver — under one engineering team." },
+  { q: "How do I get a quote?", a: "Submit the project inquiry form. Every request is reviewed manually by an engineer, who responds with a tailored quotation." },
 ];
 
 const GR: QA[] = [
-  { q: "Χρειάζεται να έχω έτοιμο σχέδιο πριν επικοινωνήσω;", a: "Όχι. Αν έχετε μόνο μια ιδέα, η ομάδα μας μπορεί να την αναπτύξει σε ένα κατασκευάσιμο προϊόν." },
-  { q: "Ποιους τύπους αρχείων δέχεστε;", a: "Δουλεύουμε με αρχεία CAD, σχέδια, PDF, σκίτσα και εικόνες αναφοράς." },
-  { q: "Βοηθάτε στον σχεδιασμό και την ανάπτυξη προϊόντος;", a: "Ναι. Υποστηρίζουμε έργα από την ιδέα και τον σχεδιασμό μέχρι την κατασκευή." },
-  { q: "Με ποια υλικά δουλεύετε;", a: "Ανοξείδωτο ατσάλι, αλουμίνιο, χάλυβα, ακρυλικό, τεχνικά πλαστικά — και διάφορα custom υλικά ανάλογα με την εφαρμογή." },
-  { q: "Προσφέρετε πρωτοτυποποίηση πριν την παραγωγή;", a: "Ναι. Με τις δυνατότητες σχεδιασμού και 3D εκτύπωσης δημιουργούμε πρωτότυπα πριν την τελική κατασκευή." },
-  { q: "Μπορώ να ζητήσω μόνο κατασκευή;", a: "Ναι. Μπορούμε να κατασκευάσουμε από αρχεία και σχέδια που παρέχει ο πελάτης." },
-  { q: "Μπορώ να ζητήσω ολοκληρωμένο έργο;", a: "Ναι. Αναλαμβάνουμε όλη τη διαδικασία — Σχεδιασμό, Πρωτότυπο, Κατασκευή και Παράδοση." },
-  { q: "Πώς λαμβάνω προσφορά;", a: "Συμπληρώστε τη φόρμα αιτήματος έργου. Η ομάδα μας θα εξετάσει τις απαιτήσεις και θα επικοινωνήσει με προσαρμοσμένη προσφορά." },
+  { q: "Χρειάζεται να έχω έτοιμο σχέδιο πριν επικοινωνήσω;", a: "Όχι. Αν έχετε μόνο μια ιδέα, η ομάδα μας θα τη μετατρέψει σε μηχανολογικό σχέδιο και κατασκευάσιμο προϊόν." },
+  { q: "Η 3D εκτύπωση είναι μόνο για πρωτότυπα;", a: "Όχι. Χρησιμοποιούμε 3D εκτύπωση για ταχέα πρωτότυπα, λειτουργικά εξαρτήματα, custom components και μικρές ή μεσαίες παραγωγές." },
+  { q: "Μπορείτε να αναπτύξετε την ιδέα μου;", a: "Ναι. Οι μηχανικοί μας σας συνοδεύουν από την ιδέα και τη μελέτη εφικτότητας έως τον σχεδιασμό, το πρωτότυπο και την τελική κατασκευή." },
+  { q: "Υποστηρίζετε μεγαλύτερους όγκους παραγωγής;", a: "Ναι. Για έργα μεγάλης κλίμακας ενεργοποιούμε το διεθνές δίκτυο αξιόπιστων κατασκευαστικών συνεργατών μας." },
+  { q: "Με ποια υλικά δουλεύετε;", a: "Ανοξείδωτο ατσάλι, αλουμίνιο, ακρυλικό και τεχνικά πλαστικά — καθώς και custom υλικά ανά εφαρμογή." },
+  { q: "Μπορώ να ζητήσω μόνο κατασκευή;", a: "Ναι. Κατασκευάζουμε απευθείας από αρχεία και σχέδια που παρέχει ο πελάτης." },
+  { q: "Μπορώ να ζητήσω ολοκληρωμένο έργο από τον σχεδιασμό μέχρι την παραγωγή;", a: "Ναι. Αναλαμβάνουμε όλη τη διαδικασία — Σχεδιασμό, Πρωτότυπο, Κατασκευή και Παράδοση." },
+  { q: "Πώς λαμβάνω προσφορά;", a: "Συμπληρώστε τη φόρμα αιτήματος. Κάθε αίτημα ελέγχεται χειροκίνητα από μηχανικό, ο οποίος επιστρέφει με εξατομικευμένη προσφορά." },
 ];
 
 export function FAQ() {
