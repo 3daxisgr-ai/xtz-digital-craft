@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { I18nProvider, useI18n } from "@/components/xtz/i18n";
+import { useI18n } from "@/components/xtz/i18n";
 import { Navigation } from "@/components/xtz/Navigation";
 import { IntroScene } from "@/components/xtz/IntroScene";
 import { Concept } from "@/components/xtz/Concept";
@@ -9,7 +9,6 @@ import { PortfolioReel } from "@/components/xtz/PortfolioReel";
 import { Process } from "@/components/xtz/Process";
 import { GlobalNetwork } from "@/components/xtz/GlobalNetwork";
 import { InquiryForm } from "@/components/xtz/InquiryForm";
-import { FAQ } from "@/components/xtz/FAQ";
 import { Finale } from "@/components/xtz/Finale";
 import { Footer } from "@/components/xtz/Footer";
 import chapterLaser from "@/assets/chapter-laser.jpg";
@@ -21,29 +20,22 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "3D AXIS — From Concept to Reality" },
-      { name: "description", content: "3D AXIS. Engineering and manufacturing partner. Design, prototype, manufacture and deliver — precision laser cutting, metal fabrication, 3D printing and design services." },
+      { name: "description", content: "3D AXIS: design, prototype and manufacture under one roof. Fiber laser cutting, sheet metal, 3D printing and engineering." },
       { property: "og:title", content: "3D AXIS — From Concept to Reality" },
-      { property: "og:description", content: "Engineering and manufacturing partner. From idea to delivery, precision without compromise." },
+      { property: "og:description", content: "Design, prototype and manufacture under one roof." },
       { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" },
+      { rel: "preload", as: "image", href: heroOffice, fetchpriority: "high" },
     ],
   }),
   component: Index,
 });
 
 function Index() {
-  return (
-    <I18nProvider>
-      <Main />
-    </I18nProvider>
-  );
-}
-
-function Main() {
   const { t } = useI18n();
   return (
     <main className="bg-black text-foreground">
@@ -58,7 +50,7 @@ function Main() {
         title={t("ch.idea.t")}
         description={t("ch.idea.d")}
         image={heroOffice}
-        imageAlt="Industrial design studio with brushed metal surfaces and blueprints"
+        imageAlt="Engineering studio with brushed metal surfaces"
       />
       <Chapter
         id="design"
@@ -67,7 +59,7 @@ function Main() {
         title={t("ch.design.t")}
         description={t("ch.design.d")}
         image={chapterPrint}
-        imageAlt="Premium product detail — designed in digital, built in real materials"
+        imageAlt="CAD detail of a precision component"
         align="right"
       />
       <Chapter
@@ -77,7 +69,7 @@ function Main() {
         title={t("ch.proto.t")}
         description={t("ch.proto.d")}
         image={chapterFab}
-        imageAlt="Precision-machined component on a workshop bench — rapid prototype"
+        imageAlt="Precision-machined prototype on a workshop bench"
       />
       <Chapter
         id="manufacture"
@@ -86,21 +78,13 @@ function Main() {
         title={t("ch.mfg.t")}
         description={t("ch.mfg.d")}
         image={chapterLaser}
-        imageAlt="Fiber laser cutting through steel with blue sparks"
+        imageAlt="Fiber laser cutting steel"
         align="right"
       />
       <PortfolioReel />
-      <div className="relative bg-black py-12 px-6 md:px-16 border-t border-border/10">
-        <div className="max-w-[1600px] mx-auto">
-          <p className="text-sm md:text-base text-foreground/50 leading-relaxed max-w-3xl">
-            Whether you need a prototype, a custom component or support bringing a new product to market, 3D AXIS provides the tools and expertise to help make it happen.
-          </p>
-        </div>
-      </div>
       <Process />
       <GlobalNetwork />
       <InquiryForm />
-      <FAQ />
       <Finale />
       <Footer />
     </main>
