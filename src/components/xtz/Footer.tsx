@@ -52,7 +52,7 @@ export function Footer() {
             <ContactCol
               label="Studio"
               items={[
-                { k: "Location", v: "Athens · Greece" },
+                { k: "Location", v: "εο2 19ο χλμ Π.Ε.Ο, EO Thessalonikis Kavalas, Lagkadas 572 00" },
                 { k: "Hours", v: "Mon — Fri / 09:00 — 18:00" },
               ]}
             />
