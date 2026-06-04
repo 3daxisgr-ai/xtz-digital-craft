@@ -215,7 +215,7 @@ export function PortfolioReel() {
             </div>
             <div className="relative h-[3px] w-full bg-white/10 overflow-hidden">
               <div
-                className="absolute inset-y-0 left-0 bg-[#00E5FF] shadow-[0_0_10px_#00E5FF] transition-all duration-500 ease-out"
+                className="absolute inset-y-0 left-0 shadow-[0_0_10px_#00E5FF] transition-all duration-500 ease-out bg-[#05acff]"
                 style={{
                   width: `${((active + 1) / slides.length) * 100}%`,
                 }}
