@@ -4,42 +4,44 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import p1 from "@/assets/portfolio-1.jpg";
 import p2 from "@/assets/portfolio-2.jpg";
 import p3 from "@/assets/portfolio-3.jpg";
+import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
   {
     img: p1,
-    alt: "Laser-cut stainless steel architectural panel",
+    alt: "Stainless steel architectural facade panel",
     index: "001",
-    title: "Aperture Wall",
-    client: "Atrium Architects",
+    title: "Meridian Facade",
+    category: "Stainless Steel",
     material: "316 Stainless · 4mm",
-    process: "Fiber laser · brushed finish",
+    process: "Fiber laser · brushed",
   },
   {
     img: p2,
-    alt: "Brass signage for a luxury brand",
+    alt: "Aluminium product enclosure",
     index: "002",
-    title: "Maison Signature",
-    client: "Maison Lumière",
-    material: "Solid Brass · 12mm",
-    process: "CNC + hand polished",
+    title: "Halo Enclosure",
+    category: "Aluminum",
+    material: "Anodised Aluminium · 6mm",
+    process: "Press brake · welded · matte",
   },
   {
     img: p3,
-    alt: "Custom titanium sculptural object",
+    alt: "Sculptural object with mixed materials",
     index: "003",
-    title: "Vortex Object",
-    client: "Private Commission",
-    material: "Grade-5 Titanium",
-    process: "5-axis fabrication",
+    title: "Axis Object",
+    category: "Custom Fabrication",
+    material: "Steel + 3D-printed polymer",
+    process: "Hybrid · 5-axis + SLS",
   },
 ];
 
 export function PortfolioReel() {
   const root = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
+  const { t } = useI18n();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -61,12 +63,13 @@ export function PortfolioReel() {
   return (
     <section id="portfolio" ref={root} className="relative h-screen w-full overflow-hidden bg-black">
       <div className="absolute top-24 left-6 md:left-12 z-20 flex items-center gap-4">
-        <span className="font-mono text-xs text-primary tracking-[0.3em]">04 /</span>
+        <span className="font-mono text-xs text-primary tracking-[0.3em]">05 /</span>
         <span className="h-px w-16 bg-primary" />
         <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-          Exhibition
+          {t("portfolio.kicker")}
         </span>
       </div>
+      <span className="absolute top-24 right-6 md:right-12 z-20 font-mono text-[10px] tracking-[0.4em] text-primary/60">X · Y · Z</span>
 
       <div ref={track} className="flex h-full will-change-transform" style={{ width: `${projects.length * 100}vw` }}>
         {projects.map((p) => (
@@ -84,13 +87,13 @@ export function PortfolioReel() {
 
             <div className="relative z-10 h-full flex flex-col justify-end px-6 md:px-16 pb-20 max-w-[1600px] mx-auto">
               <div className="font-mono text-[11px] tracking-[0.3em] text-primary mb-4">
-                PROJECT · {p.index}
+                {p.category.toUpperCase()} · {p.index}
               </div>
               <h3 className="font-display font-bold leading-[0.9] text-[clamp(3rem,9vw,9rem)] tracking-tighter mb-8">
                 {p.title}
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-3xl border-t border-border/40 pt-6">
-                <Spec label="Client" value={p.client} />
+                <Spec label="Category" value={p.category} />
                 <Spec label="Material" value={p.material} />
                 <Spec label="Process" value={p.process} />
               </div>
