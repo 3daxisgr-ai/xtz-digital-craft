@@ -15,7 +15,7 @@ const en: Dict = {
   "nav.cta": "Start a Project",
 
   // Hero
-  "intro.headline": "​",
+  "intro.headline": "​XYZ",
   "intro.sub": "Design, prototype and manufacture — under one roof.",
   "intro.scroll": "Scroll",
   "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
