@@ -111,7 +111,8 @@ function enTitle(slug: CapabilitySlug): string {
 }
 
 function CapabilityPage() {
-  const { cap, detail } = Route.useLoaderData();
+  const data = Route.useLoaderData() as { cap: typeof capabilities[number]; detail: Detail };
+  const { cap, detail } = data;
   const { t } = useI18n();
 
   return (
