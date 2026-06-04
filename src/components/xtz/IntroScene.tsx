@@ -113,7 +113,7 @@ export function IntroScene() {
         >
           {t("intro.headline")}
         </h1>
-        <p className="hero-sub mt-6 max-w-2xl text-base md:text-lg text-foreground/80 font-light">
+        <p className="hero-sub mt-6 max-w-2xl md:text-lg text-foreground/80 font-light text-xl">
           {t("intro.sub")}
         </p>
         <p className="intro-xyz mt-6 font-mono text-[11px] md:text-[13px] uppercase tracking-[0.55em] text-primary/80">
