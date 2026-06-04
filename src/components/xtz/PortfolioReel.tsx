@@ -197,7 +197,7 @@ export function PortfolioReel() {
           </div>
           <h2 className="font-display font-bold leading-[0.85] tracking-tighter text-white text-[clamp(2.4rem,5vw,4.5rem)] mb-6">
             05 /<br />
-            <span className="text-[#00E5FF] drop-shadow-[0_0_24px_rgba(0,229,255,0.45)] text-lg">
+            <span className="text-[#00E5FF] drop-shadow-[0_0_24px_rgba(0,229,255,0.45)] text-2xl">
               CAPABILITIES
             </span>
           </h2>
@@ -226,7 +226,7 @@ export function PortfolioReel() {
               <NavButton onClick={() => goTo(Math.min(slides.length - 1, active + 1))} dir="right" disabled={active === slides.length - 1} />
             </div>
             <div className="mt-6 font-mono text-[9px] tracking-[0.4em] text-white/30">
-              ↕ SCROLL · MOVES HORIZONTAL
+              ​
             </div>
           </div>
         </div>
