@@ -1,22 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { I18nProvider, useI18n } from "@/components/xtz/i18n";
 import { Navigation } from "@/components/xtz/Navigation";
 import { IntroScene } from "@/components/xtz/IntroScene";
 import { Chapter } from "@/components/xtz/Chapter";
 import { PortfolioReel } from "@/components/xtz/PortfolioReel";
 import { Process } from "@/components/xtz/Process";
-import { QuotePanel } from "@/components/xtz/QuotePanel";
+import { InquiryForm } from "@/components/xtz/InquiryForm";
 import { Finale } from "@/components/xtz/Finale";
 import chapterLaser from "@/assets/chapter-laser.jpg";
 import chapterPrint from "@/assets/chapter-print.jpg";
 import chapterFab from "@/assets/chapter-fab.jpg";
+import heroOffice from "@/assets/hero-office.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "XTZ — Precision Beyond Limits" },
-      { name: "description", content: "XTZ. Precision laser cutting, engraving, premium printing, signage, custom fabrication and industrial design. A cinematic studio for serious makers." },
-      { property: "og:title", content: "XTZ — Precision Beyond Limits" },
-      { property: "og:description", content: "Precision laser cutting, signage and custom fabrication. Step into the XTZ digital universe." },
+      { title: "3D AXIS — From Concept to Reality" },
+      { name: "description", content: "3D AXIS. Engineering and manufacturing partner. Design, prototype, manufacture and deliver — precision laser cutting, metal fabrication, 3D printing and design services." },
+      { property: "og:title", content: "3D AXIS — From Concept to Reality" },
+      { property: "og:description", content: "Engineering and manufacturing partner. From idea to delivery, precision without compromise." },
       { property: "og:type", content: "website" },
     ],
     links: [
@@ -30,40 +32,59 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
+    <I18nProvider>
+      <Main />
+    </I18nProvider>
+  );
+}
+
+function Main() {
+  const { t } = useI18n();
+  return (
     <main className="bg-black text-foreground">
       <Navigation />
       <IntroScene />
       <Chapter
-        id="laser"
+        id="idea"
         number="01 /"
-        kicker="Laser Cutting"
-        title="Light that cuts steel."
-        description="Fiber laser precision to ±0.05mm across stainless, aluminium, brass and titanium. Production-grade tolerances on one-off prototypes and runs of ten thousand."
-        image={chapterLaser}
-        imageAlt="Industrial fiber laser cutting through steel sheet with blue sparks"
+        kicker={t("ch.idea.k")}
+        title={t("ch.idea.t")}
+        description={t("ch.idea.d")}
+        image={heroOffice}
+        imageAlt="Industrial design studio with brushed metal surfaces and blueprints"
       />
       <Chapter
-        id="print"
+        id="design"
         number="02 /"
-        kicker="Premium Printing"
-        title="Ink with weight."
-        description="Foil stamping, deep emboss, soft-touch laminates. Editorial print and brand collateral where every page has presence."
+        kicker={t("ch.design.k")}
+        title={t("ch.design.t")}
+        description={t("ch.design.d")}
         image={chapterPrint}
-        imageAlt="Macro shot of metallic foil stamping on dark embossed paper"
+        imageAlt="Premium product detail — designed in digital, built in real materials"
         align="right"
       />
       <Chapter
-        id="fab"
+        id="prototype"
         number="03 /"
-        kicker="Custom Fabrication"
-        title="Built once. Built right."
-        description="From CNC components to architectural metalwork — engineered with industrial designers, machinists and finishers under one roof."
+        kicker={t("ch.proto.k")}
+        title={t("ch.proto.t")}
+        description={t("ch.proto.d")}
         image={chapterFab}
-        imageAlt="CNC-machined brushed aluminium component on dark workshop bench"
+        imageAlt="Precision-machined component on a workshop bench — rapid prototype"
+      />
+      <Chapter
+        id="manufacture"
+        number="04 /"
+        kicker={t("ch.mfg.k")}
+        title={t("ch.mfg.t")}
+        description={t("ch.mfg.d")}
+        image={chapterLaser}
+        imageAlt="Fiber laser cutting through steel with blue sparks"
+        align="right"
       />
       <PortfolioReel />
       <Process />
-      <QuotePanel />
+      <InquiryForm />
       <Finale />
     </main>
   );
