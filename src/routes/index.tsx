@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { I18nProvider, useI18n } from "@/components/xtz/i18n";
 import { Navigation } from "@/components/xtz/Navigation";
 import { IntroScene } from "@/components/xtz/IntroScene";
+import { Concept } from "@/components/xtz/Concept";
+import { Capabilities } from "@/components/xtz/Capabilities";
 import { Chapter } from "@/components/xtz/Chapter";
 import { PortfolioReel } from "@/components/xtz/PortfolioReel";
 import { Process } from "@/components/xtz/Process";
@@ -9,6 +11,7 @@ import { GlobalNetwork } from "@/components/xtz/GlobalNetwork";
 import { InquiryForm } from "@/components/xtz/InquiryForm";
 import { FAQ } from "@/components/xtz/FAQ";
 import { Finale } from "@/components/xtz/Finale";
+import { Footer } from "@/components/xtz/Footer";
 import chapterLaser from "@/assets/chapter-laser.jpg";
 import chapterPrint from "@/assets/chapter-print.jpg";
 import chapterFab from "@/assets/chapter-fab.jpg";
@@ -46,6 +49,8 @@ function Main() {
     <main className="bg-black text-foreground">
       <Navigation />
       <IntroScene />
+      <Concept />
+      <Capabilities />
       <Chapter
         id="idea"
         number="01 /"
@@ -90,6 +95,7 @@ function Main() {
       <InquiryForm />
       <FAQ />
       <Finale />
+      <Footer />
     </main>
   );
 }
