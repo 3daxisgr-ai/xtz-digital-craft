@@ -20,11 +20,11 @@ export function IntroScene() {
         .to(".ambient-blue", { opacity: 1, duration: 1.4 }, 0.2)
         .to(".ambient-particles", { opacity: 1, duration: 1.2 }, 0.4)
 
-        // SCENE 02 — extremely zoomed-in laser image revealed
+        // SCENE 02 — zoomed-in image revealed, then settles to full view
         .fromTo(
           ".scene-img-wrap",
-          { opacity: 0, scale: 2.6 },
-          { opacity: 1, scale: 2.0, duration: 1.8, ease: "power2.out" },
+          { opacity: 0, scale: 1.8 },
+          { opacity: 1, scale: 1.4, duration: 1.8, ease: "power2.out" },
           0.9
         )
 
@@ -38,8 +38,8 @@ export function IntroScene() {
         .to(".sparks", { opacity: 1, duration: 0.5 }, "<0.1")
         .to(".smoke", { opacity: 0.55, duration: 1.2 }, "<")
 
-        // continued slow push-in during cut
-        .to(".scene-img-wrap", { scale: 1.55, duration: 2.4, ease: "power1.inOut" }, 1.8)
+        // settle to fully unzoomed
+        .to(".scene-img-wrap", { scale: 1, duration: 2.4, ease: "power2.out" }, 1.8)
 
         // SCENE 04 — logo engraves out of darkness
         .fromTo(
@@ -89,7 +89,7 @@ export function IntroScene() {
         },
       });
 
-      tl.to(".scene-img-wrap", { scale: 2.4, ease: "none" }, 0);
+      tl.to(".scene-img-wrap", { scale: 1.3, ease: "none" }, 0);
       tl.to(".layer-logo", { scale: 0.55, y: -40, opacity: 0, ease: "power2.in" }, 0);
       tl.to(".intro-slogan", { y: -60, opacity: 0, ease: "power2.in" }, 0);
       tl.to(".intro-xyz", { y: -40, opacity: 0, ease: "power2.in" }, 0.02);
