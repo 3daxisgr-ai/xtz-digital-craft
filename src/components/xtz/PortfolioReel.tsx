@@ -4,6 +4,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import p1 from "@/assets/portfolio-1.jpg";
 import p2 from "@/assets/portfolio-2.jpg";
 import p3 from "@/assets/portfolio-3.jpg";
+import chapterPrint from "@/assets/chapter-print.jpg";
+import chapterFab from "@/assets/chapter-fab.jpg";
 import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -28,9 +30,27 @@ const projects = [
     process: "Press brake · welded · matte",
   },
   {
-    img: p3,
-    alt: "Sculptural object with mixed materials",
+    img: chapterPrint,
+    alt: "Acrylic display object backlit with electric blue",
     index: "003",
+    title: "Lumen Display",
+    category: "Acrylic",
+    material: "Cast Acrylic · 10mm",
+    process: "Precision cut · polished edge",
+  },
+  {
+    img: chapterFab,
+    alt: "3D printed functional component in engineering polymer",
+    index: "004",
+    title: "Nexus Component",
+    category: "3D Printing",
+    material: "Engineering Polymer · SLS",
+    process: "Functional part · production-grade",
+  },
+  {
+    img: p3,
+    alt: "Sculptural object combining metal and printed polymer",
+    index: "005",
     title: "Axis Object",
     category: "Custom Fabrication",
     material: "Steel + 3D-printed polymer",
