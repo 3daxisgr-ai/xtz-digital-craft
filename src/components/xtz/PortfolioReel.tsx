@@ -83,19 +83,22 @@ export function PortfolioReel() {
     if (!el) return;
 
     const onWheel = (e: WheelEvent) => {
+      // If user is intentionally scrolling horizontally, let the browser handle it
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+
       const dy = e.deltaY;
-      if (Math.abs(dy) < Math.abs(e.deltaX)) return; // user is already scrolling horizontally
+      if (dy === 0) return;
 
       const max = el.scrollWidth - el.clientWidth;
       const atStart = el.scrollLeft <= 0;
       const atEnd = el.scrollLeft >= max - 1;
 
-      // Allow vertical page scroll at the edges
+      // At the edges, let the page scroll vertically (don't trap)
       if ((dy > 0 && atEnd) || (dy < 0 && atStart)) return;
 
-      // Only hijack when the section fills the viewport
+      // Only hijack when the section roughly fills the viewport
       const rect = el.getBoundingClientRect();
-      if (rect.top > 5 || rect.bottom < window.innerHeight - 5) return;
+      if (rect.top > 10 || rect.bottom < window.innerHeight - 10) return;
 
       e.preventDefault();
       el.scrollLeft += dy;
