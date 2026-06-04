@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import chapterLaser from "@/assets/chapter-laser.jpg";
+import heroOffice from "@/assets/hero-office.jpg";
 import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -136,7 +136,7 @@ export function IntroScene() {
       {/* Scene 02 — zoomed laser background */}
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
         <img
-          src={chapterLaser}
+          src={heroOffice}
           alt="Fiber laser cutting steel with electric blue sparks in a dark industrial environment"
           className="h-full w-full object-cover"
           width={1920}
