@@ -168,7 +168,7 @@ export function IntroScene() {
       {/* LAYER 2 — Logo (medium movement) */}
       <div className="layer-logo absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center will-change-transform">
         <div
-          className="logo-engrave font-display font-bold leading-[0.85] text-[clamp(3rem,13vw,14rem)] tracking-tighter"
+          className="logo-engrave font-display font-bold leading-[0.85] text-[clamp(3rem,13vw,14rem)] tracking-tighter text-[#0055ff]"
           style={{
             color: "oklch(0.96 0.02 245)",
             textShadow:
