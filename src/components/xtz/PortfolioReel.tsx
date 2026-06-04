@@ -320,7 +320,7 @@ export function PortfolioReel() {
                         {s.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="font-mono text-[9px] tracking-[0.25em] uppercase px-2 py-1 border border-[#00E5FF]/40 text-[#00E5FF]/90 bg-[#00E5FF]/[0.05]"
+                            className="font-mono text-[9px] tracking-[0.25em] uppercase px-2 py-1 border border-[#00E5FF]/40 bg-[#00E5FF]/[0.05] text-[#05acff]"
                           >
                             {tag}
                           </span>
