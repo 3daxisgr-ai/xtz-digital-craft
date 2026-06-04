@@ -45,8 +45,8 @@ export function Footer() {
             <ContactCol
               label="Contact"
               items={[
-                { k: "Email", v: "hello@3daxis.studio", href: "mailto:hello@3daxis.studio" },
-                { k: "Phone", v: "+30 210 000 0000", href: "tel:+302100000000" },
+                { k: "Email", v: "3daxis.gr@gmail.com", href: "mailto:3daxis.gr@gmail.com" },
+                { k: "Phone", v: "+30 690000000", href: "tel:+30690000000" },
               ]}
             />
             <ContactCol
