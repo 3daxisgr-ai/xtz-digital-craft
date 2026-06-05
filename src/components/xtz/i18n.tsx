@@ -60,7 +60,7 @@ const en: Dict = {
   "ch.proto.d": "Hold a working version in your hands within days — not months.",
 
   "ch.mfg.k": "Step 4",
-  "ch.mfg.t": "We manufacture and deliver.",
+  "ch.mfg.t": "We manufacture.",
   "ch.mfg.d": "Laser cutting, forming, welding, 3D printing — finished and shipped to you.",
 
   // Portfolio
@@ -78,8 +78,8 @@ const en: Dict = {
   "p.proto.d": "Working sample, fast.",
   "p.mfg.t": "Manufacture",
   "p.mfg.d": "Laser, forming, welding, 3D printing.",
-  "p.deliver.t": "Deliver",
-  "p.deliver.d": "Quality-checked and shipped.",
+  "p.deliver.t": "Mass Production",
+  "p.deliver.d": "Scalable production with trusted partners.",
 
   // Inquiry
   "inquiry.kicker": "Start a Project",
@@ -180,8 +180,8 @@ const gr: Dict = {
   "p.proto.d": "Λειτουργικό δείγμα, γρήγορα.",
   "p.mfg.t": "Κατασκευή",
   "p.mfg.d": "Laser, στραντζάρισμα, συγκολλήσεις, 3D εκτύπωση.",
-  "p.deliver.t": "Παράδοση",
-  "p.deliver.d": "Έλεγχος ποιότητας και αποστολή.",
+  "p.deliver.t": "Μαζική Παραγωγή",
+  "p.deliver.d": "Κλίμακα σε μαζική παραγωγή με αξιόπιστους συνεργάτες.",
 
   "inquiry.kicker": "Ξεκίνα Έργο",
   "inquiry.title": "Πείτε μας τι χρειάζεστε.",

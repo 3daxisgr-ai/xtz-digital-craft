@@ -110,7 +110,7 @@ export function ProjectCTA() {
 
         <div className="cta-reveal mt-14">
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-            {["DESIGN", "PROTOTYPE", "MANUFACTURE", "DELIVER"].map(
+            {["DESIGN", "PROTOTYPE", "MANUFACTURE", "MASS PRODUCTION"].map(
               (word, i) => (
                 <span key={word} className="flex items-center gap-4">
                   <span className="font-mono text-[11px] tracking-[0.35em] text-primary/70">
