@@ -31,9 +31,9 @@ function Index() {
     <main className="bg-black text-foreground">
       <Navigation />
       <IntroScene />
-      <PortfolioReel />
       <About />
       <HowItWorks />
+      <PortfolioReel />
       <Footer />
     </main>
   );
