@@ -64,7 +64,7 @@ const details: Record<CapabilitySlug, Detail> = {
       { t: "Files", d: "Send .dxf, .dwg or .step with material and thickness." },
       { t: "Quote", d: "Reviewed by an engineer within one business day." },
       { t: "Cut", d: "Nested, cut and edge-checked." },
-      { t: "Deliver", d: "Ready for next step or shipped to you." },
+      { t: "Mass Production", d: "Ready for next step or shipped to you." },
     ],
     applications: ["Brackets and panels", "Enclosures and chassis", "Decorative metal", "Industrial components"],
     notes: "Send .dxf, .dwg or .step. Always include thickness and material grade.",
@@ -158,7 +158,7 @@ const details: Record<CapabilitySlug, Detail> = {
       { t: "Spec", d: "Prototype, drawings and tolerances locked in." },
       { t: "Sourcing", d: "We match the part to the right partner." },
       { t: "Production", d: "Pilot run, QC and full production." },
-      { t: "Deliver", d: "Inspected, packed and shipped to you." },
+      { t: "Mass Production", d: "Inspected, packed and shipped to you." },
     ],
     applications: ["Series production", "OEM components", "Branded consumer products", "Replacement and spare parts"],
     seo: {
