@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ForumRouteImport } from './routes/forum'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
 
+const ForumRoute = ForumRouteImport.update({
+  id: '/forum',
+  path: '/forum',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
@@ -32,35 +38,46 @@ const CapabilitiesSlugRoute = CapabilitiesSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/faq': typeof FaqRoute
+  '/forum': typeof ForumRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/faq': typeof FaqRoute
+  '/forum': typeof ForumRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/faq': typeof FaqRoute
+  '/forum': typeof ForumRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/faq' | '/capabilities/$slug'
+  fullPaths: '/' | '/faq' | '/forum' | '/capabilities/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/faq' | '/capabilities/$slug'
-  id: '__root__' | '/' | '/faq' | '/capabilities/$slug'
+  to: '/' | '/faq' | '/forum' | '/capabilities/$slug'
+  id: '__root__' | '/' | '/faq' | '/forum' | '/capabilities/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FaqRoute: typeof FaqRoute
+  ForumRoute: typeof ForumRoute
   CapabilitiesSlugRoute: typeof CapabilitiesSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/forum': {
+      id: '/forum'
+      path: '/forum'
+      fullPath: '/forum'
+      preLoaderRoute: typeof ForumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/faq': {
       id: '/faq'
       path: '/faq'
@@ -88,8 +105,19 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FaqRoute: FaqRoute,
+  ForumRoute: ForumRoute,
   CapabilitiesSlugRoute: CapabilitiesSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
