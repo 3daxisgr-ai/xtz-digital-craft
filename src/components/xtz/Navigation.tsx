@@ -6,7 +6,7 @@ import xyzLogo from "@/assets/xyz-logo.png.asset.json";
 
 const links: { to: string; hash?: string; k: string }[] = [
   { to: "/", k: "nav.intro" },
-  { to: "/capabilities", k: "nav.capabilities" },
+  { to: "/", hash: "capabilities", k: "nav.capabilities" },
   { to: "/", hash: "process", k: "nav.process" },
   { to: "/", hash: "portfolio", k: "nav.work" },
   { to: "/faq", k: "nav.faq" },
