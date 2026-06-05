@@ -67,7 +67,7 @@ export function Navigation() {
               height={36}
             />
           </span>
-          <span className="font-display text-lg font-bold tracking-[0.3em]">3D&nbsp;AXIS</span>
+          <span className="font-display text-lg font-bold tracking-[0.3em]">INOO3D</span>
         </Link>
         <ul className="hidden lg:flex items-center gap-8 font-mono text-[14px] uppercase tracking-widest">
           {links.map((l) => (
