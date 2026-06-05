@@ -85,9 +85,7 @@ export function ProjectCTA() {
 
         <div className="cta-reveal mt-8 max-w-xl">
           <p className="text-base md:text-lg text-foreground/65 leading-relaxed">
-            Sketch. CAD file. Prototype. Production.
-            <br />
-            Send us your project and we&apos;ll help you move it forward.
+            Change
           </p>
         </div>
 
