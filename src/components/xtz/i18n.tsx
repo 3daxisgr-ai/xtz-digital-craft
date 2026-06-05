@@ -19,7 +19,7 @@ const en: Dict = {
   "intro.headline": "​INOO3D",
   "intro.sub": "​",
   "intro.scroll": "Scroll",
-  "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
+  "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · MASS PRODUCTION",
 
   // Concept (what we do)
   "concept.kicker": "What we do",
@@ -110,7 +110,7 @@ const en: Dict = {
   "finale.cta": "Start a Project",
   "finale.foot1": "© INOO3D",
   "finale.foot2": "​",
-  "finale.foot3": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
+  "finale.foot3": "DESIGN · PROTOTYPE · MANUFACTURE · MASS PRODUCTION",
 };
 
 const gr: Dict = {
@@ -126,7 +126,7 @@ const gr: Dict = {
   "intro.headline": "Από την Ιδέα στην Πραγματικότητα",
   "intro.sub": "​",
   "intro.scroll": "Κύλιση",
-  "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
+  "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · MASS PRODUCTION",
 
   "concept.kicker": "Τι κάνουμε",
   "concept.title": "Σχεδιάζουμε, πρωτοτυποποιούμε και κατασκευάζουμε πραγματικά προϊόντα.",
@@ -210,7 +210,7 @@ const gr: Dict = {
   "finale.cta": "Ξεκινήστε το Έργο σας",
   "finale.foot1": "© INOO3D",
   "finale.foot2": "​",
-  "finale.foot3": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
+  "finale.foot3": "DESIGN · PROTOTYPE · MANUFACTURE · MASS PRODUCTION",
 };
 
 const dicts: Record<Lang, Dict> = { EN: en, GR: gr };
