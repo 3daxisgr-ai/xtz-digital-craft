@@ -78,23 +78,37 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "XTZ Digital Forge is a premium website showcasing XTZ's industrial design and fabrication services." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "XTZ Digital Forge is a premium website showcasing XTZ's industrial design and fabrication services." },
+      { title: "3D AXIS — Design, Prototype, Manufacture" },
+      { name: "description", content: "3D AXIS: a full-stack manufacturing partner. Fiber laser cutting, sheet metal, 3D printing, design and prototyping under one roof." },
+      { name: "author", content: "3D AXIS" },
+      { property: "og:site_name", content: "3D AXIS" },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "XTZ Digital Forge is a premium website showcasing XTZ's industrial design and fabrication services." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a556caf9-3e1b-44ba-95a8-7bcee9837932/id-preview-d08ffee7--de766918-3c5b-405d-80ca-cce2f460f906.lovable.app-1780475746634.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a556caf9-3e1b-44ba-95a8-7bcee9837932/id-preview-d08ffee7--de766918-3c5b-405d-80ca-cce2f460f906.lovable.app-1780475746634.png" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              name: "3D AXIS",
+              url: "https://xtz-digital-craft.lovable.app",
+            },
+            {
+              "@type": "WebSite",
+              name: "3D AXIS",
+              url: "https://xtz-digital-craft.lovable.app",
+            },
+          ],
+        }),
       },
     ],
   }),

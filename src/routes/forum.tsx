@@ -10,6 +10,10 @@ export const Route = createFileRoute("/forum")({
       { name: "description", content: "Updates from the 3D AXIS workshop: new equipment, capabilities, materials and announcements." },
       { property: "og:title", content: "Forum — 3D AXIS Updates" },
       { property: "og:description", content: "Updates from the 3D AXIS workshop." },
+      { property: "og:url", content: "https://xtz-digital-craft.lovable.app/forum" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://xtz-digital-craft.lovable.app/forum" },
     ],
   }),
   component: ForumPage,
