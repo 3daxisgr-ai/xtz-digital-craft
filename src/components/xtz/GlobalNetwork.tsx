@@ -44,7 +44,7 @@ export function GlobalNetwork() {
             {isGR ? "Παγκόσμιο Δίκτυο" : "Global Reach"}
           </div>
           <h2 className="font-display font-bold leading-[0.9] text-[clamp(2.4rem,6vw,5rem)] tracking-tighter mb-8">
-            {isGR ? "Παγκόσμιο Δίκτυο Παραγωγής." : "Global Manufacturing Network."}
+            {isGR ? "Παγκόσμιο Δίκτυο Παραγωγής." : "​Mass production."}
           </h2>
           <p className="text-foreground/70 text-base md:text-lg max-w-xl leading-relaxed font-light">
             {isGR

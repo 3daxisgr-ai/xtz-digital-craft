@@ -43,7 +43,7 @@ const en: Dict = {
   "cap.04.d": "Functional parts and small production runs.",
   "cap.05.t": "Design → Prototype",
   "cap.05.d": "From sketch to working prototype in days.",
-  "cap.06.t": "Global Manufacturing Network",
+  "cap.06.t": "​Mass production",
   "cap.06.d": "Scale to series production with trusted partners.",
 
   // Chapters (kept names, simpler copy)

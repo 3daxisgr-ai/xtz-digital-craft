@@ -64,7 +64,7 @@ const slides: Slide[] = [
     img: p3,
     alt: "Global manufacturing network and partners",
     index: "006",
-    title: "Global Manufacturing Network",
+    title: "​Mass production",
     category: "Manufacturing",
     description: "Distributed sourcing, scale and worldwide delivery.",
     tags: ["Sourcing", "Scale"],

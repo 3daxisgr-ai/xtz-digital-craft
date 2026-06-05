@@ -21,7 +21,7 @@ const titles: Record<CapabilitySlug, string> = {
   "sheet-metal-forming-welding": "Sheet Metal Forming & Welding",
   "3d-printing": "3D Printing",
   "design-to-prototype": "Design → Prototype",
-  "global-manufacturing-network": "Global Manufacturing Network",
+  "global-manufacturing-network": "​Mass production",
 };
 
 const details: Record<CapabilitySlug, Detail> = {
@@ -162,7 +162,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Series production", "OEM components", "Branded consumer products", "Replacement and spare parts"],
     seo: {
-      title: "Global Manufacturing Network — INOO3D",
+      title: "​Mass production — INOO3D",
       description: "Scale from prototype to series production with trusted global partners. Managed end to end.",
     },
   },
