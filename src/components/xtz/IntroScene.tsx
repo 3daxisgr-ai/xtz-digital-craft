@@ -133,7 +133,7 @@ export function IntroScene() {
 
       {/* Scroll indicator */}
       <div className="scroll-hint absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-3 opacity-0">
-        <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
+        <span className="font-mono text-[14px] uppercase tracking-[0.4em] text-muted-foreground">
           {t("intro.scroll")}
         </span>
         <span className="relative block h-14 w-px overflow-hidden bg-white/10">

@@ -225,7 +225,7 @@ function CapabilityPage() {
         />
         <div className="relative mx-auto max-w-[1200px]">
           {/* Breadcrumbs */}
-          <nav aria-label="breadcrumb" className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-10 flex flex-wrap items-center gap-2">
+          <nav aria-label="breadcrumb" className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-10 flex flex-wrap items-center gap-2">
             <Link to="/" className="hover:text-primary transition-colors">Home</Link>
             <span className="text-muted-foreground/50">/</span>
             <Link to="/" hash="capabilities" className="hover:text-primary transition-colors">Capabilities</Link>
@@ -275,7 +275,7 @@ function CapabilityPage() {
             <ul className="space-y-5">
               {detail.what.map((w, i) => (
                 <li key={i} className="flex gap-4 text-foreground/85">
-                  <span className="font-mono text-[10px] text-primary/70 tracking-[0.3em] pt-2 shrink-0">
+                  <span className="font-mono text-[14px] text-primary/70 tracking-[0.3em] pt-2 shrink-0">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span className="font-display text-lg md:text-xl leading-snug">{w}</span>
@@ -306,7 +306,7 @@ function CapabilityPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {detail.process.map((p, i) => (
               <div key={p.t} className="relative p-6 border border-border/60 bg-white/[0.02]">
-                <div className="font-mono text-[10px] tracking-[0.4em] text-primary/80 mb-4">
+                <div className="font-mono text-[14px] tracking-[0.4em] text-primary/80 mb-4">
                   STEP {String(i + 1).padStart(2, "0")}
                 </div>
                 <h3 className="font-display text-xl font-semibold mb-2">{p.t}</h3>
@@ -370,12 +370,12 @@ function CapabilityPage() {
                 className="group relative p-8 border border-border/60 bg-gradient-to-b from-white/[0.02] to-transparent overflow-hidden transition-colors hover:border-primary/60 block"
               >
                 <div aria-hidden className="absolute -top-px left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full blue-glow" />
-                <div className="font-mono text-[10px] tracking-[0.4em] text-primary/80 mb-4">{r.n}</div>
+                <div className="font-mono text-[14px] tracking-[0.4em] text-primary/80 mb-4">{r.n}</div>
                 <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 group-hover:text-primary transition-colors">
                   {titles[r.slug]}
                 </h3>
                 <p className="text-sm text-foreground/65 leading-relaxed">{t(r.dKey)}</p>
-                <span className="mt-6 inline-block font-mono text-[10px] tracking-[0.3em] text-primary opacity-70 group-hover:opacity-100">
+                <span className="mt-6 inline-block font-mono text-[14px] tracking-[0.3em] text-primary opacity-70 group-hover:opacity-100">
                   View capability →
                 </span>
               </Link>

@@ -54,10 +54,10 @@ export function Capabilities() {
         className="absolute inset-0 opacity-30 pointer-events-none"
         style={{ background: "radial-gradient(ellipse at 20% 0%, oklch(0.4 0.18 245 / 0.4), transparent 55%)" }}
       />
-      <span className="absolute top-10 left-6 md:left-12 font-mono text-[10px] tracking-[0.4em] text-primary/60">
+      <span className="absolute top-10 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         — / CAPABILITIES
       </span>
-      <span className="absolute top-10 right-6 md:right-12 font-mono text-[10px] tracking-[0.4em] text-primary/60">
+      <span className="absolute top-10 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         XYZ
       </span>
 
@@ -92,14 +92,14 @@ export function Capabilities() {
                 className="absolute -top-px left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full blue-glow"
               />
               <div className="relative flex flex-col h-full min-h-[180px]">
-                <div className="font-mono text-[10px] tracking-[0.4em] text-primary/80 mb-5">
+                <div className="font-mono text-[14px] tracking-[0.4em] text-primary/80 mb-5">
                   {c.n}
                 </div>
                 <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 group-hover:text-primary transition-colors">
                   {t(c.tKey)}
                 </h3>
                 <p className="text-sm text-foreground/65 leading-relaxed">{t(c.dKey)}</p>
-                <span className="mt-auto pt-6 font-mono text-[10px] tracking-[0.3em] text-primary opacity-70 group-hover:opacity-100 transition-opacity">
+                <span className="mt-auto pt-6 font-mono text-[14px] tracking-[0.3em] text-primary opacity-70 group-hover:opacity-100 transition-opacity">
                   {t("cap.cta")} →
                 </span>
               </div>

@@ -81,7 +81,7 @@ export function InquiryForm() {
     <section id="inquiry" className="relative min-h-screen w-full bg-black py-32 overflow-hidden">
       <div className="absolute inset-0 opacity-40 pointer-events-none"
         style={{ background: "radial-gradient(ellipse at 80% 50%, oklch(0.45 0.2 245 / 0.5), transparent 60%)" }} />
-      <span className="absolute top-6 right-6 md:top-10 md:right-12 font-mono text-[10px] tracking-[0.4em] text-primary/60">XYZ</span>
+      <span className="absolute top-6 right-6 md:top-10 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">XYZ</span>
 
       <div className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12">
         <div className="flex items-center gap-4 mb-8">
@@ -96,7 +96,7 @@ export function InquiryForm() {
 
         {sent ? (
           <div className="glass-panel grain p-12 max-w-2xl">
-            <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-4">// 200 OK</div>
+            <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-primary mb-4">// 200 OK</div>
             <p className="font-display text-2xl md:text-3xl leading-tight">{t("f.sent")}</p>
           </div>
         ) : (
@@ -135,7 +135,7 @@ export function InquiryForm() {
             )}
 
             <div className="lg:col-span-2 pt-4 border-t border-border flex items-center justify-between gap-4">
-              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              <span className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground">
                 Manual engineering review · 1 business day
               </span>
               <button
@@ -154,7 +154,7 @@ export function InquiryForm() {
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+    <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground">
       {children}
     </div>
   );
@@ -183,7 +183,7 @@ function FileInput({ name, label }: { name: string; label: string }) {
       <Label>{label}</Label>
       <label className="mt-3 flex items-center justify-between gap-3 border border-dashed border-border hover:border-primary/60 px-4 py-2.5 cursor-pointer transition-colors">
         <span className="font-mono text-xs text-muted-foreground truncate">{fname || ".dwg · .step · .stl · .pdf"}</span>
-        <span className="font-mono text-[10px] tracking-[0.3em] text-primary">SELECT</span>
+        <span className="font-mono text-[14px] tracking-[0.3em] text-primary">SELECT</span>
         <input
           name={name}
           type="file"

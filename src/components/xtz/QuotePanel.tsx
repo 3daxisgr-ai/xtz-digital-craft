@@ -35,7 +35,7 @@ export function QuotePanel() {
         <div className="grid lg:grid-cols-[1.2fr_1fr] gap-6">
           {/* Control panel */}
           <div className="glass-panel grain p-8 md:p-12 relative">
-            <div className="absolute top-4 right-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-primary">
+            <div className="absolute top-4 right-4 flex items-center gap-2 font-mono text-[14px] uppercase tracking-[0.3em] text-primary">
               <span className="h-2 w-2 rounded-full bg-primary blue-glow animate-pulse-glow" /> System Online
             </div>
 
@@ -104,7 +104,7 @@ export function QuotePanel() {
           {/* Live readout */}
           <div className="relative">
             <div className="glass-panel grain p-8 md:p-12 h-full flex flex-col">
-              <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-6">
+              <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-muted-foreground mb-6">
                 Live Summary
               </div>
 
@@ -117,8 +117,8 @@ export function QuotePanel() {
                     transition: "all 0.3s ease",
                   }}
                 >
-                  <span className="absolute -top-5 left-0 font-mono text-[10px] text-primary">{width}mm</span>
-                  <span className="absolute top-0 -right-10 font-mono text-[10px] text-primary">{height}mm</span>
+                  <span className="absolute -top-5 left-0 font-mono text-[14px] text-primary">{width}mm</span>
+                  <span className="absolute top-0 -right-10 font-mono text-[14px] text-primary">{height}mm</span>
                   <div className="absolute inset-0 bg-primary/5" />
                 </div>
                 <div className="absolute inset-0 scan-line opacity-40 top-1/2 animate-laser-sweep" />
@@ -132,7 +132,7 @@ export function QuotePanel() {
               </dl>
 
               <div className="mt-auto pt-6 border-t border-border">
-                <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-2">
+                <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-2">
                   Estimated
                 </div>
                 <div className="flex items-baseline gap-2">
@@ -156,7 +156,7 @@ export function QuotePanel() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">
+      <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-3">
         {label}
       </div>
       {children}

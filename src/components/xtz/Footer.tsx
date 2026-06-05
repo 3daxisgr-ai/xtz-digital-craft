@@ -23,7 +23,7 @@ export function Footer() {
         {/* Hero brand block */}
         <div className="grid lg:grid-cols-12 gap-12 pb-16 border-b border-border/40">
           <div className="lg:col-span-7 space-y-6">
-            <div className="font-mono text-[10px] uppercase tracking-[0.5em] text-primary/80">
+            <div className="font-mono text-[14px] uppercase tracking-[0.5em] text-primary/80">
               XYZ — coordinates of every build
             </div>
             <h2 className="font-display font-bold leading-[0.85] text-[clamp(2.8rem,9vw,8rem)] tracking-tighter text-glow">
@@ -61,11 +61,11 @@ export function Footer() {
 
         {/* Bottom row */}
         <div className="pt-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-          <div className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+          <div className="font-mono text-[14px] uppercase tracking-[0.35em] text-muted-foreground">
             © {new Date().getFullYear()} 3D AXIS · All rights reserved
           </div>
 
-          <nav className="flex flex-wrap items-center gap-x-8 gap-y-3 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+          <nav className="flex flex-wrap items-center gap-x-8 gap-y-3 font-mono text-[14px] uppercase tracking-[0.35em] text-muted-foreground">
             <a href="#concept" className="hover:text-primary transition-colors">Why</a>
             <a href="#capabilities" className="hover:text-primary transition-colors">Capabilities</a>
             <a href="#portfolio" className="hover:text-primary transition-colors">Work</a>
@@ -102,7 +102,7 @@ function ContactCol({
 }) {
   return (
     <div>
-      <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary/80 mb-5">
+      <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-primary/80 mb-5">
         {label}
       </div>
       <ul className="space-y-4">

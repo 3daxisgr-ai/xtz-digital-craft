@@ -35,7 +35,7 @@ export function Process() {
     <section id="process" ref={root} className="relative min-h-screen w-full bg-black pt-36 pb-32 md:pt-44 md:pb-40 overflow-hidden">
       <div className="absolute inset-0 opacity-30"
         style={{ background: "radial-gradient(ellipse at 50% 0%, oklch(0.4 0.15 245 / 0.4), transparent 60%)" }} />
-      <span className="absolute top-6 right-6 md:top-10 md:right-10 font-mono text-[10px] tracking-[0.4em] text-primary/60">XYZ</span>
+      <span className="absolute top-6 right-6 md:top-10 md:right-10 font-mono text-[14px] tracking-[0.4em] text-primary/60">XYZ</span>
 
       <div className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12">
         <div className="flex items-center gap-4 mb-12">
