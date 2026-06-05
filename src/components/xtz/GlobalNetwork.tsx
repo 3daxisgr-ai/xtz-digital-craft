@@ -9,12 +9,12 @@ export function GlobalNetwork() {
     ? [
         "Trusted Manufacturing Partners",
         "Scalable Production Solutions",
-        "Global Manufacturing Network",
+        "​Mass production",
       ]
     : [
         "Trusted Manufacturing Partners",
         "Scalable Production Solutions",
-        "Global Manufacturing Network",
+        "​Mass production",
       ];
 
   return (
