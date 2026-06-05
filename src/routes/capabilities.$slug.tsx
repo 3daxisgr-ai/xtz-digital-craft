@@ -175,11 +175,12 @@ export const Route = createFileRoute("/capabilities/$slug")({
     const detail = details[cap.slug];
     return { cap, detail };
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     const seo = loaderData?.detail?.seo ?? {
       title: "Capability — 3D AXIS",
       description: "Engineering and manufacturing capability at 3D AXIS.",
     };
+    const url = `https://xtz-digital-craft.lovable.app/capabilities/${params.slug}`;
     return {
       meta: [
         { title: seo.title },
@@ -187,6 +188,10 @@ export const Route = createFileRoute("/capabilities/$slug")({
         { property: "og:title", content: seo.title },
         { property: "og:description", content: seo.description },
         { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+      ],
+      links: [
+        { rel: "canonical", href: url },
       ],
     };
   },
