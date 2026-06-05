@@ -1,0 +1,19 @@
+# 3D AXIS
+
+> A full-stack manufacturing partner taking projects from concept to scalable production. Fiber laser cutting, sheet metal, 3D printing, design and prototyping under one roof.
+
+## Pages
+
+- [Home](/): Overview of 3D AXIS — design, prototype, manufacture, deliver.
+- [Start a Project](/start-project): Send us your sketch, CAD file or prototype to get started.
+- [FAQ](/faq): Answers about 3D printing, laser cutting, materials, lead times and pricing.
+- [Forum](/forum): Workshop updates — new equipment, materials and announcements.
+
+## Capabilities
+
+- [Design & Development](/capabilities/design-development)
+- [Fiber Laser Cutting](/capabilities/fiber-laser-cutting)
+- [Sheet Metal Forming & Welding](/capabilities/sheet-metal-forming-welding)
+- [3D Printing](/capabilities/3d-printing)
+- [Design to Prototype](/capabilities/design-to-prototype)
+- [Global Manufacturing Network](/capabilities/global-manufacturing-network)
