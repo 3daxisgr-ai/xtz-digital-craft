@@ -21,16 +21,6 @@ type Slide = {
 
 const slides: Slide[] = [
   {
-    img: heroOffice,
-    alt: "Engineering and CAD design workspace",
-    index: "",
-    title: "Design & Development",
-    category: "CAD · DFM",
-    description: "From sketch to manufacturable CAD with full engineering review.",
-    tags: ["CAD", "DFM"],
-    slug: "design-development",
-  },
-  {
     img: chapterLaser,
     alt: "Fiber laser cutting precision sheet metal",
     index: "002",
