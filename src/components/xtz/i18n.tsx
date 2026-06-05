@@ -16,7 +16,7 @@ const en: Dict = {
   "nav.cta": "Start a Project",
 
   // Hero
-  "intro.headline": "​XYZ",
+  "intro.headline": "​INOO3D",
   "intro.sub": "​",
   "intro.scroll": "Scroll",
   "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
