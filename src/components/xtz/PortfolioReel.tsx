@@ -163,7 +163,7 @@ export function PortfolioReel() {
 
   return (
     <section
-      id="portfolio"
+      id="capabilities"
       ref={sectionRef}
       className="relative w-full bg-[#04060d] min-h-screen flex items-center overflow-hidden py-24"
     >
