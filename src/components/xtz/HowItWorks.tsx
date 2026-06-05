@@ -25,7 +25,7 @@ const steps: Step[] = [
   { n: "02", title: "We review the project", desc: "We contact you and discuss the best solution.", Icon: MessagesSquare },
   { n: "03", title: "Design & Engineering", desc: "If needed, we create or optimize the design.", Icon: PenTool },
   { n: "04", title: "Prototype & Validation", desc: "We produce and verify the first version.", Icon: FlaskConical },
-  { n: "05", title: "Manufacturing", desc: "Production begins using the appropriate process.", Icon: Factory },
+  { n: "05", title: "Manufacturing", desc: "Production begins using the appropriate process , and material.", Icon: Factory },
   { n: "06", title: "Delivery", desc: "Your finished parts are shipped to you.", Icon: Truck },
 ];
 
