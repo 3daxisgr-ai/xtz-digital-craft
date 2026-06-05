@@ -179,7 +179,7 @@ export function PortfolioReel() {
         {/* LEFT — Title */}
         <div className="col-span-12 lg:col-span-3 xl:col-span-3">
           <div className="flex items-center gap-3 mb-6">
-            <span className="font-mono text-[10px] tracking-[0.4em] text-[#05acff]">
+            <span className="font-mono text-[14px] tracking-[0.4em] text-[#05acff]">
               SECTION
             </span>
             <span className="h-px w-10 bg-[#05acff] shadow-[0_0_8px_#05acff]" />
@@ -196,7 +196,7 @@ export function PortfolioReel() {
 
           {/* Progress bar */}
           <div className="max-w-[260px]">
-            <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.3em] mb-2 text-[#05acff]">
+            <div className="flex items-center justify-between font-mono text-[14px] tracking-[0.3em] mb-2 text-[#05acff]">
               <span>{String(active + 1).padStart(2, "0")}</span>
               <span className="text-white/40">
                 / {String(slides.length).padStart(2, "0")}
@@ -290,13 +290,13 @@ export function PortfolioReel() {
                     <Corner className={`bottom-3 right-3 rotate-180 ${isActive ? "opacity-100" : "opacity-40"}`} />
 
                     {/* Index badge */}
-                    <div className="absolute top-5 left-5 font-mono text-[10px] tracking-[0.3em] text-[#05acff]">
+                    <div className="absolute top-5 left-5 font-mono text-[14px] tracking-[0.3em] text-[#05acff]">
                       {s.index}
                     </div>
 
                     {/* Content */}
                     <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <div className="font-mono text-[10px] tracking-[0.35em] mb-3 text-[#05acff]">
+                      <div className="font-mono text-[14px] tracking-[0.35em] mb-3 text-[#05acff]">
                         {s.category.toUpperCase()}
                       </div>
                       <h3 className="font-display font-bold leading-[0.95] tracking-tight text-white text-2xl md:text-3xl mb-3">

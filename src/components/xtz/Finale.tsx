@@ -11,8 +11,8 @@ export function Finale() {
           style={{ background: "radial-gradient(ellipse at center, oklch(0.4 0.2 245 / 0.4), transparent 65%)" }} />
       </div>
 
-      <span className="absolute top-10 left-10 font-mono text-[10px] tracking-[0.4em] text-primary/60">XYZ</span>
-      <span className="absolute top-10 right-10 font-mono text-[10px] tracking-[0.4em] text-primary/60">XYZ</span>
+      <span className="absolute top-10 left-10 font-mono text-[14px] tracking-[0.4em] text-primary/60">XYZ</span>
+      <span className="absolute top-10 right-10 font-mono text-[14px] tracking-[0.4em] text-primary/60">XYZ</span>
 
       <div className="relative z-10 text-center px-6 max-w-4xl">
         <div className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-8">

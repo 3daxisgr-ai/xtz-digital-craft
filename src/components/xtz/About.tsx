@@ -43,10 +43,10 @@ export function About() {
             "radial-gradient(ellipse at 80% 20%, oklch(0.45 0.18 245 / 0.25), transparent 60%)",
         }}
       />
-      <span className="absolute top-8 left-6 md:left-12 font-mono text-[10px] tracking-[0.4em] text-primary/60">
+      <span className="absolute top-8 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         — / ABOUT
       </span>
-      <span className="absolute top-8 right-6 md:right-12 font-mono text-[10px] tracking-[0.4em] text-primary/60">
+      <span className="absolute top-8 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         XYZ
       </span>
 

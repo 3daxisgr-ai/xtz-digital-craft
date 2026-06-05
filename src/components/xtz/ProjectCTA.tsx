@@ -54,10 +54,10 @@ export function ProjectCTA() {
       </div>
 
       {/* Corner accents */}
-      <span className="absolute top-6 left-6 md:top-10 md:left-12 font-mono text-[10px] tracking-[0.4em] text-primary/40">
+      <span className="absolute top-6 left-6 md:top-10 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/40">
         — / INQUIRY
       </span>
-      <span className="absolute top-6 right-6 md:top-10 md:right-12 font-mono text-[10px] tracking-[0.4em] text-primary/40">
+      <span className="absolute top-6 right-6 md:top-10 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/40">
         XYZ
       </span>
 

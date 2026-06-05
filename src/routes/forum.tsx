@@ -87,7 +87,7 @@ function ForumPage() {
               className="border border-primary/15 hover:border-primary/40 transition-colors p-6 md:p-8"
               style={{ background: "linear-gradient(135deg, oklch(0.15 0.02 245 / 0.4), oklch(0.08 0.01 245 / 0.25))" }}
             >
-              <div className="flex items-center justify-between gap-4 mb-4 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <div className="flex items-center justify-between gap-4 mb-4 font-mono text-[14px] uppercase tracking-[0.4em] text-primary">
                 <span>{p.category}</span>
                 <span className="text-foreground/50">{p.date}</span>
               </div>

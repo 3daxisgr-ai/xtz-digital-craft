@@ -31,10 +31,10 @@ export function GlobalNetwork() {
         style={{ background: "radial-gradient(ellipse at 80% 30%, oklch(0.45 0.2 245 / 0.35), transparent 60%)" }}
       />
 
-      <span className="absolute top-10 left-6 md:left-12 font-mono text-[10px] tracking-[0.4em] text-primary/60">
+      <span className="absolute top-10 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         {isGR ? "—  / Δίκτυο" : "—  / Network"}
       </span>
-      <span className="absolute top-10 right-6 md:right-12 font-mono text-[10px] tracking-[0.4em] text-primary/60">
+      <span className="absolute top-10 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         XYZ
       </span>
 
@@ -60,7 +60,7 @@ export function GlobalNetwork() {
               className="glass-panel grain px-6 py-5 border border-primary/15 flex items-center gap-5"
               style={{ background: "linear-gradient(135deg, oklch(0.15 0.02 245 / 0.5), oklch(0.08 0.01 245 / 0.3))" }}
             >
-              <span className="font-mono text-[10px] tracking-[0.3em] text-primary/70 shrink-0">
+              <span className="font-mono text-[14px] tracking-[0.3em] text-primary/70 shrink-0">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <span className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent max-w-[2rem]" />

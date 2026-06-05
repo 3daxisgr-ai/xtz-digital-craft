@@ -47,10 +47,10 @@ export function Concept() {
         />
       </div>
 
-      <span className="absolute top-10 left-6 md:left-12 z-10 font-mono text-[10px] tracking-[0.4em] text-primary/60">
+      <span className="absolute top-10 left-6 md:left-12 z-10 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         — / WHAT WE DO
       </span>
-      <span className="absolute top-10 right-6 md:right-12 z-10 font-mono text-[10px] tracking-[0.4em] text-primary/60">
+      <span className="absolute top-10 right-6 md:right-12 z-10 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         XYZ
       </span>
 

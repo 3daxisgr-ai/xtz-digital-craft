@@ -69,7 +69,7 @@ export function Navigation() {
           </span>
           <span className="font-display text-lg font-bold tracking-[0.3em]">3D&nbsp;AXIS</span>
         </Link>
-        <ul className="hidden lg:flex items-center gap-8 font-mono text-[10px] uppercase tracking-widest">
+        <ul className="hidden lg:flex items-center gap-8 font-mono text-[14px] uppercase tracking-widest">
           {links.map((l) => (
             <li key={l.k} className="nav-item opacity-0 translate-y-3">
               <Link
