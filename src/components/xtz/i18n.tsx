@@ -11,6 +11,7 @@ const en: Dict = {
   "nav.process": "Process",
   "nav.work": "Work",
   "nav.faq": "FAQ",
+  "nav.forum": "Forum",
   "nav.inquiry": "Start a Project",
   "nav.cta": "Start a Project",
 
@@ -118,6 +119,7 @@ const gr: Dict = {
   "nav.process": "Διαδικασία",
   "nav.work": "Έργα",
   "nav.faq": "Ερωτήσεις",
+  "nav.forum": "Ενημερώσεις",
   "nav.inquiry": "Ξεκίνα Έργο",
   "nav.cta": "Ξεκίνα Έργο",
 
