@@ -3,7 +3,6 @@ import p3 from "@/assets/portfolio-3.jpg";
 import chapterPrint from "@/assets/chapter-print.jpg";
 import chapterFab from "@/assets/chapter-fab.jpg";
 import chapterLaser from "@/assets/chapter-laser.jpg";
-import heroOffice from "@/assets/hero-office.jpg";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useI18n } from "./i18n";
@@ -21,16 +20,6 @@ type Slide = {
 };
 
 const slides: Slide[] = [
-  {
-    img: heroOffice,
-    alt: "Engineering and CAD design workspace",
-    index: "",
-    title: "Design & Development",
-    category: "CAD · DFM",
-    description: "From sketch to manufacturable CAD with full engineering review.",
-    tags: ["CAD", "DFM"],
-    slug: "design-development",
-  },
   {
     img: chapterLaser,
     alt: "Fiber laser cutting precision sheet metal",
