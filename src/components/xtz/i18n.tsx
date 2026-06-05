@@ -124,7 +124,7 @@ const gr: Dict = {
   "nav.cta": "Ξεκίνα Έργο",
 
   "intro.headline": "Από την Ιδέα στην Πραγματικότητα",
-  "intro.sub": "Σχεδίαση, πρωτότυπο και κατασκευή — όλα κάτω από μία στέγη.",
+  "intro.sub": "​",
   "intro.scroll": "Κύλιση",
   "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
 
