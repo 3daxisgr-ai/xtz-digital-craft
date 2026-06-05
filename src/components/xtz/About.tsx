@@ -10,7 +10,7 @@ const specialties = [
   "Sheet Metal Forming & Welding",
   "3D Printing",
   "Design → Prototype",
-  "Global Manufacturing Network",
+  "​Mass production",
 ];
 
 export function About() {
