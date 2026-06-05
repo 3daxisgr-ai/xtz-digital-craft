@@ -85,7 +85,7 @@ export function ProjectCTA() {
 
         <div className="cta-reveal mt-8 max-w-xl">
           <p className="text-base md:text-lg text-foreground/65 leading-relaxed">
-            Change
+            Whether you have a drawing, an existing design or simply an idea, we can help turn it into a real product.
           </p>
         </div>
 
