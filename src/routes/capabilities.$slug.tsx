@@ -45,8 +45,8 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Custom industrial parts", "Product prototypes", "Brackets and enclosures", "Architectural metalwork"],
     notes: "Accepted formats: .pdf, .jpg, .png, .step, .stp, .iges, .dwg, .dxf.",
     seo: {
-      title: "Design & Development — 3D AXIS",
-      description: "From sketch to manufacturable CAD. Engineering, DFM and full documentation by 3D AXIS.",
+      title: "Design & Development — INOO3D",
+      description: "From sketch to manufacturable CAD. Engineering, DFM and full documentation by INOO3D.",
     },
   },
   "fiber-laser-cutting": {
@@ -69,7 +69,7 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Brackets and panels", "Enclosures and chassis", "Decorative metal", "Industrial components"],
     notes: "Send .dxf, .dwg or .step. Always include thickness and material grade.",
     seo: {
-      title: "Fiber Laser Cutting — 3D AXIS",
+      title: "Fiber Laser Cutting — INOO3D",
       description: "Precision fiber laser cutting in steel, stainless and aluminum. ±0.05 mm tolerance.",
     },
   },
@@ -92,7 +92,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Frames and chassis", "Enclosures and cabinets", "Architectural panels", "Welded assemblies"],
     seo: {
-      title: "Sheet Metal Forming & Welding — 3D AXIS",
+      title: "Sheet Metal Forming & Welding — INOO3D",
       description: "Press brake forming, MIG/TIG/spot welding and assembly of steel, stainless and aluminum.",
     },
   },
@@ -116,7 +116,7 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Functional prototypes", "Jigs and fixtures", "Custom end-use parts", "Small batch production"],
     notes: "Send .stl, .step or .obj. Include build volume and quantity.",
     seo: {
-      title: "3D Printing — 3D AXIS",
+      title: "3D Printing — INOO3D",
       description: "Functional 3D printing for prototypes and end-use parts in engineering polymers.",
     },
   },
@@ -139,7 +139,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Startup MVPs", "New product development", "Reverse engineering", "Custom one-off parts"],
     seo: {
-      title: "Design → Prototype — 3D AXIS",
+      title: "Design → Prototype — INOO3D",
       description: "From idea to working prototype in days. End-to-end engineering and prototyping under one roof.",
     },
   },
@@ -162,7 +162,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Series production", "OEM components", "Branded consumer products", "Replacement and spare parts"],
     seo: {
-      title: "Global Manufacturing Network — 3D AXIS",
+      title: "Global Manufacturing Network — INOO3D",
       description: "Scale from prototype to series production with trusted global partners. Managed end to end.",
     },
   },
@@ -177,8 +177,8 @@ export const Route = createFileRoute("/capabilities/$slug")({
   },
   head: ({ loaderData, params }) => {
     const seo = loaderData?.detail?.seo ?? {
-      title: "Capability — 3D AXIS",
-      description: "Engineering and manufacturing capability at 3D AXIS.",
+      title: "Capability — INOO3D",
+      description: "Engineering and manufacturing capability at INOO3D.",
     };
     const url = `https://xtz-digital-craft.lovable.app/capabilities/${params.slug}`;
     return {

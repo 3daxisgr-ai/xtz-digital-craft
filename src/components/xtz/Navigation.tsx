@@ -61,13 +61,13 @@ export function Navigation() {
             <span className="absolute inset-0 bg-primary blur-lg opacity-50 group-hover:opacity-90 transition-opacity" />
             <img
               src={xyzLogo.url}
-              alt="3D AXIS XYZ logo"
+              alt="INOO3D XYZ logo"
               className="relative h-full w-full object-contain"
               width={36}
               height={36}
             />
           </span>
-          <span className="font-display text-lg font-bold tracking-[0.3em]">3D&nbsp;AXIS</span>
+          <span className="font-display text-lg font-bold tracking-[0.3em]">INOO3D</span>
         </Link>
         <ul className="hidden lg:flex items-center gap-8 font-mono text-[14px] uppercase tracking-widest">
           {links.map((l) => (

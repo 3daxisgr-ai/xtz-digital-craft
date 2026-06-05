@@ -56,7 +56,7 @@ export function About() {
             <span className="font-mono text-xs text-primary tracking-[0.3em]">— /</span>
             <span className="h-px w-20 bg-primary blue-glow" />
             <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              About 3D AXIS
+              About INOO3D
             </span>
           </div>
           <h2 className="font-display font-bold leading-[0.9] text-[clamp(2.4rem,6vw,5.5rem)] tracking-tighter">

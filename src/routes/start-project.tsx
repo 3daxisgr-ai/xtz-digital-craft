@@ -6,9 +6,9 @@ import { InquiryForm } from "@/components/xtz/InquiryForm";
 export const Route = createFileRoute("/start-project")({
   head: () => ({
     meta: [
-      { title: "Start a Project — 3D AXIS" },
+      { title: "Start a Project — INOO3D" },
       { name: "description", content: "Send us your project. Every inquiry is reviewed by an engineer and answered within one business day." },
-      { property: "og:title", content: "Start a Project — 3D AXIS" },
+      { property: "og:title", content: "Start a Project — INOO3D" },
       { property: "og:description", content: "Design, prototype and manufacture under one roof." },
       { property: "og:url", content: "https://xtz-digital-craft.lovable.app/start-project" },
     ],

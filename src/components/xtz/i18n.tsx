@@ -65,7 +65,7 @@ const en: Dict = {
 
   // Portfolio
   "portfolio.kicker": "Work",
-  "portfolio.title": "Examples of products and parts built through the 3D AXIS workflow.",
+  "portfolio.title": "Examples of products and parts built through the INOO3D workflow.",
 
   // Process
   "process.kicker": "Process",
@@ -108,7 +108,7 @@ const en: Dict = {
   "finale.kicker": "Ready to build?",
   "finale.statement": "From concept to reality.",
   "finale.cta": "Start a Project",
-  "finale.foot1": "© 3D AXIS",
+  "finale.foot1": "© INOO3D",
   "finale.foot2": "​",
   "finale.foot3": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
 };
@@ -168,7 +168,7 @@ const gr: Dict = {
   "ch.mfg.d": "Laser, στραντζάρισμα, συγκολλήσεις, 3D εκτύπωση — έτοιμα και αποστολή.",
 
   "portfolio.kicker": "Έργα",
-  "portfolio.title": "Παραδείγματα προϊόντων και εξαρτημάτων από τη ροή εργασίας 3D AXIS.",
+  "portfolio.title": "Παραδείγματα προϊόντων και εξαρτημάτων από τη ροή εργασίας INOO3D.",
 
   "process.kicker": "Διαδικασία",
   "process.title": "Πώς δουλεύει.",
@@ -208,7 +208,7 @@ const gr: Dict = {
   "finale.kicker": "Έτοιμοι να φτιάξετε κάτι;",
   "finale.statement": "Από την ιδέα στην πραγματικότητα.",
   "finale.cta": "Ξεκινήστε το Έργο σας",
-  "finale.foot1": "© 3D AXIS",
+  "finale.foot1": "© INOO3D",
   "finale.foot2": "​",
   "finale.foot3": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
 };

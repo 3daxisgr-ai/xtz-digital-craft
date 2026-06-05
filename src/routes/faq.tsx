@@ -7,10 +7,10 @@ import { useI18n } from "@/components/xtz/i18n";
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ — 3D AXIS" },
+      { title: "FAQ — INOO3D" },
       { name: "description", content: "Answers about 3D printing, laser cutting, materials, lead times, prototyping, production, pricing and file requirements." },
-      { property: "og:title", content: "FAQ — 3D AXIS" },
-      { property: "og:description", content: "Everything you need to know before starting a project with 3D AXIS." },
+      { property: "og:title", content: "FAQ — INOO3D" },
+      { property: "og:description", content: "Everything you need to know before starting a project with INOO3D." },
       { property: "og:url", content: "https://xtz-digital-craft.lovable.app/faq" },
     ],
     links: [
