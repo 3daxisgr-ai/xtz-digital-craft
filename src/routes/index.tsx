@@ -35,6 +35,7 @@ function Index() {
       <About />
       <HowItWorks />
       <PortfolioReel />
+      <ProjectCTA />
       <Footer />
     </main>
   );
