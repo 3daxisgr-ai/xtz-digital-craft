@@ -17,7 +17,7 @@ const en: Dict = {
 
   // Hero
   "intro.headline": "​XYZ",
-  "intro.sub": "Design, prototype and manufacture — under one roof.",
+  "intro.sub": "​",
   "intro.scroll": "Scroll",
   "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
 
@@ -124,7 +124,7 @@ const gr: Dict = {
   "nav.cta": "Ξεκίνα Έργο",
 
   "intro.headline": "Από την Ιδέα στην Πραγματικότητα",
-  "intro.sub": "Σχεδίαση, πρωτότυπο και κατασκευή — όλα κάτω από μία στέγη.",
+  "intro.sub": "​",
   "intro.scroll": "Κύλιση",
   "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
 
