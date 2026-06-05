@@ -4,6 +4,7 @@ import { IntroScene } from "@/components/xtz/IntroScene";
 import { PortfolioReel } from "@/components/xtz/PortfolioReel";
 import { About } from "@/components/xtz/About";
 import { HowItWorks } from "@/components/xtz/HowItWorks";
+import { ProjectCTA } from "@/components/xtz/ProjectCTA";
 import { Footer } from "@/components/xtz/Footer";
 import heroOffice from "@/assets/hero-office.jpg";
 
