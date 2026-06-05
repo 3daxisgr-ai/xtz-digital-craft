@@ -18,7 +18,7 @@ const en: Dict = {
   // Hero
   "intro.headline": "​INOO3D",
   "intro.sub": "​",
-  "intro.scroll": "Scroll",
+  "intro.scroll": "Scroll Down",
   "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · MASS PRODUCTION",
 
   // Concept (what we do)
