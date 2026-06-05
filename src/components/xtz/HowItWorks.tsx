@@ -21,7 +21,7 @@ type Step = {
 };
 
 const steps: Step[] = [
-  { n: "01", title: "Send us your idea", desc: "Sketch, drawing, CAD file or description.", Icon: Lightbulb },
+  { n: "01", title: "Send us your idea", desc: "Sketch, drawing, Stp file or description.", Icon: Lightbulb },
   { n: "02", title: "We review the project", desc: "We contact you and discuss the best solution.", Icon: MessagesSquare },
   { n: "03", title: "Design & Engineering", desc: "If needed, we create or optimize the design.", Icon: PenTool },
   { n: "04", title: "Prototype & Validation", desc: "We produce and verify the first version.", Icon: FlaskConical },
