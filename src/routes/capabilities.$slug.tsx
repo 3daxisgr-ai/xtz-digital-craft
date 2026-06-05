@@ -196,7 +196,7 @@ export const Route = createFileRoute("/capabilities/$slug")({
       <Navigation />
       <div className="pt-40 px-6 text-center">
         <h1 className="font-display text-3xl">Capability not found.</h1>
-        <Link to="/capabilities" className="text-primary mt-4 inline-block">← All capabilities</Link>
+        <Link to="/" hash="capabilities" className="text-primary mt-4 inline-block">← All capabilities</Link>
       </div>
       <Footer />
     </main>
@@ -223,7 +223,7 @@ function CapabilityPage() {
           <nav aria-label="breadcrumb" className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-10 flex flex-wrap items-center gap-2">
             <Link to="/" className="hover:text-primary transition-colors">Home</Link>
             <span className="text-muted-foreground/50">/</span>
-            <Link to="/capabilities" className="hover:text-primary transition-colors">Capabilities</Link>
+            <Link to="/" hash="capabilities" className="hover:text-primary transition-colors">Capabilities</Link>
             <span className="text-muted-foreground/50">/</span>
             <span className="text-foreground">{titles[cap.slug]}</span>
           </nav>
@@ -252,7 +252,8 @@ function CapabilityPage() {
               Request a Quote →
             </Link>
             <Link
-              to="/capabilities"
+              to="/"
+              hash="capabilities"
               className="inline-flex items-center gap-3 px-6 py-4 border border-border/60 hover:border-primary/60 font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground hover:text-foreground transition-colors"
             >
               ← All Capabilities
