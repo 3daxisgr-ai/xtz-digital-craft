@@ -1,12 +1,13 @@
 import p1 from "@/assets/portfolio-1.jpg";
-import p2 from "@/assets/portfolio-2.jpg";
 import p3 from "@/assets/portfolio-3.jpg";
 import chapterPrint from "@/assets/chapter-print.jpg";
 import chapterFab from "@/assets/chapter-fab.jpg";
 import chapterLaser from "@/assets/chapter-laser.jpg";
 import heroOffice from "@/assets/hero-office.jpg";
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { useI18n } from "./i18n";
+import type { CapabilitySlug } from "./Capabilities";
 
 type Slide = {
   img: string;
@@ -16,76 +17,75 @@ type Slide = {
   category: string;
   description: string;
   tags: string[];
+  slug: CapabilitySlug;
 };
 
 const slides: Slide[] = [
   {
+    img: heroOffice,
+    alt: "Engineering and CAD design workspace",
+    index: "001",
+    title: "Design & Development",
+    category: "CAD · DFM",
+    description: "From sketch to manufacturable CAD with full engineering review.",
+    tags: ["CAD", "DFM"],
+    slug: "design-development",
+  },
+  {
     img: chapterLaser,
     alt: "Fiber laser cutting precision sheet metal",
-    index: "001",
-    title: "Laser Cutting",
+    index: "002",
+    title: "Fiber Laser Cutting",
     category: "Fiber Laser",
     description: "Micron-level precision on steel, stainless and aluminium.",
-    tags: ["Precision", "Speed"],
+    tags: ["±0.05 mm", "Speed"],
+    slug: "fiber-laser-cutting",
+  },
+  {
+    img: chapterFab,
+    alt: "Sheet metal forming and welding fabrication",
+    index: "003",
+    title: "Sheet Metal Forming & Welding",
+    category: "Press Brake · TIG · MIG",
+    description: "Bending, welding and assembly of finished metal parts.",
+    tags: ["CNC Brake", "Certified"],
+    slug: "sheet-metal-forming-welding",
   },
   {
     img: chapterPrint,
     alt: "Industrial 3D printing for functional parts",
-    index: "002",
+    index: "004",
     title: "3D Printing",
     category: "Additive",
-    description: "Functional parts and short runs with engineering polymers.",
-    tags: ["SLS · FDM · SLA", "End-use"],
+    description: "Functional parts and short runs in engineering polymers.",
+    tags: ["FDM · SLA", "End-use"],
+    slug: "3d-printing",
   },
   {
     img: p1,
-    alt: "CNC press brake bending sheet metal",
-    index: "003",
-    title: "Metal Bending",
-    category: "Press Brake",
-    description: "CNC press brake forming for complex repeatable geometries.",
-    tags: ["1–8 mm", "CNC"],
-  },
-  {
-    img: chapterFab,
-    alt: "Arc and TIG welding of fabricated metal structures",
-    index: "004",
-    title: "Welding",
-    category: "Arc · TIG · MIG",
-    description: "Certified operators — structural integrity, clean aesthetics.",
-    tags: ["Certified", "Structural"],
-  },
-  {
-    img: heroOffice,
-    alt: "CNC machining and engineering design workspace",
-    index: "005",
-    title: "CNC Machining & Design",
-    category: "CAD · CAM",
-    description: "Multi-axis CNC paired with in-house engineering and DFM.",
-    tags: ["Multi-axis", "DFM"],
-  },
-  {
-    img: p2,
     alt: "Prototyping and product development workshop",
-    index: "006",
-    title: "Prototyping",
+    index: "005",
+    title: "Design → Prototype",
     category: "R&D",
-    description: "Sketch to validated prototype — fast iteration loops.",
+    description: "Idea to working prototype in days, not months.",
     tags: ["MVP", "Iteration"],
+    slug: "design-to-prototype",
   },
   {
     img: p3,
     alt: "Global manufacturing network and partners",
-    index: "007",
-    title: "Global Network",
+    index: "006",
+    title: "Global Manufacturing Network",
     category: "Manufacturing",
     description: "Distributed sourcing, scale and worldwide delivery.",
     tags: ["Sourcing", "Scale"],
+    slug: "global-manufacturing-network",
   },
 ];
 
 export function PortfolioReel() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
@@ -163,7 +163,7 @@ export function PortfolioReel() {
 
   return (
     <section
-      id="portfolio"
+      id="capabilities"
       ref={sectionRef}
       className="relative w-full bg-[#04060d] min-h-screen flex items-center overflow-hidden py-24"
     >
@@ -250,7 +250,15 @@ export function PortfolioReel() {
                   ref={(el) => {
                     cardRefs.current[i] = el;
                   }}
-                  onClick={() => goTo(i)}
+                  onClick={() => {
+                    if (i === active) {
+                      navigate({ to: "/capabilities/$slug", params: { slug: s.slug } });
+                    } else {
+                      goTo(i);
+                    }
+                  }}
+                  role="link"
+                  aria-label={`Open ${s.title}`}
                   className={`relative shrink-0 snap-center cursor-pointer transition-all duration-500 ease-out
                     w-[78vw] sm:w-[55vw] md:w-[40vw] lg:w-[28vw] xl:w-[24vw]
                     aspect-[3/4]
