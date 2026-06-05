@@ -63,7 +63,7 @@ export function About() {
             A COMPLETE<br />MANUFACTURING<br />PARTNER.
           </h2>
           <div className="space-y-5 text-base md:text-lg text-foreground/75 leading-relaxed font-light max-w-xl">
-            <p>Not a laser shop. Not a print shop. A full-stack manufacturing partner taking projects from concept to scalable production.</p>
+            <p>Not a laser shop. Not a print shop. A full-stack manufacturing partner taking projects from concept to scalable production, under one roof.</p>
           </div>
         </div>
 
