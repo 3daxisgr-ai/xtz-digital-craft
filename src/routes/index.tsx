@@ -3,7 +3,7 @@ import { useI18n } from "@/components/xtz/i18n";
 import { Navigation } from "@/components/xtz/Navigation";
 import { IntroScene } from "@/components/xtz/IntroScene";
 import { Concept } from "@/components/xtz/Concept";
-import { Capabilities } from "@/components/xtz/Capabilities";
+
 import { Chapter } from "@/components/xtz/Chapter";
 import { PortfolioReel } from "@/components/xtz/PortfolioReel";
 import { Process } from "@/components/xtz/Process";
@@ -42,7 +42,7 @@ function Index() {
       <Navigation />
       <IntroScene />
       <Concept />
-      <Capabilities />
+      
       <Chapter
         id="idea"
         number="01 /"
