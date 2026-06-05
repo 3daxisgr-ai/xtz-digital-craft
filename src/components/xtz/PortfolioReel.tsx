@@ -24,7 +24,7 @@ const slides: Slide[] = [
   {
     img: heroOffice,
     alt: "Engineering and CAD design workspace",
-    index: "001",
+    index: "",
     title: "Design & Development",
     category: "CAD · DFM",
     description: "From sketch to manufacturable CAD with full engineering review.",
