@@ -61,7 +61,7 @@ export function Navigation() {
             <span className="absolute inset-0 bg-primary blur-lg opacity-50 group-hover:opacity-90 transition-opacity" />
             <img
               src={xyzLogo.url}
-              alt="3D AXIS XYZ logo"
+              alt="INOO3D XYZ logo"
               className="relative h-full w-full object-contain"
               width={36}
               height={36}

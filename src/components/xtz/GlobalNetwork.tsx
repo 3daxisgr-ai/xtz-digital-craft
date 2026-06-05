@@ -48,8 +48,8 @@ export function GlobalNetwork() {
           </h2>
           <p className="text-foreground/70 text-base md:text-lg max-w-xl leading-relaxed font-light">
             {isGR
-              ? "Για έργα που απαιτούν παραγωγή μεγάλης κλίμακας, η 3D AXIS υποστηρίζει τους πελάτες της μέσω αξιόπιστων κατασκευαστικών συνεργατών, οδηγώντας τα προϊόντα από το πρωτότυπο σε κλιμακούμενη παραγωγή."
-              : "For projects requiring large-scale production, 3D AXIS can assist clients through trusted manufacturing partners, helping transition products from prototype to scalable production."}
+              ? "Για έργα που απαιτούν παραγωγή μεγάλης κλίμακας, η INOO3D υποστηρίζει τους πελάτες της μέσω αξιόπιστων κατασκευαστικών συνεργατών, οδηγώντας τα προϊόντα από το πρωτότυπο σε κλιμακούμενη παραγωγή."
+              : "For projects requiring large-scale production, INOO3D can assist clients through trusted manufacturing partners, helping transition products from prototype to scalable production."}
           </p>
         </div>
 

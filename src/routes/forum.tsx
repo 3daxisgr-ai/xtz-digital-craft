@@ -6,10 +6,10 @@ import { useI18n } from "@/components/xtz/i18n";
 export const Route = createFileRoute("/forum")({
   head: () => ({
     meta: [
-      { title: "Forum — 3D AXIS Updates" },
-      { name: "description", content: "Updates from the 3D AXIS workshop: new equipment, capabilities, materials and announcements." },
-      { property: "og:title", content: "Forum — 3D AXIS Updates" },
-      { property: "og:description", content: "Updates from the 3D AXIS workshop." },
+      { title: "Forum — INOO3D Updates" },
+      { name: "description", content: "Updates from the INOO3D workshop: new equipment, capabilities, materials and announcements." },
+      { property: "og:title", content: "Forum — INOO3D Updates" },
+      { property: "og:description", content: "Updates from the INOO3D workshop." },
       { property: "og:url", content: "https://xtz-digital-craft.lovable.app/forum" },
     ],
     links: [
@@ -66,8 +66,8 @@ function ForumPage() {
           </h1>
           <p className="text-foreground/65 max-w-xl mx-auto">
             {lang === "GR"
-              ? "Νέος εξοπλισμός, υλικά και ανακοινώσεις από το 3D AXIS."
-              : "New equipment, materials and announcements from 3D AXIS."}
+              ? "Νέος εξοπλισμός, υλικά και ανακοινώσεις από το INOO3D."
+              : "New equipment, materials and announcements from INOO3D."}
           </p>
         </div>
       </section>
