@@ -55,7 +55,7 @@ export function Capabilities() {
         style={{ background: "radial-gradient(ellipse at 20% 0%, oklch(0.4 0.18 245 / 0.4), transparent 55%)" }}
       />
       <span className="absolute top-10 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
-        — / CAPABILITIES
+        02 / CAPABILITIES
       </span>
       <span className="absolute top-10 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         XYZ
@@ -63,7 +63,7 @@ export function Capabilities() {
 
       <div className="relative z-10 mx-auto max-w-[1500px] px-6 md:px-12">
         <div className="flex items-center gap-4 mb-8">
-          <span className="font-mono text-xs text-primary tracking-[0.3em]">— /</span>
+          <span className="font-mono text-xs text-primary tracking-[0.3em]">02 /</span>
           <span className="h-px w-16 bg-primary" />
           <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
             {t("cap.kicker")}
@@ -92,9 +92,6 @@ export function Capabilities() {
                 className="absolute -top-px left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full blue-glow"
               />
               <div className="relative flex flex-col h-full min-h-[180px]">
-                <div className="font-mono text-[14px] tracking-[0.4em] text-primary/80 mb-5">
-                  {c.n}
-                </div>
                 <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 group-hover:text-primary transition-colors">
                   {t(c.tKey)}
                 </h3>
