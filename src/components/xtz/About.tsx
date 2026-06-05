@@ -60,7 +60,7 @@ export function About() {
             </span>
           </div>
           <h2 className="font-display font-bold leading-[0.9] text-[clamp(2.4rem,6vw,5.5rem)] tracking-tighter">
-            From Concept<br />to Reality.
+            A COMPLETE<br />MANUFACTURING<br />PARTNER.
           </h2>
           <div className="space-y-5 text-base md:text-lg text-foreground/75 leading-relaxed font-light max-w-xl">
             <p>3D AXIS helps clients turn ideas into real products.</p>
