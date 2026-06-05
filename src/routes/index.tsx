@@ -1,19 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useI18n } from "@/components/xtz/i18n";
 import { Navigation } from "@/components/xtz/Navigation";
 import { IntroScene } from "@/components/xtz/IntroScene";
-import { Concept } from "@/components/xtz/Concept";
-
-import { Chapter } from "@/components/xtz/Chapter";
 import { PortfolioReel } from "@/components/xtz/PortfolioReel";
-import { Process } from "@/components/xtz/Process";
-import { GlobalNetwork } from "@/components/xtz/GlobalNetwork";
-import { InquiryForm } from "@/components/xtz/InquiryForm";
-import { Finale } from "@/components/xtz/Finale";
+import { About } from "@/components/xtz/About";
+import { HowItWorks } from "@/components/xtz/HowItWorks";
 import { Footer } from "@/components/xtz/Footer";
-import chapterLaser from "@/assets/chapter-laser.jpg";
-import chapterPrint from "@/assets/chapter-print.jpg";
-import chapterFab from "@/assets/chapter-fab.jpg";
 import heroOffice from "@/assets/hero-office.jpg";
 
 export const Route = createFileRoute("/")({
@@ -36,56 +27,13 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { t } = useI18n();
   return (
     <main className="bg-black text-foreground">
       <Navigation />
       <IntroScene />
-      <Concept />
-      
-      <Chapter
-        id="idea"
-        number="01 /"
-        kicker={t("ch.idea.k")}
-        title={t("ch.idea.t")}
-        description={t("ch.idea.d")}
-        image={heroOffice}
-        imageAlt="Engineering studio with brushed metal surfaces"
-      />
-      <Chapter
-        id="design"
-        number="02 /"
-        kicker={t("ch.design.k")}
-        title={t("ch.design.t")}
-        description={t("ch.design.d")}
-        image={chapterPrint}
-        imageAlt="CAD detail of a precision component"
-        align="right"
-      />
-      <Chapter
-        id="prototype"
-        number="03 /"
-        kicker={t("ch.proto.k")}
-        title={t("ch.proto.t")}
-        description={t("ch.proto.d")}
-        image={chapterFab}
-        imageAlt="Precision-machined prototype on a workshop bench"
-      />
-      <Chapter
-        id="manufacture"
-        number="04 /"
-        kicker={t("ch.mfg.k")}
-        title={t("ch.mfg.t")}
-        description={t("ch.mfg.d")}
-        image={chapterLaser}
-        imageAlt="Fiber laser cutting steel"
-        align="right"
-      />
       <PortfolioReel />
-      <Process />
-      <GlobalNetwork />
-      <InquiryForm />
-      <Finale />
+      <About />
+      <HowItWorks />
       <Footer />
     </main>
   );
