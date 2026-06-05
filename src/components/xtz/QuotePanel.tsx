@@ -78,10 +78,10 @@ export function QuotePanel() {
 
               <div className="grid grid-cols-2 gap-6">
                 <Field label={`Width · ${width}mm`}>
-                  <Slider value={width} min={100} max={2400} step={10} onChange={setWidth} />
+                  <Slider value={width} min={100} max={2400} step={10} onChange={setWidth} ariaLabel={`Width in millimetres, currently ${width}`} />
                 </Field>
                 <Field label={`Height · ${height}mm`}>
-                  <Slider value={height} min={100} max={1500} step={10} onChange={setHeight} />
+                  <Slider value={height} min={100} max={1500} step={10} onChange={setHeight} ariaLabel={`Height in millimetres, currently ${height}`} />
                 </Field>
               </div>
 
@@ -173,11 +173,12 @@ function Row({ k, v }: { k: string; v: string }) {
   );
 }
 
-function Slider({ value, min, max, step, onChange }: { value: number; min: number; max: number; step: number; onChange: (v: number) => void }) {
+function Slider({ value, min, max, step, onChange, ariaLabel }: { value: number; min: number; max: number; step: number; onChange: (v: number) => void; ariaLabel?: string }) {
   return (
     <input
       type="range" min={min} max={max} step={step} value={value}
       onChange={(e) => onChange(+e.target.value)}
+      aria-label={ariaLabel}
       className="w-full accent-primary"
     />
   );
