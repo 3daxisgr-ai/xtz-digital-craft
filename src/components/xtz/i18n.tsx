@@ -17,7 +17,7 @@ const en: Dict = {
 
   // Hero
   "intro.headline": "​XYZ",
-  "intro.sub": "Design, prototype and manufacture — under one roof.",
+  "intro.sub": "​",
   "intro.scroll": "Scroll",
   "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
 
