@@ -85,6 +85,7 @@ const slides: Slide[] = [
 
 export function PortfolioReel() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
@@ -249,7 +250,15 @@ export function PortfolioReel() {
                   ref={(el) => {
                     cardRefs.current[i] = el;
                   }}
-                  onClick={() => goTo(i)}
+                  onClick={() => {
+                    if (i === active) {
+                      navigate({ to: "/capabilities/$slug", params: { slug: s.slug } });
+                    } else {
+                      goTo(i);
+                    }
+                  }}
+                  role="link"
+                  aria-label={`Open ${s.title}`}
                   className={`relative shrink-0 snap-center cursor-pointer transition-all duration-500 ease-out
                     w-[78vw] sm:w-[55vw] md:w-[40vw] lg:w-[28vw] xl:w-[24vw]
                     aspect-[3/4]
