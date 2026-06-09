@@ -250,8 +250,7 @@ function CapabilityPage() {
 
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <Link
-              to="/"
-              hash="start-project"
+              to="/start-project"
               className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow"
             >
               Request a Quote →
@@ -348,8 +347,7 @@ function CapabilityPage() {
             Send your files or a brief. An engineer will review and reply within one business day.
           </p>
           <Link
-            to="/"
-            hash="start-project"
+            to="/start-project"
             className="inline-flex items-center gap-3 px-10 py-5 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow"
           >
             Request a Quote →

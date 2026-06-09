@@ -1,4 +1,5 @@
 import { useI18n, type Lang } from "./i18n";
+import { Link } from "@tanstack/react-router";
 import skg3dLogoLarge from "@/assets/skg3d-logo-large.png.asset.json";
 
 export function Footer() {
@@ -75,7 +76,7 @@ export function Footer() {
             <a href="#portfolio" className="hover:text-primary transition-colors text-xs">Work</a>
             <a href="#process" className="hover:text-primary transition-colors text-xs">Process</a>
             <a href="#network" className="hover:text-primary transition-colors text-xs">Network</a>
-            <a href="#start-project" className="hover:text-primary transition-colors text-xs">Inquiry</a>
+            <Link to="/start-project" className="hover:text-primary transition-colors text-xs">Inquiry</Link>
           </nav>
 
           <div className="flex items-center font-mono text-[11px] border border-border/60">

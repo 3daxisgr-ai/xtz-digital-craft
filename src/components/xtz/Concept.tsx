@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import heroOffice from "@/assets/hero-office.jpg";
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -70,12 +71,12 @@ export function Concept() {
             {t("concept.body")}
           </p>
           <div className="pt-2">
-            <a
-              href="#start-project"
+            <Link
+              to="/start-project"
               className="inline-flex items-center gap-3 px-6 py-3 border border-primary/60 hover:bg-primary hover:text-primary-foreground transition-colors font-mono text-[11px] uppercase tracking-[0.35em] blue-glow"
             >
               {t("concept.cta")} →
-            </a>
+            </Link>
           </div>
         </div>
       </div>
