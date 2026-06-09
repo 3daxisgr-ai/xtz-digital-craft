@@ -44,7 +44,7 @@ export function About() {
         }}
       />
       <span className="absolute top-8 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
-        01 / ABOUT 3D AXIS
+        ABOUT US
       </span>
       <span className="absolute top-8 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         XYZ
