@@ -47,7 +47,7 @@ export function Capabilities() {
     <section
       id="capabilities"
       ref={root}
-      className="relative w-full bg-black py-28 md:py-36 overflow-hidden"
+      className="relative w-full inox-surface py-28 md:py-36 overflow-hidden"
       style={{ contentVisibility: "auto", containIntrinsicSize: "1200px" }}
     >
       <div

@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 export function Finale() {
   const { t } = useI18n();
   return (
-    <section id="finale" className="relative w-full overflow-hidden flex items-center justify-center bg-black py-32 md:py-44">
+    <section id="finale" className="relative w-full overflow-hidden flex items-center justify-center inox-surface py-32 md:py-44">
       <div className="absolute inset-0">
         <div className="absolute inset-0 brushed-metal opacity-20" />
         <div className="absolute inset-0"

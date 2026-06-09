@@ -18,7 +18,7 @@ export function QuotePanel() {
   }, [material, thickness, width, height, qty]);
 
   return (
-    <section id="quote" className="relative min-h-screen w-full bg-black py-32 overflow-hidden">
+    <section id="quote" className="relative min-h-screen w-full inox-surface py-32 overflow-hidden">
       <div className="absolute inset-0 opacity-40 pointer-events-none"
         style={{ background: "radial-gradient(ellipse at 80% 50%, oklch(0.45 0.2 245 / 0.5), transparent 60%)" }} />
 
