@@ -59,10 +59,11 @@ function QuotePage() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { materialCost, timeCost, estimatedPrice } = useMemo(() => {
+  const { materialCost, machineWearCost, electricityCost, estimatedPrice } = useMemo(() => {
     const mc = (weight / 1000) * material.pricePerKg;
-    const tc = (hours / 2) * MACHINE_WEAR_PER_2H;
-    return { materialCost: mc, timeCost: tc, estimatedPrice: mc + tc };
+    const mwc = (hours / 3) * MACHINE_WEAR_PER_3H;
+    const ec = hours * ELECTRICITY_PER_HOUR;
+    return { materialCost: mc, machineWearCost: mwc, electricityCost: ec, estimatedPrice: mc + mwc + ec };
   }, [weight, hours, material]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
