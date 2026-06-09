@@ -62,7 +62,7 @@ export function Navigation() {
             <img
               src={skg3dLogo}
               alt="SKG3D logo"
-              className="relative h-full w-full object-contain text-lg"
+              className="relative h-full w-full object-contain text-xl"
               width={80}
               height={36}
             />
