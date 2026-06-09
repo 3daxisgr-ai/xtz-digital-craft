@@ -23,7 +23,7 @@ const slides: Slide[] = [
   {
     img: chapterLaser,
     alt: "Fiber laser cutting precision sheet metal",
-    index: "002",
+    index: "001",
     title: "Fiber Laser Cutting",
     category: "Fiber Laser",
     description: "Micron-level precision on steel, stainless and aluminium.",
@@ -33,7 +33,7 @@ const slides: Slide[] = [
   {
     img: chapterFab,
     alt: "Sheet metal forming and welding fabrication",
-    index: "003",
+    index: "002",
     title: "Sheet Metal Forming & Welding",
     category: "Press Brake · TIG · MIG",
     description: "Bending, welding and assembly of finished metal parts.",
@@ -43,7 +43,7 @@ const slides: Slide[] = [
   {
     img: chapterPrint,
     alt: "Industrial 3D printing for functional parts",
-    index: "004",
+    index: "003",
     title: "3D Printing",
     category: "Additive",
     description: "Functional parts and short runs in engineering polymers.",
@@ -53,7 +53,7 @@ const slides: Slide[] = [
   {
     img: p1,
     alt: "Prototyping and product development workshop",
-    index: "005",
+    index: "004",
     title: "Design → Prototype",
     category: "R&D",
     description: "Idea to working prototype in days, not months.",
@@ -63,7 +63,7 @@ const slides: Slide[] = [
   {
     img: p3,
     alt: "Global manufacturing network and partners",
-    index: "006",
+    index: "005",
     title: "​Mass production",
     category: "Manufacturing",
     description: "Distributed sourcing, scale and worldwide delivery.",
