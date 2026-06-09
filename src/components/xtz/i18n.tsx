@@ -108,7 +108,7 @@ const en: Dict = {
   "finale.kicker": "Ready to build?",
   "finale.statement": "From concept to reality.",
   "finale.cta": "Start a Project",
-  "finale.foot1": "© INOO3D",
+  "finale.foot1": "© SKG3D",
   "finale.foot2": "​",
   "finale.foot3": "DESIGN · PROTOTYPE · MANUFACTURE · MASS PRODUCTION",
 };
