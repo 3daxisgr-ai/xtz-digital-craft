@@ -28,7 +28,7 @@ const EN: Category[] = [
     label: "Materials",
     items: [
       { q: "Which metals do you cut?", a: "Mild steel, stainless steel, aluminum, brass. Copper on request." },
-      { q: "Which polymers do you print?", a: "PLA, PETG, ABS, Nylon (PA), TPU, plus engineering polymers on request." },
+      { q: "Which polymers do you print?", a: "PLA, ABS, PETG, Nylon (PA), PC, plus TPU." },
       { q: "Can you advise on materials?", a: "Yes. Tell us the use case and environment — we'll recommend." },
     ],
   },
@@ -96,7 +96,7 @@ const GR: Category[] = [
     label: "Υλικά",
     items: [
       { q: "Σε ποια μέταλλα κόβετε;", a: "Χάλυβα, ανοξείδωτο, αλουμίνιο, ορείχαλκο. Χαλκό κατόπιν συνεννόησης." },
-      { q: "Ποια πολυμερή εκτυπώνετε;", a: "PLA, PETG, ABS, PA (Nylon), TPU και άλλα κατόπιν συνεννόησης." },
+      { q: "Ποια πολυμερή εκτυπώνετε;", a: "PLA, ABS, PETG, PA (Nylon), PC και TPU." },
     ],
   },
   {
