@@ -12,7 +12,6 @@ const specialties: { label: string; slug: CapabilitySlug }[] = [
   { label: "Fiber Laser Cutting", slug: "fiber-laser-cutting" },
   { label: "Sheet Metal Forming & Welding", slug: "sheet-metal-forming-welding" },
   { label: "3D Printing", slug: "3d-printing" },
-  { label: "Design → Prototype", slug: "design-to-prototype" },
   { label: "​Mass production", slug: "global-manufacturing-network" },
 ];
 
