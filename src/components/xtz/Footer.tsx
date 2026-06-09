@@ -62,7 +62,7 @@ export function Footer() {
         {/* Bottom row */}
         <div className="pt-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div className="font-mono text-[14px] uppercase tracking-[0.35em] text-muted-foreground">
-            © {new Date().getFullYear()} INOO3D · All rights reserved
+            © {new Date().getFullYear()} SKG3D · All rights reserved
           </div>
 
           <nav className="flex flex-wrap items-center gap-x-8 gap-y-3 font-mono text-[14px] uppercase tracking-[0.35em] text-muted-foreground">
