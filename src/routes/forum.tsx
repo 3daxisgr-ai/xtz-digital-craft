@@ -66,8 +66,8 @@ function ForumPage() {
           </h1>
           <p className="text-foreground/65 max-w-xl mx-auto">
             {lang === "GR"
-              ? "Νέος εξοπλισμός, υλικά και ανακοινώσεις από το INOO3D."
-              : "New equipment, materials and announcements from INOO3D."}
+              ? "Νέος εξοπλισμός, υλικά και ανακοινώσεις από το SKG3D."
+              : "New equipment, materials and announcements from SKG3D."}
           </p>
         </div>
       </section>
