@@ -78,7 +78,7 @@ export function InquiryForm() {
   };
 
   return (
-    <section id="inquiry" className="relative min-h-screen w-full inox-surface py-32 overflow-hidden">
+    <section id="start-project" className="relative min-h-screen w-full inox-surface py-32 overflow-hidden">
       <div className="absolute inset-0 opacity-40 pointer-events-none"
         style={{ background: "radial-gradient(ellipse at 80% 50%, oklch(0.45 0.2 245 / 0.5), transparent 60%)" }} />
       <span className="absolute top-6 right-6 md:top-10 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">XYZ</span>

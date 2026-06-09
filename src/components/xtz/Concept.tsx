@@ -71,7 +71,7 @@ export function Concept() {
           </p>
           <div className="pt-2">
             <a
-              href="#inquiry"
+              href="#start-project"
               className="inline-flex items-center gap-3 px-6 py-3 border border-primary/60 hover:bg-primary hover:text-primary-foreground transition-colors font-mono text-[11px] uppercase tracking-[0.35em] blue-glow"
             >
               {t("concept.cta")} →
