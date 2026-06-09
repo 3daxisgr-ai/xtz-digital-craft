@@ -208,7 +208,7 @@ const gr: Dict = {
   "finale.kicker": "Έτοιμοι να φτιάξετε κάτι;",
   "finale.statement": "Από την ιδέα στην πραγματικότητα.",
   "finale.cta": "Ξεκινήστε το Έργο σας",
-  "finale.foot1": "© INOO3D",
+  "finale.foot1": "© SKG3D",
   "finale.foot2": "​",
   "finale.foot3": "DESIGN · PROTOTYPE · MANUFACTURE · MASS PRODUCTION",
 };
