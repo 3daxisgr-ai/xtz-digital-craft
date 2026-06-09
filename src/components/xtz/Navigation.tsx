@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { gsap } from "gsap";
 import { useI18n, type Lang } from "./i18n";
-import xyzLogo from "@/assets/xyz-logo.png.asset.json";
+import skg3dLogo from "@/assets/skg3d-logo.png";
 
 const links: { to: string; hash?: string; k: string }[] = [
   { to: "/", k: "nav.intro" },
