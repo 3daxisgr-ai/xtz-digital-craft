@@ -289,12 +289,13 @@ function QuotePage() {
 
                   <div className="border-t border-border pt-4 space-y-2 font-mono text-sm mb-6">
                     <Row k={L.materialCost} v={`€${materialCost.toFixed(2)}`} />
-                    <Row k={L.timeCost} v={`€${timeCost.toFixed(2)}`} />
+                    <Row k={L.machineWearCost} v={`€${machineWearCost.toFixed(2)}`} />
+                    <Row k={L.electricityCost} v={`€${electricityCost.toFixed(2)}`} />
                   </div>
 
                   <div className="pt-2">
                     <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-2">
-                      {L.estimated}
+                      {L.estimatedTotal}
                     </div>
                     <div className="font-display text-5xl font-bold text-primary text-glow">
                       €{estimatedPrice.toFixed(2)}
