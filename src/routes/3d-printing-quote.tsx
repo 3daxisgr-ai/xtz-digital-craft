@@ -114,11 +114,12 @@ function QuotePage() {
     hours: isGR ? "ώρες" : "hours",
     summary: isGR ? "Σύνοψη" : "Summary",
     materialCost: isGR ? "Κόστος υλικού" : "Material cost",
-    timeCost: isGR ? "Φθορά μηχανής" : "Machine wear cost",
-    estimated: isGR ? "Εκτιμώμενη Τιμή" : "Estimated Price",
+    machineWearCost: isGR ? "Φθορά μηχανής" : "Machine wear cost",
+    electricityCost: isGR ? "Κόστος ρεύματος" : "Electricity cost",
+    estimatedTotal: isGR ? "Εκτιμώμενο Σύνολο" : "Estimated Total",
     disclaimer: isGR
-      ? "Μόνο εκτιμώμενη τιμή. Αυτή η τιμή αφορά μόνο την εκτύπωση και όχι τη σχεδίαση ή τον χρόνο μας."
-      : "Estimated price only. This price is only for the printing not the design or our time",
+      ? "Μόνο εκτιμώμενη τιμή. Η τελική τιμή μπορεί να διαφέρει ανάλογα με τη γεωμετρία του μοντέλου, τα υλικά υποστήριξης, τις ρυθμίσεις εκτύπωσης και τις απαιτήσεις φινιρίσματος."
+      : "Estimated price only. Final pricing may vary depending on model geometry, support material, print settings and post-processing requirements.",
     upload: isGR ? "Ανεβάστε το αρχείο σας" : "Upload your file",
     accepted: isGR ? "Αποδεκτά" : "Accepted",
     selectFile: isGR ? "Επιλέξτε αρχείο" : "Select file",
