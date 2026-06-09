@@ -1,4 +1,5 @@
 import { useI18n, type Lang } from "./i18n";
+import skg3dLogoLarge from "@/assets/skg3d-logo-large.png.asset.json";
 
 export function Footer() {
   const { lang, setLang } = useI18n();
