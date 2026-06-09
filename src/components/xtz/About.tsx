@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import aboutBg from "@/assets/about-bg.png.asset.json";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -35,7 +36,15 @@ export function About() {
       id="about"
       ref={root}
       className="relative w-full overflow-hidden bg-black py-28 md:py-40"
+      style={{
+        backgroundImage: `url(${aboutBg.url})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+        backgroundRepeat: "no-repeat",
+      }}
     >
+      <div className="pointer-events-none absolute inset-0 bg-black/70" />
       <div
         className="pointer-events-none absolute inset-0 opacity-60"
         style={{
