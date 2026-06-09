@@ -66,12 +66,12 @@ export function Footer() {
           </div>
 
           <nav className="flex flex-wrap items-center gap-x-8 gap-y-3 font-mono text-[14px] uppercase tracking-[0.35em] text-muted-foreground">
-            <a href="#concept" className="hover:text-primary transition-colors text-sm">Why</a>
-            <a href="#capabilities" className="hover:text-primary transition-colors text-sm">Capabilities</a>
-            <a href="#portfolio" className="hover:text-primary transition-colors text-sm">Work</a>
-            <a href="#process" className="hover:text-primary transition-colors text-sm">Process</a>
-            <a href="#network" className="hover:text-primary transition-colors text-sm">Network</a>
-            <a href="#inquiry" className="hover:text-primary transition-colors text-sm">Inquiry</a>
+            <a href="#concept" className="hover:text-primary transition-colors text-xs">Why</a>
+            <a href="#capabilities" className="hover:text-primary transition-colors text-xs">Capabilities</a>
+            <a href="#portfolio" className="hover:text-primary transition-colors text-xs">Work</a>
+            <a href="#process" className="hover:text-primary transition-colors text-xs">Process</a>
+            <a href="#network" className="hover:text-primary transition-colors text-xs">Network</a>
+            <a href="#inquiry" className="hover:text-primary transition-colors text-xs">Inquiry</a>
           </nav>
 
           <div className="flex items-center font-mono text-[11px] border border-border/60">
