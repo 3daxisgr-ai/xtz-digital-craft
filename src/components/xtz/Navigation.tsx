@@ -57,13 +57,13 @@ export function Navigation() {
     >
       <nav className="mx-auto flex max-w-[1600px] items-center justify-between px-6 md:px-12 gap-6">
         <Link to="/" className="nav-brand flex items-center gap-3 group opacity-0 translate-y-2">
-          <span className="relative inline-block h-9 w-9">
+          <span className="relative inline-block h-9 w-20">
             <span className="absolute inset-0 bg-primary blur-lg opacity-50 group-hover:opacity-90 transition-opacity" />
             <img
-              src={xyzLogo.url}
-              alt="INOO3D XYZ logo"
+              src={skg3dLogo}
+              alt="SKG3D logo"
               className="relative h-full w-full object-contain"
-              width={36}
+              width={80}
               height={36}
             />
           </span>
