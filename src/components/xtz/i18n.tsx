@@ -65,7 +65,7 @@ const en: Dict = {
 
   // Portfolio
   "portfolio.kicker": "Work",
-  "portfolio.title": "Examples of products and parts built through the INOO3D workflow.",
+  "portfolio.title": "Examples of products and parts built through the SKG3D workflow.",
 
   // Process
   "process.kicker": "Process",
