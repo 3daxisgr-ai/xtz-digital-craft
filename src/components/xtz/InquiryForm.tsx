@@ -205,9 +205,9 @@ function Select({ name, label, options, placeholder, required }: { name: string;
         defaultValue=""
         className="mt-3 w-full bg-transparent border-b border-border focus:border-primary outline-none px-1 py-2 font-sans text-base transition-colors"
       >
-        <option value="" disabled className="inox-surface">{placeholder}</option>
+        <option value="" disabled className="bg-background">{placeholder}</option>
         {options.map((o) => (
-          <option key={o} value={o} className="inox-surface">{o}</option>
+          <option key={o} value={o} className="bg-background">{o}</option>
         ))}
       </select>
     </div>
