@@ -6,10 +6,10 @@ import { useI18n } from "@/components/xtz/i18n";
 export const Route = createFileRoute("/forum")({
   head: () => ({
     meta: [
-      { title: "Forum — INOO3D Updates" },
-      { name: "description", content: "Updates from the INOO3D workshop: new equipment, capabilities, materials and announcements." },
-      { property: "og:title", content: "Forum — INOO3D Updates" },
-      { property: "og:description", content: "Updates from the INOO3D workshop." },
+      { title: "Forum — SKG3D Updates" },
+      { name: "description", content: "Updates from the SKG3D workshop: new equipment, capabilities, materials and announcements." },
+      { property: "og:title", content: "Forum — SKG3D Updates" },
+      { property: "og:description", content: "Updates from the SKG3D workshop." },
       { property: "og:url", content: "https://xtz-digital-craft.lovable.app/forum" },
     ],
     links: [
