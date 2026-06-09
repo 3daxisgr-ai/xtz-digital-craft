@@ -27,9 +27,12 @@ export function Footer() {
             <div className="font-mono text-[14px] uppercase tracking-[0.5em] text-primary/80">
               XYZ — coordinates of every build
             </div>
-            <h2 className="font-display font-bold leading-[0.85] text-[clamp(2.8rem,9vw,8rem)] tracking-tighter text-glow">
-              SKG3D
-            </h2>
+            <img
+              src={skg3dLogoLarge.url}
+              alt="SKG3D"
+              className="block w-auto object-contain"
+              style={{ height: "clamp(2.8rem, 9vw, 8rem)" }}
+            />
             <p className="font-mono text-xs md:text-sm uppercase tracking-[0.55em] text-primary">
               From Concept to Reality
             </p>
