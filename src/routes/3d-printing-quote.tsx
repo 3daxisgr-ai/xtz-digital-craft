@@ -35,8 +35,9 @@ const MATERIALS: Material[] = [
   { id: "PC", available: false, pricePerKg: 70 },
 ];
 
-// Machine wear: 1.50€ every 2 hours of print time.
-const MACHINE_WEAR_PER_2H = 1.5;
+// Machine wear: 1.00€ every 3 hours of print time.
+const MACHINE_WEAR_PER_3H = 1.0;
+const ELECTRICITY_PER_HOUR = 0.15;
 
 const ACCEPTED_EXT = [".stl", ".step", ".stp", ".3mf", ".obj"];
 
@@ -58,10 +59,11 @@ function QuotePage() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { materialCost, timeCost, estimatedPrice } = useMemo(() => {
+  const { materialCost, machineWearCost, electricityCost, estimatedPrice } = useMemo(() => {
     const mc = (weight / 1000) * material.pricePerKg;
-    const tc = (hours / 2) * MACHINE_WEAR_PER_2H;
-    return { materialCost: mc, timeCost: tc, estimatedPrice: mc + tc };
+    const mwc = (hours / 3) * MACHINE_WEAR_PER_3H;
+    const ec = hours * ELECTRICITY_PER_HOUR;
+    return { materialCost: mc, machineWearCost: mwc, electricityCost: ec, estimatedPrice: mc + mwc + ec };
   }, [weight, hours, material]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -112,11 +114,12 @@ function QuotePage() {
     hours: isGR ? "ώρες" : "hours",
     summary: isGR ? "Σύνοψη" : "Summary",
     materialCost: isGR ? "Κόστος υλικού" : "Material cost",
-    timeCost: isGR ? "Φθορά μηχανής" : "Machine wear cost",
-    estimated: isGR ? "Εκτιμώμενη Τιμή" : "Estimated Price",
+    machineWearCost: isGR ? "Φθορά μηχανής" : "Machine wear cost",
+    electricityCost: isGR ? "Κόστος ρεύματος" : "Electricity cost",
+    estimatedTotal: isGR ? "Εκτιμώμενο Σύνολο" : "Estimated Total",
     disclaimer: isGR
-      ? "Μόνο εκτιμώμενη τιμή. Αυτή η τιμή αφορά μόνο την εκτύπωση και όχι τη σχεδίαση ή τον χρόνο μας."
-      : "Estimated price only. This price is only for the printing not the design or our time",
+      ? "Μόνο εκτιμώμενη τιμή. Η τελική τιμή μπορεί να διαφέρει ανάλογα με τη γεωμετρία του μοντέλου, τα υλικά υποστήριξης, τις ρυθμίσεις εκτύπωσης και τις απαιτήσεις φινιρίσματος."
+      : "Estimated price only. Final pricing may vary depending on model geometry, support material, print settings and post-processing requirements.",
     upload: isGR ? "Ανεβάστε το αρχείο σας" : "Upload your file",
     accepted: isGR ? "Αποδεκτά" : "Accepted",
     selectFile: isGR ? "Επιλέξτε αρχείο" : "Select file",
@@ -286,12 +289,13 @@ function QuotePage() {
 
                   <div className="border-t border-border pt-4 space-y-2 font-mono text-sm mb-6">
                     <Row k={L.materialCost} v={`€${materialCost.toFixed(2)}`} />
-                    <Row k={L.timeCost} v={`€${timeCost.toFixed(2)}`} />
+                    <Row k={L.machineWearCost} v={`€${machineWearCost.toFixed(2)}`} />
+                    <Row k={L.electricityCost} v={`€${electricityCost.toFixed(2)}`} />
                   </div>
 
                   <div className="pt-2">
                     <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-2">
-                      {L.estimated}
+                      {L.estimatedTotal}
                     </div>
                     <div className="font-display text-5xl font-bold text-primary text-glow">
                       €{estimatedPrice.toFixed(2)}
