@@ -58,7 +58,7 @@ export function HowItWorks() {
     <section
       id="how-it-works"
       ref={root}
-      className="relative w-full overflow-hidden bg-black py-28 md:py-40"
+      className="relative w-full overflow-hidden inox-surface py-28 md:py-40"
     >
       <div
         className="pointer-events-none absolute inset-0"

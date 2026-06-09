@@ -143,7 +143,7 @@ export function FAQ() {
   const [openKey, setOpenKey] = useState<string | null>(`${cats[0].id}-0`);
 
   return (
-    <section id="faq" className="relative w-full overflow-hidden bg-black py-24 md:py-32">
+    <section id="faq" className="relative w-full overflow-hidden inox-surface py-24 md:py-32">
       <div className="pointer-events-none absolute inset-0">
         <div
           className="absolute inset-0"
