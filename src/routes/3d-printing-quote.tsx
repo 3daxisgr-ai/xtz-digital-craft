@@ -28,14 +28,15 @@ type Material = {
 };
 
 const MATERIALS: Material[] = [
-  { id: "PLA", available: true, pricePerKg: 35 },
-  { id: "ABS", available: true, pricePerKg: 35 },
-  { id: "PC", available: false, pricePerKg: 35 },
+  { id: "PLA", available: true, pricePerKg: 25 },
+  { id: "ABS", available: true, pricePerKg: 30 },
   { id: "PETG", available: false, pricePerKg: 35 },
-  { id: "TPU", available: false, pricePerKg: 35 },
+  { id: "TPU", available: false, pricePerKg: 45 },
+  { id: "PC", available: false, pricePerKg: 70 },
 ];
 
-const HOURLY_MACHINE_COST = 1.5;
+// Machine wear: 1.50€ every 2 hours of print time.
+const MACHINE_WEAR_PER_2H = 1.5;
 
 const ACCEPTED_EXT = [".stl", ".step", ".stp", ".3mf", ".obj"];
 
@@ -59,7 +60,7 @@ function QuotePage() {
 
   const { materialCost, timeCost, estimatedPrice } = useMemo(() => {
     const mc = (weight / 1000) * material.pricePerKg;
-    const tc = hours * HOURLY_MACHINE_COST;
+    const tc = (hours / 2) * MACHINE_WEAR_PER_2H;
     return { materialCost: mc, timeCost: tc, estimatedPrice: mc + tc };
   }, [weight, hours, material]);
 
@@ -111,11 +112,11 @@ function QuotePage() {
     hours: isGR ? "ώρες" : "hours",
     summary: isGR ? "Σύνοψη" : "Summary",
     materialCost: isGR ? "Κόστος υλικού" : "Material cost",
-    timeCost: isGR ? "Κόστος μηχανής" : "Machine time cost",
+    timeCost: isGR ? "Φθορά μηχανής" : "Machine wear cost",
     estimated: isGR ? "Εκτιμώμενη Τιμή" : "Estimated Price",
     disclaimer: isGR
-      ? "Αυτή είναι μόνο μια εκτιμώμενη τιμή. Η τελική τιμή μπορεί να διαφέρει ανάλογα με την πολυπλοκότητα του μοντέλου, τα υλικά υποστήριξης, τις ρυθμίσεις εκτύπωσης και τις απαιτήσεις φινιρίσματος."
-      : "This is an estimated price only. Final pricing may vary depending on model complexity, support material, print settings and post-processing requirements.",
+      ? "Μόνο εκτιμώμενη τιμή. Η τελική τιμή μπορεί να διαφέρει ανάλογα με τη γεωμετρία του μοντέλου, τα υλικά υποστήριξης, τις ρυθμίσεις εκτύπωσης και τις απαιτήσεις φινιρίσματος."
+      : "Estimated price only. Final pricing may vary depending on model geometry, support material, print settings and post-processing requirements.",
     upload: isGR ? "Ανεβάστε το αρχείο σας" : "Upload your file",
     accepted: isGR ? "Αποδεκτά" : "Accepted",
     selectFile: isGR ? "Επιλέξτε αρχείο" : "Select file",
@@ -235,8 +236,8 @@ function QuotePage() {
                   <input
                     type="range"
                     min={0}
-                    max={24}
-                    step={0.5}
+                    max={100}
+                    step={1}
                     value={hours}
                     onChange={(e) => setHours(+e.target.value)}
                     aria-label={`${L.printTime} ${hours} ${L.hours}`}
@@ -244,7 +245,7 @@ function QuotePage() {
                   />
                   <div className="flex justify-between font-mono text-[10px] text-muted-foreground mt-1">
                     <span>0h</span>
-                    <span>24h</span>
+                    <span>100h</span>
                   </div>
                 </div>
 
