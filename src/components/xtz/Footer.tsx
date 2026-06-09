@@ -27,7 +27,7 @@ export function Footer() {
               XYZ — coordinates of every build
             </div>
             <h2 className="font-display font-bold leading-[0.85] text-[clamp(2.8rem,9vw,8rem)] tracking-tighter text-glow">
-              INOO3D
+              SKG3D
             </h2>
             <p className="font-mono text-xs md:text-sm uppercase tracking-[0.55em] text-primary">
               From Concept to Reality
