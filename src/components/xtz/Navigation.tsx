@@ -62,12 +62,12 @@ export function Navigation() {
             <img
               src={skg3dLogo}
               alt="SKG3D logo"
-              className="relative h-full w-full object-contain"
+              className="relative h-full w-full object-contain text-lg"
               width={80}
               height={36}
             />
           </span>
-          <span className="font-display text-lg font-bold tracking-[0.3em]">SKG3D</span>
+          <span className="font-display text-lg font-bold tracking-[0.3em]">​</span>
         </Link>
         <ul className="hidden lg:flex items-center gap-8 font-mono text-[14px] uppercase tracking-widest">
           {links.map((l) => (
