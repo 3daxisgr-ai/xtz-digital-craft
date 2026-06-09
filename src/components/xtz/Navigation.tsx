@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { gsap } from "gsap";
 import { useI18n, type Lang } from "./i18n";
-import xyzLogo from "@/assets/xyz-logo.png.asset.json";
+import skg3dLogo from "@/assets/skg3d-logo.png";
 
 const links: { to: string; hash?: string; k: string }[] = [
   { to: "/", k: "nav.intro" },
@@ -57,17 +57,17 @@ export function Navigation() {
     >
       <nav className="mx-auto flex max-w-[1600px] items-center justify-between px-6 md:px-12 gap-6">
         <Link to="/" className="nav-brand flex items-center gap-3 group opacity-0 translate-y-2">
-          <span className="relative inline-block h-9 w-9">
+          <span className="relative inline-block h-9 w-20">
             <span className="absolute inset-0 bg-primary blur-lg opacity-50 group-hover:opacity-90 transition-opacity" />
             <img
-              src={xyzLogo.url}
-              alt="INOO3D XYZ logo"
+              src={skg3dLogo}
+              alt="SKG3D logo"
               className="relative h-full w-full object-contain"
-              width={36}
+              width={80}
               height={36}
             />
           </span>
-          <span className="font-display text-lg font-bold tracking-[0.3em]">INOO3D</span>
+          <span className="font-display text-lg font-bold tracking-[0.3em]">SKG3D</span>
         </Link>
         <ul className="hidden lg:flex items-center gap-8 font-mono text-[14px] uppercase tracking-widest">
           {links.map((l) => (

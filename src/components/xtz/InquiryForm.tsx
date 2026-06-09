@@ -3,7 +3,7 @@ import { z } from "zod";
 import { useI18n } from "./i18n";
 
 const services = [
-  "Design & Development",
+  "Design & Prototype",
   "Fiber Laser Cutting",
   "Sheet Metal Forming",
   "Welding & Assembly",

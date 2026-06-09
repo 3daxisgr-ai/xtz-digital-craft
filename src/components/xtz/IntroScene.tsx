@@ -92,7 +92,7 @@ export function IntroScene() {
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
         <img
           src={heroOffice}
-          alt="INOO3D engineering and manufacturing workshop"
+          alt="SKG3D engineering and manufacturing workshop"
           className="h-full w-full object-cover"
           width={1920}
           height={1080}
@@ -111,7 +111,7 @@ export function IntroScene() {
               "0 0 24px oklch(0.65 0.22 245 / 0.45), 0 0 60px oklch(0.55 0.22 245 / 0.25)",
           }}
         >
-          <span className="sr-only">INOO3D — Precision Fabrication & Manufacturing. </span>
+          <span className="sr-only">SKG3D — Precision Fabrication & Manufacturing. </span>
           <span aria-hidden="true">{t("intro.headline")}</span>
         </h1>
         <p className="hero-sub mt-6 max-w-2xl md:text-lg text-foreground/80 font-light text-xl">

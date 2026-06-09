@@ -78,10 +78,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "INOO3D — Design, Prototype, Manufacture" },
-      { name: "description", content: "INOO3D: a full-stack manufacturing partner. Fiber laser cutting, sheet metal, 3D printing, design and prototyping under one roof." },
-      { name: "author", content: "INOO3D" },
-      { property: "og:site_name", content: "INOO3D" },
+      { title: "SKG3D — Design, Prototype, Manufacture" },
+      { name: "description", content: "SKG3D: a full-stack manufacturing partner. Fiber laser cutting, sheet metal, 3D printing, design and prototyping under one roof." },
+      { name: "author", content: "SKG3D" },
+      { property: "og:site_name", content: "SKG3D" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -99,12 +99,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@graph": [
             {
               "@type": "Organization",
-              name: "INOO3D",
+              name: "SKG3D",
               url: "https://xtz-digital-craft.lovable.app",
             },
             {
               "@type": "WebSite",
-              name: "INOO3D",
+              name: "SKG3D",
               url: "https://xtz-digital-craft.lovable.app",
             },
           ],
