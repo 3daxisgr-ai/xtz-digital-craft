@@ -92,7 +92,7 @@ export function IntroScene() {
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
         <img
           src={heroOffice}
-          alt="INOO3D engineering and manufacturing workshop"
+          alt="SKG3D engineering and manufacturing workshop"
           className="h-full w-full object-cover"
           width={1920}
           height={1080}
