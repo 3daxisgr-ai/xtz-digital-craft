@@ -11,9 +11,9 @@ import heroOffice from "@/assets/hero-office.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "INOO3D — From Concept to Reality" },
-      { name: "description", content: "Design, prototype and manufacture under one roof. Fiber laser cutting, sheet metal, 3D printing and engineering by INOO3D." },
-      { property: "og:title", content: "INOO3D — From Concept to Reality" },
+      { title: "SKG3D — From Concept to Reality" },
+      { name: "description", content: "Design, prototype and manufacture under one roof. Fiber laser cutting, sheet metal, 3D printing and engineering by SKG3D." },
+      { property: "og:title", content: "SKG3D — From Concept to Reality" },
       { property: "og:description", content: "Design, prototype and manufacture under one roof." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://xtz-digital-craft.lovable.app/" },
