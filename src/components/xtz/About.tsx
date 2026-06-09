@@ -8,7 +8,7 @@ import type { CapabilitySlug } from "./Capabilities";
 gsap.registerPlugin(ScrollTrigger);
 
 const specialties: { label: string; slug: CapabilitySlug }[] = [
-  { label: "Design & Development", slug: "design-to-prototype" },
+  { label: "Design & Prototype", slug: "design-to-prototype" },
   { label: "Fiber Laser Cutting", slug: "fiber-laser-cutting" },
   { label: "Sheet Metal Forming & Welding", slug: "sheet-metal-forming-welding" },
   { label: "3D Printing", slug: "3d-printing" },
