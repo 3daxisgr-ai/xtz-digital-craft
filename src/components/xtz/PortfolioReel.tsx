@@ -185,7 +185,7 @@ export function PortfolioReel() {
             <span className="h-px w-10 bg-[#05acff] shadow-[0_0_8px_#05acff]" />
           </div>
           <h2 className="font-display font-bold leading-[0.85] tracking-tighter text-white text-[clamp(2.4rem,5vw,4.5rem)] mb-6">
-            05 /<br />
+            03 /<br />
             <span className="drop-shadow-[0_0_24px_rgba(5,172,255,0.45)] text-4xl text-[#05acff]">
               CAPABILITIES
             </span>
