@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import heroOffice from "@/assets/hero-office.jpg";
+import skg3dLogo from "@/assets/skg3d-logo-large.png.asset.json";
 import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -104,15 +105,19 @@ export function IntroScene() {
 
       {/* Hero text layer */}
       <div className="hero-layer absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center will-change-transform">
-        <h1
-          className="hero-headline font-display font-bold uppercase tracking-tighter leading-[0.9] text-[clamp(2.6rem,11vw,11rem)] max-w-[16ch]"
-          style={{
-            textShadow:
-              "0 0 24px oklch(0.65 0.22 245 / 0.45), 0 0 60px oklch(0.55 0.22 245 / 0.25)",
-          }}
-        >
+        <h1 className="hero-headline flex items-center justify-center">
           <span className="sr-only">SKG3D — Precision Fabrication & Manufacturing. </span>
-          <span aria-hidden="true">{t("intro.headline")}</span>
+          <img
+            src={skg3dLogo.url}
+            alt="SKG3D"
+            aria-hidden="true"
+            className="block w-auto object-contain"
+            style={{
+              height: "clamp(6rem, 22vw, 22rem)",
+              filter:
+                "drop-shadow(0 0 24px oklch(0.65 0.22 245 / 0.45)) drop-shadow(0 0 60px oklch(0.55 0.22 245 / 0.25))",
+            }}
+          />
         </h1>
         <p className="hero-sub mt-6 max-w-2xl md:text-lg text-foreground/80 font-light text-xl">
           {t("intro.sub")}
