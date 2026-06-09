@@ -106,7 +106,7 @@ const details: Record<CapabilitySlug, Detail> = {
       "Small and medium production runs.",
       "Post-processing: sanding, painting, threaded inserts.",
     ],
-    materials: ["PLA", "PETG", "ABS", "PA (Nylon)", "TPU", "Engineering polymers on request"],
+    materials: ["PLA", "ABS", "PETG", "PC", "TPU"],
     process: [
       { t: "Files", d: "Send .stl, .step or .obj." },
       { t: "Slice", d: "We choose orientation, infill and supports." },
