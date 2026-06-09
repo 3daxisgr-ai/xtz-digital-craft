@@ -347,7 +347,7 @@ function CapabilityPage() {
             Send your files or a brief. An engineer will review and reply within one business day.
           </p>
           <Link
-            to="/start-project"
+            to={cap.slug === "3d-printing" ? "/3d-printing-quote" : "/start-project"}
             className="inline-flex items-center gap-3 px-10 py-5 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow"
           >
             Request a Quote →
