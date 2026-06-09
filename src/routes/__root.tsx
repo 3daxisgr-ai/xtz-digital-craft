@@ -104,7 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             },
             {
               "@type": "WebSite",
-              name: "INOO3D",
+              name: "SKG3D",
               url: "https://xtz-digital-craft.lovable.app",
             },
           ],
