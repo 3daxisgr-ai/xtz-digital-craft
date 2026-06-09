@@ -1,18 +1,21 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Link } from "@tanstack/react-router";
 import aboutBg from "@/assets/about-bg.png.asset.json";
+import type { CapabilitySlug } from "./Capabilities";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const specialties = [
-  "Design & Development",
-  "Fiber Laser Cutting",
-  "Sheet Metal Forming & Welding",
-  "3D Printing",
-  "Design → Prototype",
-  "​Mass production",
+const specialties: { label: string; slug: CapabilitySlug }[] = [
+  { label: "Design & Development", slug: "design-to-prototype" },
+  { label: "Fiber Laser Cutting", slug: "fiber-laser-cutting" },
+  { label: "Sheet Metal Forming & Welding", slug: "sheet-metal-forming-welding" },
+  { label: "3D Printing", slug: "3d-printing" },
+  { label: "Design → Prototype", slug: "design-to-prototype" },
+  { label: "​Mass production", slug: "global-manufacturing-network" },
 ];
+
 
 export function About() {
   const root = useRef<HTMLDivElement>(null);
@@ -82,17 +85,21 @@ export function About() {
           </div>
           <ul className="divide-y divide-primary/15 border-y border-primary/15">
             {specialties.map((s) => (
-              <li
-                key={s}
-                className="group flex items-center gap-6 py-5 transition-colors hover:text-primary"
-              >
-                <span className="font-display text-lg md:text-2xl font-medium tracking-tight">
-                  {s}
-                </span>
-                <span className="ml-auto h-px flex-1 max-w-[60px] bg-primary/20 group-hover:bg-primary transition-colors" />
+              <li key={s.label}>
+                <Link
+                  to="/capabilities/$slug"
+                  params={{ slug: s.slug }}
+                  className="group flex items-center gap-6 py-5 transition-colors hover:text-primary"
+                >
+                  <span className="font-display text-lg md:text-2xl font-medium tracking-tight">
+                    {s.label}
+                  </span>
+                  <span className="ml-auto h-px flex-1 max-w-[60px] bg-primary/20 group-hover:bg-primary transition-colors" />
+                </Link>
               </li>
             ))}
           </ul>
+
         </div>
       </div>
     </section>
