@@ -35,8 +35,9 @@ const MATERIALS: Material[] = [
   { id: "PC", available: false, pricePerKg: 70 },
 ];
 
-// Machine wear: 1.50€ every 2 hours of print time.
-const MACHINE_WEAR_PER_2H = 1.5;
+// Machine wear: 1.00€ every 3 hours of print time.
+const MACHINE_WEAR_PER_3H = 1.0;
+const ELECTRICITY_PER_HOUR = 0.15;
 
 const ACCEPTED_EXT = [".stl", ".step", ".stp", ".3mf", ".obj"];
 
