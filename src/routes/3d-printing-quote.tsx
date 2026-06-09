@@ -274,13 +274,8 @@ function QuotePage() {
               {/* Live summary */}
               <div className="relative">
                 <div className="glass-panel grain p-8 md:p-10 h-full flex flex-col">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-muted-foreground">
-                      {L.summary}
-                    </div>
-                    <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-primary">
-                      <span className="h-2 w-2 rounded-full bg-primary blue-glow animate-pulse-glow" /> Live
-                    </div>
+                  <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-muted-foreground">
+                    {L.summary}
                   </div>
 
                   <dl className="space-y-3 mb-6 font-mono text-sm">
