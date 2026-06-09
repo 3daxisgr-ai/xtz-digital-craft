@@ -68,7 +68,7 @@ export function HowItWorks() {
         }}
       />
       <span className="absolute top-8 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
-        HOW IT WORKS
+        HOW WE WORK
       </span>
       <span className="absolute top-8 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         XYZ
@@ -80,7 +80,7 @@ export function HowItWorks() {
             <span className="font-mono text-xs text-primary tracking-[0.3em]">02 /</span>
             <span className="h-px w-20 bg-primary blue-glow" />
             <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              How It Works
+              How We Work
             </span>
           </div>
           <h2 className="font-display font-bold leading-[0.9] text-[clamp(2.4rem,6vw,5.5rem)] tracking-tighter">
