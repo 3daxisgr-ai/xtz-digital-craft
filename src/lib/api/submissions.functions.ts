@@ -86,6 +86,26 @@ export const submitForm = createServerFn({ method: "POST" })
 
     const submissionId = inserted?.id as string | undefined;
 
+    // 1b. Mirror into quote_requests (backup/admin-facing table)
+    try {
+      await supabaseAdmin.from("quote_requests").insert({
+        name: `${data.name}${data.surname ? " " + data.surname : ""}`,
+        email: data.email,
+        phone: data.phone ?? null,
+        service: data.service ?? null,
+        material: data.material ?? null,
+        message: data.message ?? null,
+        file_url: fileUrl,
+        file_path: data.file_path ?? null,
+        file_name: data.file_name ?? null,
+        estimated_price: data.estimated_price ?? null,
+        source: data.source,
+        metadata: (data.metadata ?? null) as never,
+      });
+    } catch (e) {
+      console.error("quote_requests mirror insert failed", e);
+    }
+
     // 2. Send email notification (best-effort, never block the user)
     const sourceLabel = data.source === "3d-printing-quote" ? "3D Printing Quote" : "Project Inquiry";
     const subject = `New ${sourceLabel} — ${data.name}${data.surname ? " " + data.surname : ""}`;
