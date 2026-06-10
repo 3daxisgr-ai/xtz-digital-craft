@@ -92,7 +92,9 @@ export function About() {
             </span>
           </div>
           <h2 className="font-display font-bold leading-[0.9] text-[clamp(2.4rem,6vw,5.5rem)] tracking-tighter">
-            {t("about.title.l1")}<br />{t("about.title.l2")}<br />{t("about.title.l3")}
+            {t("about.title.l1")}
+            {t("about.title.l2") && <><br />{t("about.title.l2")}</>}
+            {t("about.title.l3") && <><br />{t("about.title.l3")}</>}
           </h2>
           <div className="space-y-5 text-base md:text-lg text-foreground/85 leading-relaxed font-light max-w-xl">
             <p>{t("about.body")}</p>
