@@ -134,52 +134,12 @@ export function PortfolioReel() {
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
   const [active, setActive] = useState(0);
 
-  // Snap to a specific card
+  // Snap to a specific card using native scroll-snap centering
   const goTo = (i: number) => {
-    const track = trackRef.current;
     const card = cardRefs.current[i];
-    if (!track || !card) return;
-    const target =
-      card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
-    track.scrollTo({ left: target, behavior: "smooth" });
+    if (!card) return;
+    card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   };
-
-  // Wheel hijack — only when section dominates viewport, snap card-by-card
-  useEffect(() => {
-    const section = sectionRef.current;
-    const track = trackRef.current;
-    if (!section || !track) return;
-
-    let cooldown = false;
-    const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      const dy = e.deltaY;
-      if (dy === 0) return;
-
-      const rect = section.getBoundingClientRect();
-      // engage only when the section roughly fills the viewport
-      if (rect.top > 60 || rect.bottom < window.innerHeight - 60) return;
-
-      // release at edges so the page continues to scroll naturally
-      const atStart = active <= 0;
-      const atEnd = active >= slides.length - 1;
-      if ((dy > 0 && atEnd) || (dy < 0 && atStart)) return;
-
-      e.preventDefault();
-      if (cooldown) return;
-      cooldown = true;
-      const next = Math.min(
-        slides.length - 1,
-        Math.max(0, active + (dy > 0 ? 1 : -1)),
-      );
-      goTo(next);
-      setActive(next);
-      window.setTimeout(() => (cooldown = false), 480);
-    };
-
-    section.addEventListener("wheel", onWheel, { passive: false });
-    return () => section.removeEventListener("wheel", onWheel);
-  }, [active]);
 
   // Update active index from manual horizontal scroll/touch
   useEffect(() => {
