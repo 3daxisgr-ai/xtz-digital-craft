@@ -38,7 +38,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
           {
             label: "Δυνατότητες",
             items: [
-              "Πολυ-υλική εκτύπωση",
+              "πολύχρωμη εκτύπωση",
               "Υψηλή ταχύτητα",
               "Πρωτότυπα μηχανικής",
               "Έτοιμα για παραγωγή εξαρτήματα",
@@ -136,7 +136,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
         {
           label: "Highlights",
           items: [
-            "Multi-material capability",
+            "Multi-color printing",
             "High-speed printing",
             "Engineering prototypes",
             "Production-ready parts",
