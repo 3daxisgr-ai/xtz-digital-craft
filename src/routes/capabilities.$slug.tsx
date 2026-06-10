@@ -355,11 +355,11 @@ function CapabilityPage() {
         <div className="relative mx-auto max-w-[1200px]">
           {/* Breadcrumbs */}
           <nav aria-label="breadcrumb" className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-10 flex flex-wrap items-center gap-2">
-            <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+            <Link to="/" className="hover:text-primary transition-colors">{t("capp.crumb.home")}</Link>
             <span className="text-muted-foreground/50">/</span>
-            <Link to="/" hash="capabilities" className="hover:text-primary transition-colors">Capabilities</Link>
+            <Link to="/" hash="capabilities" className="hover:text-primary transition-colors">{t("capp.crumb.caps")}</Link>
             <span className="text-muted-foreground/50">/</span>
-            <span className="text-foreground">{titles[cap.slug]}</span>
+            <span className="text-foreground">{titleMap[cap.slug]}</span>
           </nav>
 
           <div className="flex items-center gap-4 mb-6">
@@ -373,23 +373,23 @@ function CapabilityPage() {
             className="font-display font-bold leading-[0.95] text-[clamp(2.4rem,6.5vw,5rem)] tracking-tighter mb-6"
             style={{ textShadow: "0 0 24px oklch(0.65 0.22 245 / 0.35)" }}
           >
-            {titles[cap.slug]}
+            {titleMap[cap.slug]}
           </h1>
-          <p className="text-foreground/75 text-lg md:text-xl max-w-2xl leading-relaxed">{detail.intro}</p>
+          <p className="text-foreground/85 text-lg md:text-xl max-w-2xl leading-relaxed">{view.intro}</p>
 
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <Link
               to={cap.slug === "3d-printing" ? "/3d-printing-quote" : "/start-project"}
               className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow"
             >
-              Request a Quote →
+              {t("capp.cta.quote")} →
             </Link>
             <Link
               to="/"
               hash="capabilities"
               className="inline-flex items-center gap-3 px-6 py-4 border border-border/60 hover:border-primary/60 font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground hover:text-foreground transition-colors"
             >
-              ← All Capabilities
+              ← {t("capp.cta.all")}
             </Link>
           </div>
         </div>
@@ -399,10 +399,10 @@ function CapabilityPage() {
       <section className="px-6 md:px-12 py-20 border-t border-border/40">
         <div className="mx-auto max-w-[1200px] grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-7">
-            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-6">What we do</h2>
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-6">{t("capp.h.what")}</h2>
             <ul className="space-y-5">
-              {detail.what.map((w, i) => (
-                <li key={i} className="flex gap-4 text-foreground/85">
+              {view.what.map((w, i) => (
+                <li key={i} className="flex gap-4 text-foreground/90">
                   <span className="font-mono text-[14px] text-primary/70 tracking-[0.3em] pt-2 shrink-0">
                     {String(i + 1).padStart(2, "0")}
                   </span>
@@ -412,16 +412,16 @@ function CapabilityPage() {
             </ul>
           </div>
           <div className="lg:col-span-5">
-            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-6">Materials & Technologies</h2>
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-6">{t("capp.h.materials")}</h2>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {detail.materials.map((m) => (
+              {view.materials.map((m) => (
                 <li key={m} className="border border-border/50 px-4 py-3 font-display text-base hover:border-primary/60 transition-colors">
                   {m}
                 </li>
               ))}
             </ul>
-            {detail.notes && (
-              <p className="text-foreground/65 text-sm leading-relaxed mt-6">{detail.notes}</p>
+            {view.notes && (
+              <p className="text-foreground/80 text-sm leading-relaxed mt-6">{view.notes}</p>
             )}
           </div>
         </div>
@@ -430,15 +430,15 @@ function CapabilityPage() {
       {/* Process */}
       <section className="px-6 md:px-12 py-20 border-t border-border/40 bg-gradient-to-b from-white/[0.015] to-transparent">
         <div className="mx-auto max-w-[1200px]">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-10">Process Overview</h2>
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-10">{t("capp.h.process")}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {detail.process.map((p, i) => (
-              <div key={p.t} className="relative p-6 border border-border/60 bg-white/[0.02]">
+            {view.process.map((p, i) => (
+              <div key={p.t} className="relative p-6 border border-border/60 bg-white/[0.03]">
                 <div className="font-mono text-[14px] tracking-[0.4em] text-primary/80 mb-4">
-                  STEP {String(i + 1).padStart(2, "0")}
+                  {t("capp.step")} {String(i + 1).padStart(2, "0")}
                 </div>
                 <h3 className="font-display text-xl font-semibold mb-2">{p.t}</h3>
-                <p className="text-sm text-foreground/70 leading-relaxed">{p.d}</p>
+                <p className="text-sm text-foreground/80 leading-relaxed">{p.d}</p>
               </div>
             ))}
           </div>
@@ -448,10 +448,10 @@ function CapabilityPage() {
       {/* Applications */}
       <section className="px-6 md:px-12 py-20 border-t border-border/40">
         <div className="mx-auto max-w-[1200px]">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-8">Applications</h2>
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-8">{t("capp.h.apps")}</h2>
           <div className="flex flex-wrap gap-3">
-            {detail.applications.map((a) => (
-              <span key={a} className="border border-border/50 px-5 py-3 font-display text-base text-foreground/85">
+            {view.applications.map((a) => (
+              <span key={a} className="border border-border/50 px-5 py-3 font-display text-base text-foreground/90">
                 {a}
               </span>
             ))}
@@ -470,16 +470,16 @@ function CapabilityPage() {
             className="font-display font-bold leading-[0.95] text-[clamp(2rem,5vw,3.5rem)] tracking-tighter mb-6"
             style={{ textShadow: "0 0 24px oklch(0.65 0.22 245 / 0.35)" }}
           >
-            Ready to build with {titles[cap.slug]}?
+            {t("capp.ready1")} {titleMap[cap.slug]}{isGR ? ";" : "?"}
           </h2>
-          <p className="text-foreground/70 max-w-xl mx-auto mb-8">
-            Send your files or a brief. An engineer will review and reply within one business day.
+          <p className="text-foreground/80 max-w-xl mx-auto mb-8">
+            {t("capp.ready.body")}
           </p>
           <Link
             to={cap.slug === "3d-printing" ? "/3d-printing-quote" : "/start-project"}
             className="inline-flex items-center gap-3 px-10 py-5 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow"
           >
-            Request a Quote →
+            {t("capp.cta.quote")} →
           </Link>
         </div>
       </section>
@@ -487,23 +487,23 @@ function CapabilityPage() {
       {/* Related */}
       <section className="px-6 md:px-12 py-20 border-t border-border/40">
         <div className="mx-auto max-w-[1500px]">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-8">Related Capabilities</h2>
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-8">{t("capp.h.related")}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {related.map((r) => (
               <Link
                 key={r.slug}
                 to="/capabilities/$slug"
                 params={{ slug: r.slug }}
-                className="group relative p-8 border border-border/60 bg-gradient-to-b from-white/[0.02] to-transparent overflow-hidden transition-colors hover:border-primary/60 block"
+                className="group relative p-8 border border-border/60 bg-gradient-to-b from-white/[0.03] to-transparent overflow-hidden transition-colors hover:border-primary/60 block"
               >
                 <div aria-hidden className="absolute -top-px left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full blue-glow" />
                 <div className="font-mono text-[14px] tracking-[0.4em] text-primary/80 mb-4">{r.n}</div>
                 <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 group-hover:text-primary transition-colors">
-                  {titles[r.slug]}
+                  {titleMap[r.slug]}
                 </h3>
-                <p className="text-sm text-foreground/65 leading-relaxed">{t(r.dKey)}</p>
+                <p className="text-sm text-foreground/80 leading-relaxed">{t(r.dKey)}</p>
                 <span className="mt-6 inline-block font-mono text-[14px] tracking-[0.3em] text-primary opacity-70 group-hover:opacity-100">
-                  View capability →
+                  {t("capp.view")} →
                 </span>
               </Link>
             ))}
