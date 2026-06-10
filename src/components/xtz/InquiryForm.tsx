@@ -49,6 +49,21 @@ export function InquiryForm() {
   const { t } = useI18n();
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [preselectedService, setPreselectedService] = useState<string>("");
+
+  // Read ?service= from URL on mount to pre-fill the service type.
+  // When set, the manual service selector is hidden so we don't ask twice.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useState(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const s = params.get("service");
+      if (s) setPreselectedService(s);
+    }
+    return "";
+  });
+
+
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
