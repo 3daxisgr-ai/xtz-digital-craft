@@ -4,6 +4,8 @@ import { z } from "zod";
 import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
 import { useI18n } from "@/components/xtz/i18n";
+import { supabase } from "@/integrations/supabase/client";
+import { submitForm } from "@/lib/api/submissions.functions";
 
 export const Route = createFileRoute("/3d-printing-quote")({
   head: () => ({
@@ -66,7 +68,9 @@ function QuotePage() {
     return { materialCost: mc, machineWearCost: mwc, electricityCost: ec, estimatedPrice: mc + mwc + ec };
   }, [weight, hours, material]);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     const fd = new FormData(e.currentTarget);
@@ -81,9 +85,49 @@ function QuotePage() {
       setError(parsed.error.issues[0]?.message ?? "Invalid input");
       return;
     }
-    // The file (if any) is captured in `file` state and would be attached
-    // to the inquiry payload by a backend handler.
-    setSent(true);
+
+    setSubmitting(true);
+    try {
+      let filePath: string | null = null;
+      let fileName: string | null = null;
+      if (file) {
+        const ext = file.name.split(".").pop() ?? "bin";
+        const path = `3dp/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("submission-files")
+          .upload(path, file, { upsert: false, contentType: file.type || "application/octet-stream" });
+        if (upErr) throw upErr;
+        filePath = path;
+        fileName = file.name;
+      }
+
+      await submitForm({
+        data: {
+          source: "3d-printing-quote",
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          material: material.id,
+          weight_g: weight,
+          print_hours: hours,
+          estimated_price: Number(estimatedPrice.toFixed(2)),
+          message: data.notes,
+          file_path: filePath,
+          file_name: fileName,
+          metadata: {
+            materialCost: Number(materialCost.toFixed(2)),
+            machineWearCost: Number(machineWearCost.toFixed(2)),
+            electricityCost: Number(electricityCost.toFixed(2)),
+          },
+        },
+      });
+      setSent(true);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Submission failed. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
