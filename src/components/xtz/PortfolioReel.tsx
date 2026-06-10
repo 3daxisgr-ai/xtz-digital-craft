@@ -3,7 +3,7 @@ import p3 from "@/assets/portfolio-3.jpg";
 import chapterPrint from "@/assets/chapter-print.jpg";
 import chapterFab from "@/assets/chapter-fab.jpg";
 import chapterLaser from "@/assets/chapter-laser.jpg";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useI18n } from "./i18n";
 import type { CapabilitySlug } from "./Capabilities";
@@ -20,109 +20,19 @@ type Slide = {
 };
 
 const slidesEN: Slide[] = [
-  {
-    img: chapterLaser,
-    alt: "Fiber laser cutting precision sheet metal",
-    index: "001",
-    title: "Fiber Laser Cutting",
-    category: "Fiber Laser",
-    description: "Micron-level precision on steel, stainless and aluminium.",
-    tags: ["±0.05 mm", "Speed"],
-    slug: "fiber-laser-cutting",
-  },
-  {
-    img: chapterFab,
-    alt: "Sheet metal forming and welding fabrication",
-    index: "002",
-    title: "Sheet Metal Forming & Welding",
-    category: "Press Brake · TIG · MIG",
-    description: "Bending, welding and assembly of finished metal parts.",
-    tags: ["CNC Brake", "Certified"],
-    slug: "sheet-metal-forming-welding",
-  },
-  {
-    img: chapterPrint,
-    alt: "Industrial 3D printing for functional parts",
-    index: "003",
-    title: "3D Printing",
-    category: "Additive",
-    description: "Functional parts and short runs in engineering polymers.",
-    tags: ["FDM · SLA", "End-use"],
-    slug: "3d-printing",
-  },
-  {
-    img: p1,
-    alt: "Prototyping and product development workshop",
-    index: "004",
-    title: "Design → Prototype",
-    category: "R&D",
-    description: "Idea to working prototype in days, not months.",
-    tags: ["MVP", "Iteration"],
-    slug: "design-to-prototype",
-  },
-  {
-    img: p3,
-    alt: "Global manufacturing network and partners",
-    index: "005",
-    title: "Mass Production",
-    category: "Manufacturing",
-    description: "Distributed sourcing, scale and worldwide delivery.",
-    tags: ["Sourcing", "Scale"],
-    slug: "global-manufacturing-network",
-  },
+  { img: chapterLaser, alt: "Fiber laser cutting precision sheet metal", index: "001", title: "Fiber Laser Cutting", category: "Fiber Laser", description: "Micron-level precision on steel, stainless and aluminium.", tags: ["±0.05 mm", "Speed"], slug: "fiber-laser-cutting" },
+  { img: chapterFab, alt: "Sheet metal forming and welding fabrication", index: "002", title: "Sheet Metal Forming & Welding", category: "Press Brake · TIG · MIG", description: "Bending, welding and assembly of finished metal parts.", tags: ["CNC Brake", "Certified"], slug: "sheet-metal-forming-welding" },
+  { img: chapterPrint, alt: "Industrial 3D printing for functional parts", index: "003", title: "3D Printing", category: "Additive", description: "Functional parts and short runs in engineering polymers.", tags: ["FDM · SLA", "End-use"], slug: "3d-printing" },
+  { img: p1, alt: "Prototyping and product development workshop", index: "004", title: "Design → Prototype", category: "R&D", description: "Idea to working prototype in days, not months.", tags: ["MVP", "Iteration"], slug: "design-to-prototype" },
+  { img: p3, alt: "Global manufacturing network and partners", index: "005", title: "Mass Production", category: "Manufacturing", description: "Distributed sourcing, scale and worldwide delivery.", tags: ["Sourcing", "Scale"], slug: "global-manufacturing-network" },
 ];
 
 const slidesGR: Slide[] = [
-  {
-    img: chapterLaser,
-    alt: "Κοπή fiber laser ακριβείας σε λαμαρίνα",
-    index: "001",
-    title: "Κοπή Fiber Laser",
-    category: "Fiber Laser",
-    description: "Ακρίβεια επιπέδου micron σε χάλυβα, ανοξείδωτο και αλουμίνιο.",
-    tags: ["±0.05 mm", "Ταχύτητα"],
-    slug: "fiber-laser-cutting",
-  },
-  {
-    img: chapterFab,
-    alt: "Στραντζάρισμα και συγκολλήσεις λαμαρίνας",
-    index: "002",
-    title: "Στραντζάρισμα & Συγκολλήσεις",
-    category: "Στράντζα · TIG · MIG",
-    description: "Κάμψη, συγκόλληση και συναρμολόγηση μεταλλικών εξαρτημάτων.",
-    tags: ["CNC Στράντζα", "Πιστοποιημένα"],
-    slug: "sheet-metal-forming-welding",
-  },
-  {
-    img: chapterPrint,
-    alt: "Βιομηχανική 3D εκτύπωση για λειτουργικά εξαρτήματα",
-    index: "003",
-    title: "3D Εκτύπωση",
-    category: "Προσθετική",
-    description: "Λειτουργικά εξαρτήματα και μικρές σειρές σε μηχανικά πολυμερή.",
-    tags: ["FDM · SLA", "Τελικής χρήσης"],
-    slug: "3d-printing",
-  },
-  {
-    img: p1,
-    alt: "Εργαστήριο πρωτοτυποποίησης και ανάπτυξης προϊόντων",
-    index: "004",
-    title: "Σχεδιασμός → Πρωτότυπο",
-    category: "Έρευνα & Ανάπτυξη",
-    description: "Από την ιδέα σε λειτουργικό πρωτότυπο μέσα σε ημέρες.",
-    tags: ["MVP", "Επανέλεγχος"],
-    slug: "design-to-prototype",
-  },
-  {
-    img: p3,
-    alt: "Παγκόσμιο δίκτυο παραγωγής και συνεργατών",
-    index: "005",
-    title: "Μαζική Παραγωγή",
-    category: "Κατασκευή",
-    description: "Κατανεμημένη παραγωγή, κλιμάκωση και παγκόσμια παράδοση.",
-    tags: ["Sourcing", "Κλιμάκωση"],
-    slug: "global-manufacturing-network",
-  },
+  { img: chapterLaser, alt: "Κοπή fiber laser ακριβείας σε λαμαρίνα", index: "001", title: "Κοπή Fiber Laser", category: "Fiber Laser", description: "Ακρίβεια επιπέδου micron σε χάλυβα, ανοξείδωτο και αλουμίνιο.", tags: ["±0.05 mm", "Ταχύτητα"], slug: "fiber-laser-cutting" },
+  { img: chapterFab, alt: "Στραντζάρισμα και συγκολλήσεις λαμαρίνας", index: "002", title: "Στραντζάρισμα & Συγκολλήσεις", category: "Στράντζα · TIG · MIG", description: "Κάμψη, συγκόλληση και συναρμολόγηση μεταλλικών εξαρτημάτων.", tags: ["CNC Στράντζα", "Πιστοποιημένα"], slug: "sheet-metal-forming-welding" },
+  { img: chapterPrint, alt: "Βιομηχανική 3D εκτύπωση για λειτουργικά εξαρτήματα", index: "003", title: "3D Εκτύπωση", category: "Προσθετική", description: "Λειτουργικά εξαρτήματα και μικρές σειρές σε μηχανικά πολυμερή.", tags: ["FDM · SLA", "Τελικής χρήσης"], slug: "3d-printing" },
+  { img: p1, alt: "Εργαστήριο πρωτοτυποποίησης και ανάπτυξης προϊόντων", index: "004", title: "Σχεδιασμός → Πρωτότυπο", category: "Έρευνα & Ανάπτυξη", description: "Από την ιδέα σε λειτουργικό πρωτότυπο μέσα σε ημέρες.", tags: ["MVP", "Επανέλεγχος"], slug: "design-to-prototype" },
+  { img: p3, alt: "Παγκόσμιο δίκτυο παραγωγής και συνεργατών", index: "005", title: "Μαζική Παραγωγή", category: "Κατασκευή", description: "Κατανεμημένη παραγωγή, κλιμάκωση και παγκόσμια παράδοση.", tags: ["Sourcing", "Κλιμάκωση"], slug: "global-manufacturing-network" },
 ];
 
 export function PortfolioReel() {
@@ -133,22 +43,26 @@ export function PortfolioReel() {
   const trackRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
   const [active, setActive] = useState(0);
-  const [padInline, setPadInline] = useState(0);
+  const [padInline, setPadInline] = useState(16);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
 
-  // Compute side padding so first & last cards can center in the viewport
+  // Compute padding so first & last cards center in the viewport
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
     const recalc = () => {
       const first = cardRefs.current[0];
-      if (!first) return;
-      const pad = Math.max(16, (track.clientWidth - first.clientWidth) / 2);
-      setPadInline(pad);
+      const last = cardRefs.current[cardRefs.current.length - 1];
+      if (!first || !last) return;
+      const padL = Math.max(16, (track.clientWidth - first.clientWidth) / 2);
+      const padR = Math.max(16, (track.clientWidth - last.clientWidth) / 2);
+      setPadInline(Math.max(padL, padR));
     };
     recalc();
     const ro = new ResizeObserver(recalc);
     ro.observe(track);
-    if (cardRefs.current[0]) ro.observe(cardRefs.current[0]!);
+    cardRefs.current.forEach((c) => c && ro.observe(c));
     window.addEventListener("resize", recalc);
     return () => {
       ro.disconnect();
@@ -156,19 +70,11 @@ export function PortfolioReel() {
     };
   }, [slides.length]);
 
-
-  // Snap to a specific card using native scroll-snap centering
-  const goTo = (i: number) => {
-    const card = cardRefs.current[i];
-    if (!card) return;
-    card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-  };
-
-  // Update active index from manual horizontal scroll/touch
+  // Track active index + start/end state
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
-    const onScroll = () => {
+    const update = () => {
       const center = track.scrollLeft + track.clientWidth / 2;
       let bestI = 0;
       let bestDist = Infinity;
@@ -182,10 +88,107 @@ export function PortfolioReel() {
         }
       });
       setActive(bestI);
+      setAtStart(track.scrollLeft <= 2);
+      setAtEnd(track.scrollLeft + track.clientWidth >= track.scrollWidth - 2);
     };
-    track.addEventListener("scroll", onScroll, { passive: true });
-    return () => track.removeEventListener("scroll", onScroll);
+    update();
+    track.addEventListener("scroll", update, { passive: true });
+    return () => track.removeEventListener("scroll", update);
+  }, [slides.length, padInline]);
+
+  const goTo = useCallback((i: number) => {
+    const card = cardRefs.current[i];
+    const track = trackRef.current;
+    if (!card || !track) return;
+    const target =
+      card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
+    track.scrollTo({ left: target, behavior: "smooth" });
   }, []);
+
+  // Wheel -> horizontal (only when meaningful, else let page scroll)
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const onWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) return;
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (delta === 0) return;
+      const canLeft = track.scrollLeft > 0;
+      const canRight = track.scrollLeft + track.clientWidth < track.scrollWidth - 1;
+      if ((delta < 0 && !canLeft) || (delta > 0 && !canRight)) return;
+      e.preventDefault();
+      track.scrollBy({ left: delta, behavior: "auto" });
+    };
+    track.addEventListener("wheel", onWheel, { passive: false });
+    return () => track.removeEventListener("wheel", onWheel);
+  }, []);
+
+  // Click-and-drag (desktop)
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    let isDown = false;
+    let startX = 0;
+    let startScroll = 0;
+    let moved = false;
+    let pointerId = 0;
+
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      isDown = true;
+      moved = false;
+      pointerId = e.pointerId;
+      startX = e.clientX;
+      startScroll = track.scrollLeft;
+      track.style.scrollSnapType = "none";
+      track.style.cursor = "grabbing";
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!isDown) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) moved = true;
+      track.scrollLeft = startScroll - dx;
+    };
+    const finish = () => {
+      if (!isDown) return;
+      isDown = false;
+      track.style.cursor = "";
+      track.style.scrollSnapType = "";
+      if (moved) {
+        // snap to nearest
+        const center = track.scrollLeft + track.clientWidth / 2;
+        let bestI = 0;
+        let bestDist = Infinity;
+        cardRefs.current.forEach((c, i) => {
+          if (!c) return;
+          const cCenter = c.offsetLeft + c.clientWidth / 2;
+          const d = Math.abs(cCenter - center);
+          if (d < bestDist) {
+            bestDist = d;
+            bestI = i;
+          }
+        });
+        goTo(bestI);
+        // suppress next click for ~250ms
+        const blockClick = (ev: Event) => {
+          ev.stopPropagation();
+          ev.preventDefault();
+        };
+        track.addEventListener("click", blockClick, { capture: true, once: true });
+        setTimeout(() => track.removeEventListener("click", blockClick, { capture: true } as any), 250);
+      }
+    };
+    track.addEventListener("pointerdown", onDown);
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", finish);
+    window.addEventListener("pointercancel", finish);
+    return () => {
+      track.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", finish);
+      window.removeEventListener("pointercancel", finish);
+    };
+  }, [goTo]);
 
   return (
     <section
@@ -193,7 +196,6 @@ export function PortfolioReel() {
       ref={sectionRef}
       className="relative w-full bg-[#0c1426] min-h-screen flex items-center overflow-hidden py-24 before:content-[''] before:absolute before:inset-x-0 before:top-0 before:h-24 before:pointer-events-none before:bg-[linear-gradient(180deg,#0c1426_0%,transparent_100%)] after:content-[''] after:absolute after:inset-x-0 after:bottom-0 after:h-24 after:pointer-events-none after:bg-[linear-gradient(180deg,transparent_0%,#101a30_100%)]"
     >
-      {/* Background grid */}
       <div
         aria-hidden
         className="absolute inset-0 opacity-[0.07] pointer-events-none"
@@ -201,11 +203,9 @@ export function PortfolioReel() {
           backgroundImage:
             "linear-gradient(to right, #05acff 1px, transparent 1px), linear-gradient(to bottom, #05acff 1px, transparent 1px)",
           backgroundSize: "60px 60px",
-          maskImage:
-            "radial-gradient(ellipse at 50% 50%, black 30%, transparent 80%)",
+          maskImage: "radial-gradient(ellipse at 50% 50%, black 30%, transparent 80%)",
         }}
       />
-      {/* Background glow */}
       <div
         aria-hidden
         className="absolute -left-40 top-1/2 -translate-y-1/2 w-[40rem] h-[40rem] rounded-full blur-3xl opacity-30 pointer-events-none"
@@ -231,28 +231,20 @@ export function PortfolioReel() {
             {t("portfolio.title")}
           </p>
 
-          {/* Progress bar */}
           <div className="max-w-[260px]">
             <div className="flex items-center justify-between font-mono text-[14px] tracking-[0.3em] mb-2 text-[#05acff]">
               <span>{String(active + 1).padStart(2, "0")}</span>
-              <span className="text-white/40">
-                / {String(slides.length).padStart(2, "0")}
-              </span>
+              <span className="text-white/40">/ {String(slides.length).padStart(2, "0")}</span>
             </div>
             <div className="relative h-[3px] w-full bg-white/10 overflow-hidden">
               <div
                 className="absolute inset-y-0 left-0 shadow-[0_0_10px_#05acff] transition-all duration-500 ease-out bg-[#05acff]"
-                style={{
-                  width: `${((active + 1) / slides.length) * 100}%`,
-                }}
+                style={{ width: `${((active + 1) / slides.length) * 100}%` }}
               />
             </div>
             <div className="mt-6 flex gap-3">
-              <NavButton onClick={() => goTo(Math.max(0, active - 1))} dir="left" disabled={active === 0} />
-              <NavButton onClick={() => goTo(Math.min(slides.length - 1, active + 1))} dir="right" disabled={active === slides.length - 1} />
-            </div>
-            <div className="mt-6 font-mono text-[9px] tracking-[0.4em] text-white/30">
-              ​
+              <NavButton onClick={() => goTo(Math.max(0, active - 1))} dir="left" disabled={atStart} />
+              <NavButton onClick={() => goTo(Math.min(slides.length - 1, active + 1))} dir="right" disabled={atEnd} />
             </div>
           </div>
         </div>
@@ -261,11 +253,13 @@ export function PortfolioReel() {
         <div className="col-span-12 lg:col-span-9 xl:col-span-9 relative">
           <div
             ref={trackRef}
-            className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-6 overscroll-x-contain"
+            className="flex gap-6 overflow-x-auto no-scrollbar py-6 overscroll-x-contain cursor-grab select-none"
             style={{
               scrollSnapType: "x mandatory",
+              scrollBehavior: "smooth",
               paddingLeft: padInline,
               paddingRight: padInline,
+              WebkitOverflowScrolling: "touch",
             }}
           >
             {slides.map((s, i) => {
@@ -285,19 +279,19 @@ export function PortfolioReel() {
                   }}
                   role="link"
                   aria-label={`Open ${s.title}`}
-                  className={`relative shrink-0 snap-center cursor-pointer transition-all duration-500 ease-out
+                  className={`group relative shrink-0 cursor-pointer transition-transform duration-500 ease-out will-change-transform
                     w-[78vw] sm:w-[55vw] md:w-[40vw] lg:w-[28vw] xl:w-[24vw]
                     aspect-[3/4]
-                    ${isActive ? "scale-100 opacity-100" : "scale-[0.9] opacity-50 hover:opacity-75"}
+                    hover:scale-[1.03]
+                    ${isActive ? "opacity-100" : "opacity-55 hover:opacity-90"}
                   `}
-                  style={{ scrollSnapAlign: "center" }}
+                  style={{ scrollSnapAlign: "center", scrollSnapStop: "always" }}
                 >
-                  {/* Glow frame */}
                   <div
-                    className={`absolute -inset-px transition-all duration-500 ${
+                    className={`absolute -inset-px transition-shadow duration-500 pointer-events-none ${
                       isActive
                         ? "shadow-[0_0_60px_-5px_#05acff,0_0_0_1px_#05acff]"
-                        : "shadow-[0_0_0_1px_rgba(255,255,255,0.08)]"
+                        : "shadow-[0_0_0_1px_rgba(255,255,255,0.08)] group-hover:shadow-[0_0_40px_-10px_#05acff,0_0_0_1px_rgba(5,172,255,0.5)]"
                     }`}
                   />
                   <div className="relative h-full w-full overflow-hidden bg-black">
@@ -305,13 +299,13 @@ export function PortfolioReel() {
                       src={s.img}
                       alt={s.alt}
                       loading={i < 2 ? "eager" : "lazy"}
+                      draggable={false}
                       className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ${
-                        isActive ? "scale-105" : "scale-100 grayscale"
+                        isActive ? "scale-105" : "scale-100 grayscale group-hover:grayscale-0"
                       }`}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0c1426] via-[#0c1426]/40 to-transparent" />
 
-                    {/* Active scan line */}
                     {isActive && (
                       <div
                         aria-hidden
@@ -320,18 +314,15 @@ export function PortfolioReel() {
                       />
                     )}
 
-                    {/* Corner brackets */}
                     <Corner className={`top-3 left-3 ${isActive ? "opacity-100" : "opacity-40"}`} />
                     <Corner className={`top-3 right-3 rotate-90 ${isActive ? "opacity-100" : "opacity-40"}`} />
                     <Corner className={`bottom-3 left-3 -rotate-90 ${isActive ? "opacity-100" : "opacity-40"}`} />
                     <Corner className={`bottom-3 right-3 rotate-180 ${isActive ? "opacity-100" : "opacity-40"}`} />
 
-                    {/* Index badge */}
                     <div className="absolute top-5 left-5 font-mono text-[14px] tracking-[0.3em] text-[#05acff]">
                       {s.index}
                     </div>
 
-                    {/* Content */}
                     <div className="absolute bottom-0 left-0 right-0 p-6">
                       <div className="font-mono text-[14px] tracking-[0.35em] mb-3 text-[#05acff]">
                         {s.category.toUpperCase()}
@@ -370,6 +361,22 @@ export function PortfolioReel() {
           {/* Edge fades */}
           <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0c1426] to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0c1426] to-transparent" />
+
+          {/* Dots */}
+          <div className="mt-4 flex items-center justify-center gap-2">
+            {slides.map((s, i) => (
+              <button
+                key={s.index}
+                onClick={() => goTo(i)}
+                aria-label={`Go to ${s.title}`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  i === active
+                    ? "w-8 bg-[#05acff] shadow-[0_0_10px_#05acff]"
+                    : "w-2 bg-white/25 hover:bg-white/50"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -381,6 +388,8 @@ export function PortfolioReel() {
           65%  { opacity: 0; }
           100% { top: 90%; opacity: 0; }
         }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </section>
   );
