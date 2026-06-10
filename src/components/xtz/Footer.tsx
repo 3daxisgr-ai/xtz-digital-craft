@@ -84,7 +84,6 @@ export function Footer() {
           <nav className="flex flex-wrap items-center gap-x-8 gap-y-3 font-mono text-[14px] uppercase tracking-[0.35em] text-muted-foreground">
             <a href="#concept" className="hover:text-primary transition-colors text-xs">{t("foot.nav.why")}</a>
             <a href="#capabilities" className="hover:text-primary transition-colors text-xs">{t("foot.nav.caps")}</a>
-            <a href="#portfolio" className="hover:text-primary transition-colors text-xs">{t("foot.nav.work")}</a>
             <a href="#network" className="hover:text-primary transition-colors text-xs">{t("foot.nav.network")}</a>
             <Link to="/start-project" className="hover:text-primary transition-colors text-xs">{t("foot.nav.inquiry")}</Link>
           </nav>
