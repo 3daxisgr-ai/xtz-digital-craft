@@ -2,6 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
 import { useI18n } from "@/components/xtz/i18n";
+import bambuAsset from "@/assets/bambu-3d-printing.png.asset.json";
+import laserAsset from "@/assets/fiber-laser-machine.jpg.asset.json";
+import weldingAsset from "@/assets/welding-sparks.jpg.asset.json";
+
 
 export const Route = createFileRoute("/start")({
   head: () => ({
@@ -25,7 +29,8 @@ type Category = {
   descGR: string;
   to: string;
   search?: Record<string, string>;
-  icon: React.ReactNode;
+  image: string;
+  imageAlt: string;
 };
 
 const categories: Category[] = [
@@ -36,12 +41,8 @@ const categories: Category[] = [
     descEN: "Functional prototypes, multi-color & engineering parts.",
     descGR: "Λειτουργικά πρωτότυπα, πολύχρωμη εκτύπωση & εξαρτήματα μηχανικής.",
     to: "/3d-printing-quote",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-10 w-10">
-        <path d="M12 2 3 7v10l9 5 9-5V7l-9-5Z" />
-        <path d="M3 7l9 5 9-5M12 12v10" />
-      </svg>
-    ),
+    image: bambuAsset.url,
+    imageAlt: "Bambu Lab 3D printer printing a part",
   },
   {
     id: "laser",
@@ -51,12 +52,8 @@ const categories: Category[] = [
     descGR: "Ακριβής κοπή σε χάλυβα, αλουμίνιο και ανοξείδωτο.",
     to: "/start-project",
     search: { service: "Fiber Laser Cutting" },
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-10 w-10">
-        <path d="M12 2v8M12 14v8M4 12h6M14 12h6" />
-        <circle cx="12" cy="12" r="2.5" />
-      </svg>
-    ),
+    image: laserAsset.url,
+    imageAlt: "Fiber laser cutting a metal sheet with sparks",
   },
   {
     id: "sheet",
@@ -66,13 +63,10 @@ const categories: Category[] = [
     descGR: "Κάμψη, συγκόλληση και συναρμολόγηση μεταλλικών εξαρτημάτων.",
     to: "/start-project",
     search: { service: "Sheet Metal Forming & Welding" },
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-10 w-10">
-        <path d="M3 17l6-10 6 10M15 7l6 10" />
-        <path d="M3 21h18" />
-      </svg>
-    ),
+    image: weldingAsset.url,
+    imageAlt: "Welder fabricating a metal part with bright sparks",
   },
+
 ];
 
 function StartPage() {
@@ -112,24 +106,36 @@ function StartPage() {
                 key={c.id}
                 to={c.to}
                 search={c.search as never}
-                className="group glass-panel grain p-8 md:p-10 flex flex-col gap-6 border border-border hover:border-primary transition-all duration-300 hover:-translate-y-1 hover:blue-glow"
+                className="group glass-panel grain overflow-hidden flex flex-col border border-border hover:border-primary transition-all duration-300 hover:-translate-y-1 hover:blue-glow"
               >
-                <div className="text-primary group-hover:scale-110 transition-transform duration-300">{c.icon}</div>
-                <div className="space-y-3">
-                  <h2 className="font-display text-2xl md:text-3xl leading-tight tracking-tight">
-                    {isGR ? c.titleGR : c.titleEN}
-                  </h2>
-                  <p className="text-sm text-foreground/60 leading-relaxed">{isGR ? c.descGR : c.descEN}</p>
+                <div className="relative aspect-[4/3] overflow-hidden bg-black">
+                  <img
+                    src={c.image}
+                    alt={c.imageAlt}
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-5">
+                    <h2 className="font-display text-xl md:text-2xl leading-tight tracking-tight text-white drop-shadow">
+                      {isGR ? c.titleGR : c.titleEN}
+                    </h2>
+                  </div>
                 </div>
-                <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground group-hover:text-primary transition-colors">
-                    {isGR ? "Συνέχεια" : "Continue"}
-                  </span>
-                  <span className="text-primary text-lg">→</span>
+                <div className="p-6 md:p-7 flex flex-col gap-5 flex-1">
+                  <p className="text-sm text-foreground/65 leading-relaxed">{isGR ? c.descGR : c.descEN}</p>
+                  <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground group-hover:text-primary transition-colors">
+                      {isGR ? "Συνέχεια" : "Continue"}
+                    </span>
+                    <span className="text-primary text-lg transition-transform duration-300 group-hover:translate-x-1">→</span>
+                  </div>
                 </div>
               </Link>
             ))}
           </div>
+
         </div>
       </section>
       <Footer />
