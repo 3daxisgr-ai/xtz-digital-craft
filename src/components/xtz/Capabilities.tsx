@@ -64,7 +64,6 @@ export function Capabilities() {
       <div className="relative z-10 mx-auto max-w-[1500px] px-6 md:px-12">
         <div className="flex items-center gap-4 mb-8">
           <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-          <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
             {t("cap.kicker")}
           </span>
         </div>
