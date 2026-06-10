@@ -279,7 +279,7 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
   },
 };
 
-
+export const Route = createFileRoute("/capabilities/$slug")({
   loader: ({ params }) => {
     const cap = capabilities.find((c) => c.slug === (params.slug as CapabilitySlug));
     if (!cap) throw notFound();
