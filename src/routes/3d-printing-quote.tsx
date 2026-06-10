@@ -388,9 +388,10 @@ function QuotePage() {
                   </span>
                   <button
                     type="submit"
-                    className="px-8 py-4 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow"
+                    disabled={submitting}
+                    className="px-8 py-4 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow disabled:opacity-60"
                   >
-                    {L.submit} →
+                    {submitting ? "…" : `${L.submit} →`}
                   </button>
                 </div>
               </form>
