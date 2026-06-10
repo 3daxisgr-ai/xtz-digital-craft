@@ -242,7 +242,7 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
       { t: "Εκτύπωση", d: "Εξειδικευμένα μηχανήματα υψηλών προδιαγραφών αναλαμβάνουν την κατασκευή του έργου σας." },
       { t: "Φινίρισμα", d: "Καθαρισμός, post-processing και αποστολή." },
     ],
-    applications: ["Λειτουργικά πρωτότυπα", "Jigs και fixtures", "Custom τελικά εξαρτήματα", "Παραγωγή μικρής σειράς"],
+    applications: ["Λειτουργικά πρωτότυπα", "Jigs και fixtures", "Custom εξαρτήματα", "Παραγωγή μικρής σειράς"],
     notes: "Στείλτε .stl, .step ή .obj. Συμπεριλάβετε όγκο κατασκευής και ποσότητα.",
   },
   "design-to-prototype": {
