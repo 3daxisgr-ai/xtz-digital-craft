@@ -234,14 +234,14 @@ export function PortfolioReel() {
         <div className="col-span-12 lg:col-span-3 xl:col-span-3">
           <div className="flex items-center gap-3 mb-6">
             <span className="font-mono text-[14px] tracking-[0.4em] text-[#05acff]">
-              SECTION
+              {lang === "GR" ? "ΕΝΟΤΗΤΑ" : "SECTION"}
             </span>
             <span className="h-px w-10 bg-[#05acff] shadow-[0_0_8px_#05acff]" />
           </div>
           <h2 className="font-display font-bold leading-[0.85] tracking-tighter text-white text-[clamp(2.4rem,5vw,4.5rem)] mb-6">
             03 /<br />
             <span className="drop-shadow-[0_0_24px_rgba(5,172,255,0.45)] text-4xl text-[#05acff]">
-              CAPABILITIES
+              {lang === "GR" ? "ΔΥΝΑΤΟΤΗΤΕΣ" : "CAPABILITIES"}
             </span>
           </h2>
           <p className="text-sm text-white/55 leading-relaxed max-w-xs mb-8">
