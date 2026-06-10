@@ -26,7 +26,7 @@ type Post = {
   body: string;
 };
 
-const POSTS: Post[] = [
+const POSTS_EN: Post[] = [
   {
     date: "2026 · 06",
     category: "Equipment",
@@ -47,8 +47,30 @@ const POSTS: Post[] = [
   },
 ];
 
+const POSTS_GR: Post[] = [
+  {
+    date: "2026 · 06",
+    category: "Εξοπλισμός",
+    title: "Νέο fiber laser σε λειτουργία.",
+    body: "Μεγαλύτερη ισχύς, ταχύτερες κοπές και καθαρότερες ακμές σε παχύ ανοξείδωτο. Οι χρόνοι παράδοσης για μεταλλικές εργασίες μειώθηκαν.",
+  },
+  {
+    date: "2026 · 05",
+    category: "Υλικά",
+    title: "Προστέθηκαν μηχανικά πολυμερή.",
+    body: "PA-CF και PETG-CF διαθέσιμα πλέον για λειτουργικά, ανθεκτικά 3D εκτυπωμένα εξαρτήματα.",
+  },
+  {
+    date: "2026 · 04",
+    category: "Εργαστήριο",
+    title: "Επέκταση του χώρου πρωτοτυποποίησης.",
+    body: "Περισσότερος χώρος για παράλληλες κατασκευές σημαίνει ταχύτερους κύκλους από τον σχεδιασμό στο πρωτότυπο.",
+  },
+];
+
 function ForumPage() {
   const { lang } = useI18n();
+  const POSTS = lang === "GR" ? POSTS_GR : POSTS_EN;
   return (
     <main className="bg-black text-foreground min-h-screen">
       <Navigation />
