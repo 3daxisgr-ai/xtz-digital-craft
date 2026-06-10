@@ -43,15 +43,21 @@ export function ProjectCTA() {
           className="h-full w-full object-cover"
           loading="lazy"
         />
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-[#04060d]/80" />
+        {/* Dark overlay — lighter, blue-tinted */}
+        <div className="absolute inset-0" style={{ backgroundColor: "rgba(16,26,48,0.72)" }} />
         {/* Blue tint overlay */}
         <div
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-40"
           style={{
             background:
-              "radial-gradient(ellipse at 50% 50%, oklch(0.35 0.15 245 / 0.4), transparent 70%)",
+              "radial-gradient(ellipse at 50% 50%, oklch(0.5 0.18 245 / 0.45), transparent 70%)",
           }}
+        />
+        {/* Top blend with previous section */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-24"
+          style={{ background: "linear-gradient(180deg, #101a30 0%, transparent 100%)" }}
         />
       </div>
 

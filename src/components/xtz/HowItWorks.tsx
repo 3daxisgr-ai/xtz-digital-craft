@@ -61,13 +61,25 @@ export function HowItWorks() {
       id="how-it-works"
       ref={root}
       className="relative w-full overflow-hidden inox-surface py-28 md:py-40"
+      style={{ backgroundColor: "#131c33" }}
     >
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 0%, oklch(0.4 0.18 245 / 0.25), transparent 60%)",
+            "radial-gradient(ellipse at 50% 0%, oklch(0.55 0.2 245 / 0.32), transparent 60%)",
         }}
+      />
+      {/* Section blends */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-24"
+        style={{ background: "linear-gradient(180deg, #131c33 0%, transparent 100%)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-32"
+        style={{ background: "linear-gradient(180deg, transparent 0%, #0c1426 100%)" }}
       />
       <span className="absolute top-8 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         {t("how.tag")}
@@ -94,10 +106,10 @@ export function HowItWorks() {
           {steps.map(({ n, tKey, dKey, Icon }) => (
             <li
               key={n}
-              className="hw-card group relative flex flex-col p-7 md:p-8 border border-primary/15 hover:border-primary/50 transition-colors"
+              className="hw-card group relative flex flex-col p-7 md:p-8 border border-primary/20 hover:border-primary/60 transition-colors"
               style={{
                 background:
-                  "linear-gradient(135deg, oklch(0.18 0.02 245 / 0.55), oklch(0.10 0.01 245 / 0.32))",
+                  "linear-gradient(135deg, oklch(0.26 0.025 245 / 0.7), oklch(0.18 0.018 245 / 0.55))",
               }}
             >
               <div className="flex items-start justify-between mb-10">

@@ -48,9 +48,18 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <main className="bg-black text-foreground">
+    <main className="text-foreground" style={{ backgroundColor: "#0d1220" }}>
       <Navigation />
       <IntroScene />
+      {/* Smooth blend from cinematic hero into lighter body */}
+      <div
+        aria-hidden
+        className="relative h-24 w-full -mt-12 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(180deg, #000 0%, rgba(13,18,32,0.85) 55%, #11182a 100%)",
+        }}
+      />
       <About />
       <HowItWorks />
       <PortfolioReel />

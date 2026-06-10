@@ -7,13 +7,13 @@ export function Footer() {
   const toggle = (l: Lang) => () => setLang(l);
 
   return (
-    <footer className="relative w-full overflow-hidden bg-black border-t border-border/40">
+    <footer className="relative w-full overflow-hidden border-t border-border/40" style={{ backgroundColor: "#0e1628" }}>
       {/* Cinematic backdrop */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 brushed-metal opacity-[0.12]" />
+        <div className="absolute inset-0 brushed-metal opacity-[0.18]" />
         <div
           className="absolute inset-0"
-          style={{ background: "radial-gradient(ellipse at 50% 0%, oklch(0.5 0.22 245 / 0.35), transparent 60%)" }}
+          style={{ background: "radial-gradient(ellipse at 50% 0%, oklch(0.55 0.22 245 / 0.32), transparent 60%)" }}
         />
         <div
           className="absolute inset-x-0 bottom-0 h-px"

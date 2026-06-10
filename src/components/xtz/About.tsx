@@ -39,8 +39,9 @@ export function About() {
     <section
       id="about"
       ref={root}
-      className="relative w-full overflow-hidden bg-black py-28 md:py-40"
+      className="relative w-full overflow-hidden py-28 md:py-40"
       style={{
+        backgroundColor: "#11182a",
         backgroundImage: `url(${aboutBg.url})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -48,13 +49,31 @@ export function About() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-black/70" />
+      {/* Lighter, blue-tinted overlay (was bg-black/70) */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-60"
+        className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse at 80% 20%, oklch(0.45 0.18 245 / 0.25), transparent 60%)",
+            "linear-gradient(180deg, rgba(17,24,42,0.78) 0%, rgba(20,28,48,0.7) 50%, rgba(17,24,42,0.85) 100%)",
         }}
+      />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-70"
+        style={{
+          background:
+            "radial-gradient(ellipse at 80% 20%, oklch(0.55 0.18 245 / 0.28), transparent 60%)",
+        }}
+      />
+      {/* Soft top + bottom blend with neighboring sections */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-24"
+        style={{ background: "linear-gradient(180deg, #0d1220 0%, transparent 100%)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-32"
+        style={{ background: "linear-gradient(180deg, transparent 0%, #131c33 100%)" }}
       />
       <span className="absolute top-8 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         {t("about.tag")}
