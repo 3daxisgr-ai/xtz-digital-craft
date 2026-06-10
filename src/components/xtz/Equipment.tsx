@@ -136,7 +136,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
         {
           label: "Highlights",
           items: [
-            "Multi-material capability",
+            "Multi-color printing",
             "High-speed printing",
             "Engineering prototypes",
             "Production-ready parts",
