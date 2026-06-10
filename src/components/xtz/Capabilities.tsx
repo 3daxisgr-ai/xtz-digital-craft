@@ -15,12 +15,12 @@ export type CapabilitySlug =
   | "global-manufacturing-network";
 
 export const capabilities: { n: string; slug: CapabilitySlug; tKey: string; dKey: string }[] = [
-  { n: "01", slug: "design-development", tKey: "cap.01.t", dKey: "cap.01.d" },
-  { n: "02", slug: "fiber-laser-cutting", tKey: "cap.02.t", dKey: "cap.02.d" },
-  { n: "03", slug: "sheet-metal-forming-welding", tKey: "cap.03.t", dKey: "cap.03.d" },
-  { n: "04", slug: "3d-printing", tKey: "cap.04.t", dKey: "cap.04.d" },
-  { n: "05", slug: "design-to-prototype", tKey: "cap.05.t", dKey: "cap.05.d" },
-  { n: "06", slug: "global-manufacturing-network", tKey: "cap.06.t", dKey: "cap.06.d" },
+  { n: "", slug: "design-development", tKey: "cap.01.t", dKey: "cap.01.d" },
+  { n: "", slug: "fiber-laser-cutting", tKey: "cap.02.t", dKey: "cap.02.d" },
+  { n: "", slug: "sheet-metal-forming-welding", tKey: "cap.03.t", dKey: "cap.03.d" },
+  { n: "", slug: "3d-printing", tKey: "cap.04.t", dKey: "cap.04.d" },
+  { n: "", slug: "design-to-prototype", tKey: "cap.05.t", dKey: "cap.05.d" },
+  { n: "", slug: "global-manufacturing-network", tKey: "cap.06.t", dKey: "cap.06.d" },
 ];
 
 export function Capabilities() {
