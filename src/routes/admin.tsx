@@ -61,7 +61,14 @@ function AdminPage() {
     if (!authed) return;
     setListError(null);
     list()
-      .then((r) => setRows(r.rows as QuoteRow[]))
+      .then((r) => {
+        if (!r.authed) {
+          setAuthed(false);
+          setRows([]);
+          return;
+        }
+        setRows(r.rows as QuoteRow[]);
+      })
       .catch((e) => setListError(e instanceof Error ? e.message : "Failed to load"));
   }, [authed]);
 
@@ -95,6 +102,11 @@ function AdminPage() {
       let url = row.file_url;
       if (row.file_path) {
         const r = await sign({ data: { path: row.file_path } });
+        if (!r.authed) {
+          setAuthed(false);
+          setRows([]);
+          return;
+        }
         url = r.url;
       }
       if (url) window.open(url, "_blank", "noopener,noreferrer");
