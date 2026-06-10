@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useI18n } from "./i18n";
 
@@ -49,6 +49,19 @@ export function InquiryForm() {
   const { t } = useI18n();
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [preselectedService, setPreselectedService] = useState<string>("");
+
+  // Read ?service= from URL on mount to pre-fill the service type.
+  // When set, the manual service selector is hidden so we don't ask twice.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const s = new URLSearchParams(window.location.search).get("service");
+    if (s) setPreselectedService(s);
+  }, []);
+
+
+
+
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -108,7 +121,18 @@ export function InquiryForm() {
             <Input name="company" label={t("f.company")} />
             <FileInput name="file" label={t("f.upload")} />
 
-            <Select name="service" label={t("f.service")} options={services} placeholder={t("f.select")} required />
+            {preselectedService ? (
+              <div>
+                <Label>{t("f.service")}</Label>
+                <div className="mt-3 flex items-center justify-between gap-3 border border-primary/40 bg-primary/5 px-4 py-2.5">
+                  <span className="font-sans text-base text-foreground">{preselectedService}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">SELECTED</span>
+                </div>
+                <input type="hidden" name="service" value={preselectedService} />
+              </div>
+            ) : (
+              <Select name="service" label={t("f.service")} options={services} placeholder={t("f.select")} required />
+            )}
             <Select name="material" label={t("f.material")} options={materials} placeholder={t("f.select")} />
             <Select name="stage" label={t("f.stage")} options={stages} placeholder={t("f.select")} />
             <Input name="dimensions" label={t("f.dimensions")} placeholder="e.g. 1200 × 800 × 4 mm" />

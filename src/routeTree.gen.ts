@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StartProjectRouteImport } from './routes/start-project'
+import { Route as StartRouteImport } from './routes/start'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ForumRouteImport } from './routes/forum'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -21,6 +22,11 @@ import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slu
 const StartProjectRoute = StartProjectRouteImport.update({
   id: '/start-project',
   path: '/start-project',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StartRoute = StartRouteImport.update({
+  id: '/start',
+  path: '/start',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/forum'
     | '/sitemap.xml'
+    | '/start'
     | '/start-project'
     | '/capabilities/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/forum'
     | '/sitemap.xml'
+    | '/start'
     | '/start-project'
     | '/capabilities/$slug'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/forum'
     | '/sitemap.xml'
+    | '/start'
     | '/start-project'
     | '/capabilities/$slug'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   ForumRoute: typeof ForumRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StartRoute: typeof StartRoute
   StartProjectRoute: typeof StartProjectRoute
   CapabilitiesSlugRoute: typeof CapabilitiesSlugRoute
 }
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/start-project'
       fullPath: '/start-project'
       preLoaderRoute: typeof StartProjectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/start': {
+      id: '/start'
+      path: '/start'
+      fullPath: '/start'
+      preLoaderRoute: typeof StartRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -202,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   ForumRoute: ForumRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StartRoute: StartRoute,
   StartProjectRoute: StartProjectRoute,
   CapabilitiesSlugRoute: CapabilitiesSlugRoute,
 }
