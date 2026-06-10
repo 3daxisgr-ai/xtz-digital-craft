@@ -133,6 +133,29 @@ export function PortfolioReel() {
   const trackRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
   const [active, setActive] = useState(0);
+  const [padInline, setPadInline] = useState(0);
+
+  // Compute side padding so first & last cards can center in the viewport
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const recalc = () => {
+      const first = cardRefs.current[0];
+      if (!first) return;
+      const pad = Math.max(16, (track.clientWidth - first.clientWidth) / 2);
+      setPadInline(pad);
+    };
+    recalc();
+    const ro = new ResizeObserver(recalc);
+    ro.observe(track);
+    if (cardRefs.current[0]) ro.observe(cardRefs.current[0]!);
+    window.addEventListener("resize", recalc);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", recalc);
+    };
+  }, [slides.length]);
+
 
   // Snap to a specific card using native scroll-snap centering
   const goTo = (i: number) => {
