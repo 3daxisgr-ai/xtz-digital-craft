@@ -214,7 +214,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
       groups: [
         {
           label: "Capabilities",
-          items: ["MIG Welding", "TIG Welding", "Assembly", "Fabrication"],
+          items: ["MIG Welding", "TIG Welding", "LASER WELDING", "Fabrication"],
         },
       ],
     },
