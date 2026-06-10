@@ -169,7 +169,7 @@ export function InquiryForm() {
             <Input name="email" label={t("f.email")} type="email" required />
             <Input name="phone" label={t("f.phone")} required />
             <Input name="company" label={t("f.company")} />
-            <FileInput name="file" label={t("f.upload")} />
+            <FileInput name="file" label={t("f.upload")} onFileChange={(f) => { fileRef.current = f; }} />
 
             {preselectedService ? (
               <div>
