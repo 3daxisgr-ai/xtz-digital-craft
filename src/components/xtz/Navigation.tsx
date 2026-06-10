@@ -98,7 +98,7 @@ export function Navigation() {
             >EN</button>
           </div>
           <Link
-            to="/start-project"
+            to="/start"
             className="nav-cta hidden sm:inline-block font-mono text-[11px] uppercase tracking-widest border border-primary/40 px-4 py-2 hover:bg-primary hover:text-primary-foreground transition-colors opacity-0 translate-y-2"
           >
             {t("nav.cta")}
