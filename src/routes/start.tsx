@@ -106,24 +106,36 @@ function StartPage() {
                 key={c.id}
                 to={c.to}
                 search={c.search as never}
-                className="group glass-panel grain p-8 md:p-10 flex flex-col gap-6 border border-border hover:border-primary transition-all duration-300 hover:-translate-y-1 hover:blue-glow"
+                className="group glass-panel grain overflow-hidden flex flex-col border border-border hover:border-primary transition-all duration-300 hover:-translate-y-1 hover:blue-glow"
               >
-                <div className="text-primary group-hover:scale-110 transition-transform duration-300">{c.icon}</div>
-                <div className="space-y-3">
-                  <h2 className="font-display text-2xl md:text-3xl leading-tight tracking-tight">
-                    {isGR ? c.titleGR : c.titleEN}
-                  </h2>
-                  <p className="text-sm text-foreground/60 leading-relaxed">{isGR ? c.descGR : c.descEN}</p>
+                <div className="relative aspect-[4/3] overflow-hidden bg-black">
+                  <img
+                    src={c.image}
+                    alt={c.imageAlt}
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-5">
+                    <h2 className="font-display text-xl md:text-2xl leading-tight tracking-tight text-white drop-shadow">
+                      {isGR ? c.titleGR : c.titleEN}
+                    </h2>
+                  </div>
                 </div>
-                <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground group-hover:text-primary transition-colors">
-                    {isGR ? "Συνέχεια" : "Continue"}
-                  </span>
-                  <span className="text-primary text-lg">→</span>
+                <div className="p-6 md:p-7 flex flex-col gap-5 flex-1">
+                  <p className="text-sm text-foreground/65 leading-relaxed">{isGR ? c.descGR : c.descEN}</p>
+                  <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground group-hover:text-primary transition-colors">
+                      {isGR ? "Συνέχεια" : "Continue"}
+                    </span>
+                    <span className="text-primary text-lg transition-transform duration-300 group-hover:translate-x-1">→</span>
+                  </div>
                 </div>
               </Link>
             ))}
           </div>
+
         </div>
       </section>
       <Footer />
