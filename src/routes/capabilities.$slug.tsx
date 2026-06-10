@@ -307,16 +307,23 @@ export const Route = createFileRoute("/capabilities/$slug")({
     };
   },
   component: CapabilityPage,
-  notFoundComponent: () => (
-    <main className="bg-black text-foreground min-h-screen">
-      <Navigation />
-      <div className="pt-40 px-6 text-center">
-        <h1 className="font-display text-3xl">Capability not found.</h1>
-        <Link to="/" hash="capabilities" className="text-primary mt-4 inline-block">← All capabilities</Link>
-      </div>
-      <Footer />
-    </main>
-  ),
+  notFoundComponent: () => {
+    const { lang } = useI18n();
+    return (
+      <main className="bg-black text-foreground min-h-screen">
+        <Navigation />
+        <div className="pt-40 px-6 text-center">
+          <h1 className="font-display text-3xl">
+            {lang === "GR" ? "Η δυνατότητα δεν βρέθηκε." : "Capability not found."}
+          </h1>
+          <Link to="/" hash="capabilities" className="text-primary mt-4 inline-block">
+            {lang === "GR" ? "← Όλες οι δυνατότητες" : "← All capabilities"}
+          </Link>
+        </div>
+        <Footer />
+      </main>
+    );
+  },
 });
 
 function CapabilityPage() {
