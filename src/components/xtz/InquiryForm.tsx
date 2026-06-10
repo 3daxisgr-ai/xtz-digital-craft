@@ -250,7 +250,7 @@ function Input({ name, label, required, type = "text", placeholder }: { name: st
   );
 }
 
-function FileInput({ name, label }: { name: string; label: string }) {
+function FileInput({ name, label, onFileChange }: { name: string; label: string; onFileChange?: (f: File | null) => void }) {
   const [fname, setFname] = useState<string>("");
   return (
     <div>
@@ -262,7 +262,11 @@ function FileInput({ name, label }: { name: string; label: string }) {
           name={name}
           type="file"
           className="hidden"
-          onChange={(e) => setFname(e.target.files?.[0]?.name ?? "")}
+          onChange={(e) => {
+            const f = e.target.files?.[0] ?? null;
+            setFname(f?.name ?? "");
+            onFileChange?.(f);
+          }}
         />
       </label>
     </div>
