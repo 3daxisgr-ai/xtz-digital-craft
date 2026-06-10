@@ -7,6 +7,7 @@ import skg3dLogo from "@/assets/skg3d-logo.png";
 const links: { to: string; hash?: string; k: string }[] = [
   { to: "/", k: "nav.intro" },
   { to: "/", hash: "capabilities", k: "nav.capabilities" },
+  { to: "/equipment", k: "nav.equipment" },
   { to: "/forum", k: "nav.forum" },
   { to: "/faq", k: "nav.faq" },
 ];

@@ -13,6 +13,7 @@ import { Route as StartProjectRouteImport } from './routes/start-project'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ForumRouteImport } from './routes/forum'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as EquipmentRouteImport } from './routes/equipment'
 import { Route as R3dPrintingQuoteRouteImport } from './routes/3d-printing-quote'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
@@ -37,6 +38,11 @@ const FaqRoute = FaqRouteImport.update({
   path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EquipmentRoute = EquipmentRouteImport.update({
+  id: '/equipment',
+  path: '/equipment',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const R3dPrintingQuoteRoute = R3dPrintingQuoteRouteImport.update({
   id: '/3d-printing-quote',
   path: '/3d-printing-quote',
@@ -56,6 +62,7 @@ const CapabilitiesSlugRoute = CapabilitiesSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
+  '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
+  '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
+  '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/3d-printing-quote'
+    | '/equipment'
     | '/faq'
     | '/forum'
     | '/sitemap.xml'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/3d-printing-quote'
+    | '/equipment'
     | '/faq'
     | '/forum'
     | '/sitemap.xml'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/3d-printing-quote'
+    | '/equipment'
     | '/faq'
     | '/forum'
     | '/sitemap.xml'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   R3dPrintingQuoteRoute: typeof R3dPrintingQuoteRoute
+  EquipmentRoute: typeof EquipmentRoute
   FaqRoute: typeof FaqRoute
   ForumRoute: typeof ForumRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -151,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/equipment': {
+      id: '/equipment'
+      path: '/equipment'
+      fullPath: '/equipment'
+      preLoaderRoute: typeof EquipmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/3d-printing-quote': {
       id: '/3d-printing-quote'
       path: '/3d-printing-quote'
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R3dPrintingQuoteRoute: R3dPrintingQuoteRoute,
+  EquipmentRoute: EquipmentRoute,
   FaqRoute: FaqRoute,
   ForumRoute: ForumRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
