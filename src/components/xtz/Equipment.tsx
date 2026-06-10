@@ -5,7 +5,7 @@ import { useI18n } from "./i18n";
 import bambu from "@/assets/bambu-3d-printing.png.asset.json";
 import laserMachine from "@/assets/fiber-laser-machine.jpg.asset.json";
 import laserWorkshop from "@/assets/fiber-laser-workshop.jpg.asset.json";
-import pressBrake from "@/assets/press-brake.jpg.asset.json";
+import pressBrake from "@/assets/durmapress-press-brake.jpg.asset.json";
 import shear from "@/assets/sheet-shear.jpg.asset.json";
 import welding from "@/assets/welding-sparks.jpg.asset.json";
 
@@ -77,12 +77,24 @@ function getItems(lang: "EN" | "GR"): Item[] {
       },
       {
         id: "press-brakes",
-        title: "Πρέσες Στραντζαρίσματος",
-        quantity: "2 Μηχανήματα",
+        title: "DURMAPRESS CNC Πρέσες Στραντζαρίσματος",
+        quantity: "2 Μονάδες",
         image: pressBrake.url,
-        alt: "CNC press brake bending sheet metal",
+        alt: "DURMAPRESS CNC press brake bending sheet metal",
         description:
-          "Ακριβής διαμόρφωση και κάμψη λαμαρίνας για custom εξαρτήματα και συναρμολογήσεις.",
+          "Κάμψη λαμαρίνας υψηλής ακρίβειας με CNC για πρωτότυπα, custom εξαρτήματα και εξαρτήματα παραγωγής.",
+        groups: [
+          {
+            label: "Δυνατότητες",
+            items: [
+              "CNC Ελεγχόμενη Κάμψη",
+              "Υψηλή Επαναληψιμότητα",
+              "Ακριβής Διαμόρφωση",
+              "Custom Μεταλλικά Εξαρτήματα",
+              "Σειρές Παραγωγής",
+            ],
+          },
+        ],
       },
       {
         id: "shear",
@@ -163,12 +175,24 @@ function getItems(lang: "EN" | "GR"): Item[] {
     },
     {
       id: "press-brakes",
-      title: "Press Brakes",
-      quantity: "2 Machines",
+      title: "DURMAPRESS CNC Press Brakes",
+      quantity: "2 Units",
       image: pressBrake.url,
-      alt: "CNC press brake bending sheet metal",
+      alt: "DURMAPRESS CNC press brake bending sheet metal",
       description:
-        "Precision sheet metal forming and bending for custom components and assemblies.",
+        "High-precision CNC sheet metal bending for prototypes, custom parts and production components.",
+      groups: [
+        {
+          label: "Capabilities",
+          items: [
+            "CNC Controlled Bending",
+            "High Repeatability",
+            "Precision Forming",
+            "Custom Metal Components",
+            "Production Runs",
+          ],
+        },
+      ],
     },
     {
       id: "shear",
