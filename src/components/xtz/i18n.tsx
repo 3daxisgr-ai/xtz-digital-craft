@@ -365,10 +365,12 @@ const gr: Dict = {
   "foot.rights": "Με επιφύλαξη παντός δικαιώματος",
   "foot.nav.why": "Γιατί εμάς",
   "foot.nav.caps": "Δυνατότητες",
+  "foot.nav.catalog": "Κατάλογος",
   "foot.nav.work": "Έργα",
   "foot.nav.process": "Διαδικασία",
   "foot.nav.network": "Δίκτυο",
   "foot.nav.inquiry": "Αίτημα",
+
 };
 
 
