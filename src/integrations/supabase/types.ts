@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      quote_requests: {
+        Row: {
+          created_at: string
+          email: string
+          estimated_price: number | null
+          file_name: string | null
+          file_path: string | null
+          file_url: string | null
+          id: string
+          material: string | null
+          message: string | null
+          metadata: Json | null
+          name: string
+          phone: string | null
+          service: string | null
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          estimated_price?: number | null
+          file_name?: string | null
+          file_path?: string | null
+          file_url?: string | null
+          id?: string
+          material?: string | null
+          message?: string | null
+          metadata?: Json | null
+          name: string
+          phone?: string | null
+          service?: string | null
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          estimated_price?: number | null
+          file_name?: string | null
+          file_path?: string | null
+          file_url?: string | null
+          id?: string
+          material?: string | null
+          message?: string | null
+          metadata?: Json | null
+          name?: string
+          phone?: string | null
+          service?: string | null
+          source?: string | null
+        }
+        Relationships: []
+      }
       submissions: {
         Row: {
           company: string | null
