@@ -185,10 +185,12 @@ const en: Dict = {
   "foot.rights": "All rights reserved",
   "foot.nav.why": "Why",
   "foot.nav.caps": "Capabilities",
+  "foot.nav.catalog": "Catalog",
   "foot.nav.work": "Work",
   "foot.nav.process": "Process",
   "foot.nav.network": "Network",
   "foot.nav.inquiry": "Inquiry",
+
 };
 
 const gr: Dict = {
@@ -363,10 +365,12 @@ const gr: Dict = {
   "foot.rights": "Με επιφύλαξη παντός δικαιώματος",
   "foot.nav.why": "Γιατί εμάς",
   "foot.nav.caps": "Δυνατότητες",
+  "foot.nav.catalog": "Κατάλογος",
   "foot.nav.work": "Έργα",
   "foot.nav.process": "Διαδικασία",
   "foot.nav.network": "Δίκτυο",
   "foot.nav.inquiry": "Αίτημα",
+
 };
 
 
