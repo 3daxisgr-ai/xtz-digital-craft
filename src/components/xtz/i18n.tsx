@@ -185,10 +185,12 @@ const en: Dict = {
   "foot.rights": "All rights reserved",
   "foot.nav.why": "Why",
   "foot.nav.caps": "Capabilities",
+  "foot.nav.catalog": "Catalog",
   "foot.nav.work": "Work",
   "foot.nav.process": "Process",
   "foot.nav.network": "Network",
   "foot.nav.inquiry": "Inquiry",
+
 };
 
 const gr: Dict = {
