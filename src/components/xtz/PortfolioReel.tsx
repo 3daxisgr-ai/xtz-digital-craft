@@ -133,53 +133,36 @@ export function PortfolioReel() {
   const trackRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
   const [active, setActive] = useState(0);
+  const [padInline, setPadInline] = useState(0);
 
-  // Snap to a specific card
-  const goTo = (i: number) => {
-    const track = trackRef.current;
-    const card = cardRefs.current[i];
-    if (!track || !card) return;
-    const target =
-      card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
-    track.scrollTo({ left: target, behavior: "smooth" });
-  };
-
-  // Wheel hijack — only when section dominates viewport, snap card-by-card
+  // Compute side padding so first & last cards can center in the viewport
   useEffect(() => {
-    const section = sectionRef.current;
     const track = trackRef.current;
-    if (!section || !track) return;
-
-    let cooldown = false;
-    const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      const dy = e.deltaY;
-      if (dy === 0) return;
-
-      const rect = section.getBoundingClientRect();
-      // engage only when the section roughly fills the viewport
-      if (rect.top > 60 || rect.bottom < window.innerHeight - 60) return;
-
-      // release at edges so the page continues to scroll naturally
-      const atStart = active <= 0;
-      const atEnd = active >= slides.length - 1;
-      if ((dy > 0 && atEnd) || (dy < 0 && atStart)) return;
-
-      e.preventDefault();
-      if (cooldown) return;
-      cooldown = true;
-      const next = Math.min(
-        slides.length - 1,
-        Math.max(0, active + (dy > 0 ? 1 : -1)),
-      );
-      goTo(next);
-      setActive(next);
-      window.setTimeout(() => (cooldown = false), 480);
+    if (!track) return;
+    const recalc = () => {
+      const first = cardRefs.current[0];
+      if (!first) return;
+      const pad = Math.max(16, (track.clientWidth - first.clientWidth) / 2);
+      setPadInline(pad);
     };
+    recalc();
+    const ro = new ResizeObserver(recalc);
+    ro.observe(track);
+    if (cardRefs.current[0]) ro.observe(cardRefs.current[0]!);
+    window.addEventListener("resize", recalc);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", recalc);
+    };
+  }, [slides.length]);
 
-    section.addEventListener("wheel", onWheel, { passive: false });
-    return () => section.removeEventListener("wheel", onWheel);
-  }, [active]);
+
+  // Snap to a specific card using native scroll-snap centering
+  const goTo = (i: number) => {
+    const card = cardRefs.current[i];
+    if (!card) return;
+    card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  };
 
   // Update active index from manual horizontal scroll/touch
   useEffect(() => {
@@ -278,11 +261,11 @@ export function PortfolioReel() {
         <div className="col-span-12 lg:col-span-9 xl:col-span-9 relative">
           <div
             ref={trackRef}
-            className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-6"
+            className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-6 overscroll-x-contain"
             style={{
               scrollSnapType: "x mandatory",
-              paddingLeft: "10%",
-              paddingRight: "10%",
+              paddingLeft: padInline,
+              paddingRight: padInline,
             }}
           >
             {slides.map((s, i) => {
