@@ -234,7 +234,7 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
       "Γρήγορα πρωτότυπα για fit, form και function.",
       "Τελικά εξαρτήματα σε μηχανικά πολυμερή.",
       "Μικρές και μεσαίες παραγωγές.",
-      "Post-processing: τρίψιμο, βαφή, βιδωτά ένθετα.",
+      "Post-processing: τρίψιμο και βαφή.",
     ],
     process: [
       { t: "Αρχεία", d: "Στείλτε .stl, .step ή .obj." },
