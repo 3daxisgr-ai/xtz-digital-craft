@@ -44,11 +44,12 @@ export const adminCheck = createServerFn({ method: "GET" }).handler(async () => 
 
 async function requireAdmin() {
   const session = await useSession<AdminSession>(getSessionConfig());
-  if (!session.data.authed) throw new Error("Unauthorized");
+  return !!session.data.authed;
 }
 
 export const adminListQuotes = createServerFn({ method: "GET" }).handler(async () => {
-  await requireAdmin();
+  const authed = await requireAdmin();
+  if (!authed) return { authed: false as const, rows: [] };
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("quote_requests")
@@ -56,17 +57,18 @@ export const adminListQuotes = createServerFn({ method: "GET" }).handler(async (
     .order("created_at", { ascending: false })
     .limit(1000);
   if (error) throw new Error(error.message);
-  return { rows: data ?? [] };
+  return { authed: true as const, rows: data ?? [] };
 });
 
 export const adminSignFile = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ path: z.string().min(1).max(500) }).parse(d))
   .handler(async ({ data }) => {
-    await requireAdmin();
+    const authed = await requireAdmin();
+    if (!authed) return { authed: false as const, url: null };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: signed, error } = await supabaseAdmin.storage
       .from("submission-files")
       .createSignedUrl(data.path, 60 * 10, { download: true });
     if (error || !signed) throw new Error(error?.message ?? "Could not sign file");
-    return { url: signed.signedUrl };
+    return { authed: true as const, url: signed.signedUrl };
   });
