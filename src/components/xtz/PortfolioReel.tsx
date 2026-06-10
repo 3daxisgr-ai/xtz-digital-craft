@@ -208,7 +208,7 @@ export function PortfolioReel() {
     <section
       id="capabilities"
       ref={sectionRef}
-      className="relative w-full bg-[#04060d] min-h-screen flex items-center overflow-hidden py-24"
+      className="relative w-full bg-[#0c1426] min-h-screen flex items-center overflow-hidden py-24"
     >
       {/* Background grid */}
       <div
@@ -326,7 +326,7 @@ export function PortfolioReel() {
                         isActive ? "scale-105" : "scale-100 grayscale"
                       }`}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#04060d] via-[#04060d]/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0c1426] via-[#0c1426]/40 to-transparent" />
 
                     {/* Active scan line */}
                     {isActive && (
@@ -385,8 +385,8 @@ export function PortfolioReel() {
           </div>
 
           {/* Edge fades */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#04060d] to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#04060d] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0c1426] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0c1426] to-transparent" />
         </div>
       </div>
 
