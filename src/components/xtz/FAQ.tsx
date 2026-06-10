@@ -36,7 +36,7 @@ const EN: Category[] = [
     id: "lead-times",
     label: "Lead Times",
     items: [
-      { q: "How fast are prototypes?", a: "Most 3D-printed prototypes ship in a few days. Metal prototypes typically within one to two weeks." },
+      { q: "How fast are you create a prototype?", a: "Most 3D-printed prototypes ship in a few days. Metal prototypes typically within one to two weeks." },
       { q: "How fast is production?", a: "Depends on volume and material. We provide a clear timeline with every quote." },
     ],
   },
