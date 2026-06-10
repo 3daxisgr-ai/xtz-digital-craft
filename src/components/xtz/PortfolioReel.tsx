@@ -126,7 +126,8 @@ const slidesGR: Slide[] = [
 ];
 
 export function PortfolioReel() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const slides = lang === "GR" ? slidesGR : slidesEN;
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
