@@ -363,8 +363,7 @@ function CapabilityPage() {
           </nav>
 
           <div className="flex items-center gap-4 mb-6">
-            <span className="font-mono text-xs text-primary tracking-[0.3em]">{cap.n} /</span>
-            <span className="h-px w-16 bg-primary blue-glow" />
+            {cap.n && <><span className="font-mono text-xs text-primary tracking-[0.3em]">{cap.n} /</span><span className="h-px w-16 bg-primary blue-glow" /></>}
             <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
               {t("cap.kicker")}
             </span>
