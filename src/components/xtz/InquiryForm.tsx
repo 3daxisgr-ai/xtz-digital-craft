@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useI18n } from "./i18n";
+import { supabase } from "@/integrations/supabase/client";
+import { submitForm } from "@/lib/api/submissions.functions";
 
 const services = [
   "Design & Prototype",
@@ -63,7 +65,10 @@ export function InquiryForm() {
 
 
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [submitting, setSubmitting] = useState(false);
+  const fileRef = useRef<File | null>(null);
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     const fd = new FormData(e.currentTarget);
@@ -87,7 +92,52 @@ export function InquiryForm() {
       setError(parsed.error.issues[0]?.message ?? "Invalid input");
       return;
     }
-    setSent(true);
+
+    setSubmitting(true);
+    try {
+      const file = fileRef.current;
+      let filePath: string | null = null;
+      let fileName: string | null = null;
+      if (file) {
+        const ext = file.name.split(".").pop() ?? "bin";
+        const path = `inquiry/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("submission-files")
+          .upload(path, file, { upsert: false, contentType: file.type || "application/octet-stream" });
+        if (upErr) throw upErr;
+        filePath = path;
+        fileName = file.name;
+      }
+
+      await submitForm({
+        data: {
+          source: "inquiry",
+          name: data.name,
+          surname: data.surname,
+          email: data.email,
+          phone: data.phone,
+          company: data.company || null,
+          service: data.service,
+          material: data.material || null,
+          stage: data.stage || null,
+          dimensions: data.dimensions || null,
+          quantity: data.quantity || null,
+          message: data.description || null,
+          file_path: filePath,
+          file_name: fileName,
+          metadata: {
+            noDesign: data.noDesign,
+            needHelp: data.needHelp,
+          },
+        },
+      });
+      setSent(true);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Submission failed. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
