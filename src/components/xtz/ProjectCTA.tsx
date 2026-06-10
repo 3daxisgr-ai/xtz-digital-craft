@@ -57,7 +57,7 @@ export function ProjectCTA() {
 
       {/* Corner accents */}
       <span className="absolute top-6 left-6 md:top-10 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/40">
-        — / INQUIRY
+        {t("cta.tag")}
       </span>
       <span className="absolute top-6 right-6 md:top-10 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/40">
         XYZ
@@ -67,34 +67,33 @@ export function ProjectCTA() {
       <div className="relative z-10 mx-auto flex min-h-[70vh] max-w-[1400px] flex-col items-center justify-center px-6 py-28 text-center md:px-12">
         <div className="cta-reveal">
           <span className="font-mono text-xs tracking-[0.4em] text-primary">
-            READY TO BEGIN?
+            {t("cta.kicker")}
           </span>
         </div>
 
         <div className="cta-reveal mt-8 max-w-4xl">
           <h2 className="font-display text-[clamp(2.5rem,7vw,6rem)] font-bold leading-[0.9] tracking-tighter">
-            <span className="text-white/90">HAVE A PROJECT</span>
+            <span className="text-white/90">{t("cta.title.l1")}</span>
             <br />
-            <span className="text-primary text-glow">IN MIND?</span>
+            <span className="text-primary text-glow">{t("cta.title.l2")}</span>
           </h2>
         </div>
 
         <div className="cta-reveal mt-10 max-w-2xl">
           <p className="font-display text-2xl md:text-3xl font-medium tracking-tight text-white/90 leading-snug">
-            START HERE.
+            {t("cta.lead")}
           </p>
         </div>
 
         <div className="cta-reveal mt-8 max-w-xl">
-          <p className="text-base md:text-lg text-foreground/65 leading-relaxed">
-            Whether you have a drawing, an existing design or simply an idea, we can help turn it into a real product.
+          <p className="text-base md:text-lg text-foreground/80 leading-relaxed">
+            {t("cta.body1")}
           </p>
         </div>
 
         <div className="cta-reveal mt-6">
           <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-            Whether you need design, prototyping, manufacturing or production
-            support, we&apos;re ready to help.
+            {t("cta.body2")}
           </p>
         </div>
 
@@ -103,7 +102,7 @@ export function ProjectCTA() {
             to="/start-project"
             className="group relative inline-flex items-center gap-3 bg-primary px-10 py-5 font-mono text-xs tracking-[0.3em] text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_0_60px_-10px_oklch(0.72_0.18_245_/_0.5)]"
           >
-            <span>START YOUR PROJECT</span>
+            <span>{t("cta.button")}</span>
             <span className="transition-transform duration-300 group-hover:translate-x-1">
               →
             </span>
@@ -112,7 +111,10 @@ export function ProjectCTA() {
 
         <div className="cta-reveal mt-14">
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-            {["DESIGN", "PROTOTYPE", "MANUFACTURE", "MASS PRODUCTION"].map(
+            {(lang === "GR"
+              ? ["ΣΧΕΔΙΑΣΜΟΣ", "ΠΡΩΤΟΤΥΠΟ", "ΚΑΤΑΣΚΕΥΗ", "ΠΑΡΑΔΟΣΗ"]
+              : ["DESIGN", "PROTOTYPE", "MANUFACTURE", "DELIVER"]
+            ).map(
               (word, i) => (
                 <span key={word} className="flex items-center gap-4">
                   <span className="font-mono text-[11px] tracking-[0.35em] text-primary/70">
