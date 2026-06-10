@@ -208,7 +208,7 @@ export function PortfolioReel() {
     <section
       id="capabilities"
       ref={sectionRef}
-      className="relative w-full bg-[#0c1426] min-h-screen flex items-center overflow-hidden py-24"
+      className="relative w-full bg-[#0c1426] min-h-screen flex items-center overflow-hidden py-24 before:content-[''] before:absolute before:inset-x-0 before:top-0 before:h-24 before:pointer-events-none before:bg-[linear-gradient(180deg,#0c1426_0%,transparent_100%)] after:content-[''] after:absolute after:inset-x-0 after:bottom-0 after:h-24 after:pointer-events-none after:bg-[linear-gradient(180deg,transparent_0%,#101a30_100%)]"
     >
       {/* Background grid */}
       <div
