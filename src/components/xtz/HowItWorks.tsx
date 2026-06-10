@@ -10,23 +10,24 @@ import {
   Truck,
   type LucideIcon,
 } from "lucide-react";
+import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
 
 type Step = {
   n: string;
-  title: string;
-  desc: string;
+  tKey: string;
+  dKey: string;
   Icon: LucideIcon;
 };
 
 const steps: Step[] = [
-  { n: "01", title: "Send us your idea", desc: "Sketch, drawing, Stp file or description.", Icon: Lightbulb },
-  { n: "02", title: "We review the project", desc: "We contact you and discuss the best solution.", Icon: MessagesSquare },
-  { n: "03", title: "Design & Engineering", desc: "If needed, we create or optimize the design.", Icon: PenTool },
-  { n: "04", title: "Prototype & Validation", desc: "We produce and verify the first version.", Icon: FlaskConical },
-  { n: "05", title: "Manufacturing", desc: "Production begins using the appropriate process , and material.", Icon: Factory },
-  { n: "06", title: "Delivery", desc: "Your finished parts are shipped to you.", Icon: Truck },
+  { n: "01", tKey: "how.s1.t", dKey: "how.s1.d", Icon: Lightbulb },
+  { n: "02", tKey: "how.s2.t", dKey: "how.s2.d", Icon: MessagesSquare },
+  { n: "03", tKey: "how.s3.t", dKey: "how.s3.d", Icon: PenTool },
+  { n: "04", tKey: "how.s4.t", dKey: "how.s4.d", Icon: FlaskConical },
+  { n: "05", tKey: "how.s5.t", dKey: "how.s5.d", Icon: Factory },
+  { n: "06", tKey: "how.s6.t", dKey: "how.s6.d", Icon: Truck },
 ];
 
 export function HowItWorks() {
