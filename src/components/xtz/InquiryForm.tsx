@@ -136,7 +136,7 @@ export function InquiryForm() {
 
             <div className="lg:col-span-2 pt-4 border-t border-border flex items-center justify-between gap-4">
               <span className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground">
-                Manual engineering review · 1 business day
+                {t("f.review")}
               </span>
               <button
                 type="submit"
