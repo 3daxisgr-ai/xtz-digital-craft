@@ -106,10 +106,10 @@ export function HowItWorks() {
           {steps.map(({ n, tKey, dKey, Icon }) => (
             <li
               key={n}
-              className="hw-card group relative flex flex-col p-7 md:p-8 border border-primary/15 hover:border-primary/50 transition-colors"
+              className="hw-card group relative flex flex-col p-7 md:p-8 border border-primary/20 hover:border-primary/60 transition-colors"
               style={{
                 background:
-                  "linear-gradient(135deg, oklch(0.18 0.02 245 / 0.55), oklch(0.10 0.01 245 / 0.32))",
+                  "linear-gradient(135deg, oklch(0.26 0.025 245 / 0.7), oklch(0.18 0.018 245 / 0.55))",
               }}
             >
               <div className="flex items-start justify-between mb-10">
