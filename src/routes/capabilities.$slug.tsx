@@ -196,7 +196,7 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
     notes: "Δεκτοί τύποι: .pdf, .jpg, .png, .step, .stp, .iges, .dwg, .dxf.",
   },
   "fiber-laser-cutting": {
-    intro: "Ακριβής κοπή fiber laser για λαμαρίνα — καθαρές ακμές, αυστηρές ανοχές, έτοιμη για στραντζάρισμα, συγκόλληση ή φινίρισμα.",
+    intro: "Ακριβής κοπή fiber laser για λαμαρίνα , έτοιμη για στραντζάρισμα, συγκόλληση ή φινίρισμα.",
     what: [
       "Υψηλή ακρίβεια με ανοχή έως ±0.05 mm.",
       "Βιομηχανικά μεγέθη φύλλων και πολύπλοκα περιγράμματα.",
