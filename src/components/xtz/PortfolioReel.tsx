@@ -261,11 +261,11 @@ export function PortfolioReel() {
         <div className="col-span-12 lg:col-span-9 xl:col-span-9 relative">
           <div
             ref={trackRef}
-            className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-6"
+            className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-6 overscroll-x-contain"
             style={{
               scrollSnapType: "x mandatory",
-              paddingLeft: "10%",
-              paddingRight: "10%",
+              paddingLeft: padInline,
+              paddingRight: padInline,
             }}
           >
             {slides.map((s, i) => {
