@@ -29,7 +29,8 @@ type Category = {
   descGR: string;
   to: string;
   search?: Record<string, string>;
-  icon: React.ReactNode;
+  image: string;
+  imageAlt: string;
 };
 
 const categories: Category[] = [
@@ -40,12 +41,8 @@ const categories: Category[] = [
     descEN: "Functional prototypes, multi-color & engineering parts.",
     descGR: "Λειτουργικά πρωτότυπα, πολύχρωμη εκτύπωση & εξαρτήματα μηχανικής.",
     to: "/3d-printing-quote",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-10 w-10">
-        <path d="M12 2 3 7v10l9 5 9-5V7l-9-5Z" />
-        <path d="M3 7l9 5 9-5M12 12v10" />
-      </svg>
-    ),
+    image: bambuAsset.url,
+    imageAlt: "Bambu Lab 3D printer printing a part",
   },
   {
     id: "laser",
@@ -55,12 +52,8 @@ const categories: Category[] = [
     descGR: "Ακριβής κοπή σε χάλυβα, αλουμίνιο και ανοξείδωτο.",
     to: "/start-project",
     search: { service: "Fiber Laser Cutting" },
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-10 w-10">
-        <path d="M12 2v8M12 14v8M4 12h6M14 12h6" />
-        <circle cx="12" cy="12" r="2.5" />
-      </svg>
-    ),
+    image: laserAsset.url,
+    imageAlt: "Fiber laser cutting a metal sheet with sparks",
   },
   {
     id: "sheet",
@@ -70,13 +63,10 @@ const categories: Category[] = [
     descGR: "Κάμψη, συγκόλληση και συναρμολόγηση μεταλλικών εξαρτημάτων.",
     to: "/start-project",
     search: { service: "Sheet Metal Forming & Welding" },
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-10 w-10">
-        <path d="M3 17l6-10 6 10M15 7l6 10" />
-        <path d="M3 21h18" />
-      </svg>
-    ),
+    image: weldingAsset.url,
+    imageAlt: "Welder fabricating a metal part with bright sparks",
   },
+
 ];
 
 function StartPage() {
