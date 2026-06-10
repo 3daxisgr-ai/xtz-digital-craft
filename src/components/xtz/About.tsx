@@ -91,7 +91,7 @@ export function About() {
               {t("about.kicker")}
             </span>
           </div>
-          <h2 className="font-display font-bold leading-[0.9] text-[clamp(2.4rem,6vw,5.5rem)] tracking-tighter">
+          <h2 className="font-display font-bold leading-[0.9] tracking-tighter text-lg">
             {t("about.title.l1")}
             {t("about.title.l2") && <><br />{t("about.title.l2")}</>}
             {t("about.title.l3") && <><br />{t("about.title.l3")}</>}
