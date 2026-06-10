@@ -27,7 +27,7 @@ export function Finale() {
 
         <div className="mt-12 flex justify-center">
           <Link
-            to="/start-project"
+            to="/start"
             className="group relative inline-flex items-center gap-4 px-10 py-5 border border-primary bg-primary/10 backdrop-blur-sm blue-glow hover:bg-primary hover:text-primary-foreground transition-all"
           >
             <span className="font-mono text-sm uppercase tracking-[0.4em]">{t("finale.cta")}</span>

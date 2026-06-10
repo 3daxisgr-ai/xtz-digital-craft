@@ -106,7 +106,7 @@ export function ProjectCTA() {
 
         <div className="cta-reveal mt-12">
           <Link
-            to="/start-project"
+            to="/start"
             className="group relative inline-flex items-center gap-3 bg-primary px-10 py-5 font-mono text-xs tracking-[0.3em] text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_0_60px_-10px_oklch(0.72_0.18_245_/_0.5)]"
           >
             <span>{t("cta.button")}</span>
