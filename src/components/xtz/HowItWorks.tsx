@@ -31,6 +31,7 @@ const steps: Step[] = [
 ];
 
 export function HowItWorks() {
+  const { t } = useI18n();
   const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -69,7 +70,7 @@ export function HowItWorks() {
         }}
       />
       <span className="absolute top-8 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
-        HOW WE WORK
+        {t("how.tag")}
       </span>
       <span className="absolute top-8 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         XYZ
@@ -81,22 +82,22 @@ export function HowItWorks() {
             <span className="font-mono text-xs text-primary tracking-[0.3em]">02 /</span>
             <span className="h-px w-20 bg-primary blue-glow" />
             <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              How We Work
+              {t("how.kicker")}
             </span>
           </div>
           <h2 className="font-display font-bold leading-[0.9] text-[clamp(2.4rem,6vw,5.5rem)] tracking-tighter">
-            Six steps from<br />idea to delivery.
+            {t("how.title")}
           </h2>
         </div>
 
         <ol className="grid gap-6 md:gap-7 sm:grid-cols-2 lg:grid-cols-3">
-          {steps.map(({ n, title, desc, Icon }) => (
+          {steps.map(({ n, tKey, dKey, Icon }) => (
             <li
               key={n}
               className="hw-card group relative flex flex-col p-7 md:p-8 border border-primary/15 hover:border-primary/50 transition-colors"
               style={{
                 background:
-                  "linear-gradient(135deg, oklch(0.15 0.02 245 / 0.45), oklch(0.08 0.01 245 / 0.25))",
+                  "linear-gradient(135deg, oklch(0.18 0.02 245 / 0.55), oklch(0.10 0.01 245 / 0.32))",
               }}
             >
               <div className="flex items-start justify-between mb-10">
@@ -105,10 +106,10 @@ export function HowItWorks() {
                 </div>
               </div>
               <h3 className="font-display text-xl md:text-2xl font-semibold tracking-tight mb-3">
-                {title}
+                {t(tKey)}
               </h3>
-              <p className="text-sm md:text-base text-foreground/65 leading-relaxed font-light">
-                {desc}
+              <p className="text-sm md:text-base text-foreground/80 leading-relaxed font-light">
+                {t(dKey)}
               </p>
               <span className="mt-8 h-px w-full bg-gradient-to-r from-primary/40 to-transparent" />
             </li>
