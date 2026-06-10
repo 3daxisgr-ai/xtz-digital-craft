@@ -496,7 +496,7 @@ function CapabilityPage() {
                 className="group relative p-8 border border-border/60 bg-gradient-to-b from-white/[0.03] to-transparent overflow-hidden transition-colors hover:border-primary/60 block"
               >
                 <div aria-hidden className="absolute -top-px left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full blue-glow" />
-                <div className="font-mono text-[14px] tracking-[0.4em] text-primary/80 mb-4">{r.n}</div>
+                {r.n && <div className="font-mono text-[14px] tracking-[0.4em] text-primary/80 mb-4">{r.n}</div>}
                 <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 group-hover:text-primary transition-colors">
                   {titleMap[r.slug]}
                 </h3>
