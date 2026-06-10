@@ -90,6 +90,9 @@ export function Capabilities() {
                 className="absolute -top-px left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full blue-glow"
               />
               <div className="relative flex flex-col h-full min-h-[180px]">
+                {c.n && (
+                  <div className="font-mono text-[11px] text-primary/60 mb-2">{c.n}</div>
+                )}
                 <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 group-hover:text-primary transition-colors">
                   {t(c.tKey)}
                 </h3>
