@@ -19,7 +19,7 @@ type Slide = {
   slug: CapabilitySlug;
 };
 
-const slides: Slide[] = [
+const slidesEN: Slide[] = [
   {
     img: chapterLaser,
     alt: "Fiber laser cutting precision sheet metal",
@@ -64,10 +64,63 @@ const slides: Slide[] = [
     img: p3,
     alt: "Global manufacturing network and partners",
     index: "005",
-    title: "​Mass production",
+    title: "Mass Production",
     category: "Manufacturing",
     description: "Distributed sourcing, scale and worldwide delivery.",
     tags: ["Sourcing", "Scale"],
+    slug: "global-manufacturing-network",
+  },
+];
+
+const slidesGR: Slide[] = [
+  {
+    img: chapterLaser,
+    alt: "Κοπή fiber laser ακριβείας σε λαμαρίνα",
+    index: "001",
+    title: "Κοπή Fiber Laser",
+    category: "Fiber Laser",
+    description: "Ακρίβεια επιπέδου micron σε χάλυβα, ανοξείδωτο και αλουμίνιο.",
+    tags: ["±0.05 mm", "Ταχύτητα"],
+    slug: "fiber-laser-cutting",
+  },
+  {
+    img: chapterFab,
+    alt: "Στραντζάρισμα και συγκολλήσεις λαμαρίνας",
+    index: "002",
+    title: "Στραντζάρισμα & Συγκολλήσεις",
+    category: "Στράντζα · TIG · MIG",
+    description: "Κάμψη, συγκόλληση και συναρμολόγηση μεταλλικών εξαρτημάτων.",
+    tags: ["CNC Στράντζα", "Πιστοποιημένα"],
+    slug: "sheet-metal-forming-welding",
+  },
+  {
+    img: chapterPrint,
+    alt: "Βιομηχανική 3D εκτύπωση για λειτουργικά εξαρτήματα",
+    index: "003",
+    title: "3D Εκτύπωση",
+    category: "Προσθετική",
+    description: "Λειτουργικά εξαρτήματα και μικρές σειρές σε μηχανικά πολυμερή.",
+    tags: ["FDM · SLA", "Τελικής χρήσης"],
+    slug: "3d-printing",
+  },
+  {
+    img: p1,
+    alt: "Εργαστήριο πρωτοτυποποίησης και ανάπτυξης προϊόντων",
+    index: "004",
+    title: "Σχεδιασμός → Πρωτότυπο",
+    category: "Έρευνα & Ανάπτυξη",
+    description: "Από την ιδέα σε λειτουργικό πρωτότυπο μέσα σε ημέρες.",
+    tags: ["MVP", "Επανέλεγχος"],
+    slug: "design-to-prototype",
+  },
+  {
+    img: p3,
+    alt: "Παγκόσμιο δίκτυο παραγωγής και συνεργατών",
+    index: "005",
+    title: "Μαζική Παραγωγή",
+    category: "Κατασκευή",
+    description: "Κατανεμημένη παραγωγή, κλιμάκωση και παγκόσμια παράδοση.",
+    tags: ["Sourcing", "Κλιμάκωση"],
     slug: "global-manufacturing-network",
   },
 ];
