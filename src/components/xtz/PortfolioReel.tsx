@@ -1,8 +1,9 @@
 import p1 from "@/assets/portfolio-1.jpg";
 import p3 from "@/assets/portfolio-3.jpg";
 import chapterPrint from "@/assets/chapter-print.jpg";
-import chapterFab from "@/assets/chapter-fab.jpg";
+import chapterFabAsset from "@/assets/welding-sparks.jpg.asset.json";
 import chapterLaser from "@/assets/chapter-laser.jpg";
+const chapterFab = chapterFabAsset.url;
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useI18n } from "./i18n";
