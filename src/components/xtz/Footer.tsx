@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import skg3dLogoLarge from "@/assets/skg3d-logo-large.png.asset.json";
 
 export function Footer() {
-  const { lang, setLang } = useI18n();
+  const { lang, setLang, t } = useI18n();
   const toggle = (l: Lang) => () => setLang(l);
 
   return (
@@ -26,7 +26,7 @@ export function Footer() {
         <div className="grid lg:grid-cols-12 gap-12 pb-16 border-b border-border/40">
           <div className="lg:col-span-7 space-y-6">
             <div className="font-mono text-[14px] uppercase tracking-[0.5em] text-primary/80">
-              XYZ — coordinates of every build
+              {t("foot.tag")}
             </div>
             <img
               src={skg3dLogoLarge.url}
@@ -35,30 +35,41 @@ export function Footer() {
               style={{ height: "clamp(2.8rem, 9vw, 8rem)" }}
             />
             <p className="font-mono text-xs md:text-sm uppercase tracking-[0.55em] text-primary">
-              From Concept to Reality
+              {t("foot.tagline")}
             </p>
-            <div className="pt-4 flex flex-wrap gap-x-6 gap-y-2 font-display text-xl md:text-2xl font-light text-foreground/80">
-              <span>Design.</span>
-              <span className="text-primary">Prototype.</span>
-              <span>Manufacture.</span>
-              <span className="text-primary">Mass Production.</span>
+            <div className="pt-4 flex flex-wrap gap-x-6 gap-y-2 font-display text-xl md:text-2xl font-light text-foreground/85">
+              {lang === "GR" ? (
+                <>
+                  <span>Σχεδιασμός.</span>
+                  <span className="text-primary">Πρωτότυπο.</span>
+                  <span>Κατασκευή.</span>
+                  <span className="text-primary">Μαζική Παραγωγή.</span>
+                </>
+              ) : (
+                <>
+                  <span>Design.</span>
+                  <span className="text-primary">Prototype.</span>
+                  <span>Manufacture.</span>
+                  <span className="text-primary">Mass Production.</span>
+                </>
+              )}
             </div>
           </div>
 
           {/* Contact block */}
           <div className="lg:col-span-5 grid sm:grid-cols-2 gap-8 lg:pl-8">
             <ContactCol
-              label="Contact"
+              label={t("foot.contact")}
               items={[
-                { k: "Email", v: "3daxis.gr@gmail.com", href: "mailto:3daxis.gr@gmail.com" },
-                { k: "Phone", v: "+30 690000000", href: "tel:+30690000000" },
+                { k: t("foot.email"), v: "3daxis.gr@gmail.com", href: "mailto:3daxis.gr@gmail.com" },
+                { k: t("foot.phone"), v: "+30 690000000", href: "tel:+30690000000" },
               ]}
             />
             <ContactCol
-              label="Studio"
+              label={t("foot.studio")}
               items={[
-                { k: "Location", v: "Thessaloniki" },
-                { k: "Hours", v: "Mon — Fri / 09:00 — 18:00" },
+                { k: t("foot.location"), v: lang === "GR" ? "Θεσσαλονίκη" : "Thessaloniki" },
+                { k: t("foot.hours"), v: t("foot.hours.v") },
               ]}
             />
           </div>
@@ -67,16 +78,16 @@ export function Footer() {
         {/* Bottom row */}
         <div className="pt-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div className="font-mono text-[14px] uppercase tracking-[0.35em] text-muted-foreground">
-            © {new Date().getFullYear()} SKG3D · All rights reserved
+            © {new Date().getFullYear()} SKG3D · {t("foot.rights")}
           </div>
 
           <nav className="flex flex-wrap items-center gap-x-8 gap-y-3 font-mono text-[14px] uppercase tracking-[0.35em] text-muted-foreground">
-            <a href="#concept" className="hover:text-primary transition-colors text-xs">Why</a>
-            <a href="#capabilities" className="hover:text-primary transition-colors text-xs">Capabilities</a>
-            <a href="#portfolio" className="hover:text-primary transition-colors text-xs">Work</a>
-            <a href="#process" className="hover:text-primary transition-colors text-xs">Process</a>
-            <a href="#network" className="hover:text-primary transition-colors text-xs">Network</a>
-            <Link to="/start-project" className="hover:text-primary transition-colors text-xs">Inquiry</Link>
+            <a href="#concept" className="hover:text-primary transition-colors text-xs">{t("foot.nav.why")}</a>
+            <a href="#capabilities" className="hover:text-primary transition-colors text-xs">{t("foot.nav.caps")}</a>
+            <a href="#portfolio" className="hover:text-primary transition-colors text-xs">{t("foot.nav.work")}</a>
+            <a href="#process" className="hover:text-primary transition-colors text-xs">{t("foot.nav.process")}</a>
+            <a href="#network" className="hover:text-primary transition-colors text-xs">{t("foot.nav.network")}</a>
+            <Link to="/start-project" className="hover:text-primary transition-colors text-xs">{t("foot.nav.inquiry")}</Link>
           </nav>
 
           <div className="flex items-center font-mono text-[11px] border border-border/60">

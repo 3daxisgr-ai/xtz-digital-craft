@@ -21,7 +21,16 @@ const titles: Record<CapabilitySlug, string> = {
   "sheet-metal-forming-welding": "Sheet Metal Forming & Welding",
   "3d-printing": "3D Printing",
   "design-to-prototype": "Design → Prototype",
-  "global-manufacturing-network": "​Mass production",
+  "global-manufacturing-network": "Mass Production",
+};
+
+const titlesGR: Record<CapabilitySlug, string> = {
+  "design-development": "Σχεδιασμός & Ανάπτυξη",
+  "fiber-laser-cutting": "Κοπή Fiber Laser",
+  "sheet-metal-forming-welding": "Στραντζάρισμα & Συγκολλήσεις",
+  "3d-printing": "3D Εκτύπωση",
+  "design-to-prototype": "Σχεδιασμός → Πρωτότυπο",
+  "global-manufacturing-network": "Μαζική Παραγωγή",
 };
 
 const details: Record<CapabilitySlug, Detail> = {
@@ -168,6 +177,108 @@ const details: Record<CapabilitySlug, Detail> = {
   },
 };
 
+const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process" | "applications" | "notes">> = {
+  "design-development": {
+    intro: "Μετατρέπουμε σκίτσα, φωτογραφίες και briefs σε ακριβή, κατασκευάσιμα αρχεία CAD — σχεδιασμένα για τη μέθοδο που θα τα παράγει.",
+    what: [
+      "Σχέδια ιδεών και μελέτες σκοπιμότητας.",
+      "Παραμετρικό 3D CAD και κατασκευαστικά σχέδια 2D.",
+      "Design for Manufacturing (DFM) και επιλογή υλικών.",
+      "Έλεγχος εκδόσεων και πλήρης τεκμηρίωση.",
+    ],
+    process: [
+      { t: "Brief", d: "Εξετάζουμε την ιδέα, το σκίτσο ή τις φωτογραφίες αναφοράς." },
+      { t: "Σύλληψη", d: "Πρόχειρη γεωμετρία, σκοπιμότητα και πρόταση υλικού." },
+      { t: "Μελέτη", d: "Παραμετρικό CAD, ανοχές και έλεγχοι DFM." },
+      { t: "Παράδοση", d: "Έτοιμα αρχεία και σχέδια παραγωγής." },
+    ],
+    applications: ["Custom βιομηχανικά εξαρτήματα", "Πρωτότυπα προϊόντων", "Βάσεις και περιβλήματα", "Αρχιτεκτονικά μέταλλα"],
+    notes: "Δεκτοί τύποι: .pdf, .jpg, .png, .step, .stp, .iges, .dwg, .dxf.",
+  },
+  "fiber-laser-cutting": {
+    intro: "Ακριβής κοπή fiber laser για λαμαρίνα — καθαρές ακμές, αυστηρές ανοχές, έτοιμη για στραντζάρισμα, συγκόλληση ή φινίρισμα.",
+    what: [
+      "Υψηλή ακρίβεια με ανοχή έως ±0.05 mm.",
+      "Βιομηχανικά μεγέθη φύλλων και πολύπλοκα περιγράμματα.",
+      "Ελάχιστη θερμικά επηρεαζόμενη ζώνη και καθαρές ακμές.",
+      "Nesting και βελτιστοποίηση υλικού.",
+    ],
+    process: [
+      { t: "Αρχεία", d: "Στείλτε .dxf, .dwg ή .step με υλικό και πάχος." },
+      { t: "Προσφορά", d: "Έλεγχος από μηχανικό εντός μίας εργάσιμης ημέρας." },
+      { t: "Κοπή", d: "Nesting, κοπή και έλεγχος ακμών." },
+      { t: "Παράδοση", d: "Έτοιμα για το επόμενο βήμα ή αποστολή σε εσάς." },
+    ],
+    applications: ["Βάσεις και πάνελ", "Περιβλήματα και chassis", "Διακοσμητικά μέταλλα", "Βιομηχανικά εξαρτήματα"],
+    notes: "Στείλτε .dxf, .dwg ή .step. Πάντα δηλώστε πάχος και ποιότητα υλικού.",
+  },
+  "sheet-metal-forming-welding": {
+    intro: "Κάμψη, συγκόλληση και συναρμολόγηση μεταλλικών εξαρτημάτων — από μία βάση έως πλήρως συγκολλημένες κατασκευές.",
+    what: [
+      "Στραντζάρισμα με πρέσα και ακριβή κάμψη.",
+      "Συγκολλήσεις MIG, TIG και πόντες.",
+      "Τοποθέτηση εξαρτημάτων (PEM nuts, ντίζες, αποστάτες).",
+      "Συναρμολόγηση, φινίρισμα και προετοιμασία για ηλεκτροστατική βαφή.",
+    ],
+    process: [
+      { t: "Flat pattern", d: "Κοπή από το CAD σας ή από δικό μας ξεδιπλωμένο σχέδιο." },
+      { t: "Κάμψη", d: "Κάμψη σε ζυγισμένες στράντζες." },
+      { t: "Συγκόλληση", d: "MIG / TIG / πόντες, με ιδιοκατασκευές όπου χρειάζεται." },
+      { t: "Φινίρισμα", d: "Αφαίρεση γρεζιού, τρόχισμα συγκολλήσεων, προετοιμασία βαφής." },
+    ],
+    applications: ["Πλαίσια και chassis", "Περιβλήματα και ντουλάπια", "Αρχιτεκτονικά πάνελ", "Συγκολλημένες κατασκευές"],
+  },
+  "3d-printing": {
+    intro: "Λειτουργικά πρωτότυπα και τελικά εξαρτήματα — σε ημέρες, όχι μήνες. Από mock-ups σε PLA έως μηχανικά πολυμερή.",
+    what: [
+      "Γρήγορα πρωτότυπα για fit, form και function.",
+      "Τελικά εξαρτήματα σε μηχανικά πολυμερή.",
+      "Μικρές και μεσαίες παραγωγές.",
+      "Post-processing: τρίψιμο, βαφή, βιδωτά ένθετα.",
+    ],
+    process: [
+      { t: "Αρχεία", d: "Στείλτε .stl, .step ή .obj." },
+      { t: "Slicing", d: "Επιλέγουμε προσανατολισμό, γέμισμα και υποστηρίξεις." },
+      { t: "Εκτύπωση", d: "Ζυγισμένες μηχανές, παρακολούθηση εκτυπώσεων." },
+      { t: "Φινίρισμα", d: "Καθαρισμός, post-processing και αποστολή." },
+    ],
+    applications: ["Λειτουργικά πρωτότυπα", "Jigs και fixtures", "Custom τελικά εξαρτήματα", "Παραγωγή μικρής σειράς"],
+    notes: "Στείλτε .stl, .step ή .obj. Συμπεριλάβετε όγκο κατασκευής και ποσότητα.",
+  },
+  "design-to-prototype": {
+    intro: "Μία ομάδα, από την αρχή έως το τέλος. Από το πρώτο σκίτσο σε λειτουργικό πρωτότυπο στα χέρια σας — συνήθως σε ημέρες.",
+    what: [
+      "Σύλληψη, CAD, πρωτότυπο και κύκλος βελτιώσεων.",
+      "Ενιαίο σημείο επαφής σε όλα τα στάδια.",
+      "Πραγματικοί μηχανικοί ελέγχουν κάθε αναθεώρηση.",
+      "Γρήγοροι χρόνοι — ημέρες, όχι μήνες.",
+    ],
+    process: [
+      { t: "Ιδέα", d: "Στείλτε οτιδήποτε — σκίτσο, φωτογραφία ή περιγραφή." },
+      { t: "Σχεδιασμός", d: "Δημιουργούμε ένα κατασκευάσιμο αρχείο CAD." },
+      { t: "Πρωτότυπο", d: "Κατασκευάζεται με την πιο κατάλληλη in-house μέθοδο." },
+      { t: "Βελτίωση", d: "Επανέλεγχος και βελτίωση μέχρι να είναι σωστό." },
+    ],
+    applications: ["Startup MVPs", "Ανάπτυξη νέων προϊόντων", "Reverse engineering", "Custom μοναδικά εξαρτήματα"],
+  },
+  "global-manufacturing-network": {
+    intro: "Αξιόπιστοι κατασκευαστικοί συνεργάτες για σειριακή παραγωγή. Κλιμακώστε από πρωτότυπο σε χιλιάδες μονάδες — με διαχείριση ποιότητας και logistics.",
+    what: [
+      "Επιλεγμένοι συνεργάτες για CNC, χύτευση, injection molding και άλλα.",
+      "Κλιμάκωση από εκατοντάδες σε δεκάδες χιλιάδες μονάδες.",
+      "Έλεγχος ποιότητας και επιθεωρήσεις εκ μέρους σας.",
+      "Logistics, τελωνεία και παράδοση από άκρη σε άκρη.",
+    ],
+    process: [
+      { t: "Προδιαγραφές", d: "Πρωτότυπο, σχέδια και ανοχές οριστικοποιημένα." },
+      { t: "Εύρεση συνεργάτη", d: "Αντιστοιχίζουμε το εξάρτημα με τον κατάλληλο συνεργάτη." },
+      { t: "Παραγωγή", d: "Δοκιμαστική σειρά, ποιοτικός έλεγχος και πλήρης παραγωγή." },
+      { t: "Παράδοση", d: "Ελεγμένα, συσκευασμένα και αποστολή σε εσάς." },
+    ],
+    applications: ["Σειριακή παραγωγή", "OEM εξαρτήματα", "Branded καταναλωτικά προϊόντα", "Ανταλλακτικά"],
+  },
+};
+
 export const Route = createFileRoute("/capabilities/$slug")({
   loader: ({ params }) => {
     const cap = capabilities.find((c) => c.slug === (params.slug as CapabilitySlug));
@@ -196,21 +307,39 @@ export const Route = createFileRoute("/capabilities/$slug")({
     };
   },
   component: CapabilityPage,
-  notFoundComponent: () => (
-    <main className="bg-black text-foreground min-h-screen">
-      <Navigation />
-      <div className="pt-40 px-6 text-center">
-        <h1 className="font-display text-3xl">Capability not found.</h1>
-        <Link to="/" hash="capabilities" className="text-primary mt-4 inline-block">← All capabilities</Link>
-      </div>
-      <Footer />
-    </main>
-  ),
+  notFoundComponent: () => {
+    const { lang } = useI18n();
+    return (
+      <main className="bg-black text-foreground min-h-screen">
+        <Navigation />
+        <div className="pt-40 px-6 text-center">
+          <h1 className="font-display text-3xl">
+            {lang === "GR" ? "Η δυνατότητα δεν βρέθηκε." : "Capability not found."}
+          </h1>
+          <Link to="/" hash="capabilities" className="text-primary mt-4 inline-block">
+            {lang === "GR" ? "← Όλες οι δυνατότητες" : "← All capabilities"}
+          </Link>
+        </div>
+        <Footer />
+      </main>
+    );
+  },
 });
 
 function CapabilityPage() {
   const { cap, detail } = Route.useLoaderData() as { cap: typeof capabilities[number]; detail: Detail };
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const isGR = lang === "GR";
+  const titleMap = isGR ? titlesGR : titles;
+  const grOverride = isGR ? detailsGR[cap.slug] : null;
+  const view = {
+    intro: grOverride?.intro ?? detail.intro,
+    what: grOverride?.what ?? detail.what,
+    process: grOverride?.process ?? detail.process,
+    applications: grOverride?.applications ?? detail.applications,
+    notes: grOverride?.notes ?? detail.notes,
+    materials: detail.materials,
+  };
   const related = capabilities.filter((c) => c.slug !== cap.slug).slice(0, 3);
 
   return (
@@ -226,11 +355,11 @@ function CapabilityPage() {
         <div className="relative mx-auto max-w-[1200px]">
           {/* Breadcrumbs */}
           <nav aria-label="breadcrumb" className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-10 flex flex-wrap items-center gap-2">
-            <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+            <Link to="/" className="hover:text-primary transition-colors">{t("capp.crumb.home")}</Link>
             <span className="text-muted-foreground/50">/</span>
-            <Link to="/" hash="capabilities" className="hover:text-primary transition-colors">Capabilities</Link>
+            <Link to="/" hash="capabilities" className="hover:text-primary transition-colors">{t("capp.crumb.caps")}</Link>
             <span className="text-muted-foreground/50">/</span>
-            <span className="text-foreground">{titles[cap.slug]}</span>
+            <span className="text-foreground">{titleMap[cap.slug]}</span>
           </nav>
 
           <div className="flex items-center gap-4 mb-6">
@@ -244,23 +373,23 @@ function CapabilityPage() {
             className="font-display font-bold leading-[0.95] text-[clamp(2.4rem,6.5vw,5rem)] tracking-tighter mb-6"
             style={{ textShadow: "0 0 24px oklch(0.65 0.22 245 / 0.35)" }}
           >
-            {titles[cap.slug]}
+            {titleMap[cap.slug]}
           </h1>
-          <p className="text-foreground/75 text-lg md:text-xl max-w-2xl leading-relaxed">{detail.intro}</p>
+          <p className="text-foreground/85 text-lg md:text-xl max-w-2xl leading-relaxed">{view.intro}</p>
 
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <Link
               to={cap.slug === "3d-printing" ? "/3d-printing-quote" : "/start-project"}
               className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow"
             >
-              Request a Quote →
+              {t("capp.cta.quote")} →
             </Link>
             <Link
               to="/"
               hash="capabilities"
               className="inline-flex items-center gap-3 px-6 py-4 border border-border/60 hover:border-primary/60 font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground hover:text-foreground transition-colors"
             >
-              ← All Capabilities
+              ← {t("capp.cta.all")}
             </Link>
           </div>
         </div>
@@ -270,10 +399,10 @@ function CapabilityPage() {
       <section className="px-6 md:px-12 py-20 border-t border-border/40">
         <div className="mx-auto max-w-[1200px] grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-7">
-            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-6">What we do</h2>
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-6">{t("capp.h.what")}</h2>
             <ul className="space-y-5">
-              {detail.what.map((w, i) => (
-                <li key={i} className="flex gap-4 text-foreground/85">
+              {view.what.map((w, i) => (
+                <li key={i} className="flex gap-4 text-foreground/90">
                   <span className="font-mono text-[14px] text-primary/70 tracking-[0.3em] pt-2 shrink-0">
                     {String(i + 1).padStart(2, "0")}
                   </span>
@@ -283,16 +412,16 @@ function CapabilityPage() {
             </ul>
           </div>
           <div className="lg:col-span-5">
-            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-6">Materials & Technologies</h2>
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-6">{t("capp.h.materials")}</h2>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {detail.materials.map((m) => (
+              {view.materials.map((m) => (
                 <li key={m} className="border border-border/50 px-4 py-3 font-display text-base hover:border-primary/60 transition-colors">
                   {m}
                 </li>
               ))}
             </ul>
-            {detail.notes && (
-              <p className="text-foreground/65 text-sm leading-relaxed mt-6">{detail.notes}</p>
+            {view.notes && (
+              <p className="text-foreground/80 text-sm leading-relaxed mt-6">{view.notes}</p>
             )}
           </div>
         </div>
@@ -301,15 +430,15 @@ function CapabilityPage() {
       {/* Process */}
       <section className="px-6 md:px-12 py-20 border-t border-border/40 bg-gradient-to-b from-white/[0.015] to-transparent">
         <div className="mx-auto max-w-[1200px]">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-10">Process Overview</h2>
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-10">{t("capp.h.process")}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {detail.process.map((p, i) => (
-              <div key={p.t} className="relative p-6 border border-border/60 bg-white/[0.02]">
+            {view.process.map((p, i) => (
+              <div key={p.t} className="relative p-6 border border-border/60 bg-white/[0.03]">
                 <div className="font-mono text-[14px] tracking-[0.4em] text-primary/80 mb-4">
-                  STEP {String(i + 1).padStart(2, "0")}
+                  {t("capp.step")} {String(i + 1).padStart(2, "0")}
                 </div>
                 <h3 className="font-display text-xl font-semibold mb-2">{p.t}</h3>
-                <p className="text-sm text-foreground/70 leading-relaxed">{p.d}</p>
+                <p className="text-sm text-foreground/80 leading-relaxed">{p.d}</p>
               </div>
             ))}
           </div>
@@ -319,10 +448,10 @@ function CapabilityPage() {
       {/* Applications */}
       <section className="px-6 md:px-12 py-20 border-t border-border/40">
         <div className="mx-auto max-w-[1200px]">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-8">Applications</h2>
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-8">{t("capp.h.apps")}</h2>
           <div className="flex flex-wrap gap-3">
-            {detail.applications.map((a) => (
-              <span key={a} className="border border-border/50 px-5 py-3 font-display text-base text-foreground/85">
+            {view.applications.map((a) => (
+              <span key={a} className="border border-border/50 px-5 py-3 font-display text-base text-foreground/90">
                 {a}
               </span>
             ))}
@@ -341,16 +470,16 @@ function CapabilityPage() {
             className="font-display font-bold leading-[0.95] text-[clamp(2rem,5vw,3.5rem)] tracking-tighter mb-6"
             style={{ textShadow: "0 0 24px oklch(0.65 0.22 245 / 0.35)" }}
           >
-            Ready to build with {titles[cap.slug]}?
+            {t("capp.ready1")} {titleMap[cap.slug]}{isGR ? ";" : "?"}
           </h2>
-          <p className="text-foreground/70 max-w-xl mx-auto mb-8">
-            Send your files or a brief. An engineer will review and reply within one business day.
+          <p className="text-foreground/80 max-w-xl mx-auto mb-8">
+            {t("capp.ready.body")}
           </p>
           <Link
             to={cap.slug === "3d-printing" ? "/3d-printing-quote" : "/start-project"}
             className="inline-flex items-center gap-3 px-10 py-5 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow"
           >
-            Request a Quote →
+            {t("capp.cta.quote")} →
           </Link>
         </div>
       </section>
@@ -358,23 +487,23 @@ function CapabilityPage() {
       {/* Related */}
       <section className="px-6 md:px-12 py-20 border-t border-border/40">
         <div className="mx-auto max-w-[1500px]">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-8">Related Capabilities</h2>
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-8">{t("capp.h.related")}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {related.map((r) => (
               <Link
                 key={r.slug}
                 to="/capabilities/$slug"
                 params={{ slug: r.slug }}
-                className="group relative p-8 border border-border/60 bg-gradient-to-b from-white/[0.02] to-transparent overflow-hidden transition-colors hover:border-primary/60 block"
+                className="group relative p-8 border border-border/60 bg-gradient-to-b from-white/[0.03] to-transparent overflow-hidden transition-colors hover:border-primary/60 block"
               >
                 <div aria-hidden className="absolute -top-px left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full blue-glow" />
                 <div className="font-mono text-[14px] tracking-[0.4em] text-primary/80 mb-4">{r.n}</div>
                 <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 group-hover:text-primary transition-colors">
-                  {titles[r.slug]}
+                  {titleMap[r.slug]}
                 </h3>
-                <p className="text-sm text-foreground/65 leading-relaxed">{t(r.dKey)}</p>
+                <p className="text-sm text-foreground/80 leading-relaxed">{t(r.dKey)}</p>
                 <span className="mt-6 inline-block font-mono text-[14px] tracking-[0.3em] text-primary opacity-70 group-hover:opacity-100">
-                  View capability →
+                  {t("capp.view")} →
                 </span>
               </Link>
             ))}

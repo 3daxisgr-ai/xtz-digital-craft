@@ -4,19 +4,21 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "@tanstack/react-router";
 import aboutBg from "@/assets/about-bg.png.asset.json";
 import type { CapabilitySlug } from "./Capabilities";
+import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const specialties: { label: string; slug: CapabilitySlug }[] = [
-  { label: "Design & Prototype", slug: "design-to-prototype" },
-  { label: "Fiber Laser Cutting", slug: "fiber-laser-cutting" },
-  { label: "Sheet Metal Forming & Welding", slug: "sheet-metal-forming-welding" },
-  { label: "3D Printing", slug: "3d-printing" },
-  { label: "​Mass production", slug: "global-manufacturing-network" },
+const specialties: { tKey: string; slug: CapabilitySlug }[] = [
+  { tKey: "cap.05.t", slug: "design-to-prototype" },
+  { tKey: "cap.02.t", slug: "fiber-laser-cutting" },
+  { tKey: "cap.03.t", slug: "sheet-metal-forming-welding" },
+  { tKey: "cap.04.t", slug: "3d-printing" },
+  { tKey: "cap.06.t", slug: "global-manufacturing-network" },
 ];
 
 
 export function About() {
+  const { t } = useI18n();
   const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -55,7 +57,7 @@ export function About() {
         }}
       />
       <span className="absolute top-8 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
-        ABOUT US
+        {t("about.tag")}
       </span>
       <span className="absolute top-8 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         XYZ
@@ -67,31 +69,31 @@ export function About() {
             <span className="font-mono text-xs text-primary tracking-[0.3em]">01 /</span>
             <span className="h-px w-20 bg-primary blue-glow" />
             <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              About SKG3D
+              {t("about.kicker")}
             </span>
           </div>
           <h2 className="font-display font-bold leading-[0.9] text-[clamp(2.4rem,6vw,5.5rem)] tracking-tighter">
-            A COMPLETE<br />MANUFACTURING<br />PARTNER.
+            {t("about.title.l1")}<br />{t("about.title.l2")}<br />{t("about.title.l3")}
           </h2>
-          <div className="space-y-5 text-base md:text-lg text-foreground/75 leading-relaxed font-light max-w-xl">
-            <p>Not a laser shop. Not a print shop. A full-stack manufacturing partner taking projects from concept to scalable production , under one roof.</p>
+          <div className="space-y-5 text-base md:text-lg text-foreground/85 leading-relaxed font-light max-w-xl">
+            <p>{t("about.body")}</p>
           </div>
         </div>
 
         <div className="ab-reveal md:col-span-6 md:pt-20">
           <div className="font-mono text-[11px] uppercase tracking-[0.4em] text-primary/80 mb-6">
-            We specialize in
+            {t("about.specialize")}
           </div>
           <ul className="divide-y divide-primary/15 border-y border-primary/15">
             {specialties.map((s) => (
-              <li key={s.label}>
+              <li key={s.slug}>
                 <Link
                   to="/capabilities/$slug"
                   params={{ slug: s.slug }}
                   className="group flex items-center gap-6 py-5 transition-colors hover:text-primary"
                 >
                   <span className="font-display text-lg md:text-2xl font-medium tracking-tight">
-                    {s.label}
+                    {t(s.tKey)}
                   </span>
                   <span className="ml-auto h-px flex-1 max-w-[60px] bg-primary/20 group-hover:bg-primary transition-colors" />
                 </Link>

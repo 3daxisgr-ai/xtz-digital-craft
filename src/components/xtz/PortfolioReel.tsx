@@ -19,7 +19,7 @@ type Slide = {
   slug: CapabilitySlug;
 };
 
-const slides: Slide[] = [
+const slidesEN: Slide[] = [
   {
     img: chapterLaser,
     alt: "Fiber laser cutting precision sheet metal",
@@ -64,7 +64,7 @@ const slides: Slide[] = [
     img: p3,
     alt: "Global manufacturing network and partners",
     index: "005",
-    title: "​Mass production",
+    title: "Mass Production",
     category: "Manufacturing",
     description: "Distributed sourcing, scale and worldwide delivery.",
     tags: ["Sourcing", "Scale"],
@@ -72,8 +72,62 @@ const slides: Slide[] = [
   },
 ];
 
+const slidesGR: Slide[] = [
+  {
+    img: chapterLaser,
+    alt: "Κοπή fiber laser ακριβείας σε λαμαρίνα",
+    index: "001",
+    title: "Κοπή Fiber Laser",
+    category: "Fiber Laser",
+    description: "Ακρίβεια επιπέδου micron σε χάλυβα, ανοξείδωτο και αλουμίνιο.",
+    tags: ["±0.05 mm", "Ταχύτητα"],
+    slug: "fiber-laser-cutting",
+  },
+  {
+    img: chapterFab,
+    alt: "Στραντζάρισμα και συγκολλήσεις λαμαρίνας",
+    index: "002",
+    title: "Στραντζάρισμα & Συγκολλήσεις",
+    category: "Στράντζα · TIG · MIG",
+    description: "Κάμψη, συγκόλληση και συναρμολόγηση μεταλλικών εξαρτημάτων.",
+    tags: ["CNC Στράντζα", "Πιστοποιημένα"],
+    slug: "sheet-metal-forming-welding",
+  },
+  {
+    img: chapterPrint,
+    alt: "Βιομηχανική 3D εκτύπωση για λειτουργικά εξαρτήματα",
+    index: "003",
+    title: "3D Εκτύπωση",
+    category: "Προσθετική",
+    description: "Λειτουργικά εξαρτήματα και μικρές σειρές σε μηχανικά πολυμερή.",
+    tags: ["FDM · SLA", "Τελικής χρήσης"],
+    slug: "3d-printing",
+  },
+  {
+    img: p1,
+    alt: "Εργαστήριο πρωτοτυποποίησης και ανάπτυξης προϊόντων",
+    index: "004",
+    title: "Σχεδιασμός → Πρωτότυπο",
+    category: "Έρευνα & Ανάπτυξη",
+    description: "Από την ιδέα σε λειτουργικό πρωτότυπο μέσα σε ημέρες.",
+    tags: ["MVP", "Επανέλεγχος"],
+    slug: "design-to-prototype",
+  },
+  {
+    img: p3,
+    alt: "Παγκόσμιο δίκτυο παραγωγής και συνεργατών",
+    index: "005",
+    title: "Μαζική Παραγωγή",
+    category: "Κατασκευή",
+    description: "Κατανεμημένη παραγωγή, κλιμάκωση και παγκόσμια παράδοση.",
+    tags: ["Sourcing", "Κλιμάκωση"],
+    slug: "global-manufacturing-network",
+  },
+];
+
 export function PortfolioReel() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const slides = lang === "GR" ? slidesGR : slidesEN;
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -180,14 +234,14 @@ export function PortfolioReel() {
         <div className="col-span-12 lg:col-span-3 xl:col-span-3">
           <div className="flex items-center gap-3 mb-6">
             <span className="font-mono text-[14px] tracking-[0.4em] text-[#05acff]">
-              SECTION
+              {lang === "GR" ? "ΕΝΟΤΗΤΑ" : "SECTION"}
             </span>
             <span className="h-px w-10 bg-[#05acff] shadow-[0_0_8px_#05acff]" />
           </div>
           <h2 className="font-display font-bold leading-[0.85] tracking-tighter text-white text-[clamp(2.4rem,5vw,4.5rem)] mb-6">
             03 /<br />
             <span className="drop-shadow-[0_0_24px_rgba(5,172,255,0.45)] text-4xl text-[#05acff]">
-              CAPABILITIES
+              {lang === "GR" ? "ΔΥΝΑΤΟΤΗΤΕΣ" : "CAPABILITIES"}
             </span>
           </h2>
           <p className="text-sm text-white/55 leading-relaxed max-w-xs mb-8">
