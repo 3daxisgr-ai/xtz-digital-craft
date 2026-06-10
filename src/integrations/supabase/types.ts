@@ -14,7 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      submissions: {
+        Row: {
+          company: string | null
+          created_at: string
+          dimensions: string | null
+          email: string
+          email_error: string | null
+          email_sent: boolean
+          estimated_price: number | null
+          file_name: string | null
+          file_path: string | null
+          file_url: string | null
+          id: string
+          material: string | null
+          message: string | null
+          metadata: Json | null
+          name: string
+          phone: string | null
+          print_hours: number | null
+          quantity: string | null
+          service: string | null
+          source: string
+          stage: string | null
+          surname: string | null
+          weight_g: number | null
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          dimensions?: string | null
+          email: string
+          email_error?: string | null
+          email_sent?: boolean
+          estimated_price?: number | null
+          file_name?: string | null
+          file_path?: string | null
+          file_url?: string | null
+          id?: string
+          material?: string | null
+          message?: string | null
+          metadata?: Json | null
+          name: string
+          phone?: string | null
+          print_hours?: number | null
+          quantity?: string | null
+          service?: string | null
+          source: string
+          stage?: string | null
+          surname?: string | null
+          weight_g?: number | null
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          dimensions?: string | null
+          email?: string
+          email_error?: string | null
+          email_sent?: boolean
+          estimated_price?: number | null
+          file_name?: string | null
+          file_path?: string | null
+          file_url?: string | null
+          id?: string
+          material?: string | null
+          message?: string | null
+          metadata?: Json | null
+          name?: string
+          phone?: string | null
+          print_hours?: number | null
+          quantity?: string | null
+          service?: string | null
+          source?: string
+          stage?: string | null
+          surname?: string | null
+          weight_g?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
