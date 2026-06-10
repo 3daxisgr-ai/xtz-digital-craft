@@ -21,7 +21,16 @@ const titles: Record<CapabilitySlug, string> = {
   "sheet-metal-forming-welding": "Sheet Metal Forming & Welding",
   "3d-printing": "3D Printing",
   "design-to-prototype": "Design → Prototype",
-  "global-manufacturing-network": "​Mass production",
+  "global-manufacturing-network": "Mass Production",
+};
+
+const titlesGR: Record<CapabilitySlug, string> = {
+  "design-development": "Σχεδιασμός & Ανάπτυξη",
+  "fiber-laser-cutting": "Κοπή Fiber Laser",
+  "sheet-metal-forming-welding": "Στραντζάρισμα & Συγκολλήσεις",
+  "3d-printing": "3D Εκτύπωση",
+  "design-to-prototype": "Σχεδιασμός → Πρωτότυπο",
+  "global-manufacturing-network": "Μαζική Παραγωγή",
 };
 
 const details: Record<CapabilitySlug, Detail> = {
