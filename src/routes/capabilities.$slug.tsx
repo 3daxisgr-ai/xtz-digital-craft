@@ -328,7 +328,18 @@ export const Route = createFileRoute("/capabilities/$slug")({
 
 function CapabilityPage() {
   const { cap, detail } = Route.useLoaderData() as { cap: typeof capabilities[number]; detail: Detail };
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const isGR = lang === "GR";
+  const titleMap = isGR ? titlesGR : titles;
+  const grOverride = isGR ? detailsGR[cap.slug] : null;
+  const view = {
+    intro: grOverride?.intro ?? detail.intro,
+    what: grOverride?.what ?? detail.what,
+    process: grOverride?.process ?? detail.process,
+    applications: grOverride?.applications ?? detail.applications,
+    notes: grOverride?.notes ?? detail.notes,
+    materials: detail.materials,
+  };
   const related = capabilities.filter((c) => c.slug !== cap.slug).slice(0, 3);
 
   return (
