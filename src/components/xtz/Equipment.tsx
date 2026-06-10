@@ -5,7 +5,7 @@ import { useI18n } from "./i18n";
 import bambu from "@/assets/bambu-3d-printing.png.asset.json";
 import laserMachine from "@/assets/fiber-laser-machine.jpg.asset.json";
 import laserWorkshop from "@/assets/fiber-laser-workshop.jpg.asset.json";
-import pressBrake from "@/assets/durmapress-press-brake.jpg.asset.json";
+// pressBrake import removed since we're using a direct public URL now
 import shear from "@/assets/sheet-shear.jpg.asset.json";
 import welding from "@/assets/welding-sparks.jpg.asset.json";
 
@@ -79,7 +79,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
         id: "press-brakes",
         title: "DURMAPRESS CNC Πρέσες Στραντζαρίσματος",
         quantity: "2 Μονάδες",
-        image: pressBrake.url,
+        image: "/durmapress.png",
         alt: "DURMAPRESS CNC press brake bending sheet metal",
         description:
           "Κάμψη λαμαρίνας υψηλής ακρίβειας με CNC για πρωτότυπα, custom εξαρτήματα και εξαρτήματα παραγωγής.",
@@ -177,7 +177,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
       id: "press-brakes",
       title: "DURMAPRESS CNC Press Brakes",
       quantity: "2 Units",
-      image: pressBrake.url,
+      image: "/durmapress.png",
       alt: "DURMAPRESS CNC press brake bending sheet metal",
       description:
         "High-precision CNC sheet metal bending for prototypes, custom parts and production components.",
