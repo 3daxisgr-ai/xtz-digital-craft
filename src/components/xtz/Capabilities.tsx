@@ -15,12 +15,12 @@ export type CapabilitySlug =
   | "global-manufacturing-network";
 
 export const capabilities: { n: string; slug: CapabilitySlug; tKey: string; dKey: string }[] = [
-  { n: "01", slug: "design-development", tKey: "cap.01.t", dKey: "cap.01.d" },
-  { n: "02", slug: "fiber-laser-cutting", tKey: "cap.02.t", dKey: "cap.02.d" },
-  { n: "03", slug: "sheet-metal-forming-welding", tKey: "cap.03.t", dKey: "cap.03.d" },
-  { n: "04", slug: "3d-printing", tKey: "cap.04.t", dKey: "cap.04.d" },
-  { n: "05", slug: "design-to-prototype", tKey: "cap.05.t", dKey: "cap.05.d" },
-  { n: "06", slug: "global-manufacturing-network", tKey: "cap.06.t", dKey: "cap.06.d" },
+  { n: "", slug: "design-development", tKey: "cap.01.t", dKey: "cap.01.d" },
+  { n: "", slug: "fiber-laser-cutting", tKey: "cap.02.t", dKey: "cap.02.d" },
+  { n: "", slug: "sheet-metal-forming-welding", tKey: "cap.03.t", dKey: "cap.03.d" },
+  { n: "", slug: "3d-printing", tKey: "cap.04.t", dKey: "cap.04.d" },
+  { n: "", slug: "design-to-prototype", tKey: "cap.05.t", dKey: "cap.05.d" },
+  { n: "", slug: "global-manufacturing-network", tKey: "cap.06.t", dKey: "cap.06.d" },
 ];
 
 export function Capabilities() {
@@ -63,8 +63,6 @@ export function Capabilities() {
 
       <div className="relative z-10 mx-auto max-w-[1500px] px-6 md:px-12">
         <div className="flex items-center gap-4 mb-8">
-          <span className="font-mono text-xs text-primary tracking-[0.3em]">02 /</span>
-          <span className="h-px w-16 bg-primary" />
           <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
             {t("cap.kicker")}
           </span>
@@ -92,6 +90,9 @@ export function Capabilities() {
                 className="absolute -top-px left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full blue-glow"
               />
               <div className="relative flex flex-col h-full min-h-[180px]">
+                {c.n && (
+                  <div className="font-mono text-[11px] text-primary/60 mb-2">{c.n}</div>
+                )}
                 <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 group-hover:text-primary transition-colors">
                   {t(c.tKey)}
                 </h3>
