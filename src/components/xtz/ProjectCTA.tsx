@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Link } from "@tanstack/react-router";
-import ctaBg from "@/assets/cta-industrial.jpg";
+import ctaBgAsset from "@/assets/cta-workshop.png.asset.json";
+const ctaBg = ctaBgAsset.url;
 import { useI18n } from "./i18n";
 
 export function ProjectCTA() {
