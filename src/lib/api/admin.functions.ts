@@ -12,7 +12,7 @@ function getSessionConfig() {
     password,
     name: "skg3d_admin",
     maxAge: 60 * 60 * 8, // 8h
-    cookie: { httpOnly: true, sameSite: "lax" as const, secure: true, path: "/" },
+    cookie: { httpOnly: true, sameSite: "lax" as const, path: "/" },
   };
 }
 
