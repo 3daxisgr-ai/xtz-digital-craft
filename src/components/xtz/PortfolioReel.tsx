@@ -1,5 +1,5 @@
 import p1 from "@/assets/portfolio-1.jpg";
-import p3 from "@/assets/portfolio-3.jpg";
+import p3 from "@/assets/manufacturing-workflow.jpg";
 import chapterPrintAsset from "@/assets/bambu-3d-printing.png.asset.json";
 import chapterFabAsset from "@/assets/welding-sparks.jpg.asset.json";
 import chapterLaser from "@/assets/chapter-laser.jpg";
