@@ -4,7 +4,6 @@ import { Footer } from "@/components/xtz/Footer";
 import { useI18n } from "@/components/xtz/i18n";
 import bambuAsset from "@/assets/bambu-3d-printing.png.asset.json";
 import laserAsset from "@/assets/fiber-laser-machine.jpg.asset.json";
-import weldingAsset from "@/assets/welding-sparks.jpg.asset.json";
 
 
 export const Route = createFileRoute("/start")({
@@ -63,8 +62,8 @@ const categories: Category[] = [
     descGR: "Κάμψη, συγκόλληση και συναρμολόγηση μεταλλικών εξαρτημάτων.",
     to: "/start-project",
     search: { service: "Sheet Metal Forming & Welding" },
-    image: weldingAsset.url,
-    imageAlt: "Welder fabricating a metal part with bright sparks",
+    image: "/laser-welding.png",
+    imageAlt: "Modern laser welding machine in operation",
   },
 
 ];
