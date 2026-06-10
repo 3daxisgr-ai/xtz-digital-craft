@@ -2,6 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
 import { useI18n } from "@/components/xtz/i18n";
+import bambuAsset from "@/assets/bambu-3d-printing.png.asset.json";
+import laserAsset from "@/assets/fiber-laser-machine.jpg.asset.json";
+import weldingAsset from "@/assets/welding-sparks.jpg.asset.json";
+
 
 export const Route = createFileRoute("/start")({
   head: () => ({
