@@ -4,15 +4,16 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "@tanstack/react-router";
 import aboutBg from "@/assets/about-bg.png.asset.json";
 import type { CapabilitySlug } from "./Capabilities";
+import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const specialties: { label: string; slug: CapabilitySlug }[] = [
-  { label: "Design & Prototype", slug: "design-to-prototype" },
-  { label: "Fiber Laser Cutting", slug: "fiber-laser-cutting" },
-  { label: "Sheet Metal Forming & Welding", slug: "sheet-metal-forming-welding" },
-  { label: "3D Printing", slug: "3d-printing" },
-  { label: "​Mass production", slug: "global-manufacturing-network" },
+const specialties: { tKey: string; slug: CapabilitySlug }[] = [
+  { tKey: "cap.05.t", slug: "design-to-prototype" },
+  { tKey: "cap.02.t", slug: "fiber-laser-cutting" },
+  { tKey: "cap.03.t", slug: "sheet-metal-forming-welding" },
+  { tKey: "cap.04.t", slug: "3d-printing" },
+  { tKey: "cap.06.t", slug: "global-manufacturing-network" },
 ];
 
 
