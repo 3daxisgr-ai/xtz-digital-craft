@@ -74,7 +74,7 @@ export const submitForm = createServerFn({ method: "POST" })
         file_path: data.file_path ?? null,
         file_name: data.file_name ?? null,
         file_url: fileUrl,
-        metadata: data.metadata ?? null,
+        metadata: (data.metadata ?? null) as never,
       })
       .select("id")
       .single();
