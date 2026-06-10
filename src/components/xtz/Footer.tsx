@@ -85,7 +85,6 @@ export function Footer() {
             <a href="#concept" className="hover:text-primary transition-colors text-xs">{t("foot.nav.why")}</a>
             <a href="#capabilities" className="hover:text-primary transition-colors text-xs">{t("foot.nav.caps")}</a>
             <a href="#portfolio" className="hover:text-primary transition-colors text-xs">{t("foot.nav.work")}</a>
-            <a href="#process" className="hover:text-primary transition-colors text-xs">{t("foot.nav.process")}</a>
             <a href="#network" className="hover:text-primary transition-colors text-xs">{t("foot.nav.network")}</a>
             <Link to="/start-project" className="hover:text-primary transition-colors text-xs">{t("foot.nav.inquiry")}</Link>
           </nav>
