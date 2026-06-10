@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import ctaBg from "@/assets/cta-industrial.jpg";
+import { useI18n } from "./i18n";
 
 export function ProjectCTA() {
+  const { t, lang } = useI18n();
   const root = useRef<HTMLElement>(null);
 
   useEffect(() => {
