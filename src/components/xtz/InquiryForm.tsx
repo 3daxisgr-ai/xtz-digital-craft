@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useI18n } from "./i18n";
 
@@ -53,15 +53,13 @@ export function InquiryForm() {
 
   // Read ?service= from URL on mount to pre-fill the service type.
   // When set, the manual service selector is hidden so we don't ask twice.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useState(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const s = params.get("service");
-      if (s) setPreselectedService(s);
-    }
-    return "";
-  });
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const s = new URLSearchParams(window.location.search).get("service");
+    if (s) setPreselectedService(s);
+  }, []);
+
+
 
 
 
