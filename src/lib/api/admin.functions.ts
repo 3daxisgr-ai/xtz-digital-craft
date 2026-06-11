@@ -49,8 +49,8 @@ export const adminListQuotes = createServerFn({ method: "GET" }).handler(async (
   const authed = await requireAdmin();
   if (!authed) return { authed: false as const, rows: [] };
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
-    .from("quote_requests")
+  const { data, error } = await (supabaseAdmin as any)
+    .from("quotes")
     .select("*")
     .order("created_at", { ascending: false })
     .limit(2000);
