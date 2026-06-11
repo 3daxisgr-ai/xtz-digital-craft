@@ -442,11 +442,12 @@ function AdminPage() {
       </header>
 
       <div className="px-6 py-6 space-y-6">
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <section className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <StatCard label="Total" value={stats.total} accent="text-white" />
           <StatCard label="New" value={stats.new} accent="text-blue-300" />
           <StatCard label="In Progress" value={stats.in_progress} accent="text-amber-300" />
-          <StatCard label="Done" value={stats.done} accent="text-emerald-300" />
+          <StatCard label="Quoted" value={stats.quoted} accent="text-purple-300" />
+          <StatCard label="Completed" value={stats.completed} accent="text-emerald-300" />
         </section>
 
         <section className="flex flex-wrap items-center gap-2">
