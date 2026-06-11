@@ -67,7 +67,9 @@ function AdminPage() {
   const listNotifs = useServerFn(adminListNotifications);
   const markRead = useServerFn(adminMarkNotificationRead);
   const markAllRead = useServerFn(adminMarkAllNotificationsRead);
+  const sendTest = useServerFn(adminSendTestNotification);
 
+  const [testing, setTesting] = useState(false);
   const [ready, setReady] = useState(false);
   const [authed, setAuthed] = useState(false);
   const [password, setPassword] = useState("");
