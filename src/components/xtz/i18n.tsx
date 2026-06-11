@@ -20,7 +20,7 @@ const en: Dict = {
   "intro.headline": "​​SKG3D",
   "intro.sub": "​",
   "intro.scroll": "Scroll Down",
-  "intro.xyz": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
+  "intro.xyz": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
 
   // Concept (what we do)
   "concept.kicker": "What we do",
@@ -109,7 +109,7 @@ const en: Dict = {
   "finale.cta": "Start a Project",
   "finale.foot1": "© SKG3D",
   "finale.foot2": "​",
-  "finale.foot3": "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
+  "finale.foot3": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
 
   // About section
   "about.tag": "ABOUT US",
@@ -208,7 +208,7 @@ const gr: Dict = {
   "intro.headline": "Από την Ιδέα στην Πραγματικότητα",
   "intro.sub": "​",
   "intro.scroll": "Κύλιση",
-  "intro.xyz": "ΣΧΕΔΙΑΣΜΟΣ · ΠΡΩΤΟΤΥΠΟ · ΚΑΤΑΣΚΕΥΗ · ΠΑΡΑΔΟΣΗ",
+  "intro.xyz": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
 
   "concept.kicker": "Τι κάνουμε",
   "concept.title": "Σχεδιάζουμε, πρωτοτυποποιούμε και κατασκευάζουμε πραγματικά προϊόντα.",
@@ -290,7 +290,7 @@ const gr: Dict = {
   "finale.cta": "Ξεκινήστε το Έργο σας",
   "finale.foot1": "© SKG3D",
   "finale.foot2": "​",
-  "finale.foot3": "ΣΧΕΔΙΑΣΜΟΣ · ΠΡΩΤΟΤΥΠΟ · ΚΑΤΑΣΚΕΥΗ · ΠΑΡΑΔΟΣΗ",
+  "finale.foot3": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
 
   // About
   "about.tag": "ΣΧΕΤΙΚΑ",
