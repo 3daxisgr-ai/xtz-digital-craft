@@ -87,24 +87,56 @@ export const submitForm = createServerFn({ method: "POST" })
     const submissionId = inserted?.id as string | undefined;
 
     // 1b. Mirror into quote_requests (backup/admin-facing table)
+    let quoteId: string | undefined;
     try {
-      await supabaseAdmin.from("quote_requests").insert({
-        name: `${data.name}${data.surname ? " " + data.surname : ""}`,
-        email: data.email,
-        phone: data.phone ?? null,
-        service: data.service ?? null,
-        material: data.material ?? null,
-        message: data.message ?? null,
-        file_url: fileUrl,
-        file_path: data.file_path ?? null,
-        file_name: data.file_name ?? null,
-        estimated_price: data.estimated_price ?? null,
-        source: data.source,
-        metadata: (data.metadata ?? null) as never,
-      });
+      const { data: qr } = await supabaseAdmin
+        .from("quote_requests")
+        .insert({
+          name: `${data.name}${data.surname ? " " + data.surname : ""}`,
+          email: data.email,
+          phone: data.phone ?? null,
+          service: data.service ?? null,
+          material: data.material ?? null,
+          message: data.message ?? null,
+          file_url: fileUrl,
+          file_path: data.file_path ?? null,
+          file_name: data.file_name ?? null,
+          estimated_price: data.estimated_price ?? null,
+          source: data.source,
+          metadata: (data.metadata ?? null) as never,
+        })
+        .select("id")
+        .single();
+      quoteId = qr?.id as string | undefined;
     } catch (e) {
       console.error("quote_requests mirror insert failed", e);
     }
+
+    // 1c. Admin dashboard notification + realtime broadcast
+    try {
+      const fullName = `${data.name}${data.surname ? " " + data.surname : ""}`;
+      const notifTitle = `New quote request from ${fullName}`;
+      const notifBody = [data.service, data.material, data.email].filter(Boolean).join(" · ");
+      const { data: notif } = await (supabaseAdmin as any)
+        .from("admin_notifications")
+        .insert({ quote_id: quoteId ?? null, title: notifTitle, body: notifBody })
+        .select("*")
+        .single();
+      try {
+        const channel = supabaseAdmin.channel("admin-notifications");
+        await channel.send({
+          type: "broadcast",
+          event: "new",
+          payload: notif ?? { title: notifTitle, body: notifBody, quote_id: quoteId },
+        });
+        await supabaseAdmin.removeChannel(channel);
+      } catch (be) {
+        console.error("realtime broadcast failed", be);
+      }
+    } catch (e) {
+      console.error("admin notification insert failed", e);
+    }
+
 
     // 2. Send email notification (best-effort, never block the user)
     const sourceLabel = data.source === "3d-printing-quote" ? "3D Printing Quote" : "Project Inquiry";

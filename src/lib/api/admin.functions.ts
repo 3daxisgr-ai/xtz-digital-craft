@@ -121,3 +121,51 @@ export const adminDeleteQuote = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { authed: true as const, ok: true };
   });
+
+// ============ Notifications ============
+
+export const adminListNotifications = createServerFn({ method: "GET" }).handler(async () => {
+  const authed = await requireAdmin();
+  if (!authed) return { authed: false as const, items: [] };
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await (supabaseAdmin as any)
+    .from("admin_notifications")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) throw new Error(error.message);
+  return { authed: true as const, items: (data ?? []) as Array<{
+    id: string;
+    quote_id: string | null;
+    title: string;
+    body: string | null;
+    read: boolean;
+    created_at: string;
+  }> };
+});
+
+export const adminMarkNotificationRead = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => {
+    const authed = await requireAdmin();
+    if (!authed) return { authed: false as const };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await (supabaseAdmin as any)
+      .from("admin_notifications")
+      .update({ read: true })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { authed: true as const, ok: true };
+  });
+
+export const adminMarkAllNotificationsRead = createServerFn({ method: "POST" }).handler(async () => {
+  const authed = await requireAdmin();
+  if (!authed) return { authed: false as const };
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { error } = await (supabaseAdmin as any)
+    .from("admin_notifications")
+    .update({ read: true })
+    .eq("read", false);
+  if (error) throw new Error(error.message);
+  return { authed: true as const, ok: true };
+});
