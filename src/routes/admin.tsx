@@ -116,6 +116,76 @@ function AdminPage() {
     if (authed) refresh().catch((e) => setLoadError(e instanceof Error ? e.message : "Failed to load"));
   }, [authed]);
 
+  async function refreshNotifs() {
+    try {
+      const r = await listNotifs();
+      if (!r.authed) return;
+      setNotifs(r.items);
+    } catch (e) {
+      console.error("notif load failed", e);
+    }
+  }
+
+  useEffect(() => {
+    if (!authed) return;
+    refreshNotifs();
+    // Realtime: server-side broadcast on every new submission
+    const channel = supabase.channel("admin-notifications");
+    channel.on("broadcast", { event: "new" }, () => {
+      refreshNotifs();
+      refresh().catch(() => {});
+    });
+    channel.subscribe();
+    // Safety net poll
+    const t = setInterval(refreshNotifs, 30000);
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(t);
+    };
+  }, [authed]);
+
+  // Close notif panel on outside click
+  useEffect(() => {
+    if (!notifOpen) return;
+    function onClick(e: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
+    }
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [notifOpen]);
+
+  async function onClickNotif(n: Notif) {
+    if (!n.read) {
+      try {
+        await markRead({ data: { id: n.id } });
+        setNotifs((prev) => prev.map((x) => (x.id === n.id ? { ...x, read: true } : x)));
+      } catch {}
+    }
+    setNotifOpen(false);
+    if (n.quote_id) {
+      const row = rows.find((r) => r.id === n.quote_id);
+      if (row) {
+        setViewing(row);
+      } else {
+        // not loaded yet — refresh then try again
+        await refresh().catch(() => {});
+        setRows((prev) => {
+          const found = prev.find((r) => r.id === n.quote_id);
+          if (found) setViewing(found);
+          return prev;
+        });
+      }
+    }
+  }
+
+  async function onMarkAllRead() {
+    try {
+      await markAllRead();
+      setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
+    } catch {}
+  }
+
+
   async function onLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoginError(null);
