@@ -430,6 +430,26 @@ function AdminPage() {
             )}
           </div>
           <button
+            onClick={async () => {
+              setTesting(true);
+              try {
+                const r = await sendTest();
+                if (!r.authed) { setAuthed(false); return; }
+                const dMsg = r.discord?.ok ? "✅ Discord sent" : `❌ Discord: ${r.discord?.error ?? "failed"}`;
+                const eMsg = r.email?.ok ? "✅ Email sent" : `❌ Email: ${r.email?.error ?? "failed"}`;
+                alert(`Test Notification Results:\n\n${dMsg}\n${eMsg}`);
+              } catch (e) {
+                alert(e instanceof Error ? e.message : "Test failed");
+              } finally {
+                setTesting(false);
+              }
+            }}
+            disabled={testing}
+            className="text-xs border border-white/15 rounded px-3 py-2 hover:bg-white/5 disabled:opacity-50"
+          >
+            {testing ? "Sending…" : "Send Test Notification"}
+          </button>
+          <button
             onClick={() => refresh()}
             className="text-xs border border-white/15 rounded px-3 py-2 hover:bg-white/5"
           >
