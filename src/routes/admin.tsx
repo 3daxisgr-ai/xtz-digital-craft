@@ -522,9 +522,16 @@ function AdminPage() {
                     <td className="p-3 whitespace-nowrap">{r.service ?? "—"}</td>
                     <td className="p-3 whitespace-nowrap">{r.material ?? "—"}</td>
                     <td className="p-3 whitespace-nowrap">
-                      <span className={`inline-block text-xs border rounded px-2 py-0.5 ${STATUS_STYLE[status]}`}>
-                        {STATUS_LABEL[status]}
-                      </span>
+                      <select
+                        value={status}
+                        onChange={(e) => onSetStatus(r, e.target.value as Status)}
+                        disabled={busy === r.id}
+                        className={`text-xs border rounded px-2 py-1 bg-transparent focus:outline-none ${STATUS_STYLE[status]}`}
+                      >
+                        {STATUSES.map((s) => (
+                          <option key={s} value={s} className="bg-neutral-900 text-white">{s}</option>
+                        ))}
+                      </select>
                     </td>
                     <td className="p-3 whitespace-nowrap text-right">
                       {r.estimated_price != null ? `€${Number(r.estimated_price).toFixed(2)}` : "—"}
@@ -545,23 +552,6 @@ function AdminPage() {
                       <div className="inline-flex gap-1">
                         <ActionBtn onClick={() => setViewing(r)}>View</ActionBtn>
                         <ActionBtn onClick={() => setEditing(r)}>Edit</ActionBtn>
-                        {status !== "in_progress" && (
-                          <ActionBtn
-                            onClick={() => onSetStatus(r, "in_progress")}
-                            disabled={busy === r.id}
-                          >
-                            Start
-                          </ActionBtn>
-                        )}
-                        {status !== "done" && (
-                          <ActionBtn
-                            onClick={() => onSetStatus(r, "done")}
-                            disabled={busy === r.id}
-                            variant="success"
-                          >
-                            Done
-                          </ActionBtn>
-                        )}
                         <ActionBtn
                           onClick={() => setConfirmDelete(r)}
                           variant="danger"
