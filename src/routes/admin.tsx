@@ -10,6 +10,7 @@ import {
   adminLogout,
   adminMarkAllNotificationsRead,
   adminMarkNotificationRead,
+  adminSendTestNotification,
   adminSignFile,
   adminUpdateQuote,
 } from "@/lib/api/admin.functions";
@@ -66,7 +67,9 @@ function AdminPage() {
   const listNotifs = useServerFn(adminListNotifications);
   const markRead = useServerFn(adminMarkNotificationRead);
   const markAllRead = useServerFn(adminMarkAllNotificationsRead);
+  const sendTest = useServerFn(adminSendTestNotification);
 
+  const [testing, setTesting] = useState(false);
   const [ready, setReady] = useState(false);
   const [authed, setAuthed] = useState(false);
   const [password, setPassword] = useState("");
@@ -426,6 +429,26 @@ function AdminPage() {
               </div>
             )}
           </div>
+          <button
+            onClick={async () => {
+              setTesting(true);
+              try {
+                const r = await sendTest();
+                if (!r.authed) { setAuthed(false); return; }
+                const dMsg = r.discord?.ok ? "✅ Discord sent" : `❌ Discord: ${r.discord?.error ?? "failed"}`;
+                const eMsg = r.email?.ok ? "✅ Email sent" : `❌ Email: ${r.email?.error ?? "failed"}`;
+                alert(`Test Notification Results:\n\n${dMsg}\n${eMsg}`);
+              } catch (e) {
+                alert(e instanceof Error ? e.message : "Test failed");
+              } finally {
+                setTesting(false);
+              }
+            }}
+            disabled={testing}
+            className="text-xs border border-white/15 rounded px-3 py-2 hover:bg-white/5 disabled:opacity-50"
+          >
+            {testing ? "Sending…" : "Send Test Notification"}
+          </button>
           <button
             onClick={() => refresh()}
             className="text-xs border border-white/15 rounded px-3 py-2 hover:bg-white/5"

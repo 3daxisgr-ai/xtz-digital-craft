@@ -169,4 +169,68 @@ export const adminMarkAllNotificationsRead = createServerFn({ method: "POST" }).
     .eq("read", false);
   if (error) throw new Error(error.message);
   return { authed: true as const, ok: true };
+  });
+
+// ============ Test Notifications ============
+
+export const adminSendTestNotification = createServerFn({ method: "POST" }).handler(async () => {
+  const authed = await requireAdmin();
+  if (!authed) return { authed: false as const, discord: null, email: null };
+
+  const NOTIFY_EMAIL = "3daxis.gr@gmail.com";
+  const now = new Date().toLocaleString("en-GB", { timeZone: "Europe/Athens" });
+
+  // Discord
+  let discord: { ok: boolean; error?: string } = { ok: false, error: "DISCORD_WEBHOOK_URL not set" };
+  try {
+    const webhook = process.env.DISCORD_WEBHOOK_URL;
+    if (webhook) {
+      const res = await fetch(webhook, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "3D Axis",
+          embeds: [{
+            title: "✅ Test Notification",
+            description: "This is a test from the Admin Dashboard.",
+            color: 0x10b981,
+            fields: [{ name: "🕒 Time", value: now, inline: false }],
+            timestamp: new Date().toISOString(),
+          }],
+        }),
+      });
+      discord = res.ok ? { ok: true } : { ok: false, error: `Discord ${res.status}: ${await res.text()}` };
+    }
+  } catch (e) {
+    discord = { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+
+  // Email (Resend via Lovable gateway)
+  let email: { ok: boolean; error?: string } = { ok: false, error: "Email provider not configured" };
+  try {
+    const lovableKey = process.env.LOVABLE_API_KEY;
+    const resendKey = process.env.RESEND_API_KEY;
+    if (lovableKey && resendKey) {
+      const res = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${lovableKey}`,
+          "X-Connection-Api-Key": resendKey,
+        },
+        body: JSON.stringify({
+          from: "SKG3D Notifications <onboarding@resend.dev>",
+          to: [NOTIFY_EMAIL],
+          subject: "✅ Test Notification - 3D Axis",
+          html: `<p>This is a test email from the Admin Dashboard.</p><p>Time: ${now}</p>`,
+          text: `Test email from Admin Dashboard. Time: ${now}`,
+        }),
+      });
+      email = res.ok ? { ok: true } : { ok: false, error: `Resend ${res.status}: ${await res.text()}` };
+    }
+  } catch (e) {
+    email = { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+
+  return { authed: true as const, discord, email };
 });
