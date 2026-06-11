@@ -1,15 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   adminCheck,
   adminDeleteQuote,
+  adminListNotifications,
   adminListQuotes,
   adminLogin,
   adminLogout,
+  adminMarkAllNotificationsRead,
+  adminMarkNotificationRead,
   adminSignFile,
   adminUpdateQuote,
 } from "@/lib/api/admin.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -62,6 +66,9 @@ function AdminPage() {
   const sign = useServerFn(adminSignFile);
   const update = useServerFn(adminUpdateQuote);
   const remove = useServerFn(adminDeleteQuote);
+  const listNotifs = useServerFn(adminListNotifications);
+  const markRead = useServerFn(adminMarkNotificationRead);
+  const markAllRead = useServerFn(adminMarkAllNotificationsRead);
 
   const [ready, setReady] = useState(false);
   const [authed, setAuthed] = useState(false);
@@ -81,6 +88,11 @@ function AdminPage() {
   const [viewing, setViewing] = useState<QuoteRow | null>(null);
   const [editing, setEditing] = useState<QuoteRow | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<QuoteRow | null>(null);
+
+  type Notif = { id: string; quote_id: string | null; title: string; body: string | null; read: boolean; created_at: string };
+  const [notifs, setNotifs] = useState<Notif[]>([]);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     check().then((r) => {
@@ -103,6 +115,76 @@ function AdminPage() {
   useEffect(() => {
     if (authed) refresh().catch((e) => setLoadError(e instanceof Error ? e.message : "Failed to load"));
   }, [authed]);
+
+  async function refreshNotifs() {
+    try {
+      const r = await listNotifs();
+      if (!r.authed) return;
+      setNotifs(r.items);
+    } catch (e) {
+      console.error("notif load failed", e);
+    }
+  }
+
+  useEffect(() => {
+    if (!authed) return;
+    refreshNotifs();
+    // Realtime: server-side broadcast on every new submission
+    const channel = supabase.channel("admin-notifications");
+    channel.on("broadcast", { event: "new" }, () => {
+      refreshNotifs();
+      refresh().catch(() => {});
+    });
+    channel.subscribe();
+    // Safety net poll
+    const t = setInterval(refreshNotifs, 30000);
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(t);
+    };
+  }, [authed]);
+
+  // Close notif panel on outside click
+  useEffect(() => {
+    if (!notifOpen) return;
+    function onClick(e: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
+    }
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [notifOpen]);
+
+  async function onClickNotif(n: Notif) {
+    if (!n.read) {
+      try {
+        await markRead({ data: { id: n.id } });
+        setNotifs((prev) => prev.map((x) => (x.id === n.id ? { ...x, read: true } : x)));
+      } catch {}
+    }
+    setNotifOpen(false);
+    if (n.quote_id) {
+      const row = rows.find((r) => r.id === n.quote_id);
+      if (row) {
+        setViewing(row);
+      } else {
+        // not loaded yet — refresh then try again
+        await refresh().catch(() => {});
+        setRows((prev) => {
+          const found = prev.find((r) => r.id === n.quote_id);
+          if (found) setViewing(found);
+          return prev;
+        });
+      }
+    }
+  }
+
+  async function onMarkAllRead() {
+    try {
+      await markAllRead();
+      setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
+    } catch {}
+  }
+
 
   async function onLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -296,6 +378,56 @@ function AdminPage() {
           <p className="text-xs opacity-60">Admin dashboard</p>
         </div>
         <div className="flex items-center gap-2">
+          <div ref={notifRef} className="relative">
+            <button
+              onClick={() => setNotifOpen((v) => !v)}
+              aria-label="Notifications"
+              className="relative h-9 w-9 grid place-items-center border border-white/15 rounded hover:bg-white/5"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+              </svg>
+              {notifs.some((n) => !n.read) && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 grid place-items-center text-[10px] font-semibold rounded-full bg-red-500 text-white">
+                  {notifs.filter((n) => !n.read).length}
+                </span>
+              )}
+            </button>
+            {notifOpen && (
+              <div className="absolute right-0 mt-2 w-[360px] max-h-[480px] overflow-y-auto bg-neutral-900 border border-white/10 rounded-lg shadow-2xl z-20">
+                <div className="flex items-center justify-between p-3 border-b border-white/10 sticky top-0 bg-neutral-900">
+                  <div className="text-sm font-semibold">Notifications</div>
+                  <button
+                    onClick={onMarkAllRead}
+                    className="text-[11px] text-white/60 hover:text-white"
+                    disabled={!notifs.some((n) => !n.read)}
+                  >
+                    Mark all read
+                  </button>
+                </div>
+                {notifs.length === 0 && (
+                  <div className="p-6 text-center text-xs text-white/50">No notifications yet.</div>
+                )}
+                {notifs.map((n) => (
+                  <button
+                    key={n.id}
+                    onClick={() => onClickNotif(n)}
+                    className={`w-full text-left p-3 border-b border-white/5 hover:bg-white/5 flex gap-3 ${n.read ? "opacity-60" : ""}`}
+                  >
+                    <span className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${n.read ? "bg-white/20" : "bg-blue-400"}`} />
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm text-white/90 truncate">{n.title}</div>
+                      {n.body && <div className="text-xs text-white/50 truncate">{n.body}</div>}
+                      <div className="text-[10px] text-white/40 mt-1">
+                        {new Date(n.created_at).toLocaleString()}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button
             onClick={() => refresh()}
             className="text-xs border border-white/15 rounded px-3 py-2 hover:bg-white/5"

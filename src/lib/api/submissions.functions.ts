@@ -87,28 +87,60 @@ export const submitForm = createServerFn({ method: "POST" })
     const submissionId = inserted?.id as string | undefined;
 
     // 1b. Mirror into quote_requests (backup/admin-facing table)
+    let quoteId: string | undefined;
     try {
-      await supabaseAdmin.from("quote_requests").insert({
-        name: `${data.name}${data.surname ? " " + data.surname : ""}`,
-        email: data.email,
-        phone: data.phone ?? null,
-        service: data.service ?? null,
-        material: data.material ?? null,
-        message: data.message ?? null,
-        file_url: fileUrl,
-        file_path: data.file_path ?? null,
-        file_name: data.file_name ?? null,
-        estimated_price: data.estimated_price ?? null,
-        source: data.source,
-        metadata: (data.metadata ?? null) as never,
-      });
+      const { data: qr } = await supabaseAdmin
+        .from("quote_requests")
+        .insert({
+          name: `${data.name}${data.surname ? " " + data.surname : ""}`,
+          email: data.email,
+          phone: data.phone ?? null,
+          service: data.service ?? null,
+          material: data.material ?? null,
+          message: data.message ?? null,
+          file_url: fileUrl,
+          file_path: data.file_path ?? null,
+          file_name: data.file_name ?? null,
+          estimated_price: data.estimated_price ?? null,
+          source: data.source,
+          metadata: (data.metadata ?? null) as never,
+        })
+        .select("id")
+        .single();
+      quoteId = qr?.id as string | undefined;
     } catch (e) {
       console.error("quote_requests mirror insert failed", e);
     }
 
+    // 1c. Admin dashboard notification + realtime broadcast
+    try {
+      const fullName = `${data.name}${data.surname ? " " + data.surname : ""}`;
+      const notifTitle = `New quote request from ${fullName}`;
+      const notifBody = [data.service, data.material, data.email].filter(Boolean).join(" · ");
+      const { data: notif } = await (supabaseAdmin as any)
+        .from("admin_notifications")
+        .insert({ quote_id: quoteId ?? null, title: notifTitle, body: notifBody })
+        .select("*")
+        .single();
+      try {
+        const channel = supabaseAdmin.channel("admin-notifications");
+        await channel.send({
+          type: "broadcast",
+          event: "new",
+          payload: notif ?? { title: notifTitle, body: notifBody, quote_id: quoteId },
+        });
+        await supabaseAdmin.removeChannel(channel);
+      } catch (be) {
+        console.error("realtime broadcast failed", be);
+      }
+    } catch (e) {
+      console.error("admin notification insert failed", e);
+    }
+
+
     // 2. Send email notification (best-effort, never block the user)
     const sourceLabel = data.source === "3d-printing-quote" ? "3D Printing Quote" : "Project Inquiry";
-    const subject = `New ${sourceLabel} — ${data.name}${data.surname ? " " + data.surname : ""}`;
+    const subject = `🚀 New Quote Request - 3D Axis`;
 
     const fileLine = data.file_name
       ? fileUrl
@@ -189,6 +221,60 @@ export const submitForm = createServerFn({ method: "POST" })
       emailError = e instanceof Error ? e.message : String(e);
       console.error("Email send failed", e);
     }
+
+    // 3. Discord webhook notification (best-effort)
+    try {
+      const webhook = process.env.DISCORD_WEBHOOK_URL;
+      if (webhook) {
+        const fullName = `${data.name}${data.surname ? " " + data.surname : ""}`;
+        const fields: { name: string; value: string; inline?: boolean }[] = [];
+        const push = (name: string, v: unknown, inline = true) => {
+          if (v === null || v === undefined || v === "") return;
+          fields.push({ name, value: String(v).slice(0, 1024), inline });
+        };
+        push("👤 Name", fullName);
+        push("📧 Email", data.email);
+        push("📞 Phone", data.phone);
+        push("🛠️ Service", data.service);
+        push("🧪 Material", data.material);
+        if (data.estimated_price != null) push("💶 Estimated Price", `€${data.estimated_price.toFixed(2)}`);
+        if (data.message) fields.push({ name: "📝 Message", value: data.message.slice(0, 1024), inline: false });
+        if (data.file_name || fileUrl) {
+          fields.push({
+            name: "📎 Uploaded File",
+            value: fileUrl ? `[${data.file_name ?? "Download"}](${fileUrl})` : (data.file_name ?? "—"),
+            inline: false,
+          });
+        }
+        fields.push({
+          name: "🕒 Date & Time",
+          value: new Date().toLocaleString("en-GB", { timeZone: "Europe/Athens" }),
+          inline: false,
+        });
+
+        const res = await fetch(webhook, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: "3D Axis",
+            embeds: [
+              {
+                title: "🚀 New Quote Request",
+                description: `**${sourceLabel}**`,
+                color: 0x3b82f6,
+                fields,
+                timestamp: new Date().toISOString(),
+                footer: { text: submissionId ? `ID: ${submissionId}` : "3D Axis" },
+              },
+            ],
+          }),
+        });
+        if (!res.ok) console.error(`Discord ${res.status}: ${await res.text()}`);
+      }
+    } catch (e) {
+      console.error("Discord webhook failed", e);
+    }
+
 
     if (submissionId) {
       await supabaseAdmin
