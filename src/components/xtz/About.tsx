@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "@tanstack/react-router";
-import aboutBg from "@/assets/about-bg.png.asset.json";
+import aboutBg from "@/assets/about-bg1.png.asset.json";
 import type { CapabilitySlug } from "./Capabilities";
 import { useI18n } from "./i18n";
 
@@ -15,7 +15,6 @@ const specialties: { tKey: string; slug: CapabilitySlug }[] = [
   { tKey: "cap.04.t", slug: "3d-printing" },
   { tKey: "cap.06.t", slug: "global-manufacturing-network" },
 ];
-
 
 export function About() {
   const { t } = useI18n();
@@ -60,8 +59,7 @@ export function About() {
       <div
         className="pointer-events-none absolute inset-0 opacity-70"
         style={{
-          background:
-            "radial-gradient(ellipse at 80% 20%, oklch(0.55 0.18 245 / 0.28), transparent 60%)",
+          background: "radial-gradient(ellipse at 80% 20%, oklch(0.55 0.18 245 / 0.28), transparent 60%)",
         }}
       />
       {/* Soft top + bottom blend with neighboring sections */}
@@ -93,8 +91,18 @@ export function About() {
           </div>
           <h2 className="font-display font-bold leading-[0.9] tracking-tighter text-6xl">
             {t("about.title.l1")}
-            {t("about.title.l2") && <><br />{t("about.title.l2")}</>}
-            {t("about.title.l3") && <><br />{t("about.title.l3")}</>}
+            {t("about.title.l2") && (
+              <>
+                <br />
+                {t("about.title.l2")}
+              </>
+            )}
+            {t("about.title.l3") && (
+              <>
+                <br />
+                {t("about.title.l3")}
+              </>
+            )}
           </h2>
           <div className="space-y-5 text-base md:text-lg text-foreground/85 leading-relaxed font-light max-w-xl">
             <p>{t("about.body")}</p>
@@ -113,15 +121,12 @@ export function About() {
                   params={{ slug: s.slug }}
                   className="group flex items-center gap-6 py-5 transition-colors hover:text-primary"
                 >
-                  <span className="font-display text-lg md:text-2xl font-medium tracking-tight">
-                    {t(s.tKey)}
-                  </span>
+                  <span className="font-display text-lg md:text-2xl font-medium tracking-tight">{t(s.tKey)}</span>
                   <span className="ml-auto h-px flex-1 max-w-[60px] bg-primary/20 group-hover:bg-primary transition-colors" />
                 </Link>
               </li>
             ))}
           </ul>
-
         </div>
       </div>
     </section>
