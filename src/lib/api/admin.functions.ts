@@ -183,7 +183,9 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
   // Discord
   let discord: { ok: boolean; error?: string } = { ok: false, error: "DISCORD_WEBHOOK_URL not set" };
   try {
-    const webhook = process.env.DISCORD_WEBHOOK_URL;
+    const raw = process.env.DISCORD_WEBHOOK_URL?.trim().replace(/^["']|["']$/g, "");
+    const match = raw?.match(/https:\/\/discord(?:app)?\.com\/api\/webhooks\/\S+/);
+    const webhook = match?.[0];
     if (webhook) {
       const res = await fetch(webhook, {
         method: "POST",

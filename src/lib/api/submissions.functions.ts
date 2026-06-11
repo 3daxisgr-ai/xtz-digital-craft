@@ -225,7 +225,8 @@ export const submitForm = createServerFn({ method: "POST" })
 
     // 3. Discord webhook notification (best-effort)
     try {
-      const webhook = process.env.DISCORD_WEBHOOK_URL;
+      const raw = process.env.DISCORD_WEBHOOK_URL?.trim().replace(/^["']|["']$/g, "");
+      const webhook = raw?.match(/https:\/\/discord(?:app)?\.com\/api\/webhooks\/\S+/)?.[0];
       if (webhook) {
         const fullName = `${data.name}${data.surname ? " " + data.surname : ""}`;
         const fields: { name: string; value: string; inline?: boolean }[] = [];
