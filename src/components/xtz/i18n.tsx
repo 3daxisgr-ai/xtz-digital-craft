@@ -207,7 +207,7 @@ const gr: Dict = {
 
   "intro.headline": "Από την Ιδέα στην Πραγματικότητα",
   "intro.sub": "​",
-  "intro.scroll": "Κύλιση",
+  "intro.scroll": "SCROLL",
   "intro.xyz": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
 
   "concept.kicker": "Τι κάνουμε",
