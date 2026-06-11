@@ -23,7 +23,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Status = "new" | "in_progress" | "done";
+type Status = "New" | "In Progress" | "Quoted" | "Completed";
 
 type QuoteRow = {
   id: string;
@@ -42,20 +42,17 @@ type QuoteRow = {
   created_at: string;
 };
 
-const STATUS_LABEL: Record<Status, string> = {
-  new: "New",
-  in_progress: "In Progress",
-  done: "Done",
-};
+const STATUSES: Status[] = ["New", "In Progress", "Quoted", "Completed"];
 
 const STATUS_STYLE: Record<Status, string> = {
-  new: "bg-blue-500/15 text-blue-300 border-blue-500/30",
-  in_progress: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  done: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+  "New": "bg-blue-500/15 text-blue-300 border-blue-500/30",
+  "In Progress": "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  "Quoted": "bg-purple-500/15 text-purple-300 border-purple-500/30",
+  "Completed": "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
 };
 
 function normalizeStatus(s: string): Status {
-  return s === "in_progress" || s === "done" ? s : "new";
+  return (STATUSES as string[]).includes(s) ? (s as Status) : "New";
 }
 
 function AdminPage() {
@@ -302,15 +299,16 @@ function AdminPage() {
   }, [rows]);
 
   const stats = useMemo(() => {
-    let total = 0, n = 0, ip = 0, d = 0;
+    let total = 0, n = 0, ip = 0, q = 0, c = 0;
     for (const r of rows) {
       total++;
       const s = normalizeStatus(r.status);
-      if (s === "new") n++;
-      else if (s === "in_progress") ip++;
-      else if (s === "done") d++;
+      if (s === "New") n++;
+      else if (s === "In Progress") ip++;
+      else if (s === "Quoted") q++;
+      else if (s === "Completed") c++;
     }
-    return { total, new: n, in_progress: ip, done: d };
+    return { total, new: n, in_progress: ip, quoted: q, completed: c };
   }, [rows]);
 
   const filtered = useMemo(() => {
@@ -444,11 +442,12 @@ function AdminPage() {
       </header>
 
       <div className="px-6 py-6 space-y-6">
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <section className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <StatCard label="Total" value={stats.total} accent="text-white" />
           <StatCard label="New" value={stats.new} accent="text-blue-300" />
           <StatCard label="In Progress" value={stats.in_progress} accent="text-amber-300" />
-          <StatCard label="Done" value={stats.done} accent="text-emerald-300" />
+          <StatCard label="Quoted" value={stats.quoted} accent="text-purple-300" />
+          <StatCard label="Completed" value={stats.completed} accent="text-emerald-300" />
         </section>
 
         <section className="flex flex-wrap items-center gap-2">
@@ -464,9 +463,7 @@ function AdminPage() {
             className="bg-black border border-white/15 rounded px-3 py-2 text-sm"
           >
             <option value="all">All statuses</option>
-            <option value="new">New</option>
-            <option value="in_progress">In Progress</option>
-            <option value="done">Done</option>
+            {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
           <select
             value={serviceFilter}
@@ -525,9 +522,16 @@ function AdminPage() {
                     <td className="p-3 whitespace-nowrap">{r.service ?? "—"}</td>
                     <td className="p-3 whitespace-nowrap">{r.material ?? "—"}</td>
                     <td className="p-3 whitespace-nowrap">
-                      <span className={`inline-block text-xs border rounded px-2 py-0.5 ${STATUS_STYLE[status]}`}>
-                        {STATUS_LABEL[status]}
-                      </span>
+                      <select
+                        value={status}
+                        onChange={(e) => onSetStatus(r, e.target.value as Status)}
+                        disabled={busy === r.id}
+                        className={`text-xs border rounded px-2 py-1 bg-transparent focus:outline-none ${STATUS_STYLE[status]}`}
+                      >
+                        {STATUSES.map((s) => (
+                          <option key={s} value={s} className="bg-neutral-900 text-white">{s}</option>
+                        ))}
+                      </select>
                     </td>
                     <td className="p-3 whitespace-nowrap text-right">
                       {r.estimated_price != null ? `€${Number(r.estimated_price).toFixed(2)}` : "—"}
@@ -548,23 +552,6 @@ function AdminPage() {
                       <div className="inline-flex gap-1">
                         <ActionBtn onClick={() => setViewing(r)}>View</ActionBtn>
                         <ActionBtn onClick={() => setEditing(r)}>Edit</ActionBtn>
-                        {status !== "in_progress" && (
-                          <ActionBtn
-                            onClick={() => onSetStatus(r, "in_progress")}
-                            disabled={busy === r.id}
-                          >
-                            Start
-                          </ActionBtn>
-                        )}
-                        {status !== "done" && (
-                          <ActionBtn
-                            onClick={() => onSetStatus(r, "done")}
-                            disabled={busy === r.id}
-                            variant="success"
-                          >
-                            Done
-                          </ActionBtn>
-                        )}
                         <ActionBtn
                           onClick={() => setConfirmDelete(r)}
                           variant="danger"
@@ -717,7 +704,7 @@ function DetailsView({ row, onDownload }: { row: QuoteRow; onDownload: () => voi
         label="Status"
         value={
           <span className={`inline-block text-xs border rounded px-2 py-0.5 ${STATUS_STYLE[status]}`}>
-            {STATUS_LABEL[status]}
+            {status}
           </span>
         }
       />
