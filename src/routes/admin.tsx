@@ -1,15 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   adminCheck,
   adminDeleteQuote,
+  adminListNotifications,
   adminListQuotes,
   adminLogin,
   adminLogout,
+  adminMarkAllNotificationsRead,
+  adminMarkNotificationRead,
   adminSignFile,
   adminUpdateQuote,
 } from "@/lib/api/admin.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
