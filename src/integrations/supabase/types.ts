@@ -44,12 +44,12 @@ export type Database = {
             foreignKeyName: "admin_notifications_quote_id_fkey"
             columns: ["quote_id"]
             isOneToOne: false
-            referencedRelation: "quote_requests"
+            referencedRelation: "quotes"
             referencedColumns: ["id"]
           },
         ]
       }
-      quote_requests: {
+      quotes: {
         Row: {
           created_at: string
           email: string
