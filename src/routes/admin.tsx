@@ -299,15 +299,16 @@ function AdminPage() {
   }, [rows]);
 
   const stats = useMemo(() => {
-    let total = 0, n = 0, ip = 0, d = 0;
+    let total = 0, n = 0, ip = 0, q = 0, c = 0;
     for (const r of rows) {
       total++;
       const s = normalizeStatus(r.status);
-      if (s === "new") n++;
-      else if (s === "in_progress") ip++;
-      else if (s === "done") d++;
+      if (s === "New") n++;
+      else if (s === "In Progress") ip++;
+      else if (s === "Quoted") q++;
+      else if (s === "Completed") c++;
     }
-    return { total, new: n, in_progress: ip, done: d };
+    return { total, new: n, in_progress: ip, quoted: q, completed: c };
   }, [rows]);
 
   const filtered = useMemo(() => {
