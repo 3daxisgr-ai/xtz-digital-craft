@@ -66,6 +66,9 @@ function AdminPage() {
   const sign = useServerFn(adminSignFile);
   const update = useServerFn(adminUpdateQuote);
   const remove = useServerFn(adminDeleteQuote);
+  const listNotifs = useServerFn(adminListNotifications);
+  const markRead = useServerFn(adminMarkNotificationRead);
+  const markAllRead = useServerFn(adminMarkAllNotificationsRead);
 
   const [ready, setReady] = useState(false);
   const [authed, setAuthed] = useState(false);
@@ -85,6 +88,11 @@ function AdminPage() {
   const [viewing, setViewing] = useState<QuoteRow | null>(null);
   const [editing, setEditing] = useState<QuoteRow | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<QuoteRow | null>(null);
+
+  type Notif = { id: string; quote_id: string | null; title: string; body: string | null; read: boolean; created_at: string };
+  const [notifs, setNotifs] = useState<Notif[]>([]);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     check().then((r) => {
