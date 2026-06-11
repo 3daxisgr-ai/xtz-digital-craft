@@ -82,7 +82,7 @@ const updateSchema = z.object({
       material: z.string().max(100).nullable().optional(),
       message: z.string().max(5000).nullable().optional(),
       estimated_price: z.number().nullable().optional(),
-      status: z.enum(["new", "in_progress", "done"]).optional(),
+      status: z.enum(["New", "In Progress", "Quoted", "Completed"]).optional(),
     })
     .refine((p) => Object.keys(p).length > 0, "No fields to update"),
 });
@@ -93,8 +93,8 @@ export const adminUpdateQuote = createServerFn({ method: "POST" })
     const authed = await requireAdmin();
     if (!authed) return { authed: false as const, row: null };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin
-      .from("quote_requests")
+    const { data: row, error } = await (supabaseAdmin as any)
+      .from("quotes")
       .update(data.patch)
       .eq("id", data.id)
       .select("*")
@@ -109,15 +109,16 @@ export const adminDeleteQuote = createServerFn({ method: "POST" })
     const authed = await requireAdmin();
     if (!authed) return { authed: false as const, ok: false };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row } = await supabaseAdmin
-      .from("quote_requests")
+    const { data: row } = await (supabaseAdmin as any)
+      .from("quotes")
       .select("file_path")
       .eq("id", data.id)
       .maybeSingle();
-    if (row?.file_path) {
-      await supabaseAdmin.storage.from("submission-files").remove([row.file_path]);
+    const filePath = (row as { file_path?: string | null } | null)?.file_path;
+    if (filePath) {
+      await supabaseAdmin.storage.from("submission-files").remove([filePath]);
     }
-    const { error } = await supabaseAdmin.from("quote_requests").delete().eq("id", data.id);
+    const { error } = await (supabaseAdmin as any).from("quotes").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { authed: true as const, ok: true };
   });
