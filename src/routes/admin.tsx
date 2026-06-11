@@ -10,6 +10,7 @@ import {
   adminLogout,
   adminMarkAllNotificationsRead,
   adminMarkNotificationRead,
+  adminSendTestNotification,
   adminSignFile,
   adminUpdateQuote,
 } from "@/lib/api/admin.functions";
