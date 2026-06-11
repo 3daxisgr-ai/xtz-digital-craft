@@ -3,7 +3,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useI18n } from "./i18n";
 import bambu from "@/assets/bambu-3d-printing.png.asset.json";
-import laserMachine from "@/assets/fiber-laser-machine.jpg.asset.json";
+import laserMachine from "@/assets/equipment-photo.png.asset.json";
 import laserWorkshop from "@/assets/fiber-laser-workshop.jpg.asset.json";
 // pressBrake import removed since we're using a direct public URL now
 import shear from "@/assets/sheet-shear.jpg.asset.json";
