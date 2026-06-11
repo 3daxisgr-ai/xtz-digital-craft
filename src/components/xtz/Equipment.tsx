@@ -7,7 +7,7 @@ import laserMachine from "@/assets/fiber-laser-machine.jpg.asset.json";
 import laserWorkshop from "@/assets/fiber-laser-workshop.jpg.asset.json";
 // pressBrake import removed since we're using a direct public URL now
 import shear from "@/assets/sheet-shear.jpg.asset.json";
-import welding from "@/assets/welding-sparks.jpg.asset.json";
+import welding from "@/assets/laser-welding.jpg.asset.json";
 
 gsap.registerPlugin(ScrollTrigger);
 
