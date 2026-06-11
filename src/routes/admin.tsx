@@ -463,9 +463,7 @@ function AdminPage() {
             className="bg-black border border-white/15 rounded px-3 py-2 text-sm"
           >
             <option value="all">All statuses</option>
-            <option value="new">New</option>
-            <option value="in_progress">In Progress</option>
-            <option value="done">Done</option>
+            {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
           <select
             value={serviceFilter}
