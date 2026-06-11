@@ -23,7 +23,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Status = "new" | "in_progress" | "done";
+type Status = "New" | "In Progress" | "Quoted" | "Completed";
 
 type QuoteRow = {
   id: string;
@@ -42,20 +42,17 @@ type QuoteRow = {
   created_at: string;
 };
 
-const STATUS_LABEL: Record<Status, string> = {
-  new: "New",
-  in_progress: "In Progress",
-  done: "Done",
-};
+const STATUSES: Status[] = ["New", "In Progress", "Quoted", "Completed"];
 
 const STATUS_STYLE: Record<Status, string> = {
-  new: "bg-blue-500/15 text-blue-300 border-blue-500/30",
-  in_progress: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  done: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+  "New": "bg-blue-500/15 text-blue-300 border-blue-500/30",
+  "In Progress": "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  "Quoted": "bg-purple-500/15 text-purple-300 border-purple-500/30",
+  "Completed": "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
 };
 
 function normalizeStatus(s: string): Status {
-  return s === "in_progress" || s === "done" ? s : "new";
+  return (STATUSES as string[]).includes(s) ? (s as Status) : "New";
 }
 
 function AdminPage() {
