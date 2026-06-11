@@ -704,7 +704,7 @@ function DetailsView({ row, onDownload }: { row: QuoteRow; onDownload: () => voi
         label="Status"
         value={
           <span className={`inline-block text-xs border rounded px-2 py-0.5 ${STATUS_STYLE[status]}`}>
-            {STATUS_LABEL[status]}
+            {status}
           </span>
         }
       />
