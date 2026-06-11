@@ -222,6 +222,60 @@ export const submitForm = createServerFn({ method: "POST" })
       console.error("Email send failed", e);
     }
 
+    // 3. Discord webhook notification (best-effort)
+    try {
+      const webhook = process.env.DISCORD_WEBHOOK_URL;
+      if (webhook) {
+        const fullName = `${data.name}${data.surname ? " " + data.surname : ""}`;
+        const fields: { name: string; value: string; inline?: boolean }[] = [];
+        const push = (name: string, v: unknown, inline = true) => {
+          if (v === null || v === undefined || v === "") return;
+          fields.push({ name, value: String(v).slice(0, 1024), inline });
+        };
+        push("👤 Name", fullName);
+        push("📧 Email", data.email);
+        push("📞 Phone", data.phone);
+        push("🛠️ Service", data.service);
+        push("🧪 Material", data.material);
+        if (data.estimated_price != null) push("💶 Estimated Price", `€${data.estimated_price.toFixed(2)}`);
+        if (data.message) fields.push({ name: "📝 Message", value: data.message.slice(0, 1024), inline: false });
+        if (data.file_name || fileUrl) {
+          fields.push({
+            name: "📎 Uploaded File",
+            value: fileUrl ? `[${data.file_name ?? "Download"}](${fileUrl})` : (data.file_name ?? "—"),
+            inline: false,
+          });
+        }
+        fields.push({
+          name: "🕒 Date & Time",
+          value: new Date().toLocaleString("en-GB", { timeZone: "Europe/Athens" }),
+          inline: false,
+        });
+
+        const res = await fetch(webhook, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: "3D Axis",
+            embeds: [
+              {
+                title: "🚀 New Quote Request",
+                description: `**${sourceLabel}**`,
+                color: 0x3b82f6,
+                fields,
+                timestamp: new Date().toISOString(),
+                footer: { text: submissionId ? `ID: ${submissionId}` : "3D Axis" },
+              },
+            ],
+          }),
+        });
+        if (!res.ok) console.error(`Discord ${res.status}: ${await res.text()}`);
+      }
+    } catch (e) {
+      console.error("Discord webhook failed", e);
+    }
+
+
     if (submissionId) {
       await supabaseAdmin
         .from("submissions")
