@@ -86,11 +86,11 @@ export const submitForm = createServerFn({ method: "POST" })
 
     const submissionId = inserted?.id as string | undefined;
 
-    // 1b. Mirror into quote_requests (backup/admin-facing table)
+    // 1b. Mirror into quotes (admin-facing table)
     let quoteId: string | undefined;
     try {
-      const { data: qr } = await supabaseAdmin
-        .from("quote_requests")
+      const { data: qr } = await (supabaseAdmin as any)
+        .from("quotes")
         .insert({
           name: `${data.name}${data.surname ? " " + data.surname : ""}`,
           email: data.email,
@@ -103,13 +103,14 @@ export const submitForm = createServerFn({ method: "POST" })
           file_name: data.file_name ?? null,
           estimated_price: data.estimated_price ?? null,
           source: data.source,
-          metadata: (data.metadata ?? null) as never,
+          status: "New",
+          metadata: data.metadata ?? null,
         })
         .select("id")
         .single();
-      quoteId = qr?.id as string | undefined;
+      quoteId = (qr as { id?: string } | null)?.id;
     } catch (e) {
-      console.error("quote_requests mirror insert failed", e);
+      console.error("quotes insert failed", e);
     }
 
     // 1c. Admin dashboard notification + realtime broadcast
