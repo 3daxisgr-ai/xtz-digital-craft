@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import heroLaser from "@/assets/hero-laser.jpg.asset.json";
+import heroBackgroundVideo from "@/assets/hero-background.mp4.asset.json";
 import skg3dLogo from "@/assets/skg3d-logo-large.png.asset.json";
 import { useI18n } from "./i18n";
 
@@ -89,16 +89,16 @@ export function IntroScene() {
         }}
       />
 
-      {/* Hero image */}
+      {/* Hero video background */}
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
-        <img
-          src={heroLaser.url}
-          alt="AKJ laser cutting machine in production"
+        <video
+          src={heroBackgroundVideo.url}
+          autoPlay
+          muted
+          loop
+          playsInline
           className="h-full w-full object-cover"
-          width={1920}
-          height={1080}
-          fetchPriority="high"
-          decoding="async"
+          style={{ width: "100%", height: "100%" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/55" />
       </div>
