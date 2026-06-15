@@ -6,7 +6,7 @@ import { About } from "@/components/xtz/About";
 import { HowItWorks } from "@/components/xtz/HowItWorks";
 import { ProjectCTA } from "@/components/xtz/ProjectCTA";
 import { Footer } from "@/components/xtz/Footer";
-import heroOffice from "@/assets/hero-office.jpg";
+import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
