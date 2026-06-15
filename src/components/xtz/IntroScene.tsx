@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import heroBackgroundVideo from "@/assets/hero-background.mp4.asset.json";
 import skg3dLogo from "@/assets/skg3d-logo-large.png.asset.json";
 import { useI18n } from "./i18n";
 
