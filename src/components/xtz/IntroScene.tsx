@@ -92,8 +92,8 @@ export function IntroScene() {
       {/* Hero image */}
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
         <img
-          src={heroOffice}
-          alt="SKG3D engineering and manufacturing workshop"
+          src={heroLaser.url}
+          alt="AKJ laser cutting machine in production"
           className="h-full w-full object-cover"
           width={1920}
           height={1080}
