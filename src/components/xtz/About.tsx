@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "@tanstack/react-router";
-import aboutBg from "@/assets/about-bg1.png.asset.json";
+import aboutBg from "@/assets/about-bg.png.asset.json";
 import type { CapabilitySlug } from "./Capabilities";
 import { useI18n } from "./i18n";
 
