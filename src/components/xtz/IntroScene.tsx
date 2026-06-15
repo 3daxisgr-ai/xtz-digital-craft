@@ -91,14 +91,17 @@ export function IntroScene() {
       {/* Hero video background */}
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
         <video
-          src={heroBackgroundVideo.url}
+          src="https://res.cloudinary.com/dozthoxxp/video/upload/copy_32FA0F38-6278-405C-8ACC-73B17560D937_wcnhv7.mp4"
           autoPlay
           muted
           loop
           playsInline
+          preload="auto"
+          controls={false}
           className="h-full w-full object-cover"
           style={{ width: "100%", height: "100%" }}
         />
+        <div className="absolute inset-0 bg-black/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/55" />
       </div>
 
