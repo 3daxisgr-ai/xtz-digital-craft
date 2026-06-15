@@ -11,8 +11,7 @@ export function IntroScene() {
   const { t } = useI18n();
 
   useEffect(() => {
-    const reduced = typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
     const ctx = gsap.context(() => {
       // Boot
@@ -31,27 +30,12 @@ export function IntroScene() {
           { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.0 },
           0.6,
         )
-        .fromTo(
-          ".hero-sub",
-          { y: 14, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.7 },
-          "-=0.4",
-        )
-        .fromTo(
-          ".intro-xyz",
-          { y: 10, opacity: 0 },
-          { y: 0, opacity: 0.7, duration: 0.6 },
-          "-=0.3",
-        )
+        .fromTo(".hero-sub", { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, "-=0.4")
+        .fromTo(".intro-xyz", { y: 10, opacity: 0 }, { y: 0, opacity: 0.7, duration: 0.6 }, "-=0.3")
         .add(() => {
           window.dispatchEvent(new CustomEvent("intro:ready"));
         }, "+=0.05")
-        .fromTo(
-          ".scroll-hint",
-          { opacity: 0, y: 8 },
-          { opacity: 1, y: 0, duration: 0.6 },
-          "+=0.3",
-        );
+        .fromTo(".scroll-hint", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.6 }, "+=0.3");
 
       if (reduced) return;
 
@@ -74,24 +58,19 @@ export function IntroScene() {
   }, []);
 
   return (
-    <section
-      id="intro"
-      ref={root}
-      className="relative h-screen w-full overflow-hidden bg-black"
-    >
+    <section id="intro" ref={root} className="relative h-screen w-full overflow-hidden bg-black">
       {/* Ambient blue */}
       <div
         className="ambient-blue absolute inset-0 opacity-0 pointer-events-none"
         style={{
-          background:
-            "radial-gradient(ellipse at 50% 55%, oklch(0.45 0.18 245 / 0.28) 0%, transparent 55%)",
+          background: "radial-gradient(ellipse at 50% 55%, oklch(0.45 0.18 245 / 0.28) 0%, transparent 55%)",
         }}
       />
 
       {/* Hero video background */}
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
         <video
-          src="https://res.cloudinary.com/dozthoxxp/video/upload/copy_32FA0F38-6278-405C-8ACC-73B17560D937_wcnhv7.mp4"
+          src="https://player.cloudinary.com/embed/?cloud_name=dozthoxxp&public_id=copy_1E5EA85B-66A7-473E-8971-6AB9C9E0D8BB_rgcqrf"
           autoPlay
           muted
           loop
@@ -121,9 +100,7 @@ export function IntroScene() {
             }}
           />
         </h1>
-        <p className="hero-sub mt-6 max-w-2xl md:text-lg text-foreground/80 font-light text-xl">
-          {t("intro.sub")}
-        </p>
+        <p className="hero-sub mt-6 max-w-2xl md:text-lg text-foreground/80 font-light text-xl">{t("intro.sub")}</p>
         <p className="intro-xyz mt-6 font-mono text-[17px] uppercase tracking-[0.55em] text-primary/80">
           {t("intro.xyz")}
         </p>
@@ -133,8 +110,7 @@ export function IntroScene() {
       <div
         className="vignette absolute inset-0 opacity-0 pointer-events-none z-[15]"
         style={{
-          background:
-            "radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.8) 100%)",
+          background: "radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.8) 100%)",
         }}
       />
 
