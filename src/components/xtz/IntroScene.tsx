@@ -70,7 +70,7 @@ export function IntroScene() {
       {/* Hero video background */}
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
         <video
-          src="https://player.cloudinary.com/embed/?cloud_name=dozthoxxp&public_id=copy_1E5EA85B-66A7-473E-8971-6AB9C9E0D8BB_rgcqrf"
+          src="https://res.cloudinary.com/dozthoxxp/video/upload/copy_1E5EA85B-66A7-473E-8971-6AB9C9E0D8BB_czusni.mp4"
           autoPlay
           muted
           loop
