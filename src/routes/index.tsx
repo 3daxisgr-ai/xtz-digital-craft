@@ -6,7 +6,7 @@ import { About } from "@/components/xtz/About";
 import { HowItWorks } from "@/components/xtz/HowItWorks";
 import { ProjectCTA } from "@/components/xtz/ProjectCTA";
 import { Footer } from "@/components/xtz/Footer";
-import heroOffice from "@/assets/hero-office.jpg";
+import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -17,15 +17,14 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Design, prototype and manufacture under one roof." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://xtz-digital-craft.lovable.app/" },
-      { property: "og:image", content: `https://xtz-digital-craft.lovable.app${heroOffice}` },
-      { name: "twitter:image", content: `https://xtz-digital-craft.lovable.app${heroOffice}` },
+      { property: "og:image", content: `https://xtz-digital-craft.lovable.app${heroLaser.url}` },
+      { name: "twitter:image", content: `https://xtz-digital-craft.lovable.app${heroLaser.url}` },
     ],
     links: [
       { rel: "canonical", href: "https://xtz-digital-craft.lovable.app/" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" },
-      { rel: "preload", as: "image", href: heroOffice, fetchpriority: "high" },
     ],
     scripts: [
       {
