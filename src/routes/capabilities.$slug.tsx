@@ -585,7 +585,7 @@ function CapabilityPage() {
         />
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(135deg, rgba(248,250,252,0.96) 0%, rgba(241,245,249,0.92) 60%, rgba(186,230,253,0.75) 100%)" }}
+          style={{ background: "linear-gradient(135deg, rgba(2,6,23,0.92) 0%, rgba(15,23,42,0.88) 60%, rgba(7,32,72,0.85) 100%)" }}
         />
         <div className="relative mx-auto max-w-[1000px] text-center">
           <h2 className="font-display font-bold leading-[0.95] text-[clamp(2rem,5vw,3.5rem)] tracking-tighter mb-6 text-white">
