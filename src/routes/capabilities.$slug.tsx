@@ -358,7 +358,7 @@ function CapabilityPage() {
   };
   const related = capabilities.filter((c) => c.slug !== cap.slug).slice(0, 3);
   const heroImg = heroImages[cap.slug];
-  const showcaseImg = showcaseImages[cap.slug];
+  const showcaseImg = heroImg;
 
   return (
     <main className="bg-white text-neutral-900 min-h-screen">
