@@ -361,7 +361,7 @@ function CapabilityPage() {
   const showcaseImg = heroImg;
 
   return (
-    <main className="bg-white text-neutral-900 min-h-screen">
+    <main className="bg-slate-950 text-slate-100 min-h-screen">
       <Navigation />
 
       {/* Hero image banner */}
@@ -408,13 +408,13 @@ function CapabilityPage() {
       </section>
 
       {/* Intro + CTA on light surface */}
-      <section className="px-6 md:px-12 py-20 md:py-24 bg-white">
+      <section className="px-6 md:px-12 py-20 md:py-24 bg-slate-950">
         <div className="mx-auto max-w-[1200px] grid lg:grid-cols-12 gap-12 items-start">
           <div className="lg:col-span-7">
-            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-600 mb-5">
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-400 mb-5">
               {t("capp.h.what")}
             </h2>
-            <p className="text-neutral-700 text-lg md:text-xl leading-relaxed">{view.intro}</p>
+            <p className="text-slate-300 text-lg md:text-xl leading-relaxed">{view.intro}</p>
           </div>
           <div className="lg:col-span-5 flex flex-wrap gap-3 lg:justify-end">
             <Link
@@ -426,7 +426,7 @@ function CapabilityPage() {
             <Link
               to="/"
               hash="capabilities"
-              className="inline-flex items-center gap-3 px-6 py-4 border border-neutral-300 hover:border-sky-600 font-mono text-xs uppercase tracking-[0.3em] text-neutral-700 hover:text-sky-700 transition-colors"
+              className="inline-flex items-center gap-3 px-6 py-4 border border-white/15 hover:border-sky-400 font-mono text-xs uppercase tracking-[0.3em] text-slate-300 hover:text-sky-300 transition-colors"
             >
               ← {t("capp.cta.all")}
             </Link>
@@ -435,25 +435,25 @@ function CapabilityPage() {
       </section>
 
       {/* What we do — alternating: text left, image right */}
-      <section className="px-6 md:px-12 py-16 md:py-24 bg-neutral-50">
+      <section className="px-6 md:px-12 py-16 md:py-24 bg-slate-900">
         <div className="mx-auto max-w-[1300px] grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div className="order-2 lg:order-1">
-            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-600 mb-8">
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-400 mb-8">
               {t("capp.h.what")}
             </h2>
             <ul className="space-y-6">
               {view.what.map((w, i) => (
                 <li key={i} className="flex gap-5">
-                  <span className="font-mono text-[14px] text-sky-600 tracking-[0.3em] pt-2 shrink-0">
+                  <span className="font-mono text-[14px] text-sky-400 tracking-[0.3em] pt-2 shrink-0">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="font-display text-lg md:text-xl leading-snug text-neutral-800">{w}</span>
+                  <span className="font-display text-lg md:text-xl leading-snug text-slate-100">{w}</span>
                 </li>
               ))}
             </ul>
           </div>
           <div className="order-1 lg:order-2 relative">
-            <div className="relative aspect-[4/5] lg:aspect-[5/6] overflow-hidden rounded-sm shadow-2xl shadow-neutral-900/15 ring-1 ring-neutral-200">
+            <div className="relative aspect-[4/5] lg:aspect-[5/6] overflow-hidden rounded-sm shadow-2xl shadow-black/50 ring-1 ring-white/10">
               <img
                 src={showcaseImg}
                 alt=""
@@ -490,36 +490,36 @@ function CapabilityPage() {
       </section>
 
       {/* Materials — light cards */}
-      <section className="px-6 md:px-12 py-20 md:py-24 bg-white">
+      <section className="px-6 md:px-12 py-20 md:py-24 bg-slate-950">
         <div className="mx-auto max-w-[1200px]">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-600 mb-10">
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-400 mb-10">
             {t("capp.h.materials")}
           </h2>
           <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {view.materials.map((m) => (
               <li
                 key={m}
-                className="bg-white border border-neutral-200 rounded-sm px-5 py-5 font-display text-base text-neutral-800 shadow-sm hover:shadow-md hover:border-sky-500/60 hover:-translate-y-0.5 transition-all"
+                className="bg-slate-900 border border-white/10 rounded-sm px-5 py-5 font-display text-base text-slate-100 shadow-sm hover:shadow-md hover:border-sky-500/60 hover:-translate-y-0.5 transition-all"
               >
                 {m}
               </li>
             ))}
           </ul>
           {view.notes && (
-            <p className="text-neutral-600 text-sm leading-relaxed mt-8 max-w-2xl">{view.notes}</p>
+            <p className="text-slate-400 text-sm leading-relaxed mt-8 max-w-2xl">{view.notes}</p>
           )}
         </div>
       </section>
 
       {/* Process — bright cards on light gray */}
-      <section className="px-6 md:px-12 py-20 md:py-24 bg-neutral-50 border-y border-neutral-200">
+      <section className="px-6 md:px-12 py-20 md:py-24 bg-slate-900 border-y border-white/10">
         <div className="mx-auto max-w-[1300px]">
           <div className="grid lg:grid-cols-12 gap-10 mb-12 items-end">
             <div className="lg:col-span-7">
-              <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-600 mb-4">
+              <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-400 mb-4">
                 {t("capp.h.process")}
               </h2>
-              <p className="font-display text-3xl md:text-5xl tracking-tight text-neutral-900 leading-[1.05]">
+              <p className="font-display text-3xl md:text-5xl tracking-tight text-white leading-[1.05]">
                 {titleMap[cap.slug]}
               </p>
             </div>
@@ -528,14 +528,14 @@ function CapabilityPage() {
             {view.process.map((p, i) => (
               <div
                 key={p.t}
-                className="relative p-7 bg-white border border-neutral-200 rounded-sm shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-sky-500/60 transition-all"
+                className="relative p-7 bg-slate-900 border border-white/10 rounded-sm shadow-lg shadow-black/30 hover:shadow-xl hover:-translate-y-1 hover:border-sky-500/60 transition-all"
               >
                 <div className="absolute top-0 left-0 h-1 w-12 bg-sky-500" />
-                <div className="font-mono text-[12px] tracking-[0.4em] text-sky-600 mb-4 mt-2">
+                <div className="font-mono text-[12px] tracking-[0.4em] text-sky-400 mb-4 mt-2">
                   {t("capp.step")} {String(i + 1).padStart(2, "0")}
                 </div>
-                <h3 className="font-display text-xl font-semibold mb-3 text-neutral-900">{p.t}</h3>
-                <p className="text-sm text-neutral-600 leading-relaxed">{p.d}</p>
+                <h3 className="font-display text-xl font-semibold mb-3 text-white">{p.t}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">{p.d}</p>
               </div>
             ))}
           </div>
@@ -543,10 +543,10 @@ function CapabilityPage() {
       </section>
 
       {/* Applications + supporting image */}
-      <section className="px-6 md:px-12 py-20 md:py-24 bg-white">
+      <section className="px-6 md:px-12 py-20 md:py-24 bg-slate-950">
         <div className="mx-auto max-w-[1300px] grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div className="relative">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-sm shadow-2xl shadow-neutral-900/15 ring-1 ring-neutral-200">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-sm shadow-2xl shadow-black/50 ring-1 ring-white/10">
               <img
                 src={showcaseImg}
                 alt=""
@@ -557,14 +557,14 @@ function CapabilityPage() {
             </div>
           </div>
           <div>
-            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-600 mb-8">
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-400 mb-8">
               {t("capp.h.apps")}
             </h2>
             <div className="flex flex-wrap gap-3">
               {view.applications.map((a) => (
                 <span
                   key={a}
-                  className="bg-neutral-50 border border-neutral-200 rounded-full px-5 py-3 font-display text-base text-neutral-800 hover:border-sky-500/60 hover:bg-white transition-colors"
+                  className="bg-slate-900 border border-white/10 rounded-full px-5 py-3 font-display text-base text-slate-100 hover:border-sky-500/60 hover:bg-white transition-colors"
                 >
                   {a}
                 </span>
@@ -588,10 +588,10 @@ function CapabilityPage() {
           style={{ background: "linear-gradient(135deg, rgba(248,250,252,0.96) 0%, rgba(241,245,249,0.92) 60%, rgba(186,230,253,0.75) 100%)" }}
         />
         <div className="relative mx-auto max-w-[1000px] text-center">
-          <h2 className="font-display font-bold leading-[0.95] text-[clamp(2rem,5vw,3.5rem)] tracking-tighter mb-6 text-neutral-900">
+          <h2 className="font-display font-bold leading-[0.95] text-[clamp(2rem,5vw,3.5rem)] tracking-tighter mb-6 text-white">
             {t("capp.ready1")} {titleMap[cap.slug]}{isGR ? ";" : "?"}
           </h2>
-          <p className="text-neutral-700 max-w-xl mx-auto mb-10 text-lg">
+          <p className="text-slate-300 max-w-xl mx-auto mb-10 text-lg">
             {t("capp.ready.body")}
           </p>
           <Link
@@ -604,9 +604,9 @@ function CapabilityPage() {
       </section>
 
       {/* Related */}
-      <section className="px-6 md:px-12 py-20 md:py-24 bg-white border-t border-neutral-200">
+      <section className="px-6 md:px-12 py-20 md:py-24 bg-slate-950 border-t border-white/10">
         <div className="mx-auto max-w-[1500px]">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-600 mb-10">
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-400 mb-10">
             {t("capp.h.related")}
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -615,7 +615,7 @@ function CapabilityPage() {
                 key={r.slug}
                 to="/capabilities/$slug"
                 params={{ slug: r.slug }}
-                className="group relative overflow-hidden bg-white border border-neutral-200 rounded-sm shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-sky-500/60 transition-all block"
+                className="group relative overflow-hidden bg-slate-900 border border-white/10 rounded-sm shadow-lg shadow-black/30 hover:shadow-xl hover:-translate-y-1 hover:border-sky-500/60 transition-all block"
               >
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <img
@@ -631,11 +631,11 @@ function CapabilityPage() {
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 text-neutral-900 group-hover:text-sky-700 transition-colors">
+                  <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 text-white group-hover:text-sky-300 transition-colors">
                     {titleMap[r.slug]}
                   </h3>
-                  <p className="text-sm text-neutral-600 leading-relaxed">{t(r.dKey)}</p>
-                  <span className="mt-5 inline-block font-mono text-[12px] tracking-[0.3em] text-sky-600 group-hover:text-sky-700">
+                  <p className="text-sm text-slate-400 leading-relaxed">{t(r.dKey)}</p>
+                  <span className="mt-5 inline-block font-mono text-[12px] tracking-[0.3em] text-sky-400 group-hover:text-sky-300">
                     {t("capp.view")} →
                   </span>
                 </div>
