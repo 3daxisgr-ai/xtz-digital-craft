@@ -5,6 +5,7 @@ import { PortfolioReel } from "@/components/xtz/PortfolioReel";
 import { About } from "@/components/xtz/About";
 import { HowItWorks } from "@/components/xtz/HowItWorks";
 import { ProjectCTA } from "@/components/xtz/ProjectCTA";
+import { WhyToreo } from "@/components/xtz/WhyToreo";
 import { Footer } from "@/components/xtz/Footer";
 import { Metrics } from "@/components/xtz/Metrics";
 import heroLaser from "@/assets/hero-laser.jpg.asset.json";
@@ -65,6 +66,7 @@ function Index() {
       <HowItWorks />
       <PortfolioReel />
       <ProjectCTA />
+      <WhyToreo />
       <Footer />
     </main>
   );
