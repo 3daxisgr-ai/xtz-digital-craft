@@ -31,6 +31,7 @@ export function IntroScene() {
           0.6,
         )
         .fromTo(".hero-sub", { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, "-=0.4")
+        .fromTo(".hero-cta", { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, "-=0.3")
         .fromTo(".intro-xyz", { y: 10, opacity: 0 }, { y: 0, opacity: 0.7, duration: 0.6 }, "-=0.3")
         .add(() => {
           window.dispatchEvent(new CustomEvent("intro:ready"));
@@ -101,7 +102,29 @@ export function IntroScene() {
           />
         </h1>
         <p className="hero-sub mt-6 max-w-2xl md:text-lg text-foreground/80 font-light text-xl">{t("intro.sub")}</p>
-        <p className="intro-xyz mt-6 font-mono text-[17px] uppercase tracking-[0.55em] text-primary/80">
+
+        {/* Glassmorphism CTA */}
+        <a
+          href="/start"
+          className="hero-cta group relative mt-10 inline-flex items-center gap-3 px-9 py-4 rounded-full border border-white/30 bg-white/[0.06] backdrop-blur-xl font-mono text-[12px] uppercase tracking-[0.45em] text-white transition-all duration-500 hover:bg-white/[0.14] hover:border-white/60 hover:scale-[1.03]"
+          style={{
+            boxShadow:
+              "0 0 0 1px rgba(255,255,255,0.05) inset, 0 8px 32px -8px rgba(5,172,255,0.35), 0 0 60px -20px rgba(5,172,255,0.5)",
+          }}
+        >
+          <span
+            aria-hidden
+            className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, rgba(5,172,255,0.25), transparent 70%)",
+            }}
+          />
+          <span className="relative">Start Here</span>
+          <span className="relative transition-transform duration-300 group-hover:translate-x-1">→</span>
+        </a>
+
+        <p className="intro-xyz mt-8 font-mono text-[17px] uppercase tracking-[0.55em] text-primary/80">
           {t("intro.xyz")}
         </p>
       </div>

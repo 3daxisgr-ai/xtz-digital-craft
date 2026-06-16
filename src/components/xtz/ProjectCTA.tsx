@@ -71,7 +71,7 @@ export function ProjectCTA() {
       </span>
 
       {/* Content */}
-      <div className="relative z-10 mx-auto flex min-h-[70vh] max-w-[1400px] flex-col items-center justify-center px-6 py-28 text-center md:px-12">
+      <div className="relative z-10 mx-auto flex min-h-[58vh] max-w-[1400px] flex-col items-center justify-center px-6 py-20 md:py-24 text-center md:px-12">
         <div className="cta-reveal">
           <span className="font-mono text-xs tracking-[0.4em] text-primary">
             {t("cta.kicker")}
