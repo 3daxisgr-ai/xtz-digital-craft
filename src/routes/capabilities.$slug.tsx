@@ -502,7 +502,7 @@ function CapabilityPage() {
       <section className="relative w-full overflow-hidden">
         <div className="relative h-[40vh] min-h-[320px] max-h-[520px]">
           <img
-            src={heroImg}
+            src={ctaImg}
             alt=""
             aria-hidden
             className="absolute inset-0 h-full w-full object-cover"
@@ -608,7 +608,7 @@ function CapabilityPage() {
       {/* CTA — bright with image background */}
       <section className="relative px-6 md:px-12 py-24 overflow-hidden">
         <img
-          src={heroImg}
+          src={ctaImg}
           alt=""
           aria-hidden
           className="absolute inset-0 h-full w-full object-cover"
