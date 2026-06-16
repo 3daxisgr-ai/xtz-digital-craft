@@ -7,7 +7,6 @@ import { HowItWorks } from "@/components/xtz/HowItWorks";
 import { ProjectCTA } from "@/components/xtz/ProjectCTA";
 import { Footer } from "@/components/xtz/Footer";
 import { Metrics } from "@/components/xtz/Metrics";
-import { useI18n } from "@/components/xtz/i18n";
 import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
@@ -48,15 +47,6 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { t } = useI18n();
-
-  const scrollToHero = () => {
-    const el = document.getElementById("intro");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
-
   return (
     <main className="text-foreground" style={{ backgroundColor: "#0d1220" }}>
       <Navigation />
@@ -71,24 +61,6 @@ function Index() {
         }}
       />
       <Metrics />
-
-      {/* START YOUR PROJECT — moved from bottom CTA */}
-      <section
-        className="relative z-10 w-full flex items-center justify-center py-14 md:py-18"
-        style={{ backgroundColor: "#0d1220" }}
-      >
-        <button
-          type="button"
-          onClick={scrollToHero}
-          className="group relative inline-flex items-center gap-3 bg-primary px-10 py-5 font-mono text-xs tracking-[0.3em] text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_0_60px_-10px_oklch(0.72_0.18_245_/_0.5)]"
-        >
-          <span>{t("cta.button")}</span>
-          <span className="transition-transform duration-300 group-hover:translate-x-1">
-            →
-          </span>
-        </button>
-      </section>
-
       <About />
       <HowItWorks />
       <PortfolioReel />
