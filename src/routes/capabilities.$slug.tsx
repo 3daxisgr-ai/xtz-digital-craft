@@ -313,7 +313,7 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
     applications: ["Startup MVPs", "Ανάπτυξη νέων προϊόντων", "Reverse engineering", "Custom μοναδικά εξαρτήματα"],
   },
   "global-manufacturing-network": {
-    intro: "Από το πρωτότυπο στη μαζική παραγωγή. Αξιόπιστοι κατασκευαστικοί συνεργάτες, ποιοτικός έλεγχος σε κάθε στάδιο και ολοκληρωμένη υποστήριξη logistics για παραγωγή χιλιάδων τεμαχίων.",
+    intro: "Από το πρωτότυπο στη μαζική παραγωγή.",
     what: [
       "Επιλεγμένοι συνεργάτες για 3d printing, injection και άλλα.",
       "Κλιμάκωση από εκατοντάδες σε δεκάδες χιλιάδες μονάδες.",
