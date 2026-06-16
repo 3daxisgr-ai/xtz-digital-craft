@@ -9,9 +9,9 @@ import laserAsset from "@/assets/fiber-laser-machine.jpg.asset.json";
 export const Route = createFileRoute("/start")({
   head: () => ({
     meta: [
-      { title: "Start a Project — Choose Category | SKG3D" },
+      { title: "Start a Project — Choose Category | TOREO" },
       { name: "description", content: "Choose a service category to begin your project: 3D printing, fiber laser cutting, or sheet metal forming & welding." },
-      { property: "og:title", content: "Start a Project — Choose Category | SKG3D" },
+      { property: "og:title", content: "Start a Project — Choose Category | TOREO" },
       { property: "og:description", content: "Pick a service category and continue to your tailored project form." },
       { property: "og:url", content: "https://xtz-digital-craft.lovable.app/start" },
     ],
