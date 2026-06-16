@@ -1,12 +1,13 @@
-import designPrototypeAsset from "@/assets/design-prototype.png.asset.json";
-import p3 from "@/assets/manufacturing-workflow.jpg";
+import designPrototypePhotoAsset from "@/assets/design-prototype-photo.png.asset.json";
+import massProductionAsset from "@/assets/mass-production.png.asset.json";
 import chapterPrintAsset from "@/assets/bambu-3d-printing.png.asset.json";
 import chapterFabAsset from "@/assets/welding-sparks.jpg.asset.json";
-import chapterLaserAsset from "@/assets/akj-laser-cutting.jpg.asset.json";
+import chapterLaserAsset from "@/assets/static-laser.png.asset.json";
 const chapterLaser = chapterLaserAsset.url;
 const chapterFab = chapterFabAsset.url;
 const chapterPrint = chapterPrintAsset.url;
-const p1 = designPrototypeAsset.url;
+const p1 = designPrototypePhotoAsset.url;
+const p3 = massProductionAsset.url;
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useI18n } from "./i18n";

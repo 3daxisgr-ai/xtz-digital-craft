@@ -6,6 +6,7 @@ import { About } from "@/components/xtz/About";
 import { HowItWorks } from "@/components/xtz/HowItWorks";
 import { ProjectCTA } from "@/components/xtz/ProjectCTA";
 import { Footer } from "@/components/xtz/Footer";
+import { Metrics } from "@/components/xtz/Metrics";
 import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
@@ -56,9 +57,10 @@ function Index() {
         className="relative h-24 w-full -mt-12 pointer-events-none"
         style={{
           background:
-            "linear-gradient(180deg, #000 0%, rgba(13,18,32,0.85) 55%, #11182a 100%)",
+            "linear-gradient(180deg, #000 0%, rgba(13,18,32,0.85) 55%, #0d1220 100%)",
         }}
       />
+      <Metrics />
       <About />
       <HowItWorks />
       <PortfolioReel />
