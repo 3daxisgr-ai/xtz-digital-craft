@@ -9,12 +9,13 @@ import bambu from "@/assets/bambu-3d-printing.png.asset.json";
 import designPrototype from "@/assets/design-prototype-photo.png.asset.json";
 import massProduction from "@/assets/mass-production.png.asset.json";
 import designDevelopment from "@/assets/design-development.jpg.asset.json";
+import weldingSparks from "@/assets/welding-sparks.jpg.asset.json";
 
 // Each capability page uses ONLY its own dedicated image.
 const heroImages: Record<CapabilitySlug, string> = {
   "design-development": designDevelopment.url,
   "fiber-laser-cutting": staticLaser.url,
-  "sheet-metal-forming-welding": laserWelding.url,
+  "sheet-metal-forming-welding": weldingSparks.url,
   "3d-printing": bambu.url,
   "design-to-prototype": designPrototype.url,
   "global-manufacturing-network": massProduction.url,
