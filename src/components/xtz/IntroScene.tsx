@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import skg3dLogo from "@/assets/skg3d-logo-large.png.asset.json";
+import toreoLogo from "@/assets/toreo-logo.png.asset.json";
 import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -87,10 +87,10 @@ export function IntroScene() {
       {/* Hero text layer */}
       <div className="hero-layer absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center will-change-transform">
         <h1 className="hero-headline flex items-center justify-center">
-          <span className="sr-only">SKG3D — Precision Fabrication & Manufacturing. </span>
+          <span className="sr-only">TOREO — Precision Fabrication & Manufacturing. </span>
           <img
-            src={skg3dLogo.url}
-            alt="SKG3D"
+            src={toreoLogo.url}
+            alt="TOREO"
             aria-hidden="true"
             className="block w-auto object-contain"
             style={{

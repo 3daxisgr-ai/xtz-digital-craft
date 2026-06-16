@@ -1,6 +1,6 @@
 import { useI18n, type Lang } from "./i18n";
 import { Link } from "@tanstack/react-router";
-import skg3dLogoLarge from "@/assets/skg3d-logo-large.png.asset.json";
+import toreoLogo from "@/assets/toreo-logo.png.asset.json";
 
 export function Footer() {
   const { lang, setLang, t } = useI18n();
@@ -29,8 +29,8 @@ export function Footer() {
               {t("foot.tag")}
             </div>
             <img
-              src={skg3dLogoLarge.url}
-              alt="SKG3D"
+              src={toreoLogo.url}
+              alt="TOREO"
               className="block w-auto object-contain"
               style={{ height: "clamp(2.8rem, 9vw, 8rem)" }}
             />
@@ -78,7 +78,7 @@ export function Footer() {
         {/* Bottom row */}
         <div className="pt-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div className="font-mono text-[14px] uppercase tracking-[0.35em] text-muted-foreground">
-            © {new Date().getFullYear()} SKG3D · {t("foot.rights")}
+            © {new Date().getFullYear()} TOREO · {t("foot.rights")}
           </div>
 
           <nav className="flex flex-wrap items-center gap-x-8 gap-y-3 font-mono text-[14px] uppercase tracking-[0.35em] text-muted-foreground">

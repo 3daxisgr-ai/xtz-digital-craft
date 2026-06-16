@@ -7,13 +7,13 @@ import { useI18n } from "@/components/xtz/i18n";
 export const Route = createFileRoute("/equipment")({
   head: () => ({
     meta: [
-      { title: "Equipment & Technology — SKG3D" },
+      { title: "Equipment & Technology — TOREO" },
       {
         name: "description",
         content:
-          "The manufacturing equipment behind SKG3D — Bambu Lab H2S 3D printers, AKJ1530F fiber laser cutters, press brakes, sheet metal shear and welding stations.",
+          "The manufacturing equipment behind TOREO — Bambu Lab H2S 3D printers, AKJ1530F fiber laser cutters, press brakes, sheet metal shear and welding stations.",
       },
-      { property: "og:title", content: "Equipment & Technology — SKG3D" },
+      { property: "og:title", content: "Equipment & Technology — TOREO" },
       {
         property: "og:description",
         content:

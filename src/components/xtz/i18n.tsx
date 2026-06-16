@@ -17,7 +17,7 @@ const en: Dict = {
   "nav.cta": "Start a Project",
 
   // Hero
-  "intro.headline": "​​SKG3D",
+  "intro.headline": "TOREO",
   "intro.sub": "​",
   "intro.scroll": "Scroll Down",
   "intro.xyz": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
@@ -63,7 +63,7 @@ const en: Dict = {
 
   // Portfolio
   "portfolio.kicker": "Work",
-  "portfolio.title": "Examples of products and parts built through the SKG3D workflow.",
+  "portfolio.title": "Examples of products and parts built through the TOREO workflow.",
 
   // Process
   "process.kicker": "Process",
@@ -107,13 +107,13 @@ const en: Dict = {
   "finale.kicker": "Ready to build?",
   "finale.statement": "From concept to reality.",
   "finale.cta": "Start a Project",
-  "finale.foot1": "© SKG3D",
+  "finale.foot1": "© TOREO",
   "finale.foot2": "​",
   "finale.foot3": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
 
   // About section
   "about.tag": "ABOUT US",
-  "about.kicker": "About SKG3D",
+  "about.kicker": "About TOREO",
   "about.title.l1": "A COMPLETE",
   "about.title.l2": "MANUFACTURING",
   "about.title.l3": "PARTNER.",
@@ -166,7 +166,7 @@ const en: Dict = {
 
   // Forum
   "forum.title": "Workshop Updates",
-  "forum.intro": "New equipment, materials and announcements from SKG3D.",
+  "forum.intro": "New equipment, materials and announcements from TOREO.",
   "forum.kicker": "Forum",
 
   // FAQ page
@@ -288,13 +288,13 @@ const gr: Dict = {
   "finale.kicker": "Έτοιμοι να φτιάξετε κάτι;",
   "finale.statement": "Από την ιδέα στην πραγματικότητα.",
   "finale.cta": "Ξεκινήστε το Έργο σας",
-  "finale.foot1": "© SKG3D",
+  "finale.foot1": "© TOREO",
   "finale.foot2": "​",
   "finale.foot3": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
 
   // About
   "about.tag": "ΣΧΕΤΙΚΑ",
-  "about.kicker": "Σχετικά με τη SKG3D",
+  "about.kicker": "Σχετικά με τη TOREO",
   "about.title.l1": "ΟΛΟΚΛΗΡΩΜΕΝΟΣ ΣΥΝΕΡΓΑΤΗΣ",
   "about.title.l2": "",
   "about.title.l3": "",
@@ -347,7 +347,7 @@ const gr: Dict = {
 
   // Forum
   "forum.title": "Νέα από το Εργαστήριο",
-  "forum.intro": "Νέος εξοπλισμός, υλικά και ανακοινώσεις από τη SKG3D.",
+  "forum.intro": "Νέος εξοπλισμός, υλικά και ανακοινώσεις από τη TOREO.",
   "forum.kicker": "Νέα",
 
   // FAQ page

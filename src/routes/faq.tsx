@@ -7,10 +7,10 @@ import { useI18n } from "@/components/xtz/i18n";
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ — SKG3D" },
+      { title: "FAQ — TOREO" },
       { name: "description", content: "Answers about 3D printing, laser cutting, materials, lead times, prototyping, production, pricing and file requirements." },
-      { property: "og:title", content: "FAQ — SKG3D" },
-      { property: "og:description", content: "Everything you need to know before starting a project with SKG3D." },
+      { property: "og:title", content: "FAQ — TOREO" },
+      { property: "og:description", content: "Everything you need to know before starting a project with TOREO." },
       { property: "og:url", content: "https://xtz-digital-craft.lovable.app/faq" },
     ],
     links: [

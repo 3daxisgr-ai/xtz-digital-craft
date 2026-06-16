@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { gsap } from "gsap";
 import { useI18n, type Lang } from "./i18n";
-import skg3dLogo from "@/assets/skg3d-logo.png";
+import toreoLogo from "@/assets/toreo-logo.png.asset.json";
 
 const links: { to: string; hash?: string; k: string }[] = [
   { to: "/", k: "nav.intro" },
@@ -59,8 +59,8 @@ export function Navigation() {
           <span className="relative inline-block h-9 w-20">
             <span className="absolute inset-0 bg-primary blur-lg opacity-50 group-hover:opacity-90 transition-opacity" />
             <img
-              src={skg3dLogo}
-              alt="SKG3D logo"
+              src={toreoLogo.url}
+              alt="TOREO logo"
               className="relative h-full w-full object-contain text-xl"
               width={80}
               height={36}
