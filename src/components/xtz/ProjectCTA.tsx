@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Link } from "@tanstack/react-router";
 import ctaBgAsset from "@/assets/cta-workshop.png.asset.json";
 const ctaBg = ctaBgAsset.url;
 import { useI18n } from "./i18n";
@@ -86,9 +87,25 @@ export function ProjectCTA() {
         </div>
 
         <div className="cta-reveal mt-10 max-w-2xl">
-          <p className="font-display text-2xl md:text-3xl font-medium tracking-tight text-white/90 leading-snug">
-            {t("cta.lead")}
-          </p>
+          <Link
+            to="/start"
+            className="group relative inline-flex items-center gap-3 px-10 py-5 rounded-full border border-white/30 bg-white/[0.06] backdrop-blur-xl font-mono text-sm uppercase tracking-[0.45em] text-white transition-all duration-500 hover:bg-white/[0.14] hover:border-white/60 hover:scale-[1.03]"
+            style={{
+              boxShadow:
+                "0 0 0 1px rgba(255,255,255,0.05) inset, 0 8px 32px -8px rgba(5,172,255,0.35), 0 0 60px -20px rgba(5,172,255,0.5)",
+            }}
+          >
+            <span
+              aria-hidden
+              className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, rgba(5,172,255,0.25), transparent 70%)",
+              }}
+            />
+            <span className="relative">{t("cta.lead")}</span>
+            <span className="relative transition-transform duration-300 group-hover:translate-x-1">→</span>
+          </Link>
         </div>
 
         <div className="cta-reveal mt-8 max-w-xl">
