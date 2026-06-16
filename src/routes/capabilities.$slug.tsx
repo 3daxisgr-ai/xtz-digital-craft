@@ -4,21 +4,50 @@ import { Footer } from "@/components/xtz/Footer";
 import { capabilities, type CapabilitySlug } from "@/components/xtz/Capabilities";
 import { useI18n } from "@/components/xtz/i18n";
 import staticLaser from "@/assets/static-laser.png.asset.json";
-import laserWelding from "@/assets/laser-welding.jpg.asset.json";
 import bambu from "@/assets/bambu-3d-printing.png.asset.json";
 import designPrototype from "@/assets/design-prototype-photo.png.asset.json";
 import massProduction from "@/assets/mass-production.png.asset.json";
 import designDevelopment from "@/assets/design-development.jpg.asset.json";
-import weldingSparks from "@/assets/welding-sparks.jpg.asset.json";
+import laserWeldingHero from "@/assets/laser-welding-hero.jpg.asset.json";
+import capDesignDev2 from "@/assets/cap-design-dev-2.jpg";
+import capDesignDev3 from "@/assets/cap-design-dev-3.jpg";
+import capLaser2 from "@/assets/cap-laser-2.jpg";
+import capLaser3 from "@/assets/cap-laser-3.jpg";
+import capWelding2 from "@/assets/cap-welding-2.jpg";
+import capWelding3 from "@/assets/cap-welding-3.jpg";
+import cap3dp2 from "@/assets/cap-3dp-2.jpg";
+import cap3dp3 from "@/assets/cap-3dp-3.jpg";
+import capProto2 from "@/assets/cap-proto-2.jpg";
+import capProto3 from "@/assets/cap-proto-3.jpg";
+import capMass2 from "@/assets/cap-mass-2.jpg";
+import capMass3 from "@/assets/cap-mass-3.jpg";
 
-// Each capability page uses ONLY its own dedicated image.
+// Each capability page uses three distinct images: hero, showcase, CTA.
 const heroImages: Record<CapabilitySlug, string> = {
   "design-development": designDevelopment.url,
   "fiber-laser-cutting": staticLaser.url,
-  "sheet-metal-forming-welding": weldingSparks.url,
+  "sheet-metal-forming-welding": laserWeldingHero.url,
   "3d-printing": bambu.url,
   "design-to-prototype": designPrototype.url,
   "global-manufacturing-network": massProduction.url,
+};
+
+const showcaseImages: Record<CapabilitySlug, string> = {
+  "design-development": capDesignDev2,
+  "fiber-laser-cutting": capLaser2,
+  "sheet-metal-forming-welding": capWelding2,
+  "3d-printing": cap3dp2,
+  "design-to-prototype": capProto2,
+  "global-manufacturing-network": capMass2,
+};
+
+const ctaImages: Record<CapabilitySlug, string> = {
+  "design-development": capDesignDev3,
+  "fiber-laser-cutting": capLaser3,
+  "sheet-metal-forming-welding": capWelding3,
+  "3d-printing": cap3dp3,
+  "design-to-prototype": capProto3,
+  "global-manufacturing-network": capMass3,
 };
 
 type Detail = {
@@ -359,7 +388,8 @@ function CapabilityPage() {
   };
   const related = capabilities.filter((c) => c.slug !== cap.slug).slice(0, 3);
   const heroImg = heroImages[cap.slug];
-  const showcaseImg = heroImg;
+  const showcaseImg = showcaseImages[cap.slug];
+  const ctaImg = ctaImages[cap.slug];
 
   return (
     <main className="bg-slate-950 text-slate-100 min-h-screen">
@@ -472,7 +502,7 @@ function CapabilityPage() {
       <section className="relative w-full overflow-hidden">
         <div className="relative h-[40vh] min-h-[320px] max-h-[520px]">
           <img
-            src={heroImg}
+            src={ctaImg}
             alt=""
             aria-hidden
             className="absolute inset-0 h-full w-full object-cover"
@@ -578,7 +608,7 @@ function CapabilityPage() {
       {/* CTA — bright with image background */}
       <section className="relative px-6 md:px-12 py-24 overflow-hidden">
         <img
-          src={heroImg}
+          src={ctaImg}
           alt=""
           aria-hidden
           className="absolute inset-0 h-full w-full object-cover"
