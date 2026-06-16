@@ -388,7 +388,8 @@ function CapabilityPage() {
   };
   const related = capabilities.filter((c) => c.slug !== cap.slug).slice(0, 3);
   const heroImg = heroImages[cap.slug];
-  const showcaseImg = heroImg;
+  const showcaseImg = showcaseImages[cap.slug];
+  const ctaImg = ctaImages[cap.slug];
 
   return (
     <main className="bg-slate-950 text-slate-100 min-h-screen">
