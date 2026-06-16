@@ -54,8 +54,8 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Custom industrial parts", "Product prototypes", "Brackets and enclosures", "Architectural metalwork"],
     notes: "Accepted formats: .pdf, .jpg, .png, .step, .stp, .iges, .dwg, .dxf.",
     seo: {
-      title: "Design & Development — SKG3D",
-      description: "From sketch to manufacturable CAD. Engineering, DFM and full documentation by SKG3D.",
+      title: "Design & Development — TOREO",
+      description: "From sketch to manufacturable CAD. Engineering, DFM and full documentation by TOREO.",
     },
   },
   "fiber-laser-cutting": {
@@ -78,7 +78,7 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Brackets and panels", "Enclosures and chassis", "Decorative metal", "Industrial components"],
     notes: "Send .dxf, .dwg or .step. Always include thickness and material grade.",
     seo: {
-      title: "Fiber Laser Cutting — SKG3D",
+      title: "Fiber Laser Cutting — TOREO",
       description: "Precision fiber laser cutting in steel, stainless and aluminum. ±0.05 mm tolerance.",
     },
   },
@@ -101,7 +101,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Frames and chassis", "Enclosures and cabinets", "Architectural panels", "Welded assemblies"],
     seo: {
-      title: "Sheet Metal Forming & Welding — SKG3D",
+      title: "Sheet Metal Forming & Welding — TOREO",
       description: "Press brake forming, MIG/TIG/spot welding and assembly of steel, stainless and aluminum.",
     },
   },
@@ -125,7 +125,7 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Functional prototypes", "Jigs and fixtures", "Custom end-use parts", "Small batch production"],
     notes: "Send .stl, .step or .obj. Include build volume and quantity.",
     seo: {
-      title: "3D Printing — SKG3D",
+      title: "3D Printing — TOREO",
       description: "Functional 3D printing for prototypes and end-use parts in engineering polymers.",
     },
   },
@@ -148,7 +148,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Startup MVPs", "New product development", "Reverse engineering", "Custom one-off parts"],
     seo: {
-      title: "Design → Prototype — SKG3D",
+      title: "Design → Prototype — TOREO",
       description: "From idea to working prototype in days. End-to-end engineering and prototyping under one roof.",
     },
   },
@@ -171,7 +171,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Series production", "OEM components", "Branded consumer products", "Replacement and spare parts"],
     seo: {
-      title: "​Mass production — SKG3D",
+      title: "​Mass production — TOREO",
       description: "Scale from prototype to series production with trusted global partners. Managed end to end.",
     },
   },
@@ -288,8 +288,8 @@ export const Route = createFileRoute("/capabilities/$slug")({
   },
   head: ({ loaderData, params }) => {
     const seo = loaderData?.detail?.seo ?? {
-      title: "Capability — SKG3D",
-      description: "Engineering and manufacturing capability at SKG3D.",
+      title: "Capability — TOREO",
+      description: "Engineering and manufacturing capability at TOREO.",
     };
     const url = `https://xtz-digital-craft.lovable.app/capabilities/${params.slug}`;
     return {

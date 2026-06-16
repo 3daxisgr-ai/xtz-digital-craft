@@ -10,9 +10,9 @@ import { submitForm } from "@/lib/api/submissions.functions";
 export const Route = createFileRoute("/3d-printing-quote")({
   head: () => ({
     meta: [
-      { title: "3D Printing Quote — SKG3D" },
+      { title: "3D Printing Quote — TOREO" },
       { name: "description", content: "Instant 3D printing quote. Pick your material, weight and print time — get an estimated price in seconds." },
-      { property: "og:title", content: "3D Printing Quote — SKG3D" },
+      { property: "og:title", content: "3D Printing Quote — TOREO" },
       { property: "og:description", content: "Configure material, weight and print time to get an instant 3D printing estimate." },
       { property: "og:url", content: "https://xtz-digital-craft.lovable.app/3d-printing-quote" },
     ],

@@ -6,10 +6,10 @@ import { useI18n } from "@/components/xtz/i18n";
 export const Route = createFileRoute("/forum")({
   head: () => ({
     meta: [
-      { title: "Forum — SKG3D Updates" },
-      { name: "description", content: "Updates from the SKG3D workshop: new equipment, capabilities, materials and announcements." },
-      { property: "og:title", content: "Forum — SKG3D Updates" },
-      { property: "og:description", content: "Updates from the SKG3D workshop." },
+      { title: "Forum — TOREO Updates" },
+      { name: "description", content: "Updates from the TOREO workshop: new equipment, capabilities, materials and announcements." },
+      { property: "og:title", content: "Forum — TOREO Updates" },
+      { property: "og:description", content: "Updates from the TOREO workshop." },
       { property: "og:url", content: "https://xtz-digital-craft.lovable.app/forum" },
     ],
     links: [
@@ -88,8 +88,8 @@ function ForumPage() {
           </h1>
           <p className="text-foreground/65 max-w-xl mx-auto">
             {lang === "GR"
-              ? "Νέος εξοπλισμός, υλικά και ανακοινώσεις από το SKG3D."
-              : "New equipment, materials and announcements from SKG3D."}
+              ? "Νέος εξοπλισμός, υλικά και ανακοινώσεις από το TOREO."
+              : "New equipment, materials and announcements from TOREO."}
           </p>
         </div>
       </section>
