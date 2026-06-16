@@ -12,9 +12,9 @@ import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SKG3D — From Concept to Reality" },
-      { name: "description", content: "Design, prototype and manufacture under one roof. Fiber laser cutting, sheet metal, 3D printing and engineering by SKG3D." },
-      { property: "og:title", content: "SKG3D — From Concept to Reality" },
+      { title: "TOREO — From Concept to Reality" },
+      { name: "description", content: "Design, prototype and manufacture under one roof. Fiber laser cutting, sheet metal, 3D printing and engineering by TOREO." },
+      { property: "og:title", content: "TOREO — From Concept to Reality" },
       { property: "og:description", content: "Design, prototype and manufacture under one roof." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://xtz-digital-craft.lovable.app/" },
@@ -34,10 +34,10 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@type": "ItemList",
           itemListElement: [
-            { "@type": "Service", position: 1, name: "Fiber Laser Cutting", description: "Micron-level precision cutting on steel, stainless and aluminium.", provider: { "@type": "Organization", name: "SKG3D" } },
-            { "@type": "Service", position: 2, name: "Sheet Metal Forming & Welding", description: "Bending, welding and assembly of finished metal parts.", provider: { "@type": "Organization", name: "SKG3D" } },
-            { "@type": "Service", position: 3, name: "3D Printing", description: "Functional parts and short runs in engineering polymers.", provider: { "@type": "Organization", name: "SKG3D" } },
-            { "@type": "Service", position: 4, name: "Design & Prototyping", description: "Idea to working prototype in days, not months.", provider: { "@type": "Organization", name: "SKG3D" } },
+            { "@type": "Service", position: 1, name: "Fiber Laser Cutting", description: "Micron-level precision cutting on steel, stainless and aluminium.", provider: { "@type": "Organization", name: "TOREO" } },
+            { "@type": "Service", position: 2, name: "Sheet Metal Forming & Welding", description: "Bending, welding and assembly of finished metal parts.", provider: { "@type": "Organization", name: "TOREO" } },
+            { "@type": "Service", position: 3, name: "3D Printing", description: "Functional parts and short runs in engineering polymers.", provider: { "@type": "Organization", name: "TOREO" } },
+            { "@type": "Service", position: 4, name: "Design & Prototyping", description: "Idea to working prototype in days, not months.", provider: { "@type": "Organization", name: "TOREO" } },
           ],
         }),
       },
