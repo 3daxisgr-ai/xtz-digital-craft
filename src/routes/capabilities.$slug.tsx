@@ -12,6 +12,7 @@ import laserWeldingHero from "@/assets/laser-welding-hero.jpg.asset.json";
 import laserWeldingSystem from "@/assets/laser-welding-system.png.asset.json";
 import cadWorkshop from "@/assets/cad-workshop.png.asset.json";
 import bambuPrinter from "@/assets/bambu-printer.png.asset.json";
+import acctekLaser from "@/assets/acctek-laser.jpg.asset.json";
 import capDesignDev2 from "@/assets/cap-design-dev-2.jpg";
 import capDesignDev3 from "@/assets/cap-design-dev-3.jpg";
 import capLaser2 from "@/assets/cap-laser-2.jpg";
@@ -37,7 +38,7 @@ const heroImages: Record<CapabilitySlug, string> = {
 
 const showcaseImages: Record<CapabilitySlug, string> = {
   "design-development": cadWorkshop.url,
-  "fiber-laser-cutting": capLaser2,
+  "fiber-laser-cutting": acctekLaser.url,
   "sheet-metal-forming-welding": laserWeldingSystem.url,
   "3d-printing": bambuPrinter.url,
   "design-to-prototype": capProto2,
