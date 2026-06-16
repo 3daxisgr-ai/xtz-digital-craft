@@ -365,52 +365,76 @@ function CapabilityPage() {
     materials: detail.materials,
   };
   const related = capabilities.filter((c) => c.slug !== cap.slug).slice(0, 3);
+  const heroImg = heroImages[cap.slug];
+  const showcaseImg = showcaseImages[cap.slug];
 
   return (
-    <main className="bg-black text-foreground min-h-screen">
+    <main className="bg-white text-neutral-900 min-h-screen">
       <Navigation />
 
-      {/* Hero */}
-      <section className="relative pt-36 pb-16 px-6 md:px-12 overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-30 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at 20% 0%, oklch(0.4 0.18 245 / 0.4), transparent 55%)" }}
-        />
-        <div className="relative mx-auto max-w-[1200px]">
-          {/* Breadcrumbs */}
-          <nav aria-label="breadcrumb" className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-10 flex flex-wrap items-center gap-2">
-            <Link to="/" className="hover:text-primary transition-colors">{t("capp.crumb.home")}</Link>
-            <span className="text-muted-foreground/50">/</span>
-            <Link to="/" hash="capabilities" className="hover:text-primary transition-colors">{t("capp.crumb.caps")}</Link>
-            <span className="text-muted-foreground/50">/</span>
-            <span className="text-foreground">{titleMap[cap.slug]}</span>
-          </nav>
+      {/* Hero image banner */}
+      <section className="relative w-full overflow-hidden">
+        <div className="relative h-[68vh] min-h-[520px] max-h-[820px] w-full">
+          <img
+            src={heroImg}
+            alt={titleMap[cap.slug]}
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="eager"
+          />
+          {/* Readability overlay — gradient from bottom for text legibility */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(15,23,42,0.35) 0%, rgba(15,23,42,0.15) 35%, rgba(15,23,42,0.75) 100%)",
+            }}
+          />
+          {/* subtle blue accent */}
+          <div
+            className="absolute inset-0 opacity-50 mix-blend-screen pointer-events-none"
+            style={{ background: "radial-gradient(ellipse at 80% 20%, oklch(0.65 0.18 245 / 0.25), transparent 60%)" }}
+          />
 
-          <div className="flex items-center gap-4 mb-6">
-            {cap.n && <><span className="font-mono text-xs text-primary tracking-[0.3em]">{cap.n} /</span><span className="h-px w-16 bg-primary blue-glow" /></>}
-            <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              {t("cap.kicker")}
-            </span>
+          <div className="absolute inset-0 flex flex-col justify-end">
+            <div className="mx-auto w-full max-w-[1200px] px-6 md:px-12 pb-12 md:pb-16 text-white">
+              <nav aria-label="breadcrumb" className="font-mono text-[12px] uppercase tracking-[0.3em] text-white/70 mb-6 flex flex-wrap items-center gap-2">
+                <Link to="/" className="hover:text-white transition-colors">{t("capp.crumb.home")}</Link>
+                <span className="text-white/40">/</span>
+                <Link to="/" hash="capabilities" className="hover:text-white transition-colors">{t("capp.crumb.caps")}</Link>
+                <span className="text-white/40">/</span>
+                <span className="text-white">{titleMap[cap.slug]}</span>
+              </nav>
+              <span className="font-mono text-[11px] uppercase tracking-[0.4em] text-sky-300">
+                {t("cap.kicker")}
+              </span>
+              <h1 className="mt-4 font-display font-bold leading-[0.95] text-[clamp(2.4rem,6.5vw,5rem)] tracking-tighter max-w-4xl">
+                {titleMap[cap.slug]}
+              </h1>
+            </div>
           </div>
-          <h1
-            className="font-display font-bold leading-[0.95] text-[clamp(2.4rem,6.5vw,5rem)] tracking-tighter mb-6"
-            style={{ textShadow: "0 0 24px oklch(0.65 0.22 245 / 0.35)" }}
-          >
-            {titleMap[cap.slug]}
-          </h1>
-          <p className="text-foreground/85 text-lg md:text-xl max-w-2xl leading-relaxed">{view.intro}</p>
+        </div>
+      </section>
 
-          <div className="mt-10 flex flex-wrap items-center gap-4">
+      {/* Intro + CTA on light surface */}
+      <section className="px-6 md:px-12 py-20 md:py-24 bg-white">
+        <div className="mx-auto max-w-[1200px] grid lg:grid-cols-12 gap-12 items-start">
+          <div className="lg:col-span-7">
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-600 mb-5">
+              {t("capp.h.what")}
+            </h2>
+            <p className="text-neutral-700 text-lg md:text-xl leading-relaxed">{view.intro}</p>
+          </div>
+          <div className="lg:col-span-5 flex flex-wrap gap-3 lg:justify-end">
             <Link
               to={cap.slug === "3d-printing" ? "/3d-printing-quote" : "/start-project"}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-sky-600 text-white font-mono text-xs uppercase tracking-[0.3em] hover:bg-sky-700 transition shadow-lg shadow-sky-600/20"
             >
               {t("capp.cta.quote")} →
             </Link>
             <Link
               to="/"
               hash="capabilities"
-              className="inline-flex items-center gap-3 px-6 py-4 border border-border/60 hover:border-primary/60 font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-3 px-6 py-4 border border-neutral-300 hover:border-sky-600 font-mono text-xs uppercase tracking-[0.3em] text-neutral-700 hover:text-sky-700 transition-colors"
             >
               ← {t("capp.cta.all")}
             </Link>
@@ -418,89 +442,169 @@ function CapabilityPage() {
         </div>
       </section>
 
-      {/* What we do + Materials */}
-      <section className="px-6 md:px-12 py-20 border-t border-border/40">
-        <div className="mx-auto max-w-[1200px] grid lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-7">
-            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-6">{t("capp.h.what")}</h2>
-            <ul className="space-y-5">
+      {/* What we do — alternating: text left, image right */}
+      <section className="px-6 md:px-12 py-16 md:py-24 bg-neutral-50">
+        <div className="mx-auto max-w-[1300px] grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="order-2 lg:order-1">
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-600 mb-8">
+              {t("capp.h.what")}
+            </h2>
+            <ul className="space-y-6">
               {view.what.map((w, i) => (
-                <li key={i} className="flex gap-4 text-foreground/90">
-                  <span className="font-mono text-[14px] text-primary/70 tracking-[0.3em] pt-2 shrink-0">
+                <li key={i} className="flex gap-5">
+                  <span className="font-mono text-[14px] text-sky-600 tracking-[0.3em] pt-2 shrink-0">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="font-display text-lg md:text-xl leading-snug">{w}</span>
+                  <span className="font-display text-lg md:text-xl leading-snug text-neutral-800">{w}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="lg:col-span-5">
-            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-6">{t("capp.h.materials")}</h2>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {view.materials.map((m) => (
-                <li key={m} className="border border-border/50 px-4 py-3 font-display text-base hover:border-primary/60 transition-colors">
-                  {m}
-                </li>
-              ))}
-            </ul>
-            {view.notes && (
-              <p className="text-foreground/80 text-sm leading-relaxed mt-6">{view.notes}</p>
-            )}
+          <div className="order-1 lg:order-2 relative">
+            <div className="relative aspect-[4/5] lg:aspect-[5/6] overflow-hidden rounded-sm shadow-2xl shadow-neutral-900/15 ring-1 ring-neutral-200">
+              <img
+                src={showcaseImg}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                loading="lazy"
+              />
+            </div>
+            <div className="absolute -bottom-4 -left-4 hidden md:block w-24 h-24 border-2 border-sky-500/40" />
           </div>
         </div>
       </section>
 
-      {/* Process */}
-      <section className="px-6 md:px-12 py-20 border-t border-border/40 bg-gradient-to-b from-white/[0.015] to-transparent">
+      {/* Full-width showcase banner */}
+      <section className="relative w-full overflow-hidden">
+        <div className="relative h-[40vh] min-h-[320px] max-h-[520px]">
+          <img
+            src={heroImg}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+          />
+          <div
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(90deg, rgba(15,23,42,0.6) 0%, rgba(15,23,42,0.15) 100%)" }}
+          />
+          <div className="relative h-full mx-auto max-w-[1200px] px-6 md:px-12 flex items-center">
+            <p className="font-display text-white text-2xl md:text-4xl leading-tight max-w-xl">
+              {view.intro}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Materials — light cards */}
+      <section className="px-6 md:px-12 py-20 md:py-24 bg-white">
         <div className="mx-auto max-w-[1200px]">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-10">{t("capp.h.process")}</h2>
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-600 mb-10">
+            {t("capp.h.materials")}
+          </h2>
+          <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {view.materials.map((m) => (
+              <li
+                key={m}
+                className="bg-white border border-neutral-200 rounded-sm px-5 py-5 font-display text-base text-neutral-800 shadow-sm hover:shadow-md hover:border-sky-500/60 hover:-translate-y-0.5 transition-all"
+              >
+                {m}
+              </li>
+            ))}
+          </ul>
+          {view.notes && (
+            <p className="text-neutral-600 text-sm leading-relaxed mt-8 max-w-2xl">{view.notes}</p>
+          )}
+        </div>
+      </section>
+
+      {/* Process — bright cards on light gray */}
+      <section className="px-6 md:px-12 py-20 md:py-24 bg-neutral-50 border-y border-neutral-200">
+        <div className="mx-auto max-w-[1300px]">
+          <div className="grid lg:grid-cols-12 gap-10 mb-12 items-end">
+            <div className="lg:col-span-7">
+              <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-600 mb-4">
+                {t("capp.h.process")}
+              </h2>
+              <p className="font-display text-3xl md:text-5xl tracking-tight text-neutral-900 leading-[1.05]">
+                {titleMap[cap.slug]}
+              </p>
+            </div>
+          </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {view.process.map((p, i) => (
-              <div key={p.t} className="relative p-6 border border-border/60 bg-white/[0.03]">
-                <div className="font-mono text-[14px] tracking-[0.4em] text-primary/80 mb-4">
+              <div
+                key={p.t}
+                className="relative p-7 bg-white border border-neutral-200 rounded-sm shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-sky-500/60 transition-all"
+              >
+                <div className="absolute top-0 left-0 h-1 w-12 bg-sky-500" />
+                <div className="font-mono text-[12px] tracking-[0.4em] text-sky-600 mb-4 mt-2">
                   {t("capp.step")} {String(i + 1).padStart(2, "0")}
                 </div>
-                <h3 className="font-display text-xl font-semibold mb-2">{p.t}</h3>
-                <p className="text-sm text-foreground/80 leading-relaxed">{p.d}</p>
+                <h3 className="font-display text-xl font-semibold mb-3 text-neutral-900">{p.t}</h3>
+                <p className="text-sm text-neutral-600 leading-relaxed">{p.d}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Applications */}
-      <section className="px-6 md:px-12 py-20 border-t border-border/40">
-        <div className="mx-auto max-w-[1200px]">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-8">{t("capp.h.apps")}</h2>
-          <div className="flex flex-wrap gap-3">
-            {view.applications.map((a) => (
-              <span key={a} className="border border-border/50 px-5 py-3 font-display text-base text-foreground/90">
-                {a}
-              </span>
-            ))}
+      {/* Applications + supporting image */}
+      <section className="px-6 md:px-12 py-20 md:py-24 bg-white">
+        <div className="mx-auto max-w-[1300px] grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="relative">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-sm shadow-2xl shadow-neutral-900/15 ring-1 ring-neutral-200">
+              <img
+                src={showcaseImg}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                loading="lazy"
+              />
+            </div>
+          </div>
+          <div>
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-600 mb-8">
+              {t("capp.h.apps")}
+            </h2>
+            <div className="flex flex-wrap gap-3">
+              {view.applications.map((a) => (
+                <span
+                  key={a}
+                  className="bg-neutral-50 border border-neutral-200 rounded-full px-5 py-3 font-display text-base text-neutral-800 hover:border-sky-500/60 hover:bg-white transition-colors"
+                >
+                  {a}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="px-6 md:px-12 py-24 border-t border-border/40 relative overflow-hidden">
+      {/* CTA — bright with image background */}
+      <section className="relative px-6 md:px-12 py-24 overflow-hidden">
+        <img
+          src={heroImg}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+        />
         <div
-          className="absolute inset-0 opacity-40 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at 50% 100%, oklch(0.5 0.22 245 / 0.35), transparent 60%)" }}
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(135deg, rgba(248,250,252,0.96) 0%, rgba(241,245,249,0.92) 60%, rgba(186,230,253,0.75) 100%)" }}
         />
         <div className="relative mx-auto max-w-[1000px] text-center">
-          <h2
-            className="font-display font-bold leading-[0.95] text-[clamp(2rem,5vw,3.5rem)] tracking-tighter mb-6"
-            style={{ textShadow: "0 0 24px oklch(0.65 0.22 245 / 0.35)" }}
-          >
+          <h2 className="font-display font-bold leading-[0.95] text-[clamp(2rem,5vw,3.5rem)] tracking-tighter mb-6 text-neutral-900">
             {t("capp.ready1")} {titleMap[cap.slug]}{isGR ? ";" : "?"}
           </h2>
-          <p className="text-foreground/80 max-w-xl mx-auto mb-8">
+          <p className="text-neutral-700 max-w-xl mx-auto mb-10 text-lg">
             {t("capp.ready.body")}
           </p>
           <Link
             to={cap.slug === "3d-printing" ? "/3d-printing-quote" : "/start-project"}
-            className="inline-flex items-center gap-3 px-10 py-5 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow"
+            className="inline-flex items-center gap-3 px-10 py-5 bg-sky-600 text-white font-mono text-xs uppercase tracking-[0.3em] hover:bg-sky-700 transition shadow-xl shadow-sky-600/25"
           >
             {t("capp.cta.quote")} →
           </Link>
@@ -508,26 +612,41 @@ function CapabilityPage() {
       </section>
 
       {/* Related */}
-      <section className="px-6 md:px-12 py-20 border-t border-border/40">
+      <section className="px-6 md:px-12 py-20 md:py-24 bg-white border-t border-neutral-200">
         <div className="mx-auto max-w-[1500px]">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-8">{t("capp.h.related")}</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.5em] text-sky-600 mb-10">
+            {t("capp.h.related")}
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {related.map((r) => (
               <Link
                 key={r.slug}
                 to="/capabilities/$slug"
                 params={{ slug: r.slug }}
-                className="group relative p-8 border border-border/60 bg-gradient-to-b from-white/[0.03] to-transparent overflow-hidden transition-colors hover:border-primary/60 block"
+                className="group relative overflow-hidden bg-white border border-neutral-200 rounded-sm shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-sky-500/60 transition-all block"
               >
-                <div aria-hidden className="absolute -top-px left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full blue-glow" />
-                {r.n && <div className="font-mono text-[14px] tracking-[0.4em] text-primary/80 mb-4">{r.n}</div>}
-                <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 group-hover:text-primary transition-colors">
-                  {titleMap[r.slug]}
-                </h3>
-                <p className="text-sm text-foreground/80 leading-relaxed">{t(r.dKey)}</p>
-                <span className="mt-6 inline-block font-mono text-[14px] tracking-[0.3em] text-primary opacity-70 group-hover:opacity-100">
-                  {t("capp.view")} →
-                </span>
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  <img
+                    src={heroImages[r.slug]}
+                    alt=""
+                    aria-hidden
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: "linear-gradient(180deg, rgba(15,23,42,0) 40%, rgba(15,23,42,0.55) 100%)" }}
+                  />
+                </div>
+                <div className="p-6">
+                  <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight mb-3 text-neutral-900 group-hover:text-sky-700 transition-colors">
+                    {titleMap[r.slug]}
+                  </h3>
+                  <p className="text-sm text-neutral-600 leading-relaxed">{t(r.dKey)}</p>
+                  <span className="mt-5 inline-block font-mono text-[12px] tracking-[0.3em] text-sky-600 group-hover:text-sky-700">
+                    {t("capp.view")} →
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
