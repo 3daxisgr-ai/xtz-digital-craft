@@ -564,7 +564,7 @@ function CapabilityPage() {
               {view.applications.map((a) => (
                 <span
                   key={a}
-                  className="bg-slate-900 border border-white/10 rounded-full px-5 py-3 font-display text-base text-slate-100 hover:border-sky-500/60 hover:bg-white transition-colors"
+                  className="bg-white/5 border border-white/10 rounded-full px-5 py-3 font-display text-base text-slate-100 hover:border-sky-400/60 hover:bg-white/10 transition-colors"
                 >
                   {a}
                 </span>
