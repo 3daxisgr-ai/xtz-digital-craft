@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { Link } from "@tanstack/react-router";
 import ctaBgAsset from "@/assets/cta-workshop.png.asset.json";
 const ctaBg = ctaBgAsset.url;
 import { useI18n } from "./i18n";
@@ -102,18 +101,6 @@ export function ProjectCTA() {
           <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
             {t("cta.body2")}
           </p>
-        </div>
-
-        <div className="cta-reveal mt-12">
-          <Link
-            to="/start"
-            className="group relative inline-flex items-center gap-3 bg-primary px-10 py-5 font-mono text-xs tracking-[0.3em] text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_0_60px_-10px_oklch(0.72_0.18_245_/_0.5)]"
-          >
-            <span>{t("cta.button")}</span>
-            <span className="transition-transform duration-300 group-hover:translate-x-1">
-              →
-            </span>
-          </Link>
         </div>
 
         <div className="cta-reveal mt-14">

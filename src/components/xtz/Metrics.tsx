@@ -1,16 +1,13 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Clock, Zap, PenTool } from "lucide-react";
 import { useI18n } from "./i18n";
 
-gsap.registerPlugin(ScrollTrigger);
-
-type Metric = { value: string; labelEN: string; labelGR: string };
-
-const metrics: Metric[] = [
-  { value: "2000+", labelEN: "Printing Hours", labelGR: "Ώρες Εκτύπωσης" },
-  { value: "900+", labelEN: "Completed Print Jobs", labelGR: "Ολοκληρωμένες Εργασίες" },
-  { value: "300+", labelEN: "CAD Design Hours", labelGR: "Ώρες Σχεδιασμού CAD" },
+const metrics = [
+  { value: "2000+", labelEN: "Printing Hours", labelGR: "Ώρες Εκτύπωσης", Icon: Clock },
+  { value: "900+", labelEN: "Laser Cutting Hours", labelGR: "Ώρες Κοπής Laser", Icon: Zap },
+  { value: "300+", labelEN: "CAD Design Hours", labelGR: "Ώρες Σχεδιασμού CAD", Icon: PenTool },
 ];
 
 export function Metrics() {
@@ -20,12 +17,11 @@ export function Metrics() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(".metric-card", {
-        y: 30,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.12,
+        y: 20,
+        duration: 0.7,
+        stagger: 0.1,
         ease: "power3.out",
-        scrollTrigger: { trigger: root.current, start: "top 85%" },
+        scrollTrigger: { trigger: root.current, start: "top 90%" },
       });
     }, root);
     return () => ctx.revert();
@@ -35,7 +31,7 @@ export function Metrics() {
     <section
       ref={root}
       aria-label="Key metrics"
-      className="relative w-full overflow-hidden py-16 md:py-20"
+      className="relative z-10 w-full overflow-hidden py-16 md:py-20"
       style={{ backgroundColor: "#0d1220" }}
     >
       <div
@@ -66,6 +62,7 @@ export function Metrics() {
                 }}
               />
               <div className="relative flex flex-col items-start gap-3">
+                <m.Icon className="h-5 w-5 text-primary/60 mb-1" strokeWidth={1.5} />
                 <div
                   className="font-display font-bold leading-none tracking-tighter text-[clamp(2.6rem,5.5vw,4rem)] text-white"
                   style={{ textShadow: "0 0 28px rgba(5,172,255,0.35)" }}
