@@ -31,7 +31,7 @@ export function Metrics() {
     <section
       ref={root}
       aria-label="Key metrics"
-      className="relative z-10 w-full overflow-hidden py-16 md:py-20"
+      className="relative z-10 w-full overflow-hidden py-14 md:py-16"
       style={{ backgroundColor: "#0d1220" }}
     >
       <div

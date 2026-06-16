@@ -40,7 +40,7 @@ export function About() {
     <section
       id="about"
       ref={root}
-      className="relative w-full overflow-hidden py-28 md:py-40"
+      className="relative w-full overflow-hidden py-20 md:py-28"
       style={{
         backgroundColor: "#11182a",
         backgroundImage: `url(${aboutBg.url})`,
