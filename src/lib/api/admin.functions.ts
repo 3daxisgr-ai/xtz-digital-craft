@@ -221,7 +221,7 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
           "X-Connection-Api-Key": resendKey,
         },
         body: JSON.stringify({
-          from: "SKG3D Notifications <onboarding@resend.dev>",
+          from: "TOREO Notifications <onboarding@resend.dev>",
           to: [NOTIFY_EMAIL],
           subject: "✅ Test Notification - 3D Axis",
           html: `<p>This is a test email from the Admin Dashboard.</p><p>Time: ${now}</p>`,

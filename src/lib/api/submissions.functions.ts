@@ -170,7 +170,7 @@ export const submitForm = createServerFn({ method: "POST" })
     const html = `<!doctype html><html><body style="background:#f6f6f6;margin:0;padding:24px;font-family:Arial,sans-serif">
       <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden">
         <tr><td style="padding:24px 28px;background:#0b0b0b;color:#fff">
-          <div style="font-family:monospace;font-size:11px;letter-spacing:0.3em;color:#7aa8ff;text-transform:uppercase">SKG3D · New Submission</div>
+          <div style="font-family:monospace;font-size:11px;letter-spacing:0.3em;color:#7aa8ff;text-transform:uppercase">TOREO · New Submission</div>
           <div style="font-size:22px;font-weight:bold;margin-top:6px">${esc(sourceLabel)}</div>
         </td></tr>
         <tr><td style="padding:0 8px">
@@ -200,7 +200,7 @@ export const submitForm = createServerFn({ method: "POST" })
             "X-Connection-Api-Key": resendKey,
           },
           body: JSON.stringify({
-            from: "SKG3D Notifications <onboarding@resend.dev>",
+            from: "TOREO Notifications <onboarding@resend.dev>",
             to: [NOTIFY_EMAIL],
             reply_to: data.email,
             subject,
