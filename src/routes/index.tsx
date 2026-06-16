@@ -7,6 +7,7 @@ import { HowItWorks } from "@/components/xtz/HowItWorks";
 import { ProjectCTA } from "@/components/xtz/ProjectCTA";
 import { Footer } from "@/components/xtz/Footer";
 import { Metrics } from "@/components/xtz/Metrics";
+import { useI18n } from "@/components/xtz/i18n";
 import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
