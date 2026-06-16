@@ -213,7 +213,7 @@ const details: Record<CapabilitySlug, Detail> = {
       "Quality control and inspection on your behalf.",
       "Logistics, customs and delivery managed end to end.",
     ],
-    materials: ["Metals (steel, stainless, aluminum, brass)", "Engineering polymers", "Cast and molded parts", "Composite materials"],
+    materials: ["Metals (steel, stainless, aluminum, brass)", "Engineering polymers", "3d printed parts", "Composite materials"],
     process: [
       { t: "Spec", d: "Prototype, drawings and tolerances locked in." },
       { t: "Sourcing", d: "We match the part to the right partner." },
