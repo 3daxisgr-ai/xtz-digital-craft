@@ -13,6 +13,7 @@ import laserWeldingSystem from "@/assets/laser-welding-system.png.asset.json";
 import cadWorkshop from "@/assets/cad-workshop.png.asset.json";
 import bambuPrinter from "@/assets/bambu-printer.png.asset.json";
 import acctekLaser from "@/assets/acctek-laser.jpg.asset.json";
+import roboticFactory from "@/assets/robotic-factory.png.asset.json";
 import capDesignDev2 from "@/assets/cap-design-dev-2.jpg";
 import capDesignDev3 from "@/assets/cap-design-dev-3.jpg";
 import capLaser2 from "@/assets/cap-laser-2.jpg";
@@ -42,7 +43,7 @@ const showcaseImages: Record<CapabilitySlug, string> = {
   "sheet-metal-forming-welding": laserWeldingSystem.url,
   "3d-printing": bambuPrinter.url,
   "design-to-prototype": capProto2,
-  "global-manufacturing-network": capMass2,
+  "global-manufacturing-network": roboticFactory.url,
 };
 
 const ctaImages: Record<CapabilitySlug, string> = {
