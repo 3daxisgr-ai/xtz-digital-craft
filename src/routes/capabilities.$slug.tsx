@@ -8,24 +8,16 @@ import laserWelding from "@/assets/laser-welding.jpg.asset.json";
 import bambu from "@/assets/bambu-3d-printing.png.asset.json";
 import designPrototype from "@/assets/design-prototype-photo.png.asset.json";
 import massProduction from "@/assets/mass-production.png.asset.json";
+import designDevelopment from "@/assets/design-development.jpg.asset.json";
 
+// Each capability page uses ONLY its own dedicated image.
 const heroImages: Record<CapabilitySlug, string> = {
-  "design-development": designPrototype.url,
+  "design-development": designDevelopment.url,
   "fiber-laser-cutting": staticLaser.url,
   "sheet-metal-forming-welding": laserWelding.url,
   "3d-printing": bambu.url,
   "design-to-prototype": designPrototype.url,
   "global-manufacturing-network": massProduction.url,
-};
-
-// Secondary showcase image (different from hero where possible)
-const showcaseImages: Record<CapabilitySlug, string> = {
-  "design-development": staticLaser.url,
-  "fiber-laser-cutting": laserWelding.url,
-  "sheet-metal-forming-welding": massProduction.url,
-  "3d-printing": designPrototype.url,
-  "design-to-prototype": bambu.url,
-  "global-manufacturing-network": staticLaser.url,
 };
 
 type Detail = {
