@@ -335,7 +335,7 @@ const gr: Dict = {
   "capp.cta.all": "Όλες οι Δυνατότητες",
   "capp.h.what": "Τι κάνουμε",
   "capp.h.materials": "Υλικά & Τεχνολογίες",
-  "capp.h.process": "Επισκόπηση Διαδικασίας",
+  "capp.h.process": " ΔΙΑΔΙΚΑΣΊΑΣ",
   "capp.h.apps": "Εφαρμογές",
   "capp.h.related": "Συναφείς Δυνατότητες",
   "capp.step": "ΒΗΜΑ",
