@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import skg3dLogo from "@/assets/skg3d-logo-large.png.asset.json";
+import toreoLogo from "@/assets/toreo-logo.png.asset.json";
 import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
