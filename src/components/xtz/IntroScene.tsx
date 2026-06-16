@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import toreoLogo from "@/assets/toreo-logo.png.asset.json";
+import skg3dLogo from "@/assets/skg3d-logo-large.png.asset.json";
 import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -70,7 +70,7 @@ export function IntroScene() {
       {/* Hero video background */}
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
         <video
-          src="https://res.cloudinary.com/dozthoxxp/video/upload/copy_1E5EA85B-66A7-473E-8971-6AB9C9E0D8BB_czusni.mp4"
+          src="https://res.cloudinary.com/dozthoxxp/video/upload/copy_D88C4D5F-6765-4B35-B108-A8698361C726_rzq8il.mp4"
           autoPlay
           muted
           loop
@@ -87,10 +87,10 @@ export function IntroScene() {
       {/* Hero text layer */}
       <div className="hero-layer absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center will-change-transform">
         <h1 className="hero-headline flex items-center justify-center">
-          <span className="sr-only">TOREO — Precision Fabrication & Manufacturing. </span>
+          <span className="sr-only">SKG3D — Precision Fabrication & Manufacturing. </span>
           <img
-            src={toreoLogo.url}
-            alt="TOREO"
+            src={skg3dLogo.url}
+            alt="SKG3D"
             aria-hidden="true"
             className="block w-auto object-contain"
             style={{
@@ -114,8 +114,7 @@ export function IntroScene() {
             aria-hidden
             className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
             style={{
-              background:
-                "radial-gradient(ellipse at center, rgba(5,172,255,0.25), transparent 70%)",
+              background: "radial-gradient(ellipse at center, rgba(5,172,255,0.25), transparent 70%)",
             }}
           />
           <span className="relative">Start Here</span>
