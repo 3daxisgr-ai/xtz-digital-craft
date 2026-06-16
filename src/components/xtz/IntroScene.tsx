@@ -30,7 +30,6 @@ export function IntroScene() {
           { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.0 },
           0.6,
         )
-        .fromTo(".hero-sub", { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, "-=0.4")
         .fromTo(".hero-cta", { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, "-=0.3")
         .fromTo(".intro-xyz", { y: 10, opacity: 0 }, { y: 0, opacity: 0.7, duration: 0.6 }, "-=0.3")
         .add(() => {
