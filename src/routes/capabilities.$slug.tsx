@@ -230,7 +230,7 @@ const details: Record<CapabilitySlug, Detail> = {
 
 const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process" | "applications" | "notes">> = {
   "design-development": {
-    intro: "Μετατρέπουμε σκίτσα, φωτογραφίες και briefs σε ακριβή, κατασκευάσιμα αρχεία CAD — σχεδιασμένα για τη μέθοδο που θα τα παράγει.",
+    intro: "Μετατρέπουμε σκίτσα, φωτογραφίες και briefs σε ακριβή, κατασκευάσιμα αρχεία CAD",
     what: [
       "Σχέδια ιδεών και μελέτες σκοπιμότητας.",
       "Παραμετρικό 3D CAD και κατασκευαστικά σχέδια 2D.",
