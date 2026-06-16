@@ -3,6 +3,30 @@ import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
 import { capabilities, type CapabilitySlug } from "@/components/xtz/Capabilities";
 import { useI18n } from "@/components/xtz/i18n";
+import staticLaser from "@/assets/static-laser.png.asset.json";
+import laserWelding from "@/assets/laser-welding.jpg.asset.json";
+import bambu from "@/assets/bambu-3d-printing.png.asset.json";
+import designPrototype from "@/assets/design-prototype-photo.png.asset.json";
+import massProduction from "@/assets/mass-production.png.asset.json";
+
+const heroImages: Record<CapabilitySlug, string> = {
+  "design-development": designPrototype.url,
+  "fiber-laser-cutting": staticLaser.url,
+  "sheet-metal-forming-welding": laserWelding.url,
+  "3d-printing": bambu.url,
+  "design-to-prototype": designPrototype.url,
+  "global-manufacturing-network": massProduction.url,
+};
+
+// Secondary showcase image (different from hero where possible)
+const showcaseImages: Record<CapabilitySlug, string> = {
+  "design-development": staticLaser.url,
+  "fiber-laser-cutting": laserWelding.url,
+  "sheet-metal-forming-welding": massProduction.url,
+  "3d-printing": designPrototype.url,
+  "design-to-prototype": bambu.url,
+  "global-manufacturing-network": staticLaser.url,
+};
 
 type Detail = {
   slug: CapabilitySlug;
