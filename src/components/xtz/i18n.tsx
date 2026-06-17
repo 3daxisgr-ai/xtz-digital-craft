@@ -13,6 +13,7 @@ const en: Dict = {
   "nav.faq": "FAQ",
   "nav.equipment": "Equipment",
   "nav.forum": "Forum",
+  "nav.company": "Company",
   "nav.inquiry": "Start a Project",
   "nav.cta": "Start a Project",
 
@@ -202,6 +203,7 @@ const gr: Dict = {
   "nav.faq": "Ερωτήσεις",
   "nav.equipment": "Εξοπλισμός",
   "nav.forum": "Νέα",
+  "nav.company": "Η Εταιρεία",
   "nav.inquiry": "Ξεκινήστε Έργο",
   "nav.cta": "Ξεκινήστε Έργο",
 

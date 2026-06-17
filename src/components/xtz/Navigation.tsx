@@ -10,6 +10,7 @@ const links: { to: string; hash?: string; k: string }[] = [
   { to: "/equipment", k: "nav.equipment" },
   { to: "/forum", k: "nav.forum" },
   { to: "/faq", k: "nav.faq" },
+  { to: "/company", k: "nav.company" },
 ];
 
 export function Navigation() {
