@@ -15,6 +15,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ForumRouteImport } from './routes/forum'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EquipmentRouteImport } from './routes/equipment'
+import { Route as CompanyRouteImport } from './routes/company'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as R3dPrintingQuoteRouteImport } from './routes/3d-printing-quote'
 import { Route as IndexRouteImport } from './routes/index'
@@ -50,6 +51,11 @@ const EquipmentRoute = EquipmentRouteImport.update({
   path: '/equipment',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompanyRoute = CompanyRouteImport.update({
+  id: '/company',
+  path: '/company',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
   '/admin': typeof AdminRoute
+  '/company': typeof CompanyRoute
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
   '/admin': typeof AdminRoute
+  '/company': typeof CompanyRoute
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
   '/admin': typeof AdminRoute
+  '/company': typeof CompanyRoute
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/'
     | '/3d-printing-quote'
     | '/admin'
+    | '/company'
     | '/equipment'
     | '/faq'
     | '/forum'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/'
     | '/3d-printing-quote'
     | '/admin'
+    | '/company'
     | '/equipment'
     | '/faq'
     | '/forum'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/3d-printing-quote'
     | '/admin'
+    | '/company'
     | '/equipment'
     | '/faq'
     | '/forum'
@@ -151,6 +163,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   R3dPrintingQuoteRoute: typeof R3dPrintingQuoteRoute
   AdminRoute: typeof AdminRoute
+  CompanyRoute: typeof CompanyRoute
   EquipmentRoute: typeof EquipmentRoute
   FaqRoute: typeof FaqRoute
   ForumRoute: typeof ForumRoute
@@ -204,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EquipmentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/company': {
+      id: '/company'
+      path: '/company'
+      fullPath: '/company'
+      preLoaderRoute: typeof CompanyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -239,6 +259,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R3dPrintingQuoteRoute: R3dPrintingQuoteRoute,
   AdminRoute: AdminRoute,
+  CompanyRoute: CompanyRoute,
   EquipmentRoute: EquipmentRoute,
   FaqRoute: FaqRoute,
   ForumRoute: ForumRoute,
@@ -250,13 +271,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
