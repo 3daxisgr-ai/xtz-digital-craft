@@ -78,12 +78,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "TOREO — Design, Prototype, Manufacture" },
+      { title: "TOREO — From concept to reality" },
       { name: "description", content: "TOREO: a full-stack manufacturing partner. Fiber laser cutting, sheet metal, 3D printing, design and prototyping under one roof." },
       { name: "author", content: "TOREO" },
       { property: "og:site_name", content: "TOREO" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "TOREO — From concept to reality" },
+      { name: "twitter:title", content: "TOREO — From concept to reality" },
+      { property: "og:description", content: "TOREO: a full-stack manufacturing partner. Fiber laser cutting, sheet metal, 3D printing, design and prototyping under one roof." },
+      { name: "twitter:description", content: "TOREO: a full-stack manufacturing partner. Fiber laser cutting, sheet metal, 3D printing, design and prototyping under one roof." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/0136c2b7-3464-451f-939d-916490b21a9a" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/0136c2b7-3464-451f-939d-916490b21a9a" },
     ],
     links: [
       {
