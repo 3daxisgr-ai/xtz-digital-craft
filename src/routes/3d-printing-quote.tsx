@@ -406,19 +406,24 @@ function QuotePage() {
   );
 }
 
-function Label({ children }: { children: React.ReactNode }) {
+function Label({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
   return (
-    <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground">
+    <label
+      htmlFor={htmlFor}
+      className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground block"
+    >
       {children}
-    </div>
+    </label>
   );
 }
 
 function Input({ name, label, required, type = "text" }: { name: string; label: string; required?: boolean; type?: string }) {
+  const id = `quote-${name}`;
   return (
     <div>
-      <Label>{label}{required && <span className="text-primary"> *</span>}</Label>
+      <Label htmlFor={id}>{label}{required && <span className="text-primary"> *</span>}</Label>
       <input
+        id={id}
         name={name}
         type={type}
         required={required}
