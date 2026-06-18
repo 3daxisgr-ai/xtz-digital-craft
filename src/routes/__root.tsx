@@ -106,12 +106,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             {
               "@type": "Organization",
               name: "TOREO",
-              url: "https://xtz-digital-craft.lovable.app",
+              url: "https://toreo.lovable.app",
             },
             {
               "@type": "WebSite",
               name: "TOREO",
-              url: "https://xtz-digital-craft.lovable.app",
+              url: "https://toreo.lovable.app",
             },
           ],
         }),

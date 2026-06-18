@@ -342,7 +342,7 @@ export const Route = createFileRoute("/capabilities/$slug")({
       title: "Capability — TOREO",
       description: "Engineering and manufacturing capability at TOREO.",
     };
-    const url = `https://xtz-digital-craft.lovable.app/capabilities/${params.slug}`;
+    const url = `https://toreo.lovable.app/capabilities/${params.slug}`;
     return {
       meta: [
         { title: seo.title },
@@ -354,6 +354,24 @@ export const Route = createFileRoute("/capabilities/$slug")({
       ],
       links: [
         { rel: "canonical", href: url },
+      ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: seo.title,
+            description: seo.description,
+            url,
+            serviceType: loaderData?.cap ? titles[loaderData.cap.slug] : "Manufacturing service",
+            provider: {
+              "@type": "Organization",
+              name: "TOREO",
+              url: "https://toreo.lovable.app",
+            },
+          }),
+        },
       ],
     };
   },

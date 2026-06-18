@@ -19,10 +19,10 @@ export const Route = createFileRoute("/equipment")({
         content:
           "Professional manufacturing equipment that helps us transform ideas into finished products with precision, speed and reliability.",
       },
-      { property: "og:url", content: "https://xtz-digital-craft.lovable.app/equipment" },
+      { property: "og:url", content: "https://toreo.lovable.app/equipment" },
     ],
     links: [
-      { rel: "canonical", href: "https://xtz-digital-craft.lovable.app/equipment" },
+      { rel: "canonical", href: "https://toreo.lovable.app/equipment" },
     ],
   }),
   component: EquipmentPage,

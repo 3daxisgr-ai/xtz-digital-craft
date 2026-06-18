@@ -14,10 +14,10 @@ export const Route = createFileRoute("/3d-printing-quote")({
       { name: "description", content: "Instant 3D printing quote. Pick your material, weight and print time — get an estimated price in seconds." },
       { property: "og:title", content: "3D Printing Quote — TOREO" },
       { property: "og:description", content: "Configure material, weight and print time to get an instant 3D printing estimate." },
-      { property: "og:url", content: "https://xtz-digital-craft.lovable.app/3d-printing-quote" },
+      { property: "og:url", content: "https://toreo.lovable.app/3d-printing-quote" },
     ],
     links: [
-      { rel: "canonical", href: "https://xtz-digital-craft.lovable.app/3d-printing-quote" },
+      { rel: "canonical", href: "https://toreo.lovable.app/3d-printing-quote" },
     ],
   }),
   component: QuotePage,
@@ -361,8 +361,9 @@ function QuotePage() {
                 <Input name="email" label={L.email} type="email" required />
                 <Input name="phone" label={L.phone} required />
                 <div className="lg:col-span-2">
-                  <Label>{L.notes}</Label>
+                  <Label htmlFor="quote-notes">{L.notes}</Label>
                   <textarea
+                    id="quote-notes"
                     name="notes"
                     rows={4}
                     maxLength={2000}
@@ -405,19 +406,24 @@ function QuotePage() {
   );
 }
 
-function Label({ children }: { children: React.ReactNode }) {
+function Label({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
   return (
-    <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground">
+    <label
+      htmlFor={htmlFor}
+      className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground block"
+    >
       {children}
-    </div>
+    </label>
   );
 }
 
 function Input({ name, label, required, type = "text" }: { name: string; label: string; required?: boolean; type?: string }) {
+  const id = `quote-${name}`;
   return (
     <div>
-      <Label>{label}{required && <span className="text-primary"> *</span>}</Label>
+      <Label htmlFor={id}>{label}{required && <span className="text-primary"> *</span>}</Label>
       <input
+        id={id}
         name={name}
         type={type}
         required={required}
