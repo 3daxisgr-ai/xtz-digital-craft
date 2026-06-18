@@ -40,16 +40,16 @@ export function About() {
     <section
       id="about"
       ref={root}
-      className="relative w-full overflow-hidden py-20 md:py-28"
+      className="relative w-full overflow-hidden py-20 md:py-28 bg-fixed-desktop"
       style={{
         backgroundColor: "#11182a",
         backgroundImage: `url(${aboutBg.url})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundAttachment: "fixed",
         backgroundRepeat: "no-repeat",
       }}
     >
+
       {/* Lighter, blue-tinted overlay (was bg-black/70) */}
       <div
         className="pointer-events-none absolute inset-0"
