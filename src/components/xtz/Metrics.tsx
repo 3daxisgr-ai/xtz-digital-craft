@@ -7,7 +7,7 @@ import { useI18n } from "./i18n";
 const metrics = [
   { value: "2000+", labelEN: "Printing Hours", labelGR: "Ώρες Εκτύπωσης", Icon: Clock },
   { value: "7000+", labelEN: "Laser Cutting Hours", labelGR: "Ώρες Κοπής Laser", Icon: Zap },
-  { value: "300+", labelEN: "CAD Design Hours", labelGR: "Ώρες Σχεδιασμού CAD", Icon: PenTool },
+  { value: "900+", labelEN: "CAD Design Hours", labelGR: "Ώρες Σχεδιασμού CAD", Icon: PenTool },
 ];
 
 export function Metrics() {
