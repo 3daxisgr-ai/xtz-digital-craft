@@ -8,10 +8,54 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function IntroScene() {
   const root = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { t } = useI18n();
+
+  // Keep the hero video alive on mobile (iOS Safari pauses background video on scroll)
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const tryPlay = () => {
+      const p = v.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    };
+    tryPlay();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") tryPlay();
+    };
+    const onPause = () => {
+      // Re-resume if it was paused by the OS while still on screen
+      if (!document.hidden) tryPlay();
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) tryPlay();
+        });
+      },
+      { threshold: 0.05 },
+    );
+    io.observe(v);
+    document.addEventListener("visibilitychange", onVisibility);
+    v.addEventListener("pause", onPause);
+    v.addEventListener("stalled", tryPlay);
+    v.addEventListener("suspend", tryPlay);
+    window.addEventListener("focus", tryPlay);
+    window.addEventListener("pageshow", tryPlay);
+    return () => {
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+      v.removeEventListener("pause", onPause);
+      v.removeEventListener("stalled", tryPlay);
+      v.removeEventListener("suspend", tryPlay);
+      window.removeEventListener("focus", tryPlay);
+      window.removeEventListener("pageshow", tryPlay);
+    };
+  }, []);
 
   useEffect(() => {
     const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const isMobile = typeof window !== "undefined" && window.matchMedia?.("(max-width: 768px)").matches;
 
     const ctx = gsap.context(() => {
       // Boot
@@ -37,9 +81,9 @@ export function IntroScene() {
         }, "+=0.05")
         .fromTo(".scroll-hint", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.6 }, "+=0.3");
 
-      if (reduced) return;
+      // Disable scroll pin on mobile — pinning causes iOS to suspend the background video
+      if (reduced || isMobile) return;
 
-      // Subtle parallax + fade on scroll
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: "#intro",
@@ -57,6 +101,7 @@ export function IntroScene() {
     return () => ctx.revert();
   }, []);
 
+
   return (
     <section id="intro" ref={root} className="relative h-screen w-full overflow-hidden bg-black">
       {/* Ambient blue */}
@@ -70,16 +115,22 @@ export function IntroScene() {
       {/* Hero video background */}
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
         <video
+          ref={videoRef}
           src="https://res.cloudinary.com/dozthoxxp/video/upload/copy_D88C4D5F-6765-4B35-B108-A8698361C726_rzq8il.mp4"
           autoPlay
           muted
           loop
           playsInline
+          // @ts-expect-error iOS-specific attribute
+          webkit-playsinline="true"
+          disablePictureInPicture
+          disableRemotePlayback
           preload="auto"
           controls={false}
           className="h-full w-full object-cover"
           style={{ width: "100%", height: "100%" }}
         />
+
         <div className="absolute inset-0 bg-black/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/55" />
       </div>
