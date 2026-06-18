@@ -121,9 +121,9 @@ export function IntroScene() {
           muted
           loop
           playsInline
-          // @ts-expect-error iOS-specific attribute
-          webkit-playsinline="true"
+          {...({ "webkit-playsinline": "true" } as Record<string, string>)}
           disablePictureInPicture
+
           disableRemotePlayback
           preload="auto"
           controls={false}
