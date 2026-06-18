@@ -117,7 +117,7 @@ export function IntroScene() {
               background: "radial-gradient(ellipse at center, rgba(5,172,255,0.25), transparent 70%)",
             }}
           />
-          <span className="relative">Start Here</span>
+          <span className="relative">START PROJECT</span>
           <span className="relative transition-transform duration-300 group-hover:translate-x-1">→</span>
         </a>
 
