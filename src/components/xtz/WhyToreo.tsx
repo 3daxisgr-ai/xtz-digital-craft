@@ -163,7 +163,7 @@ export function WhyToreo() {
           <div className="lg:col-span-5 wt-reveal">
             <div className="sticky top-24">
               <div className="wt-mono text-[10px] uppercase mb-4" style={{ color: "#8a5e22" }}>
-                τορεύω · torevo
+                ΤΟΡΕΟ · TORΕΟ
               </div>
               <p className="wt-serif text-3xl md:text-4xl leading-[1.15]" style={{ color: "#2a2620" }}>
                 {c.introLead}
