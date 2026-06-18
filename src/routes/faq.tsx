@@ -11,10 +11,10 @@ export const Route = createFileRoute("/faq")({
       { name: "description", content: "Answers about 3D printing, laser cutting, materials, lead times, prototyping, production, pricing and file requirements." },
       { property: "og:title", content: "FAQ — TOREO" },
       { property: "og:description", content: "Everything you need to know before starting a project with TOREO." },
-      { property: "og:url", content: "https://xtz-digital-craft.lovable.app/faq" },
+      { property: "og:url", content: "https://toreo.lovable.app/faq" },
     ],
     links: [
-      { rel: "canonical", href: "https://xtz-digital-craft.lovable.app/faq" },
+      { rel: "canonical", href: "https://toreo.lovable.app/faq" },
     ],
   }),
   component: FAQPage,

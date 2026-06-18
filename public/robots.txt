@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://xtz-digital-craft.lovable.app/sitemap.xml
+Sitemap: https://toreo.lovable.app/sitemap.xml

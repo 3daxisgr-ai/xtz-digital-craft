@@ -14,10 +14,10 @@ export const Route = createFileRoute("/3d-printing-quote")({
       { name: "description", content: "Instant 3D printing quote. Pick your material, weight and print time — get an estimated price in seconds." },
       { property: "og:title", content: "3D Printing Quote — TOREO" },
       { property: "og:description", content: "Configure material, weight and print time to get an instant 3D printing estimate." },
-      { property: "og:url", content: "https://xtz-digital-craft.lovable.app/3d-printing-quote" },
+      { property: "og:url", content: "https://toreo.lovable.app/3d-printing-quote" },
     ],
     links: [
-      { rel: "canonical", href: "https://xtz-digital-craft.lovable.app/3d-printing-quote" },
+      { rel: "canonical", href: "https://toreo.lovable.app/3d-printing-quote" },
     ],
   }),
   component: QuotePage,

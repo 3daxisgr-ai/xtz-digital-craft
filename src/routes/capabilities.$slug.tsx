@@ -342,7 +342,7 @@ export const Route = createFileRoute("/capabilities/$slug")({
       title: "Capability — TOREO",
       description: "Engineering and manufacturing capability at TOREO.",
     };
-    const url = `https://xtz-digital-craft.lovable.app/capabilities/${params.slug}`;
+    const url = `https://toreo.lovable.app/capabilities/${params.slug}`;
     return {
       meta: [
         { title: seo.title },

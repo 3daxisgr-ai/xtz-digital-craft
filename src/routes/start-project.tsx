@@ -10,10 +10,10 @@ export const Route = createFileRoute("/start-project")({
       { name: "description", content: "Send us your project. Every inquiry is reviewed by an engineer and answered within one business day." },
       { property: "og:title", content: "Start a Project — TOREO" },
       { property: "og:description", content: "Design, prototype and manufacture under one roof." },
-      { property: "og:url", content: "https://xtz-digital-craft.lovable.app/start-project" },
+      { property: "og:url", content: "https://toreo.lovable.app/start-project" },
     ],
     links: [
-      { rel: "canonical", href: "https://xtz-digital-craft.lovable.app/start-project" },
+      { rel: "canonical", href: "https://toreo.lovable.app/start-project" },
     ],
   }),
   component: StartProjectPage,

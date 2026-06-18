@@ -10,10 +10,10 @@ export const Route = createFileRoute("/forum")({
       { name: "description", content: "Updates from the TOREO workshop: new equipment, capabilities, materials and announcements." },
       { property: "og:title", content: "Forum — TOREO Updates" },
       { property: "og:description", content: "Updates from the TOREO workshop." },
-      { property: "og:url", content: "https://xtz-digital-craft.lovable.app/forum" },
+      { property: "og:url", content: "https://toreo.lovable.app/forum" },
     ],
     links: [
-      { rel: "canonical", href: "https://xtz-digital-craft.lovable.app/forum" },
+      { rel: "canonical", href: "https://toreo.lovable.app/forum" },
     ],
   }),
   component: ForumPage,
