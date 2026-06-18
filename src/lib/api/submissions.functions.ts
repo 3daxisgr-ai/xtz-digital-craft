@@ -17,7 +17,12 @@ const submissionSchema = z.object({
   print_hours: z.number().nullable().optional(),
   estimated_price: z.number().nullable().optional(),
   message: z.string().trim().max(4000).optional().nullable(),
-  file_path: z.string().max(500).optional().nullable(),
+  file_path: z
+    .string()
+    .max(500)
+    .refine((v) => /^(inquiry|3dp)\/[A-Za-z0-9._-]+$/.test(v), "Invalid file path")
+    .optional()
+    .nullable(),
   file_name: z.string().max(255).optional().nullable(),
   metadata: z.record(z.string(), z.unknown()).optional().nullable(),
 });
