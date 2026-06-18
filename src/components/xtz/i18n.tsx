@@ -118,7 +118,7 @@ const en: Dict = {
   "about.title.l1": "A COMPLETE",
   "about.title.l2": "MANUFACTURING",
   "about.title.l3": "PARTNER.",
-  "about.body": "Not a laser shop. Not a print shop. A full-stack manufacturing partner taking projects from concept to scalable production — under one roof.",
+  "about.body": "Not just laser shop. Not a print shop. A full-stack manufacturing partner taking projects from concept to scalable production — under one roof.",
   "about.specialize": "We specialize in",
 
   // How it works
