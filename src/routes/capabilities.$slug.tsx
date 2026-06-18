@@ -355,6 +355,24 @@ export const Route = createFileRoute("/capabilities/$slug")({
       links: [
         { rel: "canonical", href: url },
       ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: seo.title,
+            description: seo.description,
+            url,
+            serviceType: loaderData?.cap?.title ?? "Manufacturing service",
+            provider: {
+              "@type": "Organization",
+              name: "TOREO",
+              url: "https://toreo.lovable.app",
+            },
+          }),
+        },
+      ],
     };
   },
   component: CapabilityPage,
