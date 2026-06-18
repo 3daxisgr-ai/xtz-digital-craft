@@ -271,7 +271,7 @@ function CompanyPage() {
               {c.s2Title}
             </h2>
             <div className="border border-white/15 p-8 md:p-10" style={{ background: "linear-gradient(135deg, oklch(0.15 0.02 245 / 0.4), oklch(0.08 0.01 245 / 0.25))" }}>
-              <div className="co-mono text-[10px] uppercase text-foreground/50 mb-3">τορεύω · torevo</div>
+              <div className="co-mono text-[10px] uppercase text-foreground/50 mb-3">ΤΟΡΕΟ · TORΕΟ</div>
               <p className="font-display text-2xl md:text-3xl leading-snug italic text-foreground/95">
                 "{lang === "GR" ? "Η τέχνη της μορφοποίησης με ακρίβεια." : "The art of shaping with precision."}"
               </p>
