@@ -361,8 +361,9 @@ function QuotePage() {
                 <Input name="email" label={L.email} type="email" required />
                 <Input name="phone" label={L.phone} required />
                 <div className="lg:col-span-2">
-                  <Label>{L.notes}</Label>
+                  <Label htmlFor="quote-notes">{L.notes}</Label>
                   <textarea
+                    id="quote-notes"
                     name="notes"
                     rows={4}
                     maxLength={2000}
