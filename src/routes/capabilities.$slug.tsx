@@ -364,7 +364,7 @@ export const Route = createFileRoute("/capabilities/$slug")({
             name: seo.title,
             description: seo.description,
             url,
-            serviceType: loaderData?.cap?.title ?? "Manufacturing service",
+            serviceType: loaderData?.cap ? titles[loaderData.cap.slug] : "Manufacturing service",
             provider: {
               "@type": "Organization",
               name: "TOREO",
