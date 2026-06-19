@@ -171,7 +171,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
       image: laserWorkshop.url,
       alt: "Fiber laser cutting workshop",
       description:
-        "Additional fiber laser capacity for efficient production and fast turnaround times.",
+        "Additional fiber laser - engraving capacity for efficient production and fast turnaround times.",
     },
     {
       id: "press-brakes",
