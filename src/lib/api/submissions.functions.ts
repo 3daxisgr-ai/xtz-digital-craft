@@ -271,7 +271,7 @@ export const submitForm = createServerFn({ method: "POST" })
                 color: 0x3b82f6,
                 fields,
                 timestamp: new Date().toISOString(),
-                footer: { text: submissionId ? `ID: ${submissionId}` : "3D Axis" },
+                footer: { text: submissionId ? `ID: ${submissionId}` : "TOREO" },
               },
             ],
           }),
