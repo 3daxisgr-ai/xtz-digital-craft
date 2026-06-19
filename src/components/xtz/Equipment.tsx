@@ -116,7 +116,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
         groups: [
           {
             label: "Δυνατότητες",
-            items: ["MIG Welding", "TIG Welding", "Συγκόλληση Laser", "Κατασκευή"],
+            items: ["MIG Welding", "TIG Welding", "Συγκόλληση Laser", "RSW WELDING"],
           },
         ],
       },
@@ -214,7 +214,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
       groups: [
         {
           label: "Capabilities",
-          items: ["MIG Welding", "TIG Welding", "LASER WELDING", "Fabrication"],
+          items: ["MIG Welding", "TIG Welding", "LASER WELDING", "RSW WELDING"],
         },
       ],
     },
