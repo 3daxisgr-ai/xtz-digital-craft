@@ -78,7 +78,7 @@ function ForumPage() {
       <section className="relative pt-40 pb-12 px-6 md:px-12">
         <div className="mx-auto max-w-4xl text-center">
           <div className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-6">
-            {lang === "GR" ? "Ενημερώσεις" : "Forum"}
+            {lang === "GR" ? "ΕΝΗΜΕΡΩΣΕΙΣ" : "Forum"}
           </div>
           <h1
             className="font-display font-bold leading-[0.95] text-[clamp(2.4rem,6.5vw,5rem)] tracking-tighter mb-6"
