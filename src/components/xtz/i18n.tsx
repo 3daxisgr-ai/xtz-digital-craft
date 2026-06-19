@@ -196,18 +196,18 @@ const en: Dict = {
 };
 
 const gr: Dict = {
-  "nav.intro": "Αρχική",
-  "nav.capabilities": "Δυνατότητες",
+  "nav.intro": "ΑΡΧΙΚΗ",
+  "nav.capabilities": "ΔΥΝΑΤΟΤΗΤΕΣ",
   "nav.process": "Διαδικασία",
   "nav.work": "Έργα",
-  "nav.faq": "Ερωτήσεις",
-  "nav.equipment": "Εξοπλισμός",
-  "nav.forum": "Νέα",
-  "nav.company": "Η Εταιρεία",
-  "nav.inquiry": "Ξεκινήστε Έργο",
-  "nav.cta": "Ξεκινήστε Έργο",
+  "nav.faq": "ΕΡΩΤΗΣΕΙΣ",
+  "nav.equipment": "ΕΞΟΠΛΙΣΜΟΣ",
+  "nav.forum": "ΝΕΑ",
+  "nav.company": "Η ΕΤΑΙΡΕΙΑ",
+  "nav.inquiry": "START PROJECT",
+  "nav.cta": "START PROJECT",
 
-  "intro.headline": "Από την Ιδέα στην Πραγματικότητα",
+  "intro.headline": "ΑΠΟ ΤΗΝ ΙΔΕΑ ΣΤΗΝ ΠΡΑΓΜΑΤΙΚΟΤΗΤΑ",
   "intro.sub": "​",
   "intro.scroll": "SCROLL",
   "intro.xyz": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
@@ -296,7 +296,7 @@ const gr: Dict = {
 
   // About
   "about.tag": "ΣΧΕΤΙΚΑ",
-  "about.kicker": "Σχετικά με τη TOREO",
+  "about.kicker": "ΣΧΕΤΙΚΑ ΜΕ ΤΗ TOREO",
   "about.title.l1": "ΟΛΟΚΛΗΡΩΜΕΝΟΣ ΣΥΝΕΡΓΑΤΗΣ",
   "about.title.l2": "",
   "about.title.l3": "",
@@ -305,7 +305,7 @@ const gr: Dict = {
 
   // How it works
   "how.tag": "Η ΜΕΘΟΔΟΣ ΜΑΣ",
-  "how.kicker": "Η μέθοδος μας",
+  "how.kicker": "Η ΜΕΘΟΔΟΣ ΜΑΣ",
   "how.title": "Έξι βήματα από την ιδέα στην παράδοση.",
   "how.s1.t": "Στείλτε μας την ιδέα σας",
   "how.s1.d": "Σκίτσο, σχέδιο, αρχείο STEP ή περιγραφή.",
@@ -357,16 +357,16 @@ const gr: Dict = {
   "faqp.intro": "Όλα όσα χρειάζεται να γνωρίζετε πριν ξεκινήσετε ένα έργο.",
 
   // Footer
-  "foot.tag": "XYZ — οι συντεταγμένες κάθε κατασκευής",
-  "foot.tagline": "Από την Ιδέα στην Πραγματικότητα",
-  "foot.contact": "Επικοινωνία",
-  "foot.studio": "Στούντιο",
+  "foot.tag": "XYZ — ΟΙ ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΚΑΘΕ ΚΑΤΑΣΚΕΥΗΣ",
+  "foot.tagline": "ΑΠΟ ΤΗΝ ΙΔΕΑ ΣΤΗΝ ΠΡΑΓΜΑΤΙΚΟΤΗΤΑ",
+  "foot.contact": "ΕΠΙΚΟΙΝΩΝΙΑ",
+  "foot.studio": "ΣΤΟΥΝΤΙΟ",
   "foot.email": "Email",
   "foot.phone": "Τηλέφωνο",
   "foot.location": "Τοποθεσία",
   "foot.hours": "Ωράριο",
   "foot.hours.v": "Δευ — Παρ / 08:00 — 16:00",
-  "foot.rights": "Με επιφύλαξη παντός δικαιώματος",
+  "foot.rights": "ΜΕ ΕΠΙΦΥΛΑΞΗ ΠΑΝΤΟΣ ΔΙΚΑΙΩΜΑΤΟΣ",
   "foot.nav.why": "Γιατί εμάς",
   "foot.nav.caps": "Δυνατότητες",
   "foot.nav.catalog": "Κατάλογος",
