@@ -95,7 +95,7 @@ const en: Dict = {
   "f.dimensions": "Dimensions",
   "f.quantity": "Quantity",
   "f.upload": "Upload files",
-  "f.help1": "I don't have a design yet.",
+  "f.help1": "I'D LIKE A METAL FINISHING.",
   "f.help2": "I'd like help developing my idea.",
   "f.desc": "Project description",
   "f.desc.ph": "What is it for, where will it be used, when do you need it?",
