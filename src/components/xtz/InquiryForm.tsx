@@ -237,7 +237,7 @@ function Label({ children }: { children: React.ReactNode }) {
 function Input({ name, label, required, type = "text", placeholder }: { name: string; label: string; required?: boolean; type?: string; placeholder?: string }) {
   return (
     <div>
-      <Label>{label}{required && <span className="text-primary"> *</span>}</Label>
+      <Label>{label}</Label>
       <input
         name={name}
         type={type}
