@@ -143,6 +143,10 @@ export function IntroScene() {
             src={toreoLogo.url}
             alt="TOREO"
             aria-hidden="true"
+            width={1024}
+            height={256}
+            fetchPriority="high"
+            decoding="async"
             className="block w-auto object-contain"
             style={{
               height: "clamp(6rem, 22vw, 22rem)",
