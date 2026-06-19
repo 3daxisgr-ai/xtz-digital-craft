@@ -5,7 +5,7 @@ import { useI18n } from "./i18n";
 import bambu from "@/assets/bambu-3d-printing.png.asset.json";
 import laserMachine from "@/assets/akj-fiber-laser.jpg.asset.json";
 import laserWorkshop from "@/assets/fiber-laser-workshop.jpg.asset.json";
-import pressBrake from "@/assets/press-brake-photo.png.asset.json";
+import pressBrake from "@/assets/durmapress-stratza.webp.asset.json";
 import shear from "@/assets/sheet-shear.jpg.asset.json";
 import welding from "@/assets/laser-welding.jpg.asset.json";
 
