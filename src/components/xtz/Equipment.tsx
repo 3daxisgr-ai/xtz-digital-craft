@@ -34,6 +34,11 @@ function getItems(lang: "EN" | "GR"): Item[] {
         alt: "Bambu Lab H2S 3D printer",
         description:
           "Επαγγελματική 3D εκτύπωση υψηλής ταχύτητας για πρωτότυπα, λειτουργικά εξαρτήματα και μικρή παραγωγή.",
+        specs: [
+          "Όγκος Εκτύπωσης: 350 × 320 × 325 mm",
+          "Ακρίβεια: ±0.1 mm",
+          "Πολλαπλά υλικά & χρώματα (AMS 2 Pro)",
+        ],
         groups: [
           {
             label: "Δυνατότητες",
@@ -132,6 +137,11 @@ function getItems(lang: "EN" | "GR"): Item[] {
       alt: "Bambu Lab H2S 3D printer",
       description:
         "High-speed professional 3D printing for prototypes, functional parts and low-volume production.",
+      specs: [
+        "Build Volume: 350 × 320 × 325 mm",
+        "Accuracy: ±0.1 mm",
+        "Multi-material & multi-color (AMS 2 Pro)",
+      ],
       groups: [
         {
           label: "Highlights",
