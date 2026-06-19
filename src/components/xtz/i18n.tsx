@@ -365,7 +365,7 @@ const gr: Dict = {
   "foot.phone": "Τηλέφωνο",
   "foot.location": "Τοποθεσία",
   "foot.hours": "Ωράριο",
-  "foot.hours.v": "Δευ — Παρ / 09:00 — 18:00",
+  "foot.hours.v": "Δευ — Παρ / 08:00 — 16:00",
   "foot.rights": "Με επιφύλαξη παντός δικαιώματος",
   "foot.nav.why": "Γιατί εμάς",
   "foot.nav.caps": "Δυνατότητες",
