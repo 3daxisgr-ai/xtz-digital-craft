@@ -276,7 +276,7 @@ function FileInput({ name, label, onFileChange }: { name: string; label: string;
 function Select({ name, label, options, placeholder, required }: { name: string; label: string; options: string[]; placeholder: string; required?: boolean }) {
   return (
     <div>
-      <Label>{label}{required && <span className="text-primary"> *</span>}</Label>
+      <Label>{label}</Label>
       <select
         name={name}
         required={required}
