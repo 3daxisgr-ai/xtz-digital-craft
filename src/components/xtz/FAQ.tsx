@@ -9,7 +9,7 @@ const EN: Category[] = [
     id: "3d-printing",
     label: "3D Printing",
     items: [
-      { q: "Is 3D printing only for prototypes?", a: "No. We print prototypes, functional end-use parts, custom components, and small to medium production runs." },
+      { q: "Is 3D printing only for prototypes?", a: "No. We can print almost anything that fits within the size and technical capabilities of our printers, from custom products and decorative items to functional parts and small production runs." },
       { q: "Which file types do you accept?", a: ".stl, .step (.stp), or .obj. Include quantity and any surface finish requirements." },
       { q: "How big can you print?", a: "Most parts fit our build volumes; larger parts are split and bonded. Send dimensions and we'll confirm." },
     ],
