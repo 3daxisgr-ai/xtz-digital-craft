@@ -223,7 +223,7 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
         body: JSON.stringify({
           from: "TOREO Notifications <onboarding@resend.dev>",
           to: [NOTIFY_EMAIL],
-          subject: "✅ Test Notification - 3D Axis",
+          subject: "✅ Test Notification - TOREO",
           html: `<p>This is a test email from the Admin Dashboard.</p><p>Time: ${now}</p>`,
           text: `Test email from Admin Dashboard. Time: ${now}`,
         }),
