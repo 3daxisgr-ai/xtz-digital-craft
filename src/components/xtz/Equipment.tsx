@@ -116,7 +116,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
         groups: [
           {
             label: "Δυνατότητες",
-            items: ["MIG Welding", "TIG Welding", "Συγκόλληση Laser", "RSW WELDING"],
+            items: ["MIG Welding", "TIG Welding", "ΣΥΓΚΟΛΛΗΣΗ LASER", "ΠΟΝΤΑ"],
           },
         ],
       },
