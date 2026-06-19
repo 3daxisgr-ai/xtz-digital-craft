@@ -183,7 +183,7 @@ const en: Dict = {
   "foot.phone": "Phone",
   "foot.location": "Location",
   "foot.hours": "Hours",
-  "foot.hours.v": "Mon — Fri / 09:00 — 18:00",
+  "foot.hours.v": "Mon — Fri / 08:00 — 16:00",
   "foot.rights": "All rights reserved",
   "foot.nav.why": "Why",
   "foot.nav.caps": "Capabilities",
