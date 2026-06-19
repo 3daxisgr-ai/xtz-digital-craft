@@ -81,7 +81,7 @@ const titlesGR: Record<CapabilitySlug, string> = {
   "sheet-metal-forming-welding": "Στραντζάρισμα & Συγκολλήσεις",
   "3d-printing": "3D ΕΚΤΥΠΩΣΗ",
   "design-to-prototype": "Σχεδιασμός → Πρωτότυπο",
-  "global-manufacturing-network": "Μαζική Παραγωγή",
+  "global-manufacturing-network": "ΜΑΖΙΚΗ ΠΑΡΑΓΩΓΗ",
 };
 
 const details: Record<CapabilitySlug, Detail> = {
@@ -313,7 +313,7 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
     applications: ["Startup MVPs", "Ανάπτυξη νέων προϊόντων", "Reverse engineering", "Custom μοναδικά εξαρτήματα"],
   },
   "global-manufacturing-network": {
-    intro: "Από το πρωτότυπο στη μαζική παραγωγή.",
+    intro: "Από το πρωτότυπο στη ΜΑΖΙΚΗ ΠΑΡΑΓΩΓΗ.",
     what: [
       "Επιλεγμένοι συνεργάτες για 3d printing, injection και άλλα.",
       "Κλιμάκωση από εκατοντάδες σε δεκάδες χιλιάδες μονάδες.",
