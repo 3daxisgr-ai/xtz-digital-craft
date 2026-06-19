@@ -367,13 +367,13 @@ const gr: Dict = {
   "foot.hours": "Ωράριο",
   "foot.hours.v": "Δευ — Παρ / 08:00 — 16:00",
   "foot.rights": "ΜΕ ΕΠΙΦΥΛΑΞΗ ΠΑΝΤΟΣ ΔΙΚΑΙΩΜΑΤΟΣ",
-  "foot.nav.why": "Γιατί εμάς",
-  "foot.nav.caps": "Δυνατότητες",
-  "foot.nav.catalog": "Κατάλογος",
+  "foot.nav.why": "ΓΙΑΤΙ ΕΜΑΣ",
+  "foot.nav.caps": "ΔΥΝΑΤΟΤΗΤΕΣ",
+  "foot.nav.catalog": "ΚΑΤΑΛΟΓΟΣ",
   "foot.nav.work": "Έργα",
   "foot.nav.process": "Διαδικασία",
-  "foot.nav.network": "Δίκτυο",
-  "foot.nav.inquiry": "Αίτημα",
+  "foot.nav.network": "ΔΙΚΤΥΟ",
+  "foot.nav.inquiry": "ΑΙΤΗΜΑ",
 
 };
 
