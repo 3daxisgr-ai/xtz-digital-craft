@@ -87,7 +87,7 @@ function StartPage() {
             <span className="font-mono text-xs text-primary tracking-[0.3em]">— /</span>
             <span className="h-px w-16 bg-primary" />
             <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              {isGR ? "Επιλέξτε Κατηγορία" : "Choose a Category"}
+              {isGR ? "ΕΠΙΛΕΞΤΕ ΚΑΤΗΓΟΡΙΑ" : "Choose a Category"}
             </span>
           </div>
           <h1 className="font-display font-bold leading-[0.9] text-[clamp(2.5rem,6vw,5rem)] tracking-tighter mb-6 max-w-3xl">
