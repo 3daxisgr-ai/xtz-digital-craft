@@ -216,7 +216,7 @@ export function InquiryForm() {
                 type="submit"
                 className="px-8 py-4 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow"
               >
-                {t("f.submit")} →
+                {t("f.submit")}&nbsp;→
               </button>
             </div>
           </form>
