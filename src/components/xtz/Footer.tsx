@@ -61,8 +61,8 @@ export function Footer() {
             <ContactCol
               label={t("foot.contact")}
               items={[
-                { k: t("foot.email"), v: "3daxis.gr@gmail.com", href: "mailto:3daxis.gr@gmail.com" },
-                { k: t("foot.phone"), v: "+30 690000000", href: "tel:+30690000000" },
+                { k: t("foot.email"), v: "INFO@TOREO.GR", href: "mailto:INFO@TOREO.GR" },
+                { k: t("foot.phone"), v: "+30 6970609960", href: "tel:+306970609960" },
               ]}
             />
             <ContactCol

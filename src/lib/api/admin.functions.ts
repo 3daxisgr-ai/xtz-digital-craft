@@ -177,7 +177,7 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
   const authed = await requireAdmin();
   if (!authed) return { authed: false as const, discord: null, email: null };
 
-  const NOTIFY_EMAIL = "3daxis.gr@gmail.com";
+  const NOTIFY_EMAIL = "INFO@TOREO.GR";
   const now = new Date().toLocaleString("en-GB", { timeZone: "Europe/Athens" });
 
   // Discord
@@ -191,7 +191,7 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: "3D Axis",
+          username: "TOREO",
           embeds: [{
             title: "✅ Test Notification",
             description: "This is a test from the Admin Dashboard.",
@@ -223,7 +223,7 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
         body: JSON.stringify({
           from: "TOREO Notifications <onboarding@resend.dev>",
           to: [NOTIFY_EMAIL],
-          subject: "✅ Test Notification - 3D Axis",
+          subject: "✅ Test Notification - TOREO",
           html: `<p>This is a test email from the Admin Dashboard.</p><p>Time: ${now}</p>`,
           text: `Test email from Admin Dashboard. Time: ${now}`,
         }),

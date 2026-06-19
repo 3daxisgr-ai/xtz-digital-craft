@@ -27,7 +27,7 @@ const submissionSchema = z.object({
   metadata: z.record(z.string(), z.unknown()).optional().nullable(),
 });
 
-const NOTIFY_EMAIL = "3daxis.gr@gmail.com";
+const NOTIFY_EMAIL = "INFO@TOREO.GR";
 
 function esc(v: unknown) {
   if (v === null || v === undefined || v === "") return "—";
@@ -146,7 +146,7 @@ export const submitForm = createServerFn({ method: "POST" })
 
     // 2. Send email notification (best-effort, never block the user)
     const sourceLabel = data.source === "3d-printing-quote" ? "3D Printing Quote" : "Project Inquiry";
-    const subject = `🚀 New Quote Request - 3D Axis`;
+    const subject = `🚀 New Quote Request - TOREO`;
 
     const fileLine = data.file_name
       ? fileUrl
@@ -263,7 +263,7 @@ export const submitForm = createServerFn({ method: "POST" })
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            username: "3D Axis",
+            username: "TOREO",
             embeds: [
               {
                 title: "🚀 New Quote Request",
@@ -271,7 +271,7 @@ export const submitForm = createServerFn({ method: "POST" })
                 color: 0x3b82f6,
                 fields,
                 timestamp: new Date().toISOString(),
-                footer: { text: submissionId ? `ID: ${submissionId}` : "3D Axis" },
+                footer: { text: submissionId ? `ID: ${submissionId}` : "TOREO" },
               },
             ],
           }),
