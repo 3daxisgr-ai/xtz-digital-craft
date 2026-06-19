@@ -191,7 +191,7 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: "3D Axis",
+          username: "TOREO",
           embeds: [{
             title: "✅ Test Notification",
             description: "This is a test from the Admin Dashboard.",
