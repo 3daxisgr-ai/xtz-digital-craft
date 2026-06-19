@@ -36,7 +36,7 @@ const categories: Category[] = [
   {
     id: "3d",
     titleEN: "3D Printing — Prototyping",
-    titleGR: "3D Εκτύπωση — Πρωτοτυποποίηση",
+    titleGR: "3D ΕΚΤΥΠΩΣΗ — ΠΡΩΤΟΤΥΠΟΠΟΙΗΣΗ",
     descEN: "Functional prototypes, multi-color & engineering parts.",
     descGR: "Λειτουργικά πρωτότυπα, πολύχρωμη εκτύπωση & εξαρτήματα μηχανικής.",
     to: "/3d-printing-quote",
