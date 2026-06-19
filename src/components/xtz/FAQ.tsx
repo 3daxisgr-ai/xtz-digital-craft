@@ -52,7 +52,7 @@ const EN: Category[] = [
     id: "production",
     label: "Production",
     items: [
-      { q: "Can you do large volumes?", a: "Yes. For larger volumes we use our network of trusted manufacturing partners." },
+      { q: "Can you do large volumes?", a: "Depending on the volume and requirements of the project, production can be handled either by us or by a trusted partner from our network." },
       { q: "Will quality be consistent?", a: "Every batch is inspected against the approved sample and drawings." },
     ],
   },
