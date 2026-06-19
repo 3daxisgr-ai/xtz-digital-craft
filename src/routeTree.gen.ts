@@ -19,6 +19,7 @@ import { Route as CompanyRouteImport } from './routes/company'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as R3dPrintingQuoteRouteImport } from './routes/3d-printing-quote'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CapabilitiesChoosingAProcessRouteImport } from './routes/capabilities.choosing-a-process'
 import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
 
 const StartProjectRoute = StartProjectRouteImport.update({
@@ -71,6 +72,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CapabilitiesChoosingAProcessRoute =
+  CapabilitiesChoosingAProcessRouteImport.update({
+    id: '/capabilities/choosing-a-process',
+    path: '/capabilities/choosing-a-process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CapabilitiesSlugRoute = CapabilitiesSlugRouteImport.update({
   id: '/capabilities/$slug',
   path: '/capabilities/$slug',
@@ -89,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
+  '/capabilities/choosing-a-process': typeof CapabilitiesChoosingAProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +110,7 @@ export interface FileRoutesByTo {
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
+  '/capabilities/choosing-a-process': typeof CapabilitiesChoosingAProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +125,7 @@ export interface FileRoutesById {
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
+  '/capabilities/choosing-a-process': typeof CapabilitiesChoosingAProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/start'
     | '/start-project'
     | '/capabilities/$slug'
+    | '/capabilities/choosing-a-process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/start'
     | '/start-project'
     | '/capabilities/$slug'
+    | '/capabilities/choosing-a-process'
   id:
     | '__root__'
     | '/'
@@ -157,6 +169,7 @@ export interface FileRouteTypes {
     | '/start'
     | '/start-project'
     | '/capabilities/$slug'
+    | '/capabilities/choosing-a-process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +184,7 @@ export interface RootRouteChildren {
   StartRoute: typeof StartRoute
   StartProjectRoute: typeof StartProjectRoute
   CapabilitiesSlugRoute: typeof CapabilitiesSlugRoute
+  CapabilitiesChoosingAProcessRoute: typeof CapabilitiesChoosingAProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -245,6 +259,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/capabilities/choosing-a-process': {
+      id: '/capabilities/choosing-a-process'
+      path: '/capabilities/choosing-a-process'
+      fullPath: '/capabilities/choosing-a-process'
+      preLoaderRoute: typeof CapabilitiesChoosingAProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/capabilities/$slug': {
       id: '/capabilities/$slug'
       path: '/capabilities/$slug'
@@ -267,6 +288,7 @@ const rootRouteChildren: RootRouteChildren = {
   StartRoute: StartRoute,
   StartProjectRoute: StartProjectRoute,
   CapabilitiesSlugRoute: CapabilitiesSlugRoute,
+  CapabilitiesChoosingAProcessRoute: CapabilitiesChoosingAProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
