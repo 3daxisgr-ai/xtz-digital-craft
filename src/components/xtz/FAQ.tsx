@@ -10,7 +10,7 @@ const EN: Category[] = [
     label: "3D Printing",
     items: [
       { q: "Is 3D printing only for prototypes?", a: "No. We can print almost anything that fits within the size and technical capabilities of our printers, from custom products and decorative items to functional parts and small production runs." },
-      { q: "Which file types do you accept?", a: ".stl, .3mf, .step (.stp), or .obj. Include quantity and any surface finish requirements." },
+      { q: "Which file types do you accept?", a: ".stl, .3mf, .step (.stp), or .obj. Include quantity" },
       { q: "How big can you print?", a: "Most parts fit our build volumes; larger parts are split and bonded. Send dimensions and we'll confirm." },
     ],
   },
