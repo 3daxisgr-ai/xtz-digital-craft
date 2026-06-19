@@ -68,7 +68,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
       },
       {
         id: "fiber-laser-2",
-        title: "Σύστημα Κοπής Fiber Laser",
+        title: "Σύστημα Κοπής CO2 Laser",
         quantity: "1 Σύστημα",
         image: laserWorkshop.url,
         alt: "Fiber laser cutting workshop",
