@@ -73,7 +73,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
         image: laserWorkshop.url,
         alt: "Fiber laser cutting workshop",
         description:
-          "Επιπλέον δυναμικότητα κοπής co2 laser - για αποδοτική παραγωγή και γρήγορους χρόνους παράδοσης.",
+          "Επιπλέον δυναμικότητα κοπής co2 laser - Χάραξη με λέιζερ για αποδοτική παραγωγή και γρήγορους χρόνους παράδοσης.",
       },
       {
         id: "press-brakes",
