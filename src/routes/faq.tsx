@@ -15,7 +15,7 @@ const FAQ_QA: { q: string; a: string }[] = [
   { q: "How fast can you create a prototype?", a: "Most 3D-printed prototypes ship in a few days. Metal prototypes typically within one to two weeks." },
   { q: "How fast is production?", a: "Depends on volume and material. We provide a clear timeline with every quote." },
   { q: "Do I need a finished design first?", a: "No. We can start from a sketch or idea and develop it into a manufacturable design." },
-  { q: "Can you do large volumes?", a: "Yes. For larger volumes we use our network of trusted manufacturing partners." },
+  { q: "Can you do large volumes?", a: "Depending on the volume and requirements of the project, production can be handled either by us or by a trusted partner from our network." },
   { q: "How do I get a quote?", a: "Send the inquiry form. An engineer reviews every request and replies within one business day." },
 ];
 
