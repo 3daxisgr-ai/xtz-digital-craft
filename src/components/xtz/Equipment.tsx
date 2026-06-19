@@ -82,7 +82,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
         image: pressBrake.url,
         alt: "DURMAPRESS CNC press brake bending sheet metal",
         description:
-          "Κάμψη λαμαρίνας υψηλής ακρίβειας με CNC για πρωτότυπα, custom εξαρτήματα και εξαρτήματα παραγωγής. 6+1 άξονες",
+          "Κάμψη λαμαρίνας υψηλής ακρίβειας με CNC για πρωτότυπα, custom εξαρτήματα και εξαρτήματα παραγωγής. 6+1 άξονες Ηλεκτροϋδραυλική με χειριστήριο Delem",
         groups: [
           {
             label: "Δυνατότητες",
