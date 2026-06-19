@@ -177,7 +177,7 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
   const authed = await requireAdmin();
   if (!authed) return { authed: false as const, discord: null, email: null };
 
-  const NOTIFY_EMAIL = "3daxis.gr@gmail.com";
+  const NOTIFY_EMAIL = "INFO@TOREO.GR";
   const now = new Date().toLocaleString("en-GB", { timeZone: "Europe/Athens" });
 
   // Discord
