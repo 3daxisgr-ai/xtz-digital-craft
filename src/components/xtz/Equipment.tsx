@@ -29,7 +29,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
       {
         id: "bambu",
         title: "Bambu Lab H2S",
-        quantity: "2 Μονάδες",
+        quantity: "4 ΜΟΝΆΔΕΣ",
         image: bambu.url,
         alt: "Bambu Lab H2S 3D printer",
         description:
