@@ -79,9 +79,9 @@ const titlesGR: Record<CapabilitySlug, string> = {
   "design-development": "Σχεδιασμός & Ανάπτυξη",
   "fiber-laser-cutting": "Κοπή Fiber Laser",
   "sheet-metal-forming-welding": "Στραντζάρισμα & Συγκολλήσεις",
-  "3d-printing": "3D Εκτύπωση",
+  "3d-printing": "3D ΕΚΤΥΠΩΣΗ",
   "design-to-prototype": "Σχεδιασμός → Πρωτότυπο",
-  "global-manufacturing-network": "Μαζική Παραγωγή",
+  "global-manufacturing-network": "ΜΑΖΙΚΗ ΠΑΡΑΓΩΓΗ",
 };
 
 const details: Record<CapabilitySlug, Detail> = {
@@ -255,8 +255,8 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
       "Nesting και βελτιστοποίηση υλικού.",
     ],
     process: [
-      { t: "Αρχεία", d: "Στείλτε .dxf, .dwg ή .step με υλικό και πάχος." },
-      { t: "Προσφορά", d: "Έλεγχος από μηχανικό εντός μίας εργάσιμης ημέρας." },
+      { t: "ΑΡΧΕΙΑ", d: "Στείλτε .dxf, .dwg ή .step με υλικό και πάχος." },
+      { t: "ΠΡΟΣΦΟΡΑ", d: "Έλεγχος από μηχανικό εντός μίας εργάσιμης ημέρας." },
       { t: "Κοπή", d: "Nesting, κοπή και έλεγχος ακμών." },
       { t: "Παράδοση", d: "Έτοιμα για το επόμενο βήμα ή αποστολή σε εσάς." },
     ],
@@ -288,7 +288,7 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
       "Post-processing: τρίψιμο και βαφή.",
     ],
     process: [
-      { t: "Αρχεία", d: "Στείλτε .stl, .step .mf ή .obj." },
+      { t: "ΑΡΧΕΙΑ", d: "Στείλτε .stl, .step .mf ή .obj." },
       { t: "Slicing", d: "Προετοιμασία του μοντέλου για εκτύπωση με τις κατάλληλες ρυθμίσεις ποιότητας, αντοχής και ταχύτητας." },
       { t: "Εκτύπωση", d: "Εξειδικευμένα μηχανήματα υψηλών προδιαγραφών αναλαμβάνουν την κατασκευή του έργου σας." },
       { t: "Φινίρισμα", d: "Καθαρισμός, post-processing και αποστολή." },
@@ -313,7 +313,7 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
     applications: ["Startup MVPs", "Ανάπτυξη νέων προϊόντων", "Reverse engineering", "Custom μοναδικά εξαρτήματα"],
   },
   "global-manufacturing-network": {
-    intro: "Από το πρωτότυπο στη μαζική παραγωγή.",
+    intro: "Από το πρωτότυπο στη ΜΑΖΙΚΗ ΠΑΡΑΓΩΓΗ.",
     what: [
       "Επιλεγμένοι συνεργάτες για 3d printing, injection και άλλα.",
       "Κλιμάκωση από εκατοντάδες σε δεκάδες χιλιάδες μονάδες.",
@@ -323,8 +323,8 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
     process: [
       { t: "Προδιαγραφές", d: "Πρωτότυπο, σχέδια και ανοχές οριστικοποιημένα." },
       { t: "Εύρεση συνεργάτη", d: "Βρίσκουμε τον κατάλληλο συνεργάτη παραγωγής με βάση τις απαιτήσεις του έργου σας." },
-      { t: "Παραγωγή", d: "Δοκιμαστική σειρά, ποιοτικός έλεγχος και πλήρης παραγωγή." },
-      { t: "Παράδοση", d: "Ελεγμένα, συσκευασμένα και αποστολή σε εσάς." },
+      { t: "ΠΑΡΑΓΩΓΗ", d: "Δοκιμαστική σειρά, ποιοτικός έλεγχος και πλήρης παραγωγή." },
+      { t: "ΜΑΖΙΚΗ ΠΑΡΑΓΩΓΗ", d: "Ελεγμένα, συσκευασμένα και αποστολή σε εσάς." },
     ],
     applications: ["Σειριακή παραγωγή", "OEM εξαρτήματα", "Branded καταναλωτικά προϊόντα", "Ανταλλακτικά"],
   },
