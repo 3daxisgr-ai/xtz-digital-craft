@@ -166,7 +166,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
     },
     {
       id: "fiber-laser-2",
-      title: "CO2 Cutting System",
+      title: "CO2 Laser Cutting System",
       quantity: "1 System",
       image: laserWorkshop.url,
       alt: "Fiber laser cutting workshop",
