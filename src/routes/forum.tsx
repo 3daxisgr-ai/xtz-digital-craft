@@ -62,7 +62,7 @@ const POSTS_GR: Post[] = [
   },
   {
     date: "2026 · 04",
-    category: "Εργαστήριο",
+    category: "ΕΡΓΑΣΤΗΡΙΟ",
     title: "Επέκταση του χώρου πρωτοτυποποίησης.",
     body: "Περισσότερος χώρος για παράλληλες κατασκευές σημαίνει ταχύτερους κύκλους από τον σχεδιασμό στο πρωτότυπο.",
   },
@@ -84,7 +84,7 @@ function ForumPage() {
             className="font-display font-bold leading-[0.95] text-[clamp(2.4rem,6.5vw,5rem)] tracking-tighter mb-6"
             style={{ textShadow: "0 0 24px oklch(0.65 0.22 245 / 0.35)" }}
           >
-            {lang === "GR" ? "Νέα από το Εργαστήριο" : "Workshop Updates"}
+            {lang === "GR" ? "ΝΕΑ ΑΠΟ ΤΟ ΕΡΓΑΣΤΗΡΙΟ" : "Workshop Updates"}
           </h1>
           <p className="text-foreground/65 max-w-xl mx-auto">
             {lang === "GR"

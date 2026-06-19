@@ -348,7 +348,7 @@ const gr: Dict = {
   "capp.view": "Δείτε τη δυνατότητα",
 
   // Forum
-  "forum.title": "Νέα από το Εργαστήριο",
+  "forum.title": "ΝΕΑ ΑΠΟ ΤΟ ΕΡΓΑΣΤΗΡΙΟ",
   "forum.intro": "Νέος εξοπλισμός, υλικά και ανακοινώσεις από τη TOREO.",
   "forum.kicker": "Νέα",
 
