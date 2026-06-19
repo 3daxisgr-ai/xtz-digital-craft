@@ -387,7 +387,7 @@ const Ctx = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: (k: strin
 });
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("EN");
+  const [lang, setLang] = useState<Lang>("GR");
   useEffect(() => {
     try {
       const saved = localStorage.getItem("axis-lang") as Lang | null;

@@ -68,7 +68,6 @@ const EN: Category[] = [
     id: "files",
     label: "File Requirements",
     items: [
-      { q: "Which formats do you accept?", a: "CAD: .step, .stp, .iges, .stl, .obj, .dxf, .dwg. References: .pdf, .jpg, .png." },
       { q: "What should I include?", a: "Quantity, material, thickness (for sheet), surface finish and any tolerance critical to function." },
     ],
   },
@@ -126,13 +125,6 @@ const GR: Category[] = [
     label: "ΠΡΟΣΦΟΡΑ",
     items: [
       { q: "Πώς στέλνω προσφορά;", a: "συμπληρώνετε τη φόρμα αιτήματος. O μηχανικός μας απαντά εντός μιας εργάσιμης ημέρας" },
-    ],
-  },
-  {
-    id: "files",
-    label: "ΑΡΧΕΙΑ",
-    items: [
-      { q: "Τι αρχεία δέχεστε;", a: "CAD: .step, .stp, .iges, .stl, .obj, .dxf, .dwg. Reference: .pdf, .jpg, .png." },
     ],
   },
 ];

@@ -5,7 +5,7 @@ import { useI18n } from "./i18n";
 import bambu from "@/assets/bambu-3d-printing.png.asset.json";
 import laserMachine from "@/assets/akj-fiber-laser.jpg.asset.json";
 import laserWorkshop from "@/assets/fiber-laser-workshop.jpg.asset.json";
-import pressBrake from "@/assets/press-brake-photo.png.asset.json";
+import pressBrake from "@/assets/durmapress-stratza.webp.asset.json";
 import shear from "@/assets/sheet-shear.jpg.asset.json";
 import welding from "@/assets/laser-welding.jpg.asset.json";
 
@@ -34,6 +34,11 @@ function getItems(lang: "EN" | "GR"): Item[] {
         alt: "Bambu Lab H2S 3D printer",
         description:
           "Επαγγελματική 3D εκτύπωση υψηλής ταχύτητας για πρωτότυπα, λειτουργικά εξαρτήματα και μικρή παραγωγή.",
+        specs: [
+          "Όγκος Εκτύπωσης: 350 × 320 × 325 mm",
+          "Ακρίβεια: ±0.1 mm",
+          "Πολλαπλά υλικά & χρώματα (AMS 2 Pro)",
+        ],
         groups: [
           {
             label: "Δυνατότητες",
@@ -132,6 +137,11 @@ function getItems(lang: "EN" | "GR"): Item[] {
       alt: "Bambu Lab H2S 3D printer",
       description:
         "High-speed professional 3D printing for prototypes, functional parts and low-volume production.",
+      specs: [
+        "Build Volume: 350 × 320 × 325 mm",
+        "Accuracy: ±0.1 mm",
+        "Multi-material & multi-color (AMS 2 Pro)",
+      ],
       groups: [
         {
           label: "Highlights",
