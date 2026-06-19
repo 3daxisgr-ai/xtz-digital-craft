@@ -216,7 +216,7 @@ export function InquiryForm() {
                 type="submit"
                 className="px-8 py-4 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow"
               >
-                {t("f.submit")} →
+                {t("f.submit")}&nbsp;→
               </button>
             </div>
           </form>
@@ -237,7 +237,7 @@ function Label({ children }: { children: React.ReactNode }) {
 function Input({ name, label, required, type = "text", placeholder }: { name: string; label: string; required?: boolean; type?: string; placeholder?: string }) {
   return (
     <div>
-      <Label>{label}{required && <span className="text-primary"> *</span>}</Label>
+      <Label>{label}</Label>
       <input
         name={name}
         type={type}
@@ -276,7 +276,7 @@ function FileInput({ name, label, onFileChange }: { name: string; label: string;
 function Select({ name, label, options, placeholder, required }: { name: string; label: string; options: string[]; placeholder: string; required?: boolean }) {
   return (
     <div>
-      <Label>{label}{required && <span className="text-primary"> *</span>}</Label>
+      <Label>{label}</Label>
       <select
         name={name}
         required={required}
