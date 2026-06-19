@@ -27,7 +27,7 @@ const submissionSchema = z.object({
   metadata: z.record(z.string(), z.unknown()).optional().nullable(),
 });
 
-const NOTIFY_EMAIL = "3daxis.gr@gmail.com";
+const NOTIFY_EMAIL = "INFO@TOREO.GR";
 
 function esc(v: unknown) {
   if (v === null || v === undefined || v === "") return "—";
