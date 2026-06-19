@@ -146,7 +146,7 @@ export const submitForm = createServerFn({ method: "POST" })
 
     // 2. Send email notification (best-effort, never block the user)
     const sourceLabel = data.source === "3d-printing-quote" ? "3D Printing Quote" : "Project Inquiry";
-    const subject = `🚀 New Quote Request - 3D Axis`;
+    const subject = `🚀 New Quote Request - TOREO`;
 
     const fileLine = data.file_name
       ? fileUrl
