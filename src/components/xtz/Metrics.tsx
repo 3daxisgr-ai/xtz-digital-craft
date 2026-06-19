@@ -5,9 +5,9 @@ import { Clock, Zap, PenTool } from "lucide-react";
 import { useI18n } from "./i18n";
 
 const metrics = [
-  { value: "2000+", labelEN: "Printing Hours", labelGR: "Ώρες Εκτύπωσης", Icon: Clock },
-  { value: "7000+", labelEN: "Laser Cutting Hours", labelGR: "Ώρες Κοπής Laser", Icon: Zap },
-  { value: "900+", labelEN: "CAD Design Hours", labelGR: "Ώρες Σχεδιασμού CAD", Icon: PenTool },
+  { value: "2000+", labelEN: "Printing Hours", labelGR: "ΩΡΕΣ ΕΚΤΥΠΩΣΗΣ", Icon: Clock },
+  { value: "7000+", labelEN: "Laser Cutting Hours", labelGR: "ΩΡΕΣ ΚΟΠΗΣ LASER", Icon: Zap },
+  { value: "900+", labelEN: "CAD Design Hours", labelGR: "ΩΡΕΣ ΣΧΕΔΙΑΣΜΟΥ CAD", Icon: PenTool },
 ];
 
 export function Metrics() {

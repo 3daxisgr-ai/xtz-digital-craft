@@ -123,7 +123,7 @@ export function ProjectCTA() {
         <div className="cta-reveal mt-14">
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
             {(lang === "GR"
-              ? ["ΣΧΕΔΙΑΣΜΟΣ", "ΠΡΩΤΟΤΥΠΟ", "ΚΑΤΑΣΚΕΥΗ", "ΠΑΡΑΔΟΣΗ"]
+              ? ["DESIGN", "PROTOTYPE", "MANUFACTURE", "deliver"]
               : ["DESIGN", "PROTOTYPE", "MANUFACTURE", "DELIVER"]
             ).map(
               (word, i) => (
