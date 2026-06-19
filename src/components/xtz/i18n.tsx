@@ -336,7 +336,7 @@ const gr: Dict = {
   "capp.cta.quote": "Ζητήστε Προσφορά",
   "capp.cta.all": "Όλες οι Δυνατότητες",
   "capp.h.what": "Τι κάνουμε",
-  "capp.h.materials": "Υλικά & Τεχνολογίες",
+  "capp.h.materials": "ΥΛΙΚΑ & ΤΕΧΝΟΛΟΓΙΕΣ",
   "capp.h.process": "ΔΙΑΔΙΚΑΣΊΑ",
   "capp.h.apps": "Εφαρμογές",
   "capp.h.related": "Συναφείς Δυνατότητες",
