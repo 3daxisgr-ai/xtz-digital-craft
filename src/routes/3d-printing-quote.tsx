@@ -144,16 +144,16 @@ function QuotePage() {
   };
 
   const L = {
-    kicker: isGR ? "Υπολογιστής Προσφοράς" : "Quote Calculator",
+    kicker: isGR ? "ΥΠΟΛΟΓΙΣΤΗΣ ΠΡΟΣΦΟΡΑΣ" : "Quote Calculator",
     title: isGR ? "Άμεση προσφορά για 3D εκτύπωση." : "Instant 3D printing quote.",
     intro: isGR
       ? "Επιλέξτε υλικό, βάρος και χρόνο εκτύπωσης για άμεσο εκτιμώμενο κόστος."
       : "Pick a material, weight and print time to get an instant estimate.",
     materialLabel: isGR ? "Υλικό" : "Material",
-    available: isGR ? "Διαθέσιμο" : "Available",
+    available: isGR ? "ΔΙΑΘΕΣΙΜΟ" : "Available",
     oos: isGR ? "Εξαντλημένο" : "Out of Stock",
-    weight: isGR ? "Βάρος" : "Weight",
-    printTime: isGR ? "Χρόνος Εκτύπωσης" : "Print Time",
+    weight: isGR ? "ΒΑΡΟΣ" : "Weight",
+    printTime: isGR ? "ΧΡΟΝΟΣ ΕΚΤΥΠΩΣΗΣ" : "Print Time",
     grams: "g",
     hours: isGR ? "ώρες" : "hours",
     summary: isGR ? "Σύνοψη" : "Summary",
@@ -164,14 +164,14 @@ function QuotePage() {
     disclaimer: isGR
       ? "Μόνο εκτιμώμενη τιμή. Η τελική τιμή μπορεί να διαφέρει ανάλογα με τη γεωμετρία του μοντέλου, τα υλικά υποστήριξης, τις ρυθμίσεις εκτύπωσης και τις απαιτήσεις φινιρίσματος."
       : "Estimated price only. Final pricing may vary depending on model geometry, support material, print settings and post-processing requirements.",
-    upload: isGR ? "Ανεβάστε το αρχείο σας" : "Upload your file",
+    upload: isGR ? "ΑΝΕΒΆΣΤΕ ΤΟ ΑΡΧΕΙΟ ΣΑΣ" : "Upload your file",
     accepted: isGR ? "Αποδεκτά" : "Accepted",
     selectFile: isGR ? "Επιλέξτε αρχείο" : "Select file",
-    yourInfo: isGR ? "Τα στοιχεία σας" : "Your information",
-    name: isGR ? "Όνομα" : "Name",
+    yourInfo: isGR ? "ΤΑ ΣΤΟΙΧΕΙΑ ΣΑΣ" : "Your information",
+    name: isGR ? "ΟΝΟΜΑ *" : "Name",
     email: "Email",
-    phone: isGR ? "Τηλέφωνο" : "Phone",
-    notes: isGR ? "Σημειώσεις" : "Notes",
+    phone: isGR ? "ΤΗΛΕΦΩΝΟ *" : "Phone",
+    notes: isGR ? "ΣΗΜΕΙΩΣΕΙΣ" : "Notes",
     submit: isGR ? "Αίτημα Προσφοράς" : "Request Quote",
     sent: isGR
       ? "Ελήφθη. Μηχανικός θα απαντήσει εντός μίας εργάσιμης."
@@ -194,7 +194,7 @@ function QuotePage() {
           <div className="flex items-center gap-4 mb-8">
             <span className="font-mono text-xs text-primary tracking-[0.3em]">3DP /</span>
             <span className="h-px w-16 bg-primary" />
-            <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">{L.kicker}</span>
+            <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">{isGR ? "ΥΠΟΛΟΓΙΣΤΗΣ ΠΡΟΣΦΟΡΑΣ" : L.kicker}</span>
           </div>
           <h1 className="font-display font-bold leading-[0.9] text-[clamp(2.5rem,6vw,5rem)] tracking-tighter mb-6 max-w-3xl">
             {L.title}
