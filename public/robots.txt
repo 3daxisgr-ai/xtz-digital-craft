@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /admin
 
-Sitemap: https://toreo.lovable.app/sitemap.xml
+Sitemap: https://www.toreo.gr/sitemap.xml

@@ -3,18 +3,49 @@ import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
 import { useI18n } from "@/components/xtz/i18n";
 
+const FORUM_POSTS_SEO = [
+  {
+    date: "2026-06-01",
+    title: "New fiber laser online.",
+    body: "Higher wattage, faster cuts, cleaner edges on thick stainless. Lead times on metal jobs are down.",
+  },
+  {
+    date: "2026-05-01",
+    title: "Engineering polymers added.",
+    body: "PA-CF and PETG-CF now available for functional, load-bearing 3D printed parts.",
+  },
+  {
+    date: "2026-04-01",
+    title: "Expanded prototyping bay.",
+    body: "More space for parallel builds means faster turnaround on design-to-prototype loops.",
+  },
+];
+
 export const Route = createFileRoute("/forum")({
   head: () => ({
     meta: [
       { title: "Forum — TOREO Updates" },
       { name: "description", content: "Updates from the TOREO workshop: new equipment, capabilities, materials and announcements." },
       { property: "og:title", content: "Forum — TOREO Updates" },
-      { property: "og:description", content: "Updates from the TOREO workshop." },
-      { property: "og:url", content: "https://toreo.lovable.app/forum" },
+      { property: "og:description", content: "Workshop updates from TOREO: new fiber laser capacity, engineering polymers for 3D printing, and an expanded prototyping bay." },
+      { property: "og:url", content: "https://www.toreo.gr/forum" },
     ],
     links: [
-      { rel: "canonical", href: "https://toreo.lovable.app/forum" },
+      { rel: "canonical", href: "https://www.toreo.gr/forum" },
     ],
+    scripts: FORUM_POSTS_SEO.map((p) => ({
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline: p.title,
+        datePublished: p.date,
+        articleBody: p.body,
+        author: { "@type": "Organization", name: "TOREO" },
+        publisher: { "@type": "Organization", name: "TOREO" },
+        mainEntityOfPage: "https://www.toreo.gr/forum",
+      }),
+    })),
   }),
   component: ForumPage,
 });
