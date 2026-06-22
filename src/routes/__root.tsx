@@ -107,12 +107,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             {
               "@type": "Organization",
               name: "TOREO",
-              url: "https://toreo.lovable.app",
+              url: "https://www.toreo.gr",
             },
             {
               "@type": "WebSite",
               name: "TOREO",
-              url: "https://toreo.lovable.app",
+              url: "https://www.toreo.gr",
+            },
+            {
+              "@type": "LocalBusiness",
+              name: "TOREO",
+              url: "https://www.toreo.gr",
+              telephone: "+30 6970609960",
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: "Thessaloniki",
+                addressCountry: "GR",
+              },
+              areaServed: "GR",
             },
           ],
         }),
