@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "https://toreo.lovable.app";
+const BASE_URL = "https://www.toreo.gr";
 
 interface SitemapEntry {
   path: string;
