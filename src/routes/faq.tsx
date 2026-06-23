@@ -22,14 +22,18 @@ const FAQ_QA: { q: string; a: string }[] = [
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ — TOREO" },
-      { name: "description", content: "Answers about 3D printing, laser cutting, materials, lead times, prototyping, production, pricing and file requirements." },
-      { property: "og:title", content: "FAQ — TOREO" },
-      { property: "og:description", content: "Everything you need to know before starting a project with TOREO." },
-      { property: "og:url", content: "https://toreo.lovable.app/faq" },
+      { title: "FAQ — 3D Printing, CNC & Rapid Prototyping Questions | TOREO" },
+      { name: "description", content: "Answers about 3D printing services, fiber laser cutting, CNC machining, materials, tolerances, lead times, rapid prototyping and file requirements at TOREO." },
+      { property: "og:title", content: "FAQ — 3D Printing, CNC & Rapid Prototyping | TOREO" },
+      { property: "og:description", content: "Everything you need to know about TOREO's 3D printing services, CNC machining, laser cutting, materials and lead times." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.toreo.gr/faq" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "FAQ — TOREO Manufacturing" },
+      { name: "twitter:description", content: "3D printing, CNC and laser cutting FAQs from TOREO." },
     ],
     links: [
-      { rel: "canonical", href: "https://toreo.lovable.app/faq" },
+      { rel: "canonical", href: "https://www.toreo.gr/faq" },
     ],
     scripts: [
       {

@@ -105,8 +105,8 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Custom industrial parts", "Product prototypes", "Brackets and enclosures", "Architectural metalwork"],
     notes: "Accepted formats: .pdf, .jpg, .png, .step, .stp, .iges, .dwg, .dxf.",
     seo: {
-      title: "Design & Development — TOREO",
-      description: "From sketch to manufacturable CAD. Engineering, DFM and full documentation by TOREO.",
+      title: "Design & Development — Product Development & Engineering Services | TOREO",
+      description: "From sketch to manufacturable CAD. Product development, DFM, engineering services and full documentation by TOREO in Greece.",
     },
   },
   "fiber-laser-cutting": {
@@ -129,8 +129,8 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Brackets and panels", "Enclosures and chassis", "Decorative metal", "Industrial components"],
     notes: "Send .dxf, .dwg or .step. Always include thickness and material grade.",
     seo: {
-      title: "Fiber Laser Cutting — TOREO",
-      description: "Precision fiber laser cutting in steel, stainless and aluminum. ±0.05 mm tolerance.",
+      title: "Fiber Laser Cutting — CNC Manufacturing & Custom Parts | TOREO",
+      description: "Precision fiber laser cutting in steel, stainless and aluminum with ±0.05 mm tolerance — CNC manufacturing and custom parts manufacturing in Greece.",
     },
   },
   "sheet-metal-forming-welding": {
@@ -152,8 +152,8 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Frames and chassis", "Enclosures and cabinets", "Architectural panels", "Welded assemblies"],
     seo: {
-      title: "Sheet Metal Forming & Welding — TOREO",
-      description: "Press brake forming, MIG/TIG/spot welding and assembly of steel, stainless and aluminum.",
+      title: "Sheet Metal Forming & Welding — Custom Parts Manufacturing | TOREO",
+      description: "Press brake forming, MIG/TIG/spot welding and assembly in steel, stainless and aluminum — custom parts manufacturing by TOREO in Greece.",
     },
   },
   "3d-printing": {
@@ -176,8 +176,8 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Functional prototypes", "Jigs and fixtures", "Custom end-use parts", "Small batch production"],
     notes: "Send .stl, .step or .obj. Include build volume and quantity.",
     seo: {
-      title: "3D Printing — TOREO",
-      description: "Functional 3D printing for prototypes and end-use parts in engineering polymers.",
+      title: "3D Printing Services — Rapid Prototyping & End-Use Parts | TOREO",
+      description: "Professional 3D printing services for rapid prototyping and end-use parts in engineering polymers — PLA, ABS, PETG, PC, TPU — by TOREO in Greece.",
     },
   },
   "design-to-prototype": {
@@ -199,8 +199,8 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Startup MVPs", "New product development", "Reverse engineering", "Custom one-off parts"],
     seo: {
-      title: "Design → Prototype — TOREO",
-      description: "From idea to working prototype in days. End-to-end engineering and prototyping under one roof.",
+      title: "Design → Prototype — Rapid Prototyping & Product Development | TOREO",
+      description: "Rapid prototyping and product development from idea to working prototype in days — end-to-end engineering services by TOREO.",
     },
   },
   "global-manufacturing-network": {
@@ -222,8 +222,8 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Series production", "OEM components", "Branded consumer products", "Replacement and spare parts"],
     seo: {
-      title: "​Mass production — TOREO",
-      description: "Scale from prototype to series production with trusted global partners. Managed end to end.",
+      title: "Mass Production — CNC Machining & Custom Parts Manufacturing | TOREO",
+      description: "Scale from prototype to series production with CNC machining, injection molding and trusted global partners — managed end to end by TOREO.",
     },
   },
 };
@@ -342,7 +342,8 @@ export const Route = createFileRoute("/capabilities/$slug")({
       title: "Capability — TOREO",
       description: "Engineering and manufacturing capability at TOREO.",
     };
-    const url = `https://toreo.lovable.app/capabilities/${params.slug}`;
+    const url = `https://www.toreo.gr/capabilities/${params.slug}`;
+    const serviceName = loaderData?.cap ? titles[loaderData.cap.slug] : "Manufacturing service";
     return {
       meta: [
         { title: seo.title },
@@ -351,6 +352,9 @@ export const Route = createFileRoute("/capabilities/$slug")({
         { property: "og:description", content: seo.description },
         { property: "og:type", content: "article" },
         { property: "og:url", content: url },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: seo.title },
+        { name: "twitter:description", content: seo.description },
       ],
       links: [
         { rel: "canonical", href: url },
@@ -361,15 +365,29 @@ export const Route = createFileRoute("/capabilities/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Service",
-            name: seo.title,
+            name: serviceName,
             description: seo.description,
             url,
-            serviceType: loaderData?.cap ? titles[loaderData.cap.slug] : "Manufacturing service",
+            serviceType: serviceName,
+            areaServed: ["GR", "EU"],
             provider: {
               "@type": "Organization",
               name: "TOREO",
-              url: "https://toreo.lovable.app",
+              url: "https://www.toreo.gr",
+              address: { "@type": "PostalAddress", addressLocality: "Thessaloniki", addressCountry: "GR" },
             },
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://www.toreo.gr/" },
+              { "@type": "ListItem", position: 2, name: "Capabilities", item: "https://www.toreo.gr/#capabilities" },
+              { "@type": "ListItem", position: 3, name: serviceName, item: url },
+            ],
           }),
         },
       ],
