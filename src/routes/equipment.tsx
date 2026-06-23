@@ -7,22 +7,27 @@ import { useI18n } from "@/components/xtz/i18n";
 export const Route = createFileRoute("/equipment")({
   head: () => ({
     meta: [
-      { title: "Equipment & Technology — TOREO" },
+      { title: "CNC Manufacturing Equipment & Technology | TOREO" },
       {
         name: "description",
         content:
-          "The manufacturing equipment behind TOREO — Bambu Lab H2S 3D printers, AKJ1530F fiber laser cutters, press brakes, sheet metal shear and welding stations.",
+          "Discover TOREO's manufacturing equipment for rapid prototyping, 3D printing services and CNC machining — Bambu Lab H2S printers, AKJ1530F fiber laser, press brakes and welding stations in Thessaloniki, Greece.",
       },
-      { property: "og:title", content: "Equipment & Technology — TOREO" },
+      { name: "keywords", content: "CNC manufacturing, 3D printing equipment, fiber laser cutting, rapid prototyping, sheet metal Thessaloniki, Greece" },
+      { property: "og:title", content: "CNC Manufacturing Equipment & Technology | TOREO" },
       {
         property: "og:description",
         content:
-          "Professional manufacturing equipment that helps us transform ideas into finished products with precision, speed and reliability.",
+          "Professional manufacturing equipment — 3D printing, fiber laser cutting, press brakes and welding — for prototype and custom parts manufacturing.",
       },
-      { property: "og:url", content: "https://toreo.lovable.app/equipment" },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.toreo.gr/equipment" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "CNC Manufacturing Equipment & Technology | TOREO" },
+      { name: "twitter:description", content: "Professional equipment for 3D printing, fiber laser cutting and sheet metal manufacturing at TOREO." },
     ],
     links: [
-      { rel: "canonical", href: "https://toreo.lovable.app/equipment" },
+      { rel: "canonical", href: "https://www.toreo.gr/equipment" },
     ],
   }),
   component: EquipmentPage,

@@ -13,16 +13,38 @@ import productAsset from "@/assets/design-prototype-photo.png.asset.json";
 export const Route = createFileRoute("/company")({
   head: () => ({
     meta: [
-      { title: "Company — TOREO" },
-      { name: "description", content: "TOREO is a modern manufacturing company turning ideas into reality through 3D printing, laser cutting, CAD design and custom manufacturing." },
-      { property: "og:title", content: "Company — TOREO" },
-      { property: "og:description", content: "Engineering ideas into reality through modern manufacturing." },
-      { property: "og:url", content: "https://toreo.lovable.app/company" },
-      { property: "og:image", content: `https://toreo.lovable.app${heroLaser.url}` },
-      { name: "twitter:image", content: `https://toreo.lovable.app${heroLaser.url}` },
+      { title: "About TOREO — Engineering Services & Product Development in Greece" },
+      { name: "description", content: "TOREO is a modern manufacturing company in Thessaloniki offering engineering services, product development, 3D printing services, CNC machining and prototype manufacturing across Greece and Europe." },
+      { name: "keywords", content: "engineering services, product development, prototype manufacturing, custom parts manufacturing, CNC machining Greece, Thessaloniki manufacturing" },
+      { property: "og:title", content: "About TOREO — Engineering & Product Development in Greece" },
+      { property: "og:description", content: "Engineering ideas into reality through modern manufacturing — 3D printing, CNC, laser cutting and product development in Thessaloniki." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.toreo.gr/company" },
+      { property: "og:image", content: `https://www.toreo.gr${heroLaser.url}` },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "About TOREO — Engineering & Product Development" },
+      { name: "twitter:description", content: "Modern manufacturing partner in Greece for prototyping, 3D printing, CNC and custom parts." },
+      { name: "twitter:image", content: `https://www.toreo.gr${heroLaser.url}` },
     ],
     links: [
-      { rel: "canonical", href: "https://toreo.lovable.app/company" },
+      { rel: "canonical", href: "https://www.toreo.gr/company" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "AboutPage",
+          name: "About TOREO",
+          url: "https://www.toreo.gr/company",
+          about: {
+            "@type": "Organization",
+            name: "TOREO",
+            url: "https://www.toreo.gr",
+            address: { "@type": "PostalAddress", addressLocality: "Thessaloniki", addressCountry: "GR" },
+          },
+        }),
+      },
     ],
   }),
   component: CompanyPage,

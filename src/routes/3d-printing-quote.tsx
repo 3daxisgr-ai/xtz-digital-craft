@@ -10,14 +10,34 @@ import { submitForm } from "@/lib/api/submissions.functions";
 export const Route = createFileRoute("/3d-printing-quote")({
   head: () => ({
     meta: [
-      { title: "3D Printing Quote — TOREO" },
-      { name: "description", content: "Instant 3D printing quote. Pick your material, weight and print time — get an estimated price in seconds." },
-      { property: "og:title", content: "3D Printing Quote — TOREO" },
-      { property: "og:description", content: "Configure material, weight and print time to get an instant 3D printing estimate." },
-      { property: "og:url", content: "https://toreo.lovable.app/3d-printing-quote" },
+      { title: "Instant 3D Printing Services Quote — Rapid Prototyping | TOREO" },
+      { name: "description", content: "Get an instant 3D printing services quote for rapid prototyping and custom parts manufacturing — pick your material, weight and print time for a price estimate from TOREO in Greece." },
+      { name: "keywords", content: "3D printing services, 3D printing quote, rapid prototyping, custom parts manufacturing, PLA ABS PETG TPU PC, Greece" },
+      { property: "og:title", content: "Instant 3D Printing Quote — Rapid Prototyping | TOREO" },
+      { property: "og:description", content: "Configure material, weight and print time for an instant 3D printing services estimate from TOREO." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.toreo.gr/3d-printing-quote" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Instant 3D Printing Quote | TOREO" },
+      { name: "twitter:description", content: "Configure your part and get an instant 3D printing estimate from TOREO." },
     ],
     links: [
-      { rel: "canonical", href: "https://toreo.lovable.app/3d-printing-quote" },
+      { rel: "canonical", href: "https://www.toreo.gr/3d-printing-quote" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "3D Printing Services",
+          serviceType: "3D Printing / Rapid Prototyping",
+          provider: { "@type": "Organization", name: "TOREO", url: "https://www.toreo.gr" },
+          areaServed: ["GR", "EU"],
+          url: "https://www.toreo.gr/3d-printing-quote",
+          offers: { "@type": "Offer", priceCurrency: "EUR", availability: "https://schema.org/InStock" },
+        }),
+      },
     ],
   }),
   component: QuotePage,
