@@ -90,7 +90,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:description", content: "TOREO: a full-stack manufacturing partner. Fiber laser cutting, sheet metal, 3D printing, design and prototyping under one roof." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/0136c2b7-3464-451f-939d-916490b21a9a" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/0136c2b7-3464-451f-939d-916490b21a9a" },
-      { name: "google-site-verification", content: "vSDOLsSUfQJNHMBycIezNwyLh12xPmclE1ZMiiilR6g" },
+      { name: "google-site-verification", content: "OnQ5wC9BJYXVX1HUQITKJU3E4JMb2FBGW3hIMHSo40E" },
     ],
     links: [
       {
