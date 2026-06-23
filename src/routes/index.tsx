@@ -13,13 +13,17 @@ import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "TOREO — From Concept to Reality" },
-      { name: "description", content: "Design, prototype and manufacture under one roof. Fiber laser cutting, sheet metal, 3D printing and engineering by TOREO." },
-      { property: "og:title", content: "TOREO — From Concept to Reality" },
-      { property: "og:description", content: "Design, prototype and manufacture under one roof — fiber laser, sheet metal, 3D printing and engineering by TOREO in Thessaloniki." },
+      { title: "TOREO — Rapid Prototyping, 3D Printing & CNC Manufacturing in Greece" },
+      { name: "description", content: "Rapid prototyping, 3D printing services, CNC machining, fiber laser cutting and product development under one roof. Engineering-led custom parts manufacturing in Thessaloniki, Greece." },
+      { name: "keywords", content: "rapid prototyping, 3D printing services, CNC machining, CNC manufacturing, product development, prototype manufacturing, engineering services, custom parts manufacturing, Greece, Thessaloniki" },
+      { property: "og:title", content: "TOREO — Rapid Prototyping, 3D Printing & CNC Manufacturing" },
+      { property: "og:description", content: "Engineering-led rapid prototyping, 3D printing services, CNC machining and product development by TOREO in Thessaloniki, Greece." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.toreo.gr/" },
       { property: "og:image", content: `https://www.toreo.gr${heroLaser.url}` },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "TOREO — Rapid Prototyping, 3D Printing & CNC Manufacturing" },
+      { name: "twitter:description", content: "Engineering-led rapid prototyping, 3D printing services, CNC machining and product development by TOREO." },
       { name: "twitter:image", content: `https://www.toreo.gr${heroLaser.url}` },
     ],
     links: [
@@ -35,10 +39,10 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@type": "ItemList",
           itemListElement: [
-            { "@type": "Service", position: 1, name: "Fiber Laser Cutting", description: "Micron-level precision cutting on steel, stainless and aluminium.", provider: { "@type": "Organization", name: "TOREO" } },
-            { "@type": "Service", position: 2, name: "Sheet Metal Forming & Welding", description: "Bending, welding and assembly of finished metal parts.", provider: { "@type": "Organization", name: "TOREO" } },
-            { "@type": "Service", position: 3, name: "3D Printing", description: "Functional parts and short runs in engineering polymers.", provider: { "@type": "Organization", name: "TOREO" } },
-            { "@type": "Service", position: 4, name: "Design & Prototyping", description: "Idea to working prototype in days, not months.", provider: { "@type": "Organization", name: "TOREO" } },
+            { "@type": "Service", position: 1, name: "Rapid Prototyping & Product Development", description: "From sketch to working prototype in days — engineering services and DFM by TOREO.", provider: { "@type": "Organization", name: "TOREO" }, areaServed: ["GR", "EU"] },
+            { "@type": "Service", position: 2, name: "3D Printing Services", description: "Functional parts and short runs in engineering polymers — PLA, ABS, PETG, PC, TPU.", provider: { "@type": "Organization", name: "TOREO" }, areaServed: ["GR", "EU"] },
+            { "@type": "Service", position: 3, name: "CNC Manufacturing & Fiber Laser Cutting", description: "Micron-level precision cutting and CNC manufacturing on steel, stainless and aluminium.", provider: { "@type": "Organization", name: "TOREO" }, areaServed: ["GR", "EU"] },
+            { "@type": "Service", position: 4, name: "Sheet Metal Forming & Welding", description: "Bending, welding and assembly of finished custom metal parts.", provider: { "@type": "Organization", name: "TOREO" }, areaServed: ["GR", "EU"] },
           ],
         }),
       },
