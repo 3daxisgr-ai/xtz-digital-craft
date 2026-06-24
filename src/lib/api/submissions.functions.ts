@@ -133,7 +133,7 @@ export const submitForm = createServerFn({ method: "POST" })
         await channel.send({
           type: "broadcast",
           event: "new",
-          payload: notif ?? { title: notifTitle, body: notifBody, quote_id: quoteId },
+          payload: { trigger: true },
         });
         await supabaseAdmin.removeChannel(channel);
       } catch (be) {
