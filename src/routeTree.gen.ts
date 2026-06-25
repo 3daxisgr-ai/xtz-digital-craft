@@ -12,13 +12,19 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StartProjectRouteImport } from './routes/start-project'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RapidPrototypingRouteImport } from './routes/rapid-prototyping'
 import { Route as ForumRouteImport } from './routes/forum'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EquipmentRouteImport } from './routes/equipment'
+import { Route as CustomMetalPartsRouteImport } from './routes/custom-metal-parts'
 import { Route as CompanyRouteImport } from './routes/company'
+import { Route as CncMachiningRouteImport } from './routes/cnc-machining'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as R3dPrintingQuoteRouteImport } from './routes/3d-printing-quote'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GrRapidPrototypingRouteImport } from './routes/gr.rapid-prototyping'
+import { Route as GrCustomMetalPartsRouteImport } from './routes/gr.custom-metal-parts'
+import { Route as GrCncMachiningRouteImport } from './routes/gr.cnc-machining'
 import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
 
 const StartProjectRoute = StartProjectRouteImport.update({
@@ -36,6 +42,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RapidPrototypingRoute = RapidPrototypingRouteImport.update({
+  id: '/rapid-prototyping',
+  path: '/rapid-prototyping',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForumRoute = ForumRouteImport.update({
   id: '/forum',
   path: '/forum',
@@ -51,9 +62,19 @@ const EquipmentRoute = EquipmentRouteImport.update({
   path: '/equipment',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CustomMetalPartsRoute = CustomMetalPartsRouteImport.update({
+  id: '/custom-metal-parts',
+  path: '/custom-metal-parts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CompanyRoute = CompanyRouteImport.update({
   id: '/company',
   path: '/company',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CncMachiningRoute = CncMachiningRouteImport.update({
+  id: '/cnc-machining',
+  path: '/cnc-machining',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -71,6 +92,21 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GrRapidPrototypingRoute = GrRapidPrototypingRouteImport.update({
+  id: '/gr/rapid-prototyping',
+  path: '/gr/rapid-prototyping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GrCustomMetalPartsRoute = GrCustomMetalPartsRouteImport.update({
+  id: '/gr/custom-metal-parts',
+  path: '/gr/custom-metal-parts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GrCncMachiningRoute = GrCncMachiningRouteImport.update({
+  id: '/gr/cnc-machining',
+  path: '/gr/cnc-machining',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CapabilitiesSlugRoute = CapabilitiesSlugRouteImport.update({
   id: '/capabilities/$slug',
   path: '/capabilities/$slug',
@@ -81,41 +117,59 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
   '/admin': typeof AdminRoute
+  '/cnc-machining': typeof CncMachiningRoute
   '/company': typeof CompanyRoute
+  '/custom-metal-parts': typeof CustomMetalPartsRoute
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
+  '/rapid-prototyping': typeof RapidPrototypingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
+  '/gr/cnc-machining': typeof GrCncMachiningRoute
+  '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
+  '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
   '/admin': typeof AdminRoute
+  '/cnc-machining': typeof CncMachiningRoute
   '/company': typeof CompanyRoute
+  '/custom-metal-parts': typeof CustomMetalPartsRoute
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
+  '/rapid-prototyping': typeof RapidPrototypingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
+  '/gr/cnc-machining': typeof GrCncMachiningRoute
+  '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
+  '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
   '/admin': typeof AdminRoute
+  '/cnc-machining': typeof CncMachiningRoute
   '/company': typeof CompanyRoute
+  '/custom-metal-parts': typeof CustomMetalPartsRoute
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
+  '/rapid-prototyping': typeof RapidPrototypingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
+  '/gr/cnc-machining': typeof GrCncMachiningRoute
+  '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
+  '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -123,54 +177,78 @@ export interface FileRouteTypes {
     | '/'
     | '/3d-printing-quote'
     | '/admin'
+    | '/cnc-machining'
     | '/company'
+    | '/custom-metal-parts'
     | '/equipment'
     | '/faq'
     | '/forum'
+    | '/rapid-prototyping'
     | '/sitemap.xml'
     | '/start'
     | '/start-project'
     | '/capabilities/$slug'
+    | '/gr/cnc-machining'
+    | '/gr/custom-metal-parts'
+    | '/gr/rapid-prototyping'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/3d-printing-quote'
     | '/admin'
+    | '/cnc-machining'
     | '/company'
+    | '/custom-metal-parts'
     | '/equipment'
     | '/faq'
     | '/forum'
+    | '/rapid-prototyping'
     | '/sitemap.xml'
     | '/start'
     | '/start-project'
     | '/capabilities/$slug'
+    | '/gr/cnc-machining'
+    | '/gr/custom-metal-parts'
+    | '/gr/rapid-prototyping'
   id:
     | '__root__'
     | '/'
     | '/3d-printing-quote'
     | '/admin'
+    | '/cnc-machining'
     | '/company'
+    | '/custom-metal-parts'
     | '/equipment'
     | '/faq'
     | '/forum'
+    | '/rapid-prototyping'
     | '/sitemap.xml'
     | '/start'
     | '/start-project'
     | '/capabilities/$slug'
+    | '/gr/cnc-machining'
+    | '/gr/custom-metal-parts'
+    | '/gr/rapid-prototyping'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   R3dPrintingQuoteRoute: typeof R3dPrintingQuoteRoute
   AdminRoute: typeof AdminRoute
+  CncMachiningRoute: typeof CncMachiningRoute
   CompanyRoute: typeof CompanyRoute
+  CustomMetalPartsRoute: typeof CustomMetalPartsRoute
   EquipmentRoute: typeof EquipmentRoute
   FaqRoute: typeof FaqRoute
   ForumRoute: typeof ForumRoute
+  RapidPrototypingRoute: typeof RapidPrototypingRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StartRoute: typeof StartRoute
   StartProjectRoute: typeof StartProjectRoute
   CapabilitiesSlugRoute: typeof CapabilitiesSlugRoute
+  GrCncMachiningRoute: typeof GrCncMachiningRoute
+  GrCustomMetalPartsRoute: typeof GrCustomMetalPartsRoute
+  GrRapidPrototypingRoute: typeof GrRapidPrototypingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -196,6 +274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rapid-prototyping': {
+      id: '/rapid-prototyping'
+      path: '/rapid-prototyping'
+      fullPath: '/rapid-prototyping'
+      preLoaderRoute: typeof RapidPrototypingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forum': {
       id: '/forum'
       path: '/forum'
@@ -217,11 +302,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EquipmentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/custom-metal-parts': {
+      id: '/custom-metal-parts'
+      path: '/custom-metal-parts'
+      fullPath: '/custom-metal-parts'
+      preLoaderRoute: typeof CustomMetalPartsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/company': {
       id: '/company'
       path: '/company'
       fullPath: '/company'
       preLoaderRoute: typeof CompanyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cnc-machining': {
+      id: '/cnc-machining'
+      path: '/cnc-machining'
+      fullPath: '/cnc-machining'
+      preLoaderRoute: typeof CncMachiningRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -245,6 +344,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/gr/rapid-prototyping': {
+      id: '/gr/rapid-prototyping'
+      path: '/gr/rapid-prototyping'
+      fullPath: '/gr/rapid-prototyping'
+      preLoaderRoute: typeof GrRapidPrototypingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gr/custom-metal-parts': {
+      id: '/gr/custom-metal-parts'
+      path: '/gr/custom-metal-parts'
+      fullPath: '/gr/custom-metal-parts'
+      preLoaderRoute: typeof GrCustomMetalPartsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gr/cnc-machining': {
+      id: '/gr/cnc-machining'
+      path: '/gr/cnc-machining'
+      fullPath: '/gr/cnc-machining'
+      preLoaderRoute: typeof GrCncMachiningRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/capabilities/$slug': {
       id: '/capabilities/$slug'
       path: '/capabilities/$slug'
@@ -259,25 +379,21 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R3dPrintingQuoteRoute: R3dPrintingQuoteRoute,
   AdminRoute: AdminRoute,
+  CncMachiningRoute: CncMachiningRoute,
   CompanyRoute: CompanyRoute,
+  CustomMetalPartsRoute: CustomMetalPartsRoute,
   EquipmentRoute: EquipmentRoute,
   FaqRoute: FaqRoute,
   ForumRoute: ForumRoute,
+  RapidPrototypingRoute: RapidPrototypingRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StartRoute: StartRoute,
   StartProjectRoute: StartProjectRoute,
   CapabilitiesSlugRoute: CapabilitiesSlugRoute,
+  GrCncMachiningRoute: GrCncMachiningRoute,
+  GrCustomMetalPartsRoute: GrCustomMetalPartsRoute,
+  GrRapidPrototypingRoute: GrRapidPrototypingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
