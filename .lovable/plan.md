@@ -1,104 +1,86 @@
 
-# Phase 1 — Structure, UX & Performance Refinement
+# TOREO Blueprint Implementation Plan
 
-Keeping the existing visual identity, palette, hero image, and the horizontal-scroll capabilities system. Refinement only — no redesign.
+A large change. I'll do it in 4 phases so each is reviewable. Existing pages (`/capabilities`, `/equipment`, `/company`, `/faq`, `/start-project`, `/3d-printing-quote`) stay untouched.
 
-## 1. Homepage hero (`IntroScene.tsx`)
+## Phase 1 — Bilingual routing (EN default, GR variants)
 
-- Remove the oversized `3D AXIS` wordmark (logo-engrave block + sheen + metallic baseline) from the hero.
-- Keep the hero background image, ambient blue, sparks, laser beam, vignette, scroll hint.
-- Promote `FROM CONCEPT TO REALITY` to the dominant hero element:
-  - Display font, `clamp(3rem, 11vw, 11rem)`, tight tracking, leading 0.9
-  - Subtle electric-blue glow via existing `--primary` token (drop-shadow + soft radial halo)
-  - Keep the small `XYZ — DESIGN · PROTOTYPE · MANUFACTURE · DELIVER` mono line beneath it
-- Adjust the scroll-pin timeline classes so the new headline (replaces `.logo-engrave`) is the element being scaled/faded out.
+URL strategy: English at root (`/cnc-machining`), Greek mirrored under `/gr/...` (`/gr/cnc-machining`). Pros: no breaking change to existing URLs, clean canonical/hreflang per page, simple to implement, good for `toreo.gr` local SEO.
 
-## 2. Copy simplification
+- Add a tiny `useLocale()` helper that derives `"en" | "gr"` from `pathname`.
+- Each bilingual page exports two routes: one EN file, one GR file in `src/routes/gr.*`.
+- Each route emits `<link rel="canonical">` + `<link rel="alternate" hreflang="en|el|x-default">` to point to its counterpart.
+- Navigation gets an EN/GR language switcher (small text link, no design overhaul).
 
-Rewrite EN + GR strings in `src/components/xtz/i18n.tsx` and any hardcoded copy in:
-- `Concept.tsx`, `Capabilities.tsx`, `Chapter.tsx` callers (in `routes/index.tsx`), `Process.tsx`, `GlobalNetwork.tsx`, `InquiryForm.tsx`, `Finale.tsx`, `Footer.tsx`
-
-Voice rules:
-- Short sentences, plain language, no philosophy/jargon
-- Three answers, always visible quickly: what we do · how we do it · how to start
-
-## 3. Capabilities section (horizontal scroll)
-
-Keep the current horizontal-scroll system as-is structurally. Performance pass only:
-- Add `will-change: transform`, `translate3d` on the scrolled track, `contain: paint`
-- Throttle ScrollTrigger via `gsap.ticker.lagSmoothing` + `ScrollTrigger.config({ ignoreMobileResize: true })`
-- Lazy-load card images (`loading="lazy" decoding="async"`) and add explicit `width`/`height`
-- Disable heaviest animations under `prefers-reduced-motion` and `<768px`
-- Replace any per-frame state updates with `requestAnimationFrame`-batched reads
-
-## 4. Capabilities list
-
-Replace card data in `Capabilities.tsx` with:
-
-```text
-01 Design & Development
-02 Fiber Laser Cutting
-03 Sheet Metal Forming & Welding
-04 3D Printing
-05 Design → Prototype
-06 Global Manufacturing Network
-```
-
-Remove the old "Functional Prototypes / Scalable Manufacturing" cards and the duplicate Services list + 3D Printing emphasis block (folded into the new six items). Keep card aesthetic.
-
-## 5. Capabilities interaction → dedicated pages
-
-Each capability becomes a `<Link>` to its own route. No modals, no popups.
+## Phase 2 — 3 SEO landing pages (×2 languages = 6 routes)
 
 New routes:
+- `/cnc-machining` + `/gr/cnc-machining`
+- `/rapid-prototyping` + `/gr/rapid-prototyping`
+- `/custom-metal-parts` + `/gr/custom-metal-parts`
 
-```text
-src/routes/capabilities.index.tsx                      (overview grid, same six items)
-src/routes/capabilities.design-development.tsx
-src/routes/capabilities.fiber-laser-cutting.tsx
-src/routes/capabilities.sheet-metal.tsx
-src/routes/capabilities.3d-printing.tsx
-src/routes/capabilities.design-to-prototype.tsx
-src/routes/capabilities.global-network.tsx
-```
+Each page:
+- Hero (H1 = primary keyword, e.g. "CNC Machining Services in Greece & Europe")
+- "What it is" / problem solved
+- Industries served (automotive, industrial, energy, defense, robotics)
+- Process (CAD → Quote → Production → QC → Delivery)
+- Materials/capabilities table
+- "Why TOREO" trust block (reuses existing `WhyToreo` component — no visual change there)
+- FAQ accordion (4–6 Q&A, schema.org FAQPage JSON-LD)
+- Final CTA → `/start-project`
+- Per-route `head()`: unique title, description, og:*, canonical, Service JSON-LD, BreadcrumbList JSON-LD
 
-Each page: hero (title + kicker + short summary), what we do, materials/process, how to start CTA → `/#inquiry`. Reuses the same tokens, Navigation, Footer. Per-route `head()` with unique title + description + og:title/description.
+Visual style reuses existing `xtz/` components and tokens — no new design system.
 
-## 6. Remove forum
+## Phase 3 — Blog system (Lovable Cloud DB-backed)
 
-Search the project for any "forum" reference and remove (routes, components, nav links, i18n keys). If none exist, note it and move on.
+DB: `blog_posts` table in `public` schema.
+- Columns: `id uuid pk`, `slug text unique`, `locale text check ('en','gr')`, `title text`, `excerpt text`, `body_md text`, `cover_image_url text nullable`, `meta_title text`, `meta_description text`, `published boolean default false`, `published_at timestamptz`, `created_at`, `updated_at`.
+- RLS: `SELECT` to `anon`+`authenticated` where `published = true`; full access to `service_role`.
+- GRANTs included in the migration.
+- Seed migration: 4 starter posts in EN + GR translations (the article ideas from the brief).
 
-## 7. FAQ → dedicated page
+Routes:
+- `/blog` + `/gr/blog` — index, lists published posts for that locale, loader uses publishable-key server client.
+- `/blog/$slug` + `/gr/blog/$slug` — post detail, renders Markdown (add `react-markdown` + `remark-gfm`), Article JSON-LD, OG tags from cover image.
+- Sitemap server route extended to fetch all published posts and emit one URL per post per locale.
 
-- New route: `src/routes/faq.tsx` using the existing `FAQ` component, restructured around: 3D Printing, Laser Cutting, Materials, Lead Times, Prototyping, Production, Pricing Process, File Requirements.
-- Remove `<FAQ />` from `routes/index.tsx`.
-- Add an FAQ entry to the Navigation links.
+No admin UI in this phase — content seeded via migrations. Adding a CMS UI later is a separate ask.
 
-## 8. Performance
+## Phase 4 — Home + conversion polish (minimal)
 
-- `loading="lazy" decoding="async"` + explicit dimensions on all non-hero images (`Chapter`, `PortfolioReel`, capability pages).
-- Convert hero image to a preloaded asset via per-route `head().links` (`rel=preload as=image fetchpriority=high`).
-- Guard GSAP timelines with `prefers-reduced-motion` (skip ScrollTrigger scrubs, run a single fade).
-- Add `content-visibility: auto` + `contain-intrinsic-size` on long below-the-fold sections (Process, GlobalNetwork, FAQ block when used inline).
-- Remove unused asset imports.
-- Verify no per-scroll React `setState` in hot paths (Navigation already uses passive listener; keep).
+Goal: improve CTAs/conversion without redesigning. Per user constraints from earlier turns I will NOT change visible design — only:
+- Add a small sticky "Request a Quote" CTA in the navigation (mobile-friendly), matching existing button styles.
+- Add a "Quick Contact" form route at `/contact` + `/gr/contact` (name, email, phone, message, optional CAD file upload via existing `submission-files` bucket). Reuses existing `InquiryForm` styling.
+- Internal links: home + landing pages cross-link to one another and to the blog.
 
-## 9. Branding
+If you want home-page structural changes (new section order, hero copy rewrite, swapping in CNC/Prototyping/Metal Parts as the 3 cards), that's a separate phase — I'll ask before touching the existing home layout.
 
-No palette change. Keep XYZ kicker, electric-blue accent, mono labels, brushed-metal/glass-panel utilities.
+## Phase 5 — SEO plumbing
 
----
+- Update `/sitemap.xml` server route: add all new EN+GR pages + blog posts.
+- Update `src/components/xtz/Navigation.tsx` minimally: add language switcher + (optionally) the 3 service links under a dropdown.
+- Update footer with new service links + Greek links.
+- Keep all existing per-route `head()` metadata; only add `hreflang` alternates.
 
-## Technical notes
+## What I will NOT touch (per earlier instructions)
 
-- Routing additions register automatically via the TanStack Router Vite plugin; do not hand-edit `routeTree.gen.ts`.
-- Capability page filenames use dot-separated convention: `capabilities.fiber-laser-cutting.tsx` → `/capabilities/fiber-laser-cutting`. The leading numeric slug `3d-printing` is fine as a URL segment but the route file must start with a letter — use `capabilities.three-d-printing.tsx` mapping to `/capabilities/three-d-printing`, or keep `capabilities.3d-printing.tsx` (TanStack accepts it; verify after generation).
-- New `<Link>` usage: `import { Link } from "@tanstack/react-router"` with `to="/capabilities/fiber-laser-cutting"` — never interpolated strings.
-- i18n: keep `useI18n` provider; new pages are wrapped the same way the index page is, or i18n is lifted into `__root.tsx` so every route shares it. I'll lift it to `__root.tsx` to avoid duplicating the provider on every page.
-- FAQ content is rewritten in both EN and GR.
+- No redesign of existing `/`, `/capabilities/*`, `/equipment`, `/company`, `/faq`, `/start-project`, `/3d-printing-quote` pages.
+- No changes to colors, typography, components in `src/components/xtz/*` beyond adding bilingual text props and the nav language switcher.
+- No removal of existing routes.
 
-## Out of scope (Phase 1)
+## Technical details (for the record)
 
-- No new color tokens, no design system rewrite.
-- No backend / Lovable Cloud changes.
-- No new third-party libraries.
+- Markdown: `bun add react-markdown remark-gfm`
+- DB: one migration for `blog_posts` + seed
+- i18n: lightweight — no `react-i18next`, just per-route content. Each GR route file imports the EN component and passes Greek copy as props, OR has its own thin component. Choosing the latter for clarity and per-page SEO control.
+- All new pages: SSR on (default), public, no auth gate.
+- Canonical and og:url self-reference each route's full URL on `https://www.toreo.gr`.
+
+## Confirmation needed before I start
+
+1. **URL pattern OK?** `/gr/...` prefix for Greek, English at root. (Alternative: `/en/...` + `/gr/...` with redirect — breaks current URLs.)
+2. **Blog without admin UI OK for now?** Posts seeded via migration; admin CMS can come later.
+3. **Home page:** confirm I should leave the current home design alone and only add a sticky CTA + nav language switcher (no section rewrites).
+
+Reply "go" plus answers to the 3 questions and I'll execute Phases 1–5 in sequence.

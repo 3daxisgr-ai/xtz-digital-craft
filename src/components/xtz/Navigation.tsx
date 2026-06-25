@@ -172,6 +172,37 @@ export function Navigation() {
             ))}
           </ul>
 
+          {/* Services sub-menu */}
+          <div className="mt-6">
+            <div className="font-mono text-[11px] uppercase tracking-[0.4em] text-primary/80 mb-3">
+              {lang === "GR" ? "Υπηρεσίες" : "Services"}
+            </div>
+            <ul className="flex flex-col gap-1 font-display text-lg">
+              {(lang === "GR"
+                ? [
+                    { to: "/gr/cnc-machining" as const, label: "CNC Κατεργασίες" },
+                    { to: "/gr/rapid-prototyping" as const, label: "Rapid Prototyping" },
+                    { to: "/gr/custom-metal-parts" as const, label: "Custom Μεταλλικά" },
+                  ]
+                : [
+                    { to: "/cnc-machining" as const, label: "CNC Machining" },
+                    { to: "/rapid-prototyping" as const, label: "Rapid Prototyping" },
+                    { to: "/custom-metal-parts" as const, label: "Custom Metal Parts" },
+                  ]
+              ).map((s) => (
+                <li key={s.to}>
+                  <Link
+                    to={s.to}
+                    onClick={closeMenu}
+                    className="block py-3 border-b border-border/30 text-foreground hover:text-primary transition-colors"
+                  >
+                    {s.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <Link
             to="/start"
             onClick={closeMenu}

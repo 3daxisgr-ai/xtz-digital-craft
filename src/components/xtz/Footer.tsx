@@ -75,6 +75,33 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Services index — internal links for SEO + discoverability */}
+        <div className="py-10 border-b border-border/40">
+          <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-primary/80 mb-5">
+            {lang === "GR" ? "Υπηρεσίες" : "Services"}
+          </div>
+          <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 font-display text-base md:text-lg">
+            {(lang === "GR"
+              ? [
+                  { to: "/gr/cnc-machining" as const, label: "CNC Κατεργασίες" },
+                  { to: "/gr/rapid-prototyping" as const, label: "Rapid Prototyping" },
+                  { to: "/gr/custom-metal-parts" as const, label: "Custom Μεταλλικά Εξαρτήματα" },
+                ]
+              : [
+                  { to: "/cnc-machining" as const, label: "CNC Machining" },
+                  { to: "/rapid-prototyping" as const, label: "Rapid Prototyping" },
+                  { to: "/custom-metal-parts" as const, label: "Custom Metal Parts" },
+                ]
+            ).map((s) => (
+              <li key={s.to}>
+                <Link to={s.to} className="text-foreground/85 hover:text-primary transition-colors">
+                  {s.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         {/* Bottom row */}
         <div className="pt-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div className="font-mono text-[14px] uppercase tracking-[0.35em] text-muted-foreground">
