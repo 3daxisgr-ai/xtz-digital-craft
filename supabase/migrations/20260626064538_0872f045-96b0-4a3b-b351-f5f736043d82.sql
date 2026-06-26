@@ -296,7 +296,7 @@ BEGIN
   ON CONFLICT DO NOTHING;
 
   -- admin seed
-  IF lower(NEW.email) = '3daxis.gr@gmail.com' THEN
+  IF lower(NEW.email) = 'info@toreo.gr' THEN
     INSERT INTO public.user_roles (user_id, role)
     VALUES (NEW.id, 'admin')
     ON CONFLICT DO NOTHING;
