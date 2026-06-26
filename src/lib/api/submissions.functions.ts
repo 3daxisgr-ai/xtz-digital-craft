@@ -233,11 +233,12 @@ export const submitForm = createServerFn({ method: "POST" })
       const raw = process.env.DISCORD_WEBHOOK_URL?.trim().replace(/^["']|["']$/g, "");
       const webhook = raw?.match(/https:\/\/discord(?:app)?\.com\/api\/webhooks\/\S+/)?.[0];
       if (webhook) {
+        const discordEsc = (v: string) => v.replace(/[\\[\]()*_`~>|]/g, "\\$&");
         const fullName = `${data.name}${data.surname ? " " + data.surname : ""}`;
         const fields: { name: string; value: string; inline?: boolean }[] = [];
         const push = (name: string, v: unknown, inline = true) => {
           if (v === null || v === undefined || v === "") return;
-          fields.push({ name, value: String(v).slice(0, 1024), inline });
+          fields.push({ name, value: discordEsc(String(v)).slice(0, 1024), inline });
         };
         push("👤 Name", fullName);
         push("📧 Email", data.email);
@@ -245,14 +246,16 @@ export const submitForm = createServerFn({ method: "POST" })
         push("🛠️ Service", data.service);
         push("🧪 Material", data.material);
         if (data.estimated_price != null) push("💶 Estimated Price", `€${data.estimated_price.toFixed(2)}`);
-        if (data.message) fields.push({ name: "📝 Message", value: data.message.slice(0, 1024), inline: false });
+        if (data.message) fields.push({ name: "📝 Message", value: discordEsc(data.message).slice(0, 1024), inline: false });
         if (data.file_name || fileUrl) {
+          const safeName = discordEsc(data.file_name ?? "Download");
           fields.push({
             name: "📎 Uploaded File",
-            value: fileUrl ? `[${data.file_name ?? "Download"}](${fileUrl})` : (data.file_name ?? "—"),
+            value: fileUrl ? `[${safeName}](${fileUrl})` : (discordEsc(data.file_name ?? "—")),
             inline: false,
           });
         }
+
         fields.push({
           name: "🕒 Date & Time",
           value: new Date().toLocaleString("en-GB", { timeZone: "Europe/Athens" }),
