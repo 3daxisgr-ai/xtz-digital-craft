@@ -19,6 +19,7 @@ import { Route as EquipmentRouteImport } from './routes/equipment'
 import { Route as CustomMetalPartsRouteImport } from './routes/custom-metal-parts'
 import { Route as CompanyRouteImport } from './routes/company'
 import { Route as CncMachiningRouteImport } from './routes/cnc-machining'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as R3dPrintingQuoteRouteImport } from './routes/3d-printing-quote'
 import { Route as IndexRouteImport } from './routes/index'
@@ -77,6 +78,11 @@ const CncMachiningRoute = CncMachiningRouteImport.update({
   path: '/cnc-machining',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
   '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/cnc-machining': typeof CncMachiningRoute
   '/company': typeof CompanyRoute
   '/custom-metal-parts': typeof CustomMetalPartsRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
   '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/cnc-machining': typeof CncMachiningRoute
   '/company': typeof CompanyRoute
   '/custom-metal-parts': typeof CustomMetalPartsRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
   '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/cnc-machining': typeof CncMachiningRoute
   '/company': typeof CompanyRoute
   '/custom-metal-parts': typeof CustomMetalPartsRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/'
     | '/3d-printing-quote'
     | '/admin'
+    | '/auth'
     | '/cnc-machining'
     | '/company'
     | '/custom-metal-parts'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/'
     | '/3d-printing-quote'
     | '/admin'
+    | '/auth'
     | '/cnc-machining'
     | '/company'
     | '/custom-metal-parts'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/'
     | '/3d-printing-quote'
     | '/admin'
+    | '/auth'
     | '/cnc-machining'
     | '/company'
     | '/custom-metal-parts'
@@ -235,6 +247,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   R3dPrintingQuoteRoute: typeof R3dPrintingQuoteRoute
   AdminRoute: typeof AdminRoute
+  AuthRoute: typeof AuthRoute
   CncMachiningRoute: typeof CncMachiningRoute
   CompanyRoute: typeof CompanyRoute
   CustomMetalPartsRoute: typeof CustomMetalPartsRoute
@@ -323,6 +336,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CncMachiningRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -379,6 +399,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R3dPrintingQuoteRoute: R3dPrintingQuoteRoute,
   AdminRoute: AdminRoute,
+  AuthRoute: AuthRoute,
   CncMachiningRoute: CncMachiningRoute,
   CompanyRoute: CompanyRoute,
   CustomMetalPartsRoute: CustomMetalPartsRoute,
