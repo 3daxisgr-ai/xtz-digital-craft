@@ -118,6 +118,89 @@ export const submitForm = createServerFn({ method: "POST" })
       console.error("quotes insert failed", e);
     }
 
+    // 1b2. Create order row (Customer Portal / Admin Dashboard)
+    let orderCode: string | null = null;
+    try {
+      const fullName = `${data.name}${data.surname ? " " + data.surname : ""}`.trim();
+      const { data: existingUser } = await (supabaseAdmin as any)
+        .from("profiles")
+        .select("user_id")
+        .ilike("email", data.email)
+        .maybeSingle();
+      const orderSource =
+        data.source === "3d-printing-quote" ? "3dp_quote" : "inquiry";
+      const { data: orderRow, error: orderErr } = await (supabaseAdmin as any)
+        .from("orders")
+        .insert({
+          user_id: existingUser?.user_id ?? null,
+          customer_name: fullName,
+          customer_email: data.email,
+          customer_phone: data.phone ?? null,
+          company: data.company ?? null,
+          source: orderSource,
+          service: data.service ?? null,
+          material: data.material ?? null,
+          quantity: data.quantity ?? null,
+          dimensions: data.dimensions ?? null,
+          message: data.message ?? null,
+          quote_price: data.estimated_price ?? null,
+          metadata: (data.metadata ?? {}) as never,
+        })
+        .select("id, order_code")
+        .single();
+      if (orderErr) throw orderErr;
+      orderCode = (orderRow as { order_code: string | null }).order_code;
+      const orderId = (orderRow as { id: string }).id;
+
+      // attach uploaded file as customer-visible order file
+      if (data.file_path && data.file_name) {
+        await (supabaseAdmin as any).from("order_files").insert({
+          order_id: orderId,
+          file_path: data.file_path,
+          file_name: data.file_name,
+          file_type: data.file_name.split(".").pop() ?? null,
+          uploaded_by: "customer",
+          visibility: "customer",
+        });
+      }
+
+      // Customer confirmation email
+      try {
+        const lovableKey = process.env.LOVABLE_API_KEY;
+        const resendKey = process.env.RESEND_API_KEY;
+        if (lovableKey && resendKey && orderCode) {
+          const trackUrl = `https://www.toreo.gr/track?code=${encodeURIComponent(orderCode)}`;
+          await fetch("https://connector-gateway.lovable.dev/resend/emails", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${lovableKey}`,
+              "X-Connection-Api-Key": resendKey,
+            },
+            body: JSON.stringify({
+              from: "TOREO <onboarding@resend.dev>",
+              to: [data.email],
+              subject: `Quote Request Received – ${orderCode}`,
+              html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;padding:24px;color:#111">
+                <div style="font-family:monospace;font-size:11px;letter-spacing:0.3em;color:#666;text-transform:uppercase">TOREO</div>
+                <h2 style="margin:8px 0 16px 0">Thank you for contacting TOREO</h2>
+                <p>We have received your quotation request.</p>
+                <p>Your Order ID is:<br/><strong style="font-family:monospace;font-size:18px">${orderCode}</strong></p>
+                <p>Our engineering team is reviewing your files. You will receive your quotation within 24 hours.</p>
+                <p><a href="${trackUrl}" style="display:inline-block;background:#111;color:#fff;padding:10px 18px;border-radius:4px;text-decoration:none;font-family:monospace;letter-spacing:0.1em;text-transform:uppercase;font-size:12px">Track your order</a></p>
+                <p style="margin-top:24px;color:#666;font-size:12px">TOREO · INFO@TOREO.GR · +30 6970609960</p>
+              </div>`,
+              text: `Thank you for contacting TOREO.\n\nYour Order ID is: ${orderCode}\n\nTrack: ${trackUrl}`,
+            }),
+          }).catch((e) => console.error("customer email failed", e));
+        }
+      } catch (e) {
+        console.error("customer confirmation send failed", e);
+      }
+    } catch (e) {
+      console.error("orders insert failed", e);
+    }
+
     // 1c. Admin dashboard notification + realtime broadcast
     try {
       const fullName = `${data.name}${data.surname ? " " + data.surname : ""}`;
