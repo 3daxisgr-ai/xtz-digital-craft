@@ -319,5 +319,5 @@ FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 -- If admin email already exists in auth.users, grant admin now
 INSERT INTO public.user_roles (user_id, role)
 SELECT id, 'admin'::public.app_role FROM auth.users
-WHERE lower(email) = '3daxis.gr@gmail.com'
+WHERE lower(email) = 'info@toreo.gr'
 ON CONFLICT DO NOTHING;
