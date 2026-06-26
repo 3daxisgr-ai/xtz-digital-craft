@@ -214,6 +214,7 @@ export const getOrderFileUrl = createServerFn({ method: "POST" })
       .select("user_id")
       .eq("id", file.order_id)
       .single();
+    if (!order) throw new Error("Not found");
     const { data: roleRow } = await supabaseAdmin
       .from("user_roles")
       .select("role")
@@ -356,6 +357,7 @@ export const adminUpdateOrder = createServerFn({ method: "POST" })
       .eq("order_code", order_code)
       .select("*")
       .single();
+    if (!order) throw new Error("Not found");
     if (error) throw error;
 
     // Trigger transactional email if status changed to a notify-able status
@@ -389,6 +391,7 @@ export const adminAddNote = createServerFn({ method: "POST" })
       .select("id")
       .eq("order_code", data.order_code)
       .single();
+    if (!order) throw new Error("Not found");
     await supabaseAdmin.from("order_events").insert({
       order_id: order.id,
       event_type: "note",
@@ -412,6 +415,7 @@ export const adminPostMessage = createServerFn({ method: "POST" })
       .select("id, customer_email, order_code")
       .eq("order_code", data.order_code)
       .single();
+    if (!order) throw new Error("Not found");
     await supabaseAdmin.from("order_messages").insert({
       order_id: order.id,
       from_role: "admin",
@@ -447,6 +451,7 @@ export const adminUploadOrderFile = createServerFn({ method: "POST" })
       .select("id, order_code")
       .eq("order_code", data.order_code)
       .single();
+    if (!order) throw new Error("Not found");
     const safeName = data.file_name.replace(/[^A-Za-z0-9._-]/g, "_");
     const path = `${order.order_code}/${Date.now()}-${safeName}`;
     const buf = Buffer.from(data.file_base64, "base64");
