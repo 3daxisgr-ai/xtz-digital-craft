@@ -114,6 +114,8 @@ export function Footer() {
             <a href="#catalog" className="hover:text-primary transition-colors text-xs">{t("foot.nav.catalog")}</a>
             <a href="#network" className="hover:text-primary transition-colors text-xs">{t("foot.nav.network")}</a>
             <Link to="/start" className="hover:text-primary transition-colors text-xs">{t("foot.nav.inquiry")}</Link>
+            <Link to="/track" className="hover:text-primary transition-colors text-xs">TRACK ORDER</Link>
+            <Link to="/portal" className="hover:text-primary transition-colors text-xs">PORTAL</Link>
           </nav>
 
           <div className="flex items-center font-mono text-[11px] border border-border/60">
