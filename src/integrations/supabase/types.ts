@@ -49,6 +49,246 @@ export type Database = {
           },
         ]
       }
+      order_events: {
+        Row: {
+          actor: Database["public"]["Enums"]["actor_role"]
+          created_at: string
+          description: string | null
+          event_type: string
+          id: string
+          order_id: string
+          payload: Json
+          title: string
+          visibility: Database["public"]["Enums"]["file_visibility"]
+        }
+        Insert: {
+          actor?: Database["public"]["Enums"]["actor_role"]
+          created_at?: string
+          description?: string | null
+          event_type: string
+          id?: string
+          order_id: string
+          payload?: Json
+          title: string
+          visibility?: Database["public"]["Enums"]["file_visibility"]
+        }
+        Update: {
+          actor?: Database["public"]["Enums"]["actor_role"]
+          created_at?: string
+          description?: string | null
+          event_type?: string
+          id?: string
+          order_id?: string
+          payload?: Json
+          title?: string
+          visibility?: Database["public"]["Enums"]["file_visibility"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_files: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_path: string
+          file_type: string | null
+          id: string
+          order_id: string
+          size_bytes: number | null
+          uploaded_by: Database["public"]["Enums"]["actor_role"]
+          visibility: Database["public"]["Enums"]["file_visibility"]
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_path: string
+          file_type?: string | null
+          id?: string
+          order_id: string
+          size_bytes?: number | null
+          uploaded_by?: Database["public"]["Enums"]["actor_role"]
+          visibility?: Database["public"]["Enums"]["file_visibility"]
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_type?: string | null
+          id?: string
+          order_id?: string
+          size_bytes?: number | null
+          uploaded_by?: Database["public"]["Enums"]["actor_role"]
+          visibility?: Database["public"]["Enums"]["file_visibility"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_files_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_messages: {
+        Row: {
+          author_id: string | null
+          body: string
+          created_at: string
+          from_role: Database["public"]["Enums"]["actor_role"]
+          id: string
+          order_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          created_at?: string
+          from_role: Database["public"]["Enums"]["actor_role"]
+          id?: string
+          order_id: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          from_role?: Database["public"]["Enums"]["actor_role"]
+          id?: string
+          order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_messages_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          company: string | null
+          courier: string | null
+          created_at: string
+          currency: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          dimensions: string | null
+          estimated_delivery: string | null
+          id: string
+          internal_notes: string | null
+          invoice_file_path: string | null
+          material: string | null
+          message: string | null
+          metadata: Json
+          order_code: string | null
+          quantity: string | null
+          quote_price: number | null
+          service: string | null
+          source: Database["public"]["Enums"]["order_source"]
+          status: Database["public"]["Enums"]["order_status"]
+          tracking_number: string | null
+          tracking_url: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          company?: string | null
+          courier?: string | null
+          created_at?: string
+          currency?: string
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          dimensions?: string | null
+          estimated_delivery?: string | null
+          id?: string
+          internal_notes?: string | null
+          invoice_file_path?: string | null
+          material?: string | null
+          message?: string | null
+          metadata?: Json
+          order_code?: string | null
+          quantity?: string | null
+          quote_price?: number | null
+          service?: string | null
+          source?: Database["public"]["Enums"]["order_source"]
+          status?: Database["public"]["Enums"]["order_status"]
+          tracking_number?: string | null
+          tracking_url?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          company?: string | null
+          courier?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          dimensions?: string | null
+          estimated_delivery?: string | null
+          id?: string
+          internal_notes?: string | null
+          invoice_file_path?: string | null
+          material?: string | null
+          message?: string | null
+          metadata?: Json
+          order_code?: string | null
+          quantity?: string | null
+          quote_price?: number | null
+          service?: string | null
+          source?: Database["public"]["Enums"]["order_source"]
+          status?: Database["public"]["Enums"]["order_status"]
+          tracking_number?: string | null
+          tracking_url?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       quotes: {
         Row: {
           created_at: string
@@ -181,15 +421,57 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      actor_role: "customer" | "admin" | "system"
+      app_role: "admin" | "customer"
+      file_visibility: "customer" | "admin"
+      order_source: "inquiry" | "3dp_quote" | "start" | "admin"
+      order_status:
+        | "quote_received"
+        | "engineering_review"
+        | "quote_sent"
+        | "awaiting_approval"
+        | "payment_received"
+        | "production"
+        | "quality_inspection"
+        | "ready_for_shipping"
+        | "shipped"
+        | "delivered"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -316,6 +598,24 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      actor_role: ["customer", "admin", "system"],
+      app_role: ["admin", "customer"],
+      file_visibility: ["customer", "admin"],
+      order_source: ["inquiry", "3dp_quote", "start", "admin"],
+      order_status: [
+        "quote_received",
+        "engineering_review",
+        "quote_sent",
+        "awaiting_approval",
+        "payment_received",
+        "production",
+        "quality_inspection",
+        "ready_for_shipping",
+        "shipped",
+        "delivered",
+        "cancelled",
+      ],
+    },
   },
 } as const
