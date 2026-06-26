@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrackRouteImport } from './routes/track'
 import { Route as StartProjectRouteImport } from './routes/start-project'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -30,6 +31,11 @@ import { Route as GrCustomMetalPartsRouteImport } from './routes/gr.custom-metal
 import { Route as GrCncMachiningRouteImport } from './routes/gr.cnc-machining'
 import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
 
+const TrackRoute = TrackRouteImport.update({
+  id: '/track',
+  path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StartProjectRoute = StartProjectRouteImport.update({
   id: '/start-project',
   path: '/start-project',
@@ -147,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
+  '/track': typeof TrackRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
@@ -169,6 +176,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
+  '/track': typeof TrackRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
@@ -192,6 +200,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
+  '/track': typeof TrackRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
@@ -216,6 +225,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/start'
     | '/start-project'
+    | '/track'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
@@ -238,6 +248,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/start'
     | '/start-project'
+    | '/track'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
@@ -260,6 +271,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/start'
     | '/start-project'
+    | '/track'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
@@ -283,6 +295,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StartRoute: typeof StartRoute
   StartProjectRoute: typeof StartProjectRoute
+  TrackRoute: typeof TrackRoute
   CapabilitiesSlugRoute: typeof CapabilitiesSlugRoute
   GrCncMachiningRoute: typeof GrCncMachiningRoute
   GrCustomMetalPartsRoute: typeof GrCustomMetalPartsRoute
@@ -291,6 +304,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/track': {
+      id: '/track'
+      path: '/track'
+      fullPath: '/track'
+      preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/start-project': {
       id: '/start-project'
       path: '/start-project'
@@ -461,6 +481,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StartRoute: StartRoute,
   StartProjectRoute: StartProjectRoute,
+  TrackRoute: TrackRoute,
   CapabilitiesSlugRoute: CapabilitiesSlugRoute,
   GrCncMachiningRoute: GrCncMachiningRoute,
   GrCustomMetalPartsRoute: GrCustomMetalPartsRoute,
