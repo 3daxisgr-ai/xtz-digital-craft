@@ -24,6 +24,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as R3dPrintingQuoteRouteImport } from './routes/3d-printing-quote'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PortalOrderCodeRouteImport } from './routes/portal.$orderCode'
 import { Route as GrRapidPrototypingRouteImport } from './routes/gr.rapid-prototyping'
 import { Route as GrCustomMetalPartsRouteImport } from './routes/gr.custom-metal-parts'
 import { Route as GrCncMachiningRouteImport } from './routes/gr.cnc-machining'
@@ -104,6 +105,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortalOrderCodeRoute = PortalOrderCodeRouteImport.update({
+  id: '/$orderCode',
+  path: '/$orderCode',
+  getParentRoute: () => PortalRoute,
+} as any)
 const GrRapidPrototypingRoute = GrRapidPrototypingRouteImport.update({
   id: '/gr/rapid-prototyping',
   path: '/gr/rapid-prototyping',
@@ -136,7 +142,7 @@ export interface FileRoutesByFullPath {
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
-  '/portal': typeof PortalRoute
+  '/portal': typeof PortalRouteWithChildren
   '/rapid-prototyping': typeof RapidPrototypingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
+  '/portal/$orderCode': typeof PortalOrderCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -157,7 +164,7 @@ export interface FileRoutesByTo {
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
-  '/portal': typeof PortalRoute
+  '/portal': typeof PortalRouteWithChildren
   '/rapid-prototyping': typeof RapidPrototypingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
@@ -166,6 +173,7 @@ export interface FileRoutesByTo {
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
+  '/portal/$orderCode': typeof PortalOrderCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -179,7 +187,7 @@ export interface FileRoutesById {
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
-  '/portal': typeof PortalRoute
+  '/portal': typeof PortalRouteWithChildren
   '/rapid-prototyping': typeof RapidPrototypingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
@@ -188,6 +196,7 @@ export interface FileRoutesById {
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
+  '/portal/$orderCode': typeof PortalOrderCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
     | '/gr/rapid-prototyping'
+    | '/portal/$orderCode'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
     | '/gr/rapid-prototyping'
+    | '/portal/$orderCode'
   id:
     | '__root__'
     | '/'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
     | '/gr/rapid-prototyping'
+    | '/portal/$orderCode'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -266,7 +278,7 @@ export interface RootRouteChildren {
   EquipmentRoute: typeof EquipmentRoute
   FaqRoute: typeof FaqRoute
   ForumRoute: typeof ForumRoute
-  PortalRoute: typeof PortalRoute
+  PortalRoute: typeof PortalRouteWithChildren
   RapidPrototypingRoute: typeof RapidPrototypingRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StartRoute: typeof StartRoute
@@ -384,6 +396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portal/$orderCode': {
+      id: '/portal/$orderCode'
+      path: '/$orderCode'
+      fullPath: '/portal/$orderCode'
+      preLoaderRoute: typeof PortalOrderCodeRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/gr/rapid-prototyping': {
       id: '/gr/rapid-prototyping'
       path: '/gr/rapid-prototyping'
@@ -415,6 +434,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PortalRouteChildren {
+  PortalOrderCodeRoute: typeof PortalOrderCodeRoute
+}
+
+const PortalRouteChildren: PortalRouteChildren = {
+  PortalOrderCodeRoute: PortalOrderCodeRoute,
+}
+
+const PortalRouteWithChildren =
+  PortalRoute._addFileChildren(PortalRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R3dPrintingQuoteRoute: R3dPrintingQuoteRoute,
@@ -426,7 +456,7 @@ const rootRouteChildren: RootRouteChildren = {
   EquipmentRoute: EquipmentRoute,
   FaqRoute: FaqRoute,
   ForumRoute: ForumRoute,
-  PortalRoute: PortalRoute,
+  PortalRoute: PortalRouteWithChildren,
   RapidPrototypingRoute: RapidPrototypingRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StartRoute: StartRoute,
