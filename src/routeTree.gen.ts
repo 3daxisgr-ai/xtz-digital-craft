@@ -13,6 +13,7 @@ import { Route as StartProjectRouteImport } from './routes/start-project'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RapidPrototypingRouteImport } from './routes/rapid-prototyping'
+import { Route as PortalRouteImport } from './routes/portal'
 import { Route as ForumRouteImport } from './routes/forum'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EquipmentRouteImport } from './routes/equipment'
@@ -46,6 +47,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const RapidPrototypingRoute = RapidPrototypingRouteImport.update({
   id: '/rapid-prototyping',
   path: '/rapid-prototyping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalRoute = PortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForumRoute = ForumRouteImport.update({
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
+  '/portal': typeof PortalRoute
   '/rapid-prototyping': typeof RapidPrototypingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
+  '/portal': typeof PortalRoute
   '/rapid-prototyping': typeof RapidPrototypingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
@@ -171,6 +179,7 @@ export interface FileRoutesById {
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
   '/forum': typeof ForumRoute
+  '/portal': typeof PortalRoute
   '/rapid-prototyping': typeof RapidPrototypingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
@@ -193,6 +202,7 @@ export interface FileRouteTypes {
     | '/equipment'
     | '/faq'
     | '/forum'
+    | '/portal'
     | '/rapid-prototyping'
     | '/sitemap.xml'
     | '/start'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/equipment'
     | '/faq'
     | '/forum'
+    | '/portal'
     | '/rapid-prototyping'
     | '/sitemap.xml'
     | '/start'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/equipment'
     | '/faq'
     | '/forum'
+    | '/portal'
     | '/rapid-prototyping'
     | '/sitemap.xml'
     | '/start'
@@ -254,6 +266,7 @@ export interface RootRouteChildren {
   EquipmentRoute: typeof EquipmentRoute
   FaqRoute: typeof FaqRoute
   ForumRoute: typeof ForumRoute
+  PortalRoute: typeof PortalRoute
   RapidPrototypingRoute: typeof RapidPrototypingRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StartRoute: typeof StartRoute
@@ -292,6 +305,13 @@ declare module '@tanstack/react-router' {
       path: '/rapid-prototyping'
       fullPath: '/rapid-prototyping'
       preLoaderRoute: typeof RapidPrototypingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal': {
+      id: '/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof PortalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forum': {
@@ -406,6 +426,7 @@ const rootRouteChildren: RootRouteChildren = {
   EquipmentRoute: EquipmentRoute,
   FaqRoute: FaqRoute,
   ForumRoute: ForumRoute,
+  PortalRoute: PortalRoute,
   RapidPrototypingRoute: RapidPrototypingRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StartRoute: StartRoute,
