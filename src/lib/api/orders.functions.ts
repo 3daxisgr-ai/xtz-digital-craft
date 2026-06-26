@@ -357,8 +357,8 @@ export const adminUpdateOrder = createServerFn({ method: "POST" })
       .eq("order_code", order_code)
       .select("*")
       .single();
-    if (!order) throw new Error("Not found");
     if (error) throw error;
+    if (!updated) throw new Error("Not found");
 
     // Trigger transactional email if status changed to a notify-able status
     if (data.status && STATUS_EMAIL_BODY[data.status]) {
