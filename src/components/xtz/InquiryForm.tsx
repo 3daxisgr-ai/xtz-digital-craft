@@ -110,7 +110,7 @@ export function InquiryForm() {
         fileName = file.name;
       }
 
-      await submitForm({
+      const res = await submitForm({
         data: {
           source: "inquiry",
           name: data.name,
@@ -132,6 +132,7 @@ export function InquiryForm() {
           },
         },
       });
+      setOrderCode((res as { order_code?: string | null })?.order_code ?? null);
       setSent(true);
     } catch (err) {
       console.error(err);
