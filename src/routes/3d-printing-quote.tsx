@@ -79,6 +79,7 @@ function QuotePage() {
   const [hours, setHours] = useState(1);
   const [file, setFile] = useState<File | null>(null);
   const [sent, setSent] = useState(false);
+  const [orderCode, setOrderCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const { materialCost, machineWearCost, electricityCost, estimatedPrice } = useMemo(() => {
