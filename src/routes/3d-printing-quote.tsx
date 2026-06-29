@@ -79,6 +79,7 @@ function QuotePage() {
   const [hours, setHours] = useState(1);
   const [file, setFile] = useState<File | null>(null);
   const [sent, setSent] = useState(false);
+  const [orderCode, setOrderCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const { materialCost, machineWearCost, electricityCost, estimatedPrice } = useMemo(() => {
@@ -121,7 +122,7 @@ function QuotePage() {
         fileName = file.name;
       }
 
-      await submitForm({
+      const res = await submitForm({
         data: {
           source: "3d-printing-quote",
           name: data.name,
@@ -141,6 +142,7 @@ function QuotePage() {
           },
         },
       });
+      setOrderCode((res as { order_code?: string | null })?.order_code ?? null);
       setSent(true);
     } catch (err) {
       console.error(err);
@@ -222,9 +224,43 @@ function QuotePage() {
           <p className="text-foreground/60 max-w-xl mb-12">{L.intro}</p>
 
           {sent ? (
-            <div className="glass-panel grain p-12 max-w-2xl">
-              <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-primary mb-4">// 200 OK</div>
-              <p className="font-display text-2xl md:text-3xl leading-tight">{L.sent}</p>
+            <div className="glass-panel grain p-8 md:p-12 max-w-2xl space-y-6">
+              <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-primary">// 200 OK</div>
+              <p className="font-display text-2xl md:text-3xl leading-tight">
+                {isGR ? "Το αίτημα προσφοράς υποβλήθηκε επιτυχώς." : "Quote Request Submitted Successfully"}
+              </p>
+              {orderCode ? (
+                <>
+                  <div className="border-t border-primary/20 pt-6">
+                    <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-foreground/50 mb-2">
+                      {isGR ? "Κωδικός Παραγγελίας" : "Your Order ID"}
+                    </div>
+                    <div className="font-mono text-2xl md:text-3xl tracking-[0.15em] text-primary">{orderCode}</div>
+                  </div>
+                  <div>
+                    <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-foreground/50 mb-2">
+                      {isGR ? "Τρέχουσα Κατάσταση" : "Current Status"}
+                    </div>
+                    <div className="font-mono text-sm uppercase tracking-[0.2em] text-foreground/90">
+                      {isGR ? "Αναμονή Προσφοράς" : "Waiting for Quote"}
+                    </div>
+                  </div>
+                  <p className="text-sm text-foreground/60">{L.sent}</p>
+                  <p className="text-sm text-foreground/60">
+                    {isGR
+                      ? "Παρακαλούμε φυλάξτε αυτόν τον κωδικό. Μπορείτε να τον χρησιμοποιήσετε για να παρακολουθήσετε το αίτημά σας."
+                      : "Please keep this Order ID. You can use it to track your request or contact our team."}
+                  </p>
+                  <a
+                    href={`/track?code=${encodeURIComponent(orderCode)}`}
+                    className="inline-block font-mono text-xs uppercase tracking-[0.3em] bg-primary text-primary-foreground px-6 py-3 rounded hover:bg-primary/90 transition"
+                  >
+                    {isGR ? "Παρακολούθηση παραγγελίας →" : "Track your order →"}
+                  </a>
+                </>
+              ) : (
+                <p className="text-sm text-foreground/70">{L.sent}</p>
+              )}
             </div>
           ) : (
             <div className="grid lg:grid-cols-[1.4fr_1fr] gap-6">

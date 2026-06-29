@@ -50,6 +50,7 @@ const schema = z.object({
 export function InquiryForm() {
   const { t } = useI18n();
   const [sent, setSent] = useState(false);
+  const [orderCode, setOrderCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [preselectedService, setPreselectedService] = useState<string>("");
 
@@ -109,7 +110,7 @@ export function InquiryForm() {
         fileName = file.name;
       }
 
-      await submitForm({
+      const res = await submitForm({
         data: {
           source: "inquiry",
           name: data.name,
@@ -131,6 +132,7 @@ export function InquiryForm() {
           },
         },
       });
+      setOrderCode((res as { order_code?: string | null })?.order_code ?? null);
       setSent(true);
     } catch (err) {
       console.error(err);
@@ -158,9 +160,30 @@ export function InquiryForm() {
         <p className="text-foreground/60 max-w-xl mb-12">{t("inquiry.intro")}</p>
 
         {sent ? (
-          <div className="glass-panel grain p-12 max-w-2xl">
-            <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-primary mb-4">// 200 OK</div>
+          <div className="glass-panel grain p-8 md:p-12 max-w-2xl space-y-6">
+            <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-primary">// 200 OK</div>
             <p className="font-display text-2xl md:text-3xl leading-tight">{t("f.sent")}</p>
+            {orderCode ? (
+              <>
+                <div className="border-t border-primary/20 pt-6">
+                  <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-foreground/50 mb-2">Your Order ID</div>
+                  <div className="font-mono text-2xl md:text-3xl tracking-[0.15em] text-primary">{orderCode}</div>
+                </div>
+                <div>
+                  <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-foreground/50 mb-2">Current Status</div>
+                  <div className="font-mono text-sm uppercase tracking-[0.2em] text-foreground/90">Waiting for Quote</div>
+                </div>
+                <p className="text-sm text-foreground/60">
+                  Please keep this Order ID. You can use it to track your request or contact our team.
+                </p>
+                <a
+                  href={`/track?code=${encodeURIComponent(orderCode)}`}
+                  className="inline-block font-mono text-xs uppercase tracking-[0.3em] bg-primary text-primary-foreground px-6 py-3 rounded hover:bg-primary/90 transition"
+                >
+                  Track your order →
+                </a>
+              </>
+            ) : null}
           </div>
         ) : (
           <form onSubmit={onSubmit} className="glass-panel grain p-8 md:p-12 grid lg:grid-cols-2 gap-x-10 gap-y-8 max-w-5xl">

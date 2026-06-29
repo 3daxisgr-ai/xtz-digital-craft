@@ -57,60 +57,151 @@ const STATUS_LABEL: Record<string, string> = {
   cancelled: "Cancelled",
 };
 
-const STATUS_EMAIL_BODY: Record<string, { subject: (c: string) => string; html: (o: any) => string }> = {
+type StatusTemplate = {
+  subject: (code: string) => string;
+  kicker: string;
+  headline: (code: string) => string;
+  intro: (o: any) => string;
+  outro?: (o: any) => string;
+  extraRows?: (o: any) => { label: string; value: unknown }[];
+};
+
+const STATUS_TEMPLATES: Record<string, StatusTemplate> = {
+  quote_received: {
+    subject: (c) => `Quote Request Received – ${c}`,
+    kicker: "Order Received",
+    headline: () => "We have received your request.",
+    intro: () =>
+      `<p style="margin:0">Our engineering team will review your files and respond within one business day.</p>`,
+  },
+  engineering_review: {
+    subject: (c) => `Engineering Review Started – ${c}`,
+    kicker: "Engineering Review",
+    headline: () => "Your project is under engineering review.",
+    intro: () =>
+      `<p style="margin:0">Our engineers are reviewing technical feasibility, materials, and tolerances. You will receive a formal quotation shortly.</p>`,
+  },
   quote_sent: {
     subject: (c) => `Your TOREO Quote is Ready – ${c}`,
-    html: (o) =>
-      `<p>Your quote is ready. Total: <strong>€${(o.quote_price ?? 0).toFixed(2)}</strong>.</p>`,
+    kicker: "Quote Sent",
+    headline: () => "Your quotation is ready.",
+    intro: (o) =>
+      `<p style="margin:0">Total: <strong style="color:#ffffff;font-size:18px">€${(o.quote_price ?? 0).toFixed(2)}</strong></p>`,
+    outro: () =>
+      `<p style="margin:0">Open your portal to review the full quote and approve to begin production.</p>`,
+  },
+  awaiting_approval: {
+    subject: (c) => `Awaiting Approval – ${c}`,
+    kicker: "Awaiting Approval",
+    headline: () => "Awaiting your approval.",
+    intro: () =>
+      `<p style="margin:0">Please review your quotation and confirm to begin production.</p>`,
   },
   payment_received: {
     subject: (c) => `Payment Received – ${c}`,
-    html: () => `<p>We have received your payment. Production will start shortly.</p>`,
+    kicker: "Payment Confirmed",
+    headline: () => "Payment received. Production scheduled.",
+    intro: () =>
+      `<p style="margin:0">Thank you. Your payment has been received and your order is now queued for production.</p>`,
   },
   production: {
     subject: (c) => `Production Started – ${c}`,
-    html: () => `<p>Production has started on your order.</p>`,
+    kicker: "In Production",
+    headline: () => "Production has started.",
+    intro: () =>
+      `<p style="margin:0">Your order is now on the manufacturing floor. We will notify you again when it enters quality inspection.</p>`,
   },
   quality_inspection: {
     subject: (c) => `Quality Inspection – ${c}`,
-    html: () => `<p>Your order is undergoing quality inspection.</p>`,
+    kicker: "Quality Control",
+    headline: () => "Your order is undergoing quality inspection.",
+    intro: () =>
+      `<p style="margin:0">Every part is verified against drawings, tolerances, and surface specification before shipping.</p>`,
+  },
+  ready_for_shipping: {
+    subject: (c) => `Ready for Shipping – ${c}`,
+    kicker: "Ready to Ship",
+    headline: () => "Your order is ready for shipping.",
+    intro: () =>
+      `<p style="margin:0">Your order has passed quality control and is being prepared for dispatch.</p>`,
   },
   shipped: {
     subject: (c) => `Order Shipped – ${c}`,
-    html: (o) => `<p>Your order has been shipped via <strong>${o.courier ?? "—"}</strong>.</p>
-      <p>Tracking number: <strong>${o.tracking_number ?? "—"}</strong></p>
-      ${o.tracking_url ? `<p><a href="${o.tracking_url}">Track shipment</a></p>` : ""}
-      ${o.estimated_delivery ? `<p>Estimated delivery: ${o.estimated_delivery}</p>` : ""}`,
+    kicker: "Shipped",
+    headline: () => "Your order is on its way.",
+    intro: (o) =>
+      `<p style="margin:0">Your order has been shipped via <strong style="color:#ffffff">${o.courier ?? "courier"}</strong>.</p>`,
+    extraRows: (o) => [
+      { label: "Courier", value: o.courier },
+      { label: "Tracking number", value: o.tracking_number },
+      { label: "Estimated delivery", value: o.estimated_delivery },
+    ],
+    outro: (o) =>
+      o.tracking_url
+        ? `<p style="margin:0"><a href="${o.tracking_url}" style="color:#7aa8ff">Track your shipment with the courier →</a></p>`
+        : "",
   },
   delivered: {
     subject: (c) => `Order Delivered – ${c}`,
-    html: () =>
-      `<p>Your order has been delivered. Thank you for choosing TOREO! We'd love your feedback.</p>`,
+    kicker: "Delivered",
+    headline: () => "Your order has been delivered.",
+    intro: () =>
+      `<p style="margin:0">Thank you for choosing TOREO. We hope the parts meet your expectations. We'd appreciate your feedback.</p>`,
+  },
+  cancelled: {
+    subject: (c) => `Order Cancelled – ${c}`,
+    kicker: "Cancelled",
+    headline: () => "Your order has been cancelled.",
+    intro: () =>
+      `<p style="margin:0">This order has been cancelled. If this was unexpected, please contact us.</p>`,
   },
 };
 
-async function sendCustomerEmail(to: string, subject: string, html: string) {
-  const lovableKey = process.env.LOVABLE_API_KEY;
-  const resendKey = process.env.RESEND_API_KEY;
-  if (!lovableKey || !resendKey) return;
-  await fetch("https://connector-gateway.lovable.dev/resend/emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${lovableKey}`,
-      "X-Connection-Api-Key": resendKey,
+async function sendStatusEmail(order: any, status: string) {
+  const tmpl = STATUS_TEMPLATES[status];
+  if (!tmpl) return;
+  const { sendBrandedEmail } = await import("@/lib/email/template.server");
+  const code = order.order_code ?? "";
+  const trackUrl = `https://www.toreo.gr/track?code=${encodeURIComponent(code)}`;
+  await sendBrandedEmail({
+    to: order.customer_email,
+    replyTo: "INFO@TOREO.GR",
+    subject: tmpl.subject(code),
+    params: {
+      preview: `Your TOREO order ${code} status: ${STATUS_LABEL[status] ?? status}`,
+      kicker: tmpl.kicker,
+      headline: tmpl.headline(code),
+      orderCode: code,
+      status: STATUS_LABEL[status] ?? status,
+      intro: tmpl.intro(order),
+      sections: tmpl.extraRows
+        ? [{ title: "Details", rows: tmpl.extraRows(order) }]
+        : undefined,
+      outro: tmpl.outro?.(order),
+      cta: { label: "Open your portal", url: trackUrl },
     },
-    body: JSON.stringify({
-      from: "TOREO <onboarding@resend.dev>",
-      to: [to],
-      subject,
-      html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;padding:24px;color:#111">
-        <div style="font-family:monospace;font-size:11px;letter-spacing:0.3em;color:#666;text-transform:uppercase">TOREO</div>
-        ${html}
-        <p style="margin-top:24px;color:#666;font-size:12px">TOREO · INFO@TOREO.GR · +30 6970609960</p>
-      </div>`,
-    }),
-  }).catch((e) => console.error("status email failed", e));
+  });
+}
+
+async function sendCustomerEmail(
+  to: string,
+  subject: string,
+  bodyHtml: string,
+  opts?: { kicker?: string; headline?: string; orderCode?: string; cta?: { label: string; url: string } },
+) {
+  const { sendBrandedEmail } = await import("@/lib/email/template.server");
+  await sendBrandedEmail({
+    to,
+    replyTo: "INFO@TOREO.GR",
+    subject,
+    params: {
+      kicker: opts?.kicker ?? "Order Update",
+      headline: opts?.headline ?? subject,
+      orderCode: opts?.orderCode ?? null,
+      intro: bodyHtml,
+      cta: opts?.cta,
+    },
+  });
 }
 
 // ----- customer-facing -------------------------------------------------------
@@ -360,14 +451,13 @@ export const adminUpdateOrder = createServerFn({ method: "POST" })
     if (error) throw error;
     if (!updated) throw new Error("Not found");
 
-    // Trigger transactional email if status changed to a notify-able status
-    if (data.status && STATUS_EMAIL_BODY[data.status]) {
-      const tmpl = STATUS_EMAIL_BODY[data.status];
-      await sendCustomerEmail(
-        updated.customer_email,
-        tmpl.subject(updated.order_code ?? order_code),
-        tmpl.html(updated),
-      );
+    // Trigger branded status email if status changed
+    if (data.status && STATUS_TEMPLATES[data.status]) {
+      try {
+        await sendStatusEmail(updated, data.status);
+      } catch (e) {
+        console.error("status email failed", e);
+      }
     }
     return updated;
   });
@@ -425,8 +515,13 @@ export const adminPostMessage = createServerFn({ method: "POST" })
     await sendCustomerEmail(
       order.customer_email,
       `New message regarding ${order.order_code}`,
-      `<p>You have a new message from TOREO:</p><blockquote style="border-left:3px solid #999;padding-left:12px;color:#444">${data.body.replace(/</g, "&lt;")}</blockquote>
-       <p><a href="https://www.toreo.gr/portal">Open your portal</a></p>`,
+      `<p style="margin:0">You have a new message from TOREO:</p><blockquote style="border-left:3px solid #5e8bff;padding:8px 14px;margin:14px 0 0 0;color:#c7cfdd;background:#0f1320;border-radius:0 4px 4px 0">${data.body.replace(/</g, "&lt;")}</blockquote>`,
+      {
+        kicker: "New Message",
+        headline: "You have a new message from TOREO",
+        orderCode: order.order_code ?? undefined,
+        cta: { label: "Open your portal", url: "https://www.toreo.gr/portal" },
+      },
     );
     return { ok: true };
   });
