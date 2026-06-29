@@ -164,35 +164,69 @@ export const submitForm = createServerFn({ method: "POST" })
         });
       }
 
-      // Customer confirmation email
+      // Customer confirmation email — branded template
       try {
-        const lovableKey = process.env.LOVABLE_API_KEY;
-        const resendKey = process.env.RESEND_API_KEY;
-        if (lovableKey && resendKey && orderCode) {
+        if (orderCode) {
+          const { sendBrandedEmail } = await import("@/lib/email/template.server");
           const trackUrl = `https://www.toreo.gr/track?code=${encodeURIComponent(orderCode)}`;
-          await fetch("https://connector-gateway.lovable.dev/resend/emails", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${lovableKey}`,
-              "X-Connection-Api-Key": resendKey,
+          const submittedAt = new Date().toLocaleString("en-GB", {
+            timeZone: "Europe/Athens",
+            dateStyle: "medium",
+            timeStyle: "short",
+          });
+          await sendBrandedEmail({
+            to: data.email,
+            replyTo: "INFO@TOREO.GR",
+            subject: `Quote Request Received – ${orderCode}`,
+            params: {
+              preview: `Your TOREO order ${orderCode} has been received. We will respond within 24 hours.`,
+              kicker: "Order Confirmation",
+              headline: "Thank you — your quote request has been received.",
+              intro: `<p style="margin:0">Hello ${esc(data.name)}, thank you for choosing TOREO. Our engineering team will review your request and contact you within one business day.</p>`,
+              orderCode,
+              status: "Waiting for Quote",
+              sections: [
+                {
+                  title: "Submission",
+                  rows: [
+                    { label: "Submitted", value: submittedAt },
+                    { label: "Source", value: data.source === "3d-printing-quote" ? "3D Printing Quote" : "Project Inquiry" },
+                  ],
+                },
+                {
+                  title: "Customer",
+                  rows: [
+                    { label: "Full Name", value: `${data.name}${data.surname ? " " + data.surname : ""}` },
+                    { label: "Email", value: data.email },
+                    { label: "Phone", value: data.phone },
+                    { label: "Company", value: data.company },
+                  ],
+                },
+                {
+                  title: "Manufacturing Details",
+                  rows: [
+                    { label: "Technology", value: data.service },
+                    { label: "Material", value: data.material },
+                    { label: "Stage", value: data.stage },
+                    { label: "Dimensions", value: data.dimensions },
+                    { label: "Quantity", value: data.quantity },
+                    { label: "Weight (g)", value: data.weight_g },
+                    { label: "Print time (h)", value: data.print_hours },
+                    {
+                      label: "Estimated price",
+                      value: data.estimated_price != null ? `€${data.estimated_price.toFixed(2)}` : null,
+                    },
+                    { label: "Notes", value: data.message },
+                    { label: "Uploaded file", value: data.file_name },
+                  ],
+                },
+              ],
+              outro:
+                `<p style="margin:0"><strong style="color:#ffffff">What happens next?</strong><br/>Our engineering team will review your request and contact you shortly with your formal quotation. You can track progress at any time using your Order ID.</p>`,
+              cta: { label: "Track your order", url: trackUrl },
+              footerNote: "Please keep this Order ID. You can use it to track your request or contact our team.",
             },
-            body: JSON.stringify({
-              from: "TOREO <onboarding@resend.dev>",
-              to: [data.email],
-              subject: `Quote Request Received – ${orderCode}`,
-              html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;padding:24px;color:#111">
-                <div style="font-family:monospace;font-size:11px;letter-spacing:0.3em;color:#666;text-transform:uppercase">TOREO</div>
-                <h2 style="margin:8px 0 16px 0">Thank you for contacting TOREO</h2>
-                <p>We have received your quotation request.</p>
-                <p>Your Order ID is:<br/><strong style="font-family:monospace;font-size:18px">${orderCode}</strong></p>
-                <p>Our engineering team is reviewing your files. You will receive your quotation within 24 hours.</p>
-                <p><a href="${trackUrl}" style="display:inline-block;background:#111;color:#fff;padding:10px 18px;border-radius:4px;text-decoration:none;font-family:monospace;letter-spacing:0.1em;text-transform:uppercase;font-size:12px">Track your order</a></p>
-                <p style="margin-top:24px;color:#666;font-size:12px">TOREO · INFO@TOREO.GR · +30 6970609960</p>
-              </div>`,
-              text: `Thank you for contacting TOREO.\n\nYour Order ID is: ${orderCode}\n\nTrack: ${trackUrl}`,
-            }),
-          }).catch((e) => console.error("customer email failed", e));
+          });
         }
       } catch (e) {
         console.error("customer confirmation send failed", e);
