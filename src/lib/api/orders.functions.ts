@@ -515,8 +515,13 @@ export const adminPostMessage = createServerFn({ method: "POST" })
     await sendCustomerEmail(
       order.customer_email,
       `New message regarding ${order.order_code}`,
-      `<p>You have a new message from TOREO:</p><blockquote style="border-left:3px solid #999;padding-left:12px;color:#444">${data.body.replace(/</g, "&lt;")}</blockquote>
-       <p><a href="https://www.toreo.gr/portal">Open your portal</a></p>`,
+      `<p style="margin:0">You have a new message from TOREO:</p><blockquote style="border-left:3px solid #5e8bff;padding:8px 14px;margin:14px 0 0 0;color:#c7cfdd;background:#0f1320;border-radius:0 4px 4px 0">${data.body.replace(/</g, "&lt;")}</blockquote>`,
+      {
+        kicker: "New Message",
+        headline: "You have a new message from TOREO",
+        orderCode: order.order_code ?? undefined,
+        cta: { label: "Open your portal", url: "https://www.toreo.gr/portal" },
+      },
     );
     return { ok: true };
   });
