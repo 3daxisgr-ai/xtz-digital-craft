@@ -122,7 +122,7 @@ function QuotePage() {
         fileName = file.name;
       }
 
-      await submitForm({
+      const res = await submitForm({
         data: {
           source: "3d-printing-quote",
           name: data.name,
@@ -142,6 +142,7 @@ function QuotePage() {
           },
         },
       });
+      setOrderCode((res as { order_code?: string | null })?.order_code ?? null);
       setSent(true);
     } catch (err) {
       console.error(err);
