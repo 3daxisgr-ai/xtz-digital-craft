@@ -451,14 +451,13 @@ export const adminUpdateOrder = createServerFn({ method: "POST" })
     if (error) throw error;
     if (!updated) throw new Error("Not found");
 
-    // Trigger transactional email if status changed to a notify-able status
-    if (data.status && STATUS_EMAIL_BODY[data.status]) {
-      const tmpl = STATUS_EMAIL_BODY[data.status];
-      await sendCustomerEmail(
-        updated.customer_email,
-        tmpl.subject(updated.order_code ?? order_code),
-        tmpl.html(updated),
-      );
+    // Trigger branded status email if status changed
+    if (data.status && STATUS_TEMPLATES[data.status]) {
+      try {
+        await sendStatusEmail(updated, data.status);
+      } catch (e) {
+        console.error("status email failed", e);
+      }
     }
     return updated;
   });
