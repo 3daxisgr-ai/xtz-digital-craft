@@ -50,6 +50,7 @@ const schema = z.object({
 export function InquiryForm() {
   const { t } = useI18n();
   const [sent, setSent] = useState(false);
+  const [orderCode, setOrderCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [preselectedService, setPreselectedService] = useState<string>("");
 
