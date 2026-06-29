@@ -410,5 +410,5 @@ export const submitForm = createServerFn({ method: "POST" })
         .eq("id", submissionId);
     }
 
-    return { ok: true, id: submissionId, emailSent };
+    return { ok: true, id: submissionId, order_code: orderCode, emailSent };
   });
