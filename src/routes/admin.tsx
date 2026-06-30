@@ -293,7 +293,7 @@ function OrdersList({ onOpen, preset, title }: { onOpen: (c: string) => void; pr
   const list = useServerFn(panelListOrders);
   const create = useServerFn(panelCreateOrder);
   const [rows, setRows] = useState<any[]>([]);
-  const [filter, setFilter] = useState({ q: "", status: preset ?? "all", priority: "all", courier: "all", sort: "created_at" as const, dir: "desc" as const });
+  const [filter, setFilter] = useState<{ q: string; status: string; priority: string; courier: string; sort: "created_at" | "updated_at" | "due_date" | "priority"; dir: "asc" | "desc" }>({ q: "", status: preset ?? "all", priority: "all", courier: "all", sort: "created_at", dir: "desc" });
   const [showNew, setShowNew] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -350,7 +350,7 @@ function OrdersList({ onOpen, preset, title }: { onOpen: (c: string) => void; pr
         </table>
       </div>
 
-      {showNew && <NewOrderModal create={create} onClose={() => setShowNew(false)} onCreated={(code) => { setShowNew(false); onOpen(code); }} />}
+      {showNew && <NewOrderModal create={create} onClose={() => setShowNew(false)} onCreated={(code: string) => { setShowNew(false); onOpen(code); }} />}
     </div>
   );
 }
