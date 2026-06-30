@@ -93,7 +93,7 @@ function AdminApp() {
               ? <CustomerDetail email={openCustomerEmail} onBack={() => setOpenCustomerEmail(null)} onOpenOrder={(c) => { setSection("orders"); setOpenOrderCode(c); }} />
               : <CustomersList onOpen={setOpenCustomerEmail} />
           )}
-          {section === "tracking" && <TrackingList onOpen={(c) => setOpenOrderCode(c) || setSection("orders")} />}
+          {section === "tracking" && <TrackingList onOpen={(c) => { setOpenOrderCode(c); setSection("orders"); }} />}
           {section === "uploads" && <UploadsList onOpenOrder={(c) => { setSection("orders"); setOpenOrderCode(c); }} />}
           {section === "notifications" && <NotificationsPanel />}
           {section === "settings" && <SettingsPanel />}
