@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_activity_log: {
+        Row: {
+          action: string
+          actor: string
+          created_at: string
+          details: Json
+          id: string
+          ip: string | null
+          target_id: string | null
+          target_type: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor?: string
+          created_at?: string
+          details?: Json
+          id?: string
+          ip?: string | null
+          target_id?: string | null
+          target_type?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor?: string
+          created_at?: string
+          details?: Json
+          id?: string
+          ip?: string | null
+          target_id?: string | null
+          target_type?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       admin_notifications: {
         Row: {
           body: string | null
@@ -52,10 +88,13 @@ export type Database = {
       order_events: {
         Row: {
           actor: Database["public"]["Enums"]["actor_role"]
+          attachment_path: string | null
+          color_tag: string | null
           created_at: string
           description: string | null
           event_type: string
           id: string
+          image_path: string | null
           order_id: string
           payload: Json
           title: string
@@ -63,10 +102,13 @@ export type Database = {
         }
         Insert: {
           actor?: Database["public"]["Enums"]["actor_role"]
+          attachment_path?: string | null
+          color_tag?: string | null
           created_at?: string
           description?: string | null
           event_type: string
           id?: string
+          image_path?: string | null
           order_id: string
           payload?: Json
           title: string
@@ -74,10 +116,13 @@ export type Database = {
         }
         Update: {
           actor?: Database["public"]["Enums"]["actor_role"]
+          attachment_path?: string | null
+          color_tag?: string | null
           created_at?: string
           description?: string | null
           event_type?: string
           id?: string
+          image_path?: string | null
           order_id?: string
           payload?: Json
           title?: string
@@ -182,6 +227,7 @@ export type Database = {
           customer_name: string
           customer_phone: string | null
           dimensions: string | null
+          due_date: string | null
           estimated_delivery: string | null
           id: string
           internal_notes: string | null
@@ -190,6 +236,7 @@ export type Database = {
           message: string | null
           metadata: Json
           order_code: string | null
+          priority: Database["public"]["Enums"]["order_priority"]
           quantity: string | null
           quote_price: number | null
           service: string | null
@@ -209,6 +256,7 @@ export type Database = {
           customer_name: string
           customer_phone?: string | null
           dimensions?: string | null
+          due_date?: string | null
           estimated_delivery?: string | null
           id?: string
           internal_notes?: string | null
@@ -217,6 +265,7 @@ export type Database = {
           message?: string | null
           metadata?: Json
           order_code?: string | null
+          priority?: Database["public"]["Enums"]["order_priority"]
           quantity?: string | null
           quote_price?: number | null
           service?: string | null
@@ -236,6 +285,7 @@ export type Database = {
           customer_name?: string
           customer_phone?: string | null
           dimensions?: string | null
+          due_date?: string | null
           estimated_delivery?: string | null
           id?: string
           internal_notes?: string | null
@@ -244,6 +294,7 @@ export type Database = {
           message?: string | null
           metadata?: Json
           order_code?: string | null
+          priority?: Database["public"]["Enums"]["order_priority"]
           quantity?: string | null
           quote_price?: number | null
           service?: string | null
@@ -453,6 +504,7 @@ export type Database = {
       actor_role: "customer" | "admin" | "system"
       app_role: "admin" | "customer"
       file_visibility: "customer" | "admin"
+      order_priority: "low" | "normal" | "high" | "urgent"
       order_source: "inquiry" | "3dp_quote" | "start" | "admin"
       order_status:
         | "quote_received"
@@ -466,6 +518,9 @@ export type Database = {
         | "shipped"
         | "delivered"
         | "cancelled"
+        | "packaging"
+        | "completed"
+        | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -596,6 +651,7 @@ export const Constants = {
       actor_role: ["customer", "admin", "system"],
       app_role: ["admin", "customer"],
       file_visibility: ["customer", "admin"],
+      order_priority: ["low", "normal", "high", "urgent"],
       order_source: ["inquiry", "3dp_quote", "start", "admin"],
       order_status: [
         "quote_received",
@@ -609,6 +665,9 @@ export const Constants = {
         "shipped",
         "delivered",
         "cancelled",
+        "packaging",
+        "completed",
+        "rejected",
       ],
     },
   },
