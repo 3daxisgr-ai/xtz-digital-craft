@@ -85,6 +85,105 @@ export type Database = {
           },
         ]
       }
+      machines: {
+        Row: {
+          active: boolean
+          build_volume_mm: Json | null
+          created_at: string
+          hourly_cost: number | null
+          id: string
+          kind: string
+          model: string | null
+          name: string
+          nozzles: Json | null
+          power_watts: number | null
+          specs: Json | null
+          status: string
+          updated_at: string
+          vendor: string | null
+        }
+        Insert: {
+          active?: boolean
+          build_volume_mm?: Json | null
+          created_at?: string
+          hourly_cost?: number | null
+          id?: string
+          kind: string
+          model?: string | null
+          name: string
+          nozzles?: Json | null
+          power_watts?: number | null
+          specs?: Json | null
+          status?: string
+          updated_at?: string
+          vendor?: string | null
+        }
+        Update: {
+          active?: boolean
+          build_volume_mm?: Json | null
+          created_at?: string
+          hourly_cost?: number | null
+          id?: string
+          kind?: string
+          model?: string | null
+          name?: string
+          nozzles?: Json | null
+          power_watts?: number | null
+          specs?: Json | null
+          status?: string
+          updated_at?: string
+          vendor?: string | null
+        }
+        Relationships: []
+      }
+      materials: {
+        Row: {
+          active: boolean
+          code: string
+          color: string | null
+          created_at: string
+          density_g_cm3: number | null
+          family: string
+          id: string
+          name: string
+          price_per_kg: number | null
+          process: string
+          properties: Json | null
+          stock_kg: number | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          color?: string | null
+          created_at?: string
+          density_g_cm3?: number | null
+          family: string
+          id?: string
+          name: string
+          price_per_kg?: number | null
+          process: string
+          properties?: Json | null
+          stock_kg?: number | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          color?: string | null
+          created_at?: string
+          density_g_cm3?: number | null
+          family?: string
+          id?: string
+          name?: string
+          price_per_kg?: number | null
+          process?: string
+          properties?: Json | null
+          stock_kg?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_events: {
         Row: {
           actor: Database["public"]["Enums"]["actor_role"]
@@ -339,6 +438,168 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      project_analyses: {
+        Row: {
+          ai_recommendations: Json | null
+          ai_summary: string | null
+          ai_warnings: Json | null
+          complexity_score: number | null
+          confidence: number | null
+          created_at: string
+          created_by: string | null
+          dfm_score: number | null
+          estimated_cost_eur: number | null
+          estimated_material_g: number | null
+          estimated_print_hours: number | null
+          file_id: string | null
+          file_name: string | null
+          id: string
+          order_id: string | null
+          printability_score: number | null
+          production_mode: string | null
+          project_id: string | null
+          quote_price_eur: number | null
+          raw: Json | null
+          recommended_infill_pct: number | null
+          recommended_layer_height_mm: number | null
+          recommended_material: string | null
+          recommended_nozzle: string | null
+          service: string
+        }
+        Insert: {
+          ai_recommendations?: Json | null
+          ai_summary?: string | null
+          ai_warnings?: Json | null
+          complexity_score?: number | null
+          confidence?: number | null
+          created_at?: string
+          created_by?: string | null
+          dfm_score?: number | null
+          estimated_cost_eur?: number | null
+          estimated_material_g?: number | null
+          estimated_print_hours?: number | null
+          file_id?: string | null
+          file_name?: string | null
+          id?: string
+          order_id?: string | null
+          printability_score?: number | null
+          production_mode?: string | null
+          project_id?: string | null
+          quote_price_eur?: number | null
+          raw?: Json | null
+          recommended_infill_pct?: number | null
+          recommended_layer_height_mm?: number | null
+          recommended_material?: string | null
+          recommended_nozzle?: string | null
+          service?: string
+        }
+        Update: {
+          ai_recommendations?: Json | null
+          ai_summary?: string | null
+          ai_warnings?: Json | null
+          complexity_score?: number | null
+          confidence?: number | null
+          created_at?: string
+          created_by?: string | null
+          dfm_score?: number | null
+          estimated_cost_eur?: number | null
+          estimated_material_g?: number | null
+          estimated_print_hours?: number | null
+          file_id?: string | null
+          file_name?: string | null
+          id?: string
+          order_id?: string | null
+          printability_score?: number | null
+          production_mode?: string | null
+          project_id?: string | null
+          quote_price_eur?: number | null
+          raw?: Json | null
+          recommended_infill_pct?: number | null
+          recommended_layer_height_mm?: number | null
+          recommended_material?: string | null
+          recommended_nozzle?: string | null
+          service?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_analyses_file_id_fkey"
+            columns: ["file_id"]
+            isOneToOne: false
+            referencedRelation: "order_files"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_analyses_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_analyses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          created_at: string
+          customer_email: string
+          customer_name: string | null
+          id: string
+          notes: string | null
+          order_id: string | null
+          priority: string
+          production_mode: string | null
+          project_code: string | null
+          service: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          customer_name?: string | null
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          priority?: string
+          production_mode?: string | null
+          project_code?: string | null
+          service?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          customer_name?: string | null
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          priority?: string
+          production_mode?: string | null
+          project_code?: string | null
+          service?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       quotes: {
         Row: {

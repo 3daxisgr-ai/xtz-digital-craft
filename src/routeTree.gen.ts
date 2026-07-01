@@ -30,6 +30,7 @@ import { Route as GrRapidPrototypingRouteImport } from './routes/gr.rapid-protot
 import { Route as GrCustomMetalPartsRouteImport } from './routes/gr.custom-metal-parts'
 import { Route as GrCncMachiningRouteImport } from './routes/gr.cnc-machining'
 import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
+import { Route as AdminFactoryRouteImport } from './routes/admin.factory'
 
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
@@ -136,11 +137,16 @@ const CapabilitiesSlugRoute = CapabilitiesSlugRouteImport.update({
   path: '/capabilities/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminFactoryRoute = AdminFactoryRouteImport.update({
+  id: '/factory',
+  path: '/factory',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/cnc-machining': typeof CncMachiningRoute
   '/company': typeof CompanyRoute
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/track': typeof TrackRoute
+  '/admin/factory': typeof AdminFactoryRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
@@ -163,7 +170,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/cnc-machining': typeof CncMachiningRoute
   '/company': typeof CompanyRoute
@@ -177,6 +184,7 @@ export interface FileRoutesByTo {
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/track': typeof TrackRoute
+  '/admin/factory': typeof AdminFactoryRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
@@ -187,7 +195,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/3d-printing-quote': typeof R3dPrintingQuoteRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/cnc-machining': typeof CncMachiningRoute
   '/company': typeof CompanyRoute
@@ -201,6 +209,7 @@ export interface FileRoutesById {
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/track': typeof TrackRoute
+  '/admin/factory': typeof AdminFactoryRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/start'
     | '/start-project'
     | '/track'
+    | '/admin/factory'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/start'
     | '/start-project'
     | '/track'
+    | '/admin/factory'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/start'
     | '/start-project'
     | '/track'
+    | '/admin/factory'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
@@ -282,7 +294,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   R3dPrintingQuoteRoute: typeof R3dPrintingQuoteRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   CncMachiningRoute: typeof CncMachiningRoute
   CompanyRoute: typeof CompanyRoute
@@ -451,8 +463,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CapabilitiesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/factory': {
+      id: '/admin/factory'
+      path: '/factory'
+      fullPath: '/admin/factory'
+      preLoaderRoute: typeof AdminFactoryRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminFactoryRoute: typeof AdminFactoryRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminFactoryRoute: AdminFactoryRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface PortalRouteChildren {
   PortalOrderCodeRoute: typeof PortalOrderCodeRoute
@@ -468,7 +497,7 @@ const PortalRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R3dPrintingQuoteRoute: R3dPrintingQuoteRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   CncMachiningRoute: CncMachiningRoute,
   CompanyRoute: CompanyRoute,
@@ -490,13 +519,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
