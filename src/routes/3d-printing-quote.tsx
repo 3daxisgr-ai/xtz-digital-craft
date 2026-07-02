@@ -150,8 +150,18 @@ function QuotePage() {
           },
         },
       });
-      setOrderCode((res as { order_code?: string | null })?.order_code ?? null);
+      const code = (res as { order_code?: string | null })?.order_code ?? null;
+      setOrderCode(code);
+      setSubmittedEmail(data.email);
       setSent(true);
+      if (code) {
+        setAnalyzing(true);
+        runQuoteAnalysis({ data: { order_code: code, email: data.email } })
+          .then((a) => setAnalysis(a))
+          .catch((e) => console.error("auto analysis failed", e))
+          .finally(() => setAnalyzing(false));
+      }
+
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Submission failed. Please try again.");
