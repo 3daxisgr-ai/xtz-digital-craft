@@ -84,7 +84,11 @@ function QuotePage() {
   const [file, setFile] = useState<File | null>(null);
   const [sent, setSent] = useState(false);
   const [orderCode, setOrderCode] = useState<string | null>(null);
+  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
+  const [analysis, setAnalysis] = useState<any | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
 
   const { materialCost, machineWearCost, electricityCost, estimatedPrice } = useMemo(() => {
     const mc = (weight / 1000) * material.pricePerKg;
