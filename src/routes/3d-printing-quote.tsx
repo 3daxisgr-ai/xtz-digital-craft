@@ -404,6 +404,14 @@ function QuotePage() {
                       onChange={onFileChange}
                     />
                   </label>
+                  {file && (
+                    <div className="mt-3">
+                      <Suspense fallback={<div className="h-[280px] rounded-lg bg-white/[0.02] border border-white/10" />}>
+                        <ModelViewer file={file} height={280} />
+                      </Suspense>
+                    </div>
+                  )}
+
                 </div>
               </div>
 
