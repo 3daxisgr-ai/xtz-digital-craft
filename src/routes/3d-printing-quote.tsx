@@ -275,11 +275,26 @@ function QuotePage() {
                   >
                     {isGR ? "Παρακολούθηση παραγγελίας →" : "Track your order →"}
                   </a>
+
+                  {(file || analyzing || analysis) && (
+                    <div className="grid md:grid-cols-2 gap-4 pt-6 border-t border-primary/10">
+                      {file && (
+                        <Suspense fallback={<div className="h-[280px] rounded-lg bg-white/[0.02] border border-white/10" />}>
+                          <ModelViewer file={file} height={280} />
+                        </Suspense>
+                      )}
+                      <div className={file ? "" : "md:col-span-2"}>
+                        <AIAnalysisCard a={analysis} loading={analyzing && !analysis} />
+                      </div>
+                    </div>
+                  )}
+                  {submittedEmail && null}
                 </>
               ) : (
                 <p className="text-sm text-foreground/70">{L.sent}</p>
               )}
             </div>
+
           ) : (
             <div className="grid lg:grid-cols-[1.4fr_1fr] gap-6">
               {/* Configurator */}
