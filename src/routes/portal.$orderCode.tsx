@@ -162,6 +162,21 @@ function PortalOrderPage() {
           </section>
         </div>
 
+        {(previewUrl || analysis) && (
+          <section className="grid md:grid-cols-2 gap-6">
+            {previewUrl && (
+              <Suspense fallback={<div className="h-[360px] rounded-lg bg-white/[0.02] border border-white/10" />}>
+                <ModelViewer url={previewUrl} fileName={previewName} height={360} />
+              </Suspense>
+            )}
+            <div className={previewUrl ? "" : "md:col-span-2"}>
+              <AIAnalysisCard a={analysis} />
+            </div>
+          </section>
+        )}
+
+
+
         <section className="border border-white/10 bg-white/[0.02] rounded-lg p-5 md:p-6">
           <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40 mb-4">Timeline</div>
           <ol className="space-y-4 relative pl-5 border-l border-white/10">
