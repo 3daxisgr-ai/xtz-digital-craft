@@ -313,3 +313,125 @@ export const panelDeleteAnalysis = createServerFn({ method: "POST" })
     if (error) throw error;
     return { ok: true };
   });
+
+// ---------------- PUBLIC AUTO-ANALYSIS (customer-facing) ----------------
+// Runs the same AI DFM pipeline for a freshly submitted quote WITHOUT admin auth.
+// Guardrails: only for orders < 24h old, only if no prior analysis exists.
+
+async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const [{ data: machines }, { data: materials }] = await Promise.all([
+    supabaseAdmin.from("machines" as any).select("name, kind, vendor, model, build_volume_mm, nozzles, hourly_cost").eq("active", true),
+    supabaseAdmin.from("materials" as any).select("code, name, family, process, price_per_kg, density_g_cm3, properties").eq("active", true),
+  ]);
+  const apiKey = process.env.LOVABLE_API_KEY;
+  if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
+
+  const sys = `You are TOREO's AI Manufacturing Engineer. Analyse a customer's part for Design-for-Manufacturing (DFM), recommend the best material, printer/nozzle/layer height, and estimate print time, material use, cost and quote price. Base your answer on the file metadata, machine and material catalogue, and the requested production mode. Reply STRICTLY as JSON matching the schema — no prose, no markdown fences.`;
+
+  const svc = (serviceHint || "").toLowerCase();
+  const service = svc.includes("cnc") ? "cnc" : svc.includes("laser") ? "laser" : svc.includes("weld") ? "welding" : "3d_printing";
+
+  const user = {
+    order: { code: order.order_code, service: order.service, note: order.message },
+    request: { service, production_mode: "prototype", material_hint: order.material ?? null, notes: order.message ?? null },
+    file: file ? { name: file.file_name, type: file.file_type, size_bytes: file.size_bytes, ext: file.file_name?.split(".").pop() ?? null } : null,
+    catalogue: { machines: machines ?? [], materials: materials ?? [] },
+    pricing_rules: { currency: "EUR", min_price_eur: 15, machine_overhead_multiplier: 1.35, margin_pct: 45 },
+  };
+
+  const schema = {
+    type: "object",
+    additionalProperties: false,
+    required: ["dfm_score","complexity_score","printability_score","confidence","recommended_material","estimated_print_hours","estimated_material_g","estimated_cost_eur","quote_price_eur","summary","warnings","recommendations"],
+    properties: {
+      dfm_score: { type: "number" }, complexity_score: { type: "number" }, printability_score: { type: "number" },
+      confidence: { type: "number" }, recommended_material: { type: "string" },
+      recommended_nozzle: { type: ["string","null"] }, recommended_layer_height_mm: { type: ["number","null"] },
+      recommended_infill_pct: { type: ["integer","null"] }, estimated_print_hours: { type: "number" },
+      estimated_material_g: { type: "number" }, estimated_cost_eur: { type: "number" },
+      quote_price_eur: { type: "number" }, summary: { type: "string" },
+      warnings: { type: "array", items: { type: "string" } }, recommendations: { type: "array", items: { type: "string" } },
+    },
+  };
+
+  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [{ role: "system", content: sys }, { role: "user", content: JSON.stringify(user) }],
+      response_format: { type: "json_schema", json_schema: { name: "analysis", strict: true, schema } },
+    }),
+  });
+  if (!res.ok) throw new Error(`AI Gateway ${res.status}: ${(await res.text()).slice(0, 400)}`);
+  const json = await res.json();
+  const raw = json?.choices?.[0]?.message?.content ?? "{}";
+  const parsed = AnalysisSchema.parse(typeof raw === "string" ? JSON.parse(raw) : raw);
+
+  const { data: saved, error: saveErr } = await supabaseAdmin
+    .from("project_analyses" as any)
+    .insert({
+      order_id: order.id, file_id: file?.id ?? null, file_name: file?.file_name ?? null,
+      service, production_mode: "prototype",
+      dfm_score: Math.round(parsed.dfm_score),
+      complexity_score: Math.round(parsed.complexity_score),
+      printability_score: Math.round(parsed.printability_score),
+      recommended_material: parsed.recommended_material,
+      recommended_nozzle: parsed.recommended_nozzle ?? null,
+      recommended_layer_height_mm: parsed.recommended_layer_height_mm ?? null,
+      recommended_infill_pct: parsed.recommended_infill_pct ?? null,
+      estimated_print_hours: parsed.estimated_print_hours,
+      estimated_material_g: parsed.estimated_material_g,
+      estimated_cost_eur: parsed.estimated_cost_eur,
+      quote_price_eur: parsed.quote_price_eur,
+      confidence: Math.round(parsed.confidence),
+      ai_summary: parsed.summary,
+      ai_warnings: parsed.warnings,
+      ai_recommendations: parsed.recommendations,
+      raw: parsed as any,
+    })
+    .select("*")
+    .single();
+  if (saveErr) throw saveErr;
+  return saved;
+}
+
+export const runQuoteAnalysis = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ order_code: z.string().min(3).max(40), email: z.string().email() }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await supabaseAdmin
+      .from("orders")
+      .select("id, order_code, customer_email, service, material, message, created_at")
+      .eq("order_code", data.order_code)
+      .maybeSingle();
+    if (!order) throw new Error("Order not found");
+    if (String(order.customer_email).toLowerCase() !== data.email.toLowerCase()) throw new Error("Not authorized");
+    const ageMs = Date.now() - new Date(order.created_at as any).getTime();
+    if (ageMs > 24 * 60 * 60 * 1000) throw new Error("Analysis window expired");
+    const { data: existing } = await supabaseAdmin
+      .from("project_analyses" as any).select("*").eq("order_id", order.id).order("created_at", { ascending: false }).limit(1);
+    if (existing && existing.length > 0) return existing[0];
+    const { data: files } = await supabaseAdmin
+      .from("order_files").select("*").eq("order_id", order.id).order("created_at").limit(1);
+    return await runAnalysisForOrder(order, files?.[0] ?? null, order.service ?? "3d_printing");
+  });
+
+export const getOrderAnalyses = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ order_code: z.string().min(3).max(40), email: z.string().email().optional() }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await supabaseAdmin
+      .from("orders").select("id, customer_email").eq("order_code", data.order_code).maybeSingle();
+    if (!order) return [];
+    if (data.email && String(order.customer_email).toLowerCase() !== data.email.toLowerCase()) return [];
+    const { data: rows } = await supabaseAdmin
+      .from("project_analyses" as any).select("*").eq("order_id", order.id).order("created_at", { ascending: false });
+    return rows ?? [];
+  });
+
