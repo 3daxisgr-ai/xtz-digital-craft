@@ -27,16 +27,38 @@ function PortalOrderPage() {
   const get = useServerFn(getMyOrder);
   const post = useServerFn(customerPostMessage);
   const sign = useServerFn(getOrderFileUrl);
+  const listAnalyses = useServerFn(getOrderAnalyses);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
+  const [analysis, setAnalysis] = useState<any | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewName, setPreviewName] = useState<string | null>(null);
 
   async function reload() {
     try {
       const d = await get({ data: { order_code: orderCode } });
       setData(d);
+      // load latest AI analysis (best-effort)
+      listAnalyses({ data: { order_code: orderCode } })
+        .then((rows: any) => setAnalysis(Array.isArray(rows) && rows.length ? rows[0] : null))
+        .catch(() => {});
+      // Preview first STL/OBJ file
+      const previewable = (d?.files ?? []).find((f: any) =>
+        /\.(stl|obj)$/i.test(f.file_name || ""),
+      );
+      if (previewable) {
+        try {
+          const { url } = await sign({ data: { file_path: previewable.file_path } });
+          if (url) {
+            setPreviewUrl(url);
+            setPreviewName(previewable.file_name);
+          }
+        } catch {}
+      }
     } catch (e: any) {
+
       setError(e.message ?? "Failed to load");
     } finally {
       setLoading(false);
