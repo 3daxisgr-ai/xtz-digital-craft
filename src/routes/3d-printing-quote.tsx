@@ -1,11 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { z } from "zod";
 import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
 import { useI18n } from "@/components/xtz/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { submitForm } from "@/lib/api/submissions.functions";
+import { runQuoteAnalysis } from "@/lib/api/factory.functions";
+import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
+const ModelViewer = lazy(() => import("@/components/factory/ModelViewer"));
+
 
 export const Route = createFileRoute("/3d-printing-quote")({
   head: () => ({
@@ -80,7 +84,11 @@ function QuotePage() {
   const [file, setFile] = useState<File | null>(null);
   const [sent, setSent] = useState(false);
   const [orderCode, setOrderCode] = useState<string | null>(null);
+  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
+  const [analysis, setAnalysis] = useState<any | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
 
   const { materialCost, machineWearCost, electricityCost, estimatedPrice } = useMemo(() => {
     const mc = (weight / 1000) * material.pricePerKg;
@@ -142,8 +150,18 @@ function QuotePage() {
           },
         },
       });
-      setOrderCode((res as { order_code?: string | null })?.order_code ?? null);
+      const code = (res as { order_code?: string | null })?.order_code ?? null;
+      setOrderCode(code);
+      setSubmittedEmail(data.email);
       setSent(true);
+      if (code) {
+        setAnalyzing(true);
+        runQuoteAnalysis({ data: { order_code: code, email: data.email } })
+          .then((a) => setAnalysis(a))
+          .catch((e) => console.error("auto analysis failed", e))
+          .finally(() => setAnalyzing(false));
+      }
+
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Submission failed. Please try again.");
@@ -257,11 +275,26 @@ function QuotePage() {
                   >
                     {isGR ? "Παρακολούθηση παραγγελίας →" : "Track your order →"}
                   </a>
+
+                  {(file || analyzing || analysis) && (
+                    <div className="grid md:grid-cols-2 gap-4 pt-6 border-t border-primary/10">
+                      {file && (
+                        <Suspense fallback={<div className="h-[280px] rounded-lg bg-white/[0.02] border border-white/10" />}>
+                          <ModelViewer file={file} height={280} />
+                        </Suspense>
+                      )}
+                      <div className={file ? "" : "md:col-span-2"}>
+                        <AIAnalysisCard a={analysis} loading={analyzing && !analysis} />
+                      </div>
+                    </div>
+                  )}
+                  {submittedEmail && null}
                 </>
               ) : (
                 <p className="text-sm text-foreground/70">{L.sent}</p>
               )}
             </div>
+
           ) : (
             <div className="grid lg:grid-cols-[1.4fr_1fr] gap-6">
               {/* Configurator */}
@@ -371,6 +404,14 @@ function QuotePage() {
                       onChange={onFileChange}
                     />
                   </label>
+                  {file && (
+                    <div className="mt-3">
+                      <Suspense fallback={<div className="h-[280px] rounded-lg bg-white/[0.02] border border-white/10" />}>
+                        <ModelViewer file={file} height={280} />
+                      </Suspense>
+                    </div>
+                  )}
+
                 </div>
               </div>
 

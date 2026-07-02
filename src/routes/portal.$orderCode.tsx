@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -7,7 +7,11 @@ import {
   getMyOrder,
   getOrderFileUrl,
 } from "@/lib/api/orders.functions";
+import { getOrderAnalyses } from "@/lib/api/factory.functions";
+import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { StatusBadge, StatusProgress } from "@/components/portal/StatusProgress";
+const ModelViewer = lazy(() => import("@/components/factory/ModelViewer"));
+
 
 export const Route = createFileRoute("/portal/$orderCode")({
   ssr: false,
@@ -23,16 +27,38 @@ function PortalOrderPage() {
   const get = useServerFn(getMyOrder);
   const post = useServerFn(customerPostMessage);
   const sign = useServerFn(getOrderFileUrl);
+  const listAnalyses = useServerFn(getOrderAnalyses);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
+  const [analysis, setAnalysis] = useState<any | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewName, setPreviewName] = useState<string | null>(null);
 
   async function reload() {
     try {
       const d = await get({ data: { order_code: orderCode } });
       setData(d);
+      // load latest AI analysis (best-effort)
+      listAnalyses({ data: { order_code: orderCode } })
+        .then((rows: any) => setAnalysis(Array.isArray(rows) && rows.length ? rows[0] : null))
+        .catch(() => {});
+      // Preview first STL/OBJ file
+      const previewable = (d?.files ?? []).find((f: any) =>
+        /\.(stl|obj)$/i.test(f.file_name || ""),
+      );
+      if (previewable) {
+        try {
+          const { url } = await sign({ data: { file_path: previewable.file_path } });
+          if (url) {
+            setPreviewUrl(url);
+            setPreviewName(previewable.file_name);
+          }
+        } catch {}
+      }
     } catch (e: any) {
+
       setError(e.message ?? "Failed to load");
     } finally {
       setLoading(false);
@@ -135,6 +161,21 @@ function PortalOrderPage() {
             </div>
           </section>
         </div>
+
+        {(previewUrl || analysis) && (
+          <section className="grid md:grid-cols-2 gap-6">
+            {previewUrl && (
+              <Suspense fallback={<div className="h-[360px] rounded-lg bg-white/[0.02] border border-white/10" />}>
+                <ModelViewer url={previewUrl} fileName={previewName} height={360} />
+              </Suspense>
+            )}
+            <div className={previewUrl ? "" : "md:col-span-2"}>
+              <AIAnalysisCard a={analysis} />
+            </div>
+          </section>
+        )}
+
+
 
         <section className="border border-white/10 bg-white/[0.02] rounded-lg p-5 md:p-6">
           <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40 mb-4">Timeline</div>
