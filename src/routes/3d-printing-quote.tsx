@@ -1,11 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { z } from "zod";
 import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
 import { useI18n } from "@/components/xtz/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { submitForm } from "@/lib/api/submissions.functions";
+import { runQuoteAnalysis } from "@/lib/api/factory.functions";
+import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
+const ModelViewer = lazy(() => import("@/components/factory/ModelViewer"));
+
 
 export const Route = createFileRoute("/3d-printing-quote")({
   head: () => ({
