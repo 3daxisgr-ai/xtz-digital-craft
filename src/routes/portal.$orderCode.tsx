@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -7,7 +7,11 @@ import {
   getMyOrder,
   getOrderFileUrl,
 } from "@/lib/api/orders.functions";
+import { getOrderAnalyses } from "@/lib/api/factory.functions";
+import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { StatusBadge, StatusProgress } from "@/components/portal/StatusProgress";
+const ModelViewer = lazy(() => import("@/components/factory/ModelViewer"));
+
 
 export const Route = createFileRoute("/portal/$orderCode")({
   ssr: false,
