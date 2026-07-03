@@ -407,7 +407,7 @@ async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
       patch.quote_price = parsed.quote_price_eur;
     }
     if (Object.keys(patch).length) {
-      await supabaseAdmin.from("orders").update(patch).eq("id", order.id);
+      await supabaseAdmin.from("orders").update(patch as any).eq("id", order.id);
     }
     await supabaseAdmin.from("order_events").insert({
       order_id: order.id,
