@@ -394,6 +394,42 @@ async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
     .select("*")
     .single();
   if (saveErr) throw saveErr;
+
+  // Wire AI result back to the order + timeline so the customer portal reflects it.
+  try {
+    const { data: currentOrder } = await supabaseAdmin
+      .from("orders")
+      .select("quote_price, status")
+      .eq("id", order.id)
+      .maybeSingle();
+    const patch: Record<string, unknown> = {};
+    if (currentOrder && (currentOrder.quote_price == null || Number(currentOrder.quote_price) === 0)) {
+      patch.quote_price = parsed.quote_price_eur;
+    }
+    if (Object.keys(patch).length) {
+      await supabaseAdmin.from("orders").update(patch as any).eq("id", order.id);
+    }
+    await supabaseAdmin.from("order_events").insert({
+      order_id: order.id,
+      event_type: "ai_analysis",
+      title: "AI Engineering Analysis Complete",
+      description: `DFM ${Math.round(parsed.dfm_score)}/100 · Printability ${Math.round(parsed.printability_score)}/100 · Est. €${Number(parsed.quote_price_eur).toFixed(2)}`,
+      actor: "system",
+      visibility: "customer",
+      payload: {
+        dfm_score: Math.round(parsed.dfm_score),
+        printability_score: Math.round(parsed.printability_score),
+        complexity_score: Math.round(parsed.complexity_score),
+        recommended_material: parsed.recommended_material,
+        estimated_print_hours: parsed.estimated_print_hours,
+        estimated_material_g: parsed.estimated_material_g,
+        quote_price_eur: parsed.quote_price_eur,
+      } as any,
+    });
+  } catch (e) {
+    console.error("post-analysis wire-up failed", e);
+  }
+
   return saved;
 }
 
