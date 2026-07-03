@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/factory")({
+export const Route = createFileRoute("/admin_/factory")({
   component: FactoryPage,
   head: () => ({ meta: [{ title: "AI Factory OS · TOREO Admin" }] }),
 });
