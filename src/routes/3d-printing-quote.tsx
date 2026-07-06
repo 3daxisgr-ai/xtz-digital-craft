@@ -337,37 +337,57 @@ function QuotePage() {
                   {materials.length === 0 ? (
                     <div className="font-mono text-xs text-muted-foreground">Loading materials…</div>
                   ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                      {materials.map((m) => {
-                        const active = m.code === materialCode;
-                        const disabled = !m.in_stock;
-                        return (
-                          <button
-                            key={m.code}
-                            type="button"
-                            disabled={disabled}
-                            onClick={() => !disabled && setMaterialCode(m.code)}
-                            className={`relative p-3 border text-left transition-all ${
-                              disabled
-                                ? "border-border/40 opacity-40 cursor-not-allowed bg-white/[0.01]"
-                                : active
-                                  ? "border-primary bg-primary/10 text-primary blue-glow"
-                                  : "border-border hover:border-foreground/40 text-foreground"
-                            }`}
-                          >
-                            <div className="font-display text-lg font-bold">{m.family}</div>
-                            <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-                              {m.name}
-                            </div>
-                            <div className="font-mono text-[10px] mt-1 opacity-70">
-                              {m.in_stock ? L.inStock : L.oos}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
+                    <>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                        {materials.map((m) => {
+                          const active = m.code === materialCode;
+                          const isOOS = m.status === "out_of_stock";
+                          const isLow = m.status === "low_stock";
+                          const disabled = isOOS;
+                          const dot = isOOS ? "bg-red-400" : isLow ? "bg-amber-400" : "bg-emerald-400";
+                          const statusLabel = isOOS ? L.oos : isLow ? L.lowStock : L.inStock;
+                          return (
+                            <button
+                              key={m.code}
+                              type="button"
+                              disabled={disabled}
+                              aria-disabled={disabled}
+                              onClick={() => !disabled && setMaterialCode(m.code)}
+                              title={isOOS ? L.oosWarn : isLow ? L.lowStockWarn : undefined}
+                              className={`relative p-3 border text-left transition-all ${
+                                disabled
+                                  ? "border-border/40 opacity-40 cursor-not-allowed bg-white/[0.01]"
+                                  : active
+                                    ? "border-primary bg-primary/10 text-primary blue-glow"
+                                    : "border-border hover:border-foreground/40 text-foreground"
+                              }`}
+                            >
+                              <div className="font-display text-lg font-bold">{m.family}</div>
+                              <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                                {m.name}
+                              </div>
+                              <div className="mt-1 flex items-center gap-1.5 font-mono text-[10px] opacity-80">
+                                <span className={`inline-block h-1.5 w-1.5 rounded-full ${dot}`} />
+                                <span>{statusLabel}</span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {selectedMaterial?.status === "low_stock" && (
+                        <div className="mt-3 border border-amber-400/30 bg-amber-400/5 text-amber-200 text-xs px-3 py-2 rounded">
+                          {L.lowStockWarn}
+                        </div>
+                      )}
+                      {selectedMaterial?.status === "out_of_stock" && (
+                        <div className="mt-3 border border-red-400/30 bg-red-400/5 text-red-200 text-xs px-3 py-2 rounded">
+                          {L.oosWarn}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
+
 
                 {/* Production Purpose */}
                 <div>
