@@ -78,15 +78,18 @@ function QuotePage() {
   useEffect(() => {
     getPublicPrintingMaterials()
       .then((rows) => {
-        setMaterials(rows);
-        if (rows.length && !rows.find((r) => r.code === materialCode)) {
-          const firstInStock = rows.find((r) => r.in_stock) ?? rows[0];
-          setMaterialCode(firstInStock.code);
+        const list = rows as Array<{ code: string; name: string; family: string; in_stock: boolean; status: MaterialStatus }>;
+        setMaterials(list);
+        const selectable = list.filter((r) => r.status === "in_stock" || r.status === "low_stock");
+        if (list.length && !selectable.find((r) => r.code === materialCode)) {
+          const first = selectable.find((r) => r.status === "in_stock") ?? selectable[0];
+          if (first) setMaterialCode(first.code);
         }
       })
       .catch((e) => console.error("materials load failed", e));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const selectedMaterial = useMemo(
     () => materials.find((m) => m.code === materialCode) ?? null,
