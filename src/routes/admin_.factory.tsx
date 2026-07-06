@@ -205,17 +205,34 @@ function MachinesPanel() {
   );
 }
 
+const MAT_STATUSES = ["in_stock","low_stock","out_of_stock","disabled"] as const;
+type MatStatus = typeof MAT_STATUSES[number];
+const MAT_STATUS_LABEL: Record<MatStatus, string> = {
+  in_stock: "In stock", low_stock: "Low stock", out_of_stock: "Out of stock", disabled: "Disabled",
+};
+const MAT_STATUS_COLOR: Record<MatStatus, string> = {
+  in_stock: "text-emerald-300 border-emerald-400/40",
+  low_stock: "text-amber-300 border-amber-400/40",
+  out_of_stock: "text-red-300 border-red-400/40",
+  disabled: "text-zinc-400 border-zinc-500/40",
+};
+
 function MaterialsPanel() {
   const list = useServerFn(panelListMaterials);
   const upsert = useServerFn(panelUpsertMaterial);
-  const del = useServerFn(panelDeleteMaterial);
+  const setStatus = useServerFn(panelSetMaterialStatus);
   const [rows, setRows] = useState<any[]>([]);
   const [form, setForm] = useState({ code: "", name: "", family: "PLA", process: "3d_printing", price_per_kg: 25, density_g_cm3: 1.24 });
   const refresh = () => list().then(setRows).catch((e) => toast.error(String(e)));
   useEffect(() => { refresh(); }, []);
+  async function quick(id: string, status: MatStatus) {
+    try { await setStatus({ data: { id, status } }); toast.success(MAT_STATUS_LABEL[status]); refresh(); }
+    catch (e: any) { toast.error(e.message ?? String(e)); }
+  }
   return (
     <Card className="bg-neutral-900 border-white/10 text-white p-5">
-      <h2 className="text-lg font-semibold mb-4">Materials</h2>
+      <h2 className="text-lg font-semibold mb-1">Materials Inventory</h2>
+      <p className="text-xs text-white/50 mb-4">Materials are never deleted. Toggle status to control customer availability. Existing orders keep their original material.</p>
       <div className="grid md:grid-cols-6 gap-2 mb-4">
         <Input placeholder="Code (e.g. PLA-BLK)" value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} />
         <Input placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -224,21 +241,38 @@ function MaterialsPanel() {
         <Input type="number" placeholder="€/kg" value={form.price_per_kg} onChange={(e) => setForm({ ...form, price_per_kg: Number(e.target.value) })} />
         <div className="flex gap-2">
           <Input type="number" step="0.01" placeholder="g/cm³" value={form.density_g_cm3} onChange={(e) => setForm({ ...form, density_g_cm3: Number(e.target.value) })} />
-          <Button onClick={async () => { if (!form.code || !form.name) return; await upsert({ data: { patch: form as any } }); setForm({ code: "", name: "", family: "PLA", process: "3d_printing", price_per_kg: 25, density_g_cm3: 1.24 }); refresh(); }}>Add</Button>
+          <Button onClick={async () => { if (!form.code || !form.name) return; await upsert({ data: { patch: { ...form, status: "in_stock" } as any } }); setForm({ code: "", name: "", family: "PLA", process: "3d_printing", price_per_kg: 25, density_g_cm3: 1.24 }); refresh(); }}>Add</Button>
         </div>
       </div>
       <div className="grid gap-2">
-        {rows.map((r) => (
-          <div key={r.id} className="flex items-center justify-between border border-white/10 rounded px-3 py-2">
-            <div className="text-sm"><b>{r.code}</b> · {r.name} · {r.family}/{r.process} · €{r.price_per_kg}/kg · {r.density_g_cm3} g/cm³</div>
-            <Button size="sm" variant="ghost" onClick={async () => { await del({ data: { id: r.id } }); refresh(); }}>Delete</Button>
-          </div>
-        ))}
+        {rows.map((r) => {
+          const st = (r.status ?? "in_stock") as MatStatus;
+          return (
+            <div key={r.id} className="flex flex-wrap items-center justify-between gap-2 border border-white/10 rounded px-3 py-2">
+              <div className="text-sm flex items-center gap-2 min-w-0">
+                <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 border rounded ${MAT_STATUS_COLOR[st]}`}>{MAT_STATUS_LABEL[st]}</span>
+                <b>{r.code}</b> · {r.name} · {r.family}/{r.process} · €{r.price_per_kg}/kg · {r.stock_kg ?? 0}kg
+              </div>
+              <div className="flex gap-1">
+                {MAT_STATUSES.map((s2) => (
+                  <button
+                    key={s2}
+                    onClick={() => quick(r.id, s2)}
+                    className={`px-2 py-1 text-[10px] font-mono uppercase rounded border ${st === s2 ? MAT_STATUS_COLOR[s2] : "border-white/10 text-white/40 hover:text-white"}`}
+                  >
+                    {s2 === "in_stock" ? "In" : s2 === "low_stock" ? "Low" : s2 === "out_of_stock" ? "OOS" : "Off"}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
         {!rows.length && <div className="text-sm text-white/50">No materials yet.</div>}
       </div>
     </Card>
   );
 }
+
 
 function AnalysisPanel() {
   const analyze = useServerFn(panelAnalyzeFile);
