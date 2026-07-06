@@ -30,7 +30,7 @@ export function Footer() {
             </div>
             <img
               src={toreoLogo.url}
-              alt="TOREO"
+              alt="TOREO logo"
               className="block w-auto object-contain"
               style={{ height: "clamp(2.8rem, 9vw, 8rem)" }}
             />

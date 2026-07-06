@@ -30,7 +30,7 @@ export const Route = createFileRoute("/cnc-machining")({
     buildServiceHead({
       title: "CNC Machining Services in Greece & Europe | TOREO",
       description:
-        "Precision CNC machining services in Thessaloniki, Greece. Custom metal parts, prototypes and production runs in steel, stainless, aluminium. Fast quotes — EU-wide delivery.",
+        "Precision CNC machining in Thessaloniki: custom metal parts and production runs in steel, stainless and aluminium. Fast quotes, EU delivery.",
       path: "/cnc-machining",
       altPath: "/gr/cnc-machining",
       locale: "en",

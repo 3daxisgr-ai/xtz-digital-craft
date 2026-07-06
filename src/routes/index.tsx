@@ -13,11 +13,11 @@ import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "TOREO — Rapid Prototyping, 3D Printing & CNC Manufacturing in Greece" },
-      { name: "description", content: "Rapid prototyping, 3D printing services, CNC machining, fiber laser cutting and product development under one roof. Engineering-led custom parts manufacturing in Thessaloniki, Greece." },
+      { title: "TOREO — Prototyping, 3D Printing & CNC Manufacturing" },
+      { name: "description", content: "Engineering-led rapid prototyping, 3D printing, CNC machining and fiber laser cutting under one roof in Thessaloniki, Greece." },
       { name: "keywords", content: "rapid prototyping, 3D printing services, CNC machining, CNC manufacturing, product development, prototype manufacturing, engineering services, custom parts manufacturing, Greece, Thessaloniki" },
-      { property: "og:title", content: "TOREO — Rapid Prototyping, 3D Printing & CNC Manufacturing" },
-      { property: "og:description", content: "Engineering-led rapid prototyping, 3D printing services, CNC machining and product development by TOREO in Thessaloniki, Greece." },
+      { property: "og:title", content: "TOREO — Engineering-Led Manufacturing in Thessaloniki" },
+      { property: "og:description", content: "Prototyping, 3D printing, CNC machining and product development by TOREO in Greece." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.toreo.gr/" },
       { property: "og:image", content: `https://www.toreo.gr${heroLaser.url}` },

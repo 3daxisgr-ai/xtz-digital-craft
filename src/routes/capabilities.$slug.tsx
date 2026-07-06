@@ -105,7 +105,7 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Custom industrial parts", "Product prototypes", "Brackets and enclosures", "Architectural metalwork"],
     notes: "Accepted formats: .pdf, .jpg, .png, .step, .stp, .iges, .dwg, .dxf.",
     seo: {
-      title: "Design & Development — Product Development & Engineering Services | TOREO",
+      title: "Design & Development — Engineering Services | TOREO",
       description: "From sketch to manufacturable CAD. Product development, DFM, engineering services and full documentation by TOREO in Greece.",
     },
   },
@@ -129,7 +129,7 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Brackets and panels", "Enclosures and chassis", "Decorative metal", "Industrial components"],
     notes: "Send .dxf, .dwg or .step. Always include thickness and material grade.",
     seo: {
-      title: "Fiber Laser Cutting — CNC Manufacturing & Custom Parts | TOREO",
+      title: "Fiber Laser Cutting — CNC & Custom Parts | TOREO",
       description: "Precision fiber laser cutting in steel, stainless and aluminum with ±0.05 mm tolerance — CNC manufacturing and custom parts manufacturing in Greece.",
     },
   },
@@ -152,7 +152,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Frames and chassis", "Enclosures and cabinets", "Architectural panels", "Welded assemblies"],
     seo: {
-      title: "Sheet Metal Forming & Welding — Custom Parts Manufacturing | TOREO",
+      title: "Sheet Metal Forming & Welding — Custom Parts | TOREO",
       description: "Press brake forming, MIG/TIG/spot welding and assembly in steel, stainless and aluminum — custom parts manufacturing by TOREO in Greece.",
     },
   },
@@ -176,7 +176,7 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Functional prototypes", "Jigs and fixtures", "Custom end-use parts", "Small batch production"],
     notes: "Send .stl, .step or .obj. Include build volume and quantity.",
     seo: {
-      title: "3D Printing Services — Rapid Prototyping & End-Use Parts | TOREO",
+      title: "3D Printing — Rapid Prototyping & End-Use Parts | TOREO",
       description: "Professional 3D printing services for rapid prototyping and end-use parts in engineering polymers — PLA, ABS, PETG, PC, TPU — by TOREO in Greece.",
     },
   },
@@ -199,7 +199,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Startup MVPs", "New product development", "Reverse engineering", "Custom one-off parts"],
     seo: {
-      title: "Design → Prototype — Rapid Prototyping & Product Development | TOREO",
+      title: "Design → Prototype — Rapid Prototyping | TOREO",
       description: "Rapid prototyping and product development from idea to working prototype in days — end-to-end engineering services by TOREO.",
     },
   },
@@ -222,7 +222,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Series production", "OEM components", "Branded consumer products", "Replacement and spare parts"],
     seo: {
-      title: "Mass Production — CNC Machining & Custom Parts Manufacturing | TOREO",
+      title: "Mass Production — CNC & Custom Parts Manufacturing | TOREO",
       description: "Scale from prototype to series production with CNC machining, injection molding and trusted global partners — managed end to end by TOREO.",
     },
   },

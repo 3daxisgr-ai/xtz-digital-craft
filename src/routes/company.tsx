@@ -13,8 +13,8 @@ import productAsset from "@/assets/design-prototype-photo.png.asset.json";
 export const Route = createFileRoute("/company")({
   head: () => ({
     meta: [
-      { title: "About TOREO — Engineering Services & Product Development in Greece" },
-      { name: "description", content: "TOREO is a modern manufacturing company in Thessaloniki offering engineering services, product development, 3D printing services, CNC machining and prototype manufacturing across Greece and Europe." },
+      { title: "About TOREO — Engineering & Product Development in Greece" },
+      { name: "description", content: "TOREO is a Thessaloniki manufacturer offering engineering services, product development, 3D printing and CNC machining across Greece and Europe." },
       { name: "keywords", content: "engineering services, product development, prototype manufacturing, custom parts manufacturing, CNC machining Greece, Thessaloniki manufacturing" },
       { property: "og:title", content: "About TOREO — Engineering & Product Development in Greece" },
       { property: "og:description", content: "Engineering ideas into reality through modern manufacturing — 3D printing, CNC, laser cutting and product development in Thessaloniki." },
