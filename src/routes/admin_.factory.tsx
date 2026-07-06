@@ -4,11 +4,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { adminCheck } from "@/lib/api/admin.functions";
 import {
   panelListMachines, panelUpsertMachine, panelDeleteMachine,
-  panelListMaterials, panelUpsertMaterial, panelDeleteMaterial,
+  panelListMaterials, panelUpsertMaterial, panelSetMaterialStatus,
   panelAnalyzeFile, panelListAnalyses, panelDeleteAnalysis,
   panelGetSettings, panelUpdateSettings, panelReadinessCheck, panelApplyOverride,
   panelRecalculatePrice,
 } from "@/lib/api/factory.functions";
+
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
