@@ -297,7 +297,7 @@ function DelayAndAssistant({ orderCode }: { orderCode: string }) {
 
   return (
     <section className="border border-white/10 bg-white/[0.02] rounded-lg p-5 md:p-6">
-      <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40 mb-4">Delivery outlook & AI assistant</div>
+      <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40 mb-4">Delivery outlook & order assistant</div>
       {pred ? (
         <div className="grid md:grid-cols-3 gap-4 mb-6">
           <div>
@@ -324,7 +324,7 @@ function DelayAndAssistant({ orderCode }: { orderCode: string }) {
         <div className="space-y-2 mb-3 max-h-64 overflow-y-auto">
           {conv.map((m, i) => (
             <div key={i} className={`text-sm rounded-md px-3 py-2 ${m.role === "user" ? "bg-sky-500/15 border border-sky-400/30 ml-8" : "bg-white/[0.04] border border-white/10 mr-8"}`}>
-              <div className="text-[10px] uppercase tracking-wider opacity-50 mb-1">{m.role === "user" ? "You" : "TOREO AI"}</div>
+              <div className="text-[10px] uppercase tracking-wider opacity-50 mb-1">{m.role === "user" ? "You" : "TOREO"}</div>
               {m.text}
             </div>
           ))}
