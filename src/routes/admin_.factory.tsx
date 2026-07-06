@@ -276,7 +276,10 @@ function AnalysisPanel() {
           <div key={r.id} className="border border-white/10 rounded p-3 text-sm">
             <div className="flex items-center justify-between">
               <div className="font-medium">{r.file_name ?? "—"} · {r.service} · {r.production_mode}</div>
-              <Button size="sm" variant="ghost" onClick={async () => { await del({ data: { id: r.id } }); load(); }}>Delete</Button>
+              <div className="flex gap-2">
+                <Button size="sm" variant="secondary" onClick={async () => { try { await recalc({ data: { id: r.id } }); toast.success("Price recalculated"); load(); } catch (e: any) { toast.error(e.message ?? String(e)); } }}>Recalculate Price</Button>
+                <Button size="sm" variant="ghost" onClick={async () => { await del({ data: { id: r.id } }); load(); }}>Delete</Button>
+              </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-xs">
               <Stat label="DFM" value={`${r.dfm_score}/100`} />
