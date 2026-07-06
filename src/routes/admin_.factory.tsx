@@ -7,6 +7,7 @@ import {
   panelListMaterials, panelUpsertMaterial, panelDeleteMaterial,
   panelAnalyzeFile, panelListAnalyses, panelDeleteAnalysis,
   panelGetSettings, panelUpdateSettings, panelReadinessCheck, panelApplyOverride,
+  panelRecalculatePrice,
 } from "@/lib/api/factory.functions";
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { Button } from "@/components/ui/button";
