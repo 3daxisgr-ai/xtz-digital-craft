@@ -698,20 +698,8 @@ export const panelAssignPrinter = createServerFn({ method: "POST" })
       if (error) throw error;
     }
 
-    // Also mirror the machine name on the order for admin readability (best-effort).
-    if (data.machine_id) {
-      const { data: m } = await supabaseAdmin
-        .from("machines" as any)
-        .select("name")
-        .eq("id", data.machine_id)
-        .maybeSingle();
-      if ((m as any)?.name) {
-        await supabaseAdmin
-          .from("orders")
-          .update({ assigned_machine: (m as any).name } as any)
-          .eq("id", (order as any).id);
-      }
-    }
+    // Machine name is read via panelGetOrderJob join; no denormalized column on orders.
+
 
     await logAction("printer_assigned", { type: "order", id: data.order_code }, { machine_id: data.machine_id });
     return { ok: true };
