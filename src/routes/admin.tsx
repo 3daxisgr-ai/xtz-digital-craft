@@ -478,6 +478,301 @@ function OrderDetail({ code, onBack }: { code: string; onBack: () => void }) {
   );
 }
 
+// ============= QUICK ACTIONS =============
+function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; onChanged: () => void; setTab: (t: OrderTab) => void }) {
+  const analyze = useServerFn(panelAnalyzeFile);
+  const update = useServerFn(panelUpdateOrder);
+  const complete = useServerFn(panelCompleteProduction);
+  const sendUpdate = useServerFn(panelSendCustomerUpdate);
+  const assign = useServerFn(panelAssignPrinter);
+  const move = useServerFn(panelMoveJobInQueue);
+  const listMachines = useServerFn(panelListMachines);
+  const getJob = useServerFn(panelGetOrderJob);
+  const upload = useServerFn(panelUploadFile);
+
+  const [busy, setBusy] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const [modal, setModal] = useState<null | "priority" | "status" | "assign" | "message" | "tracking">(null);
+  const [machines, setMachines] = useState<any[]>([]);
+  const [jobInfo, setJobInfo] = useState<any>(null);
+  const photoRef = useRef<HTMLInputElement>(null);
+
+  const meta = (o?.metadata ?? {}) as any;
+  const mode: "prototype" | "durable" | "decorative" =
+    meta.production_mode === "durable" || meta.production_mode === "functional" ? "durable" :
+    meta.production_mode === "decorative" || meta.production_mode === "display" ? "decorative" : "prototype";
+
+  function flash(msg: string) { setToast(msg); setTimeout(() => setToast(null), 2000); }
+
+  async function openAssign() {
+    setModal("assign");
+    try {
+      const [m, j] = await Promise.all([listMachines(), getJob({ data: { order_code: code } })]);
+      setMachines((m as any[]).filter((x) => x.active !== false));
+      setJobInfo(j);
+    } catch {}
+  }
+
+  async function doAssign(mid: string | null) {
+    setBusy("assign");
+    try {
+      await assign({ data: { order_code: code, machine_id: mid } });
+      flash(mid ? "Printer assigned ✓" : "Printer cleared");
+      setModal(null); onChanged();
+    } catch (e: any) { flash(e.message ?? "Failed"); }
+    finally { setBusy(null); }
+  }
+
+  async function doMove(direction: "up" | "down" | "top" | "bottom") {
+    setBusy("move");
+    try {
+      await move({ data: { order_code: code, direction } });
+      flash(`Moved ${direction} ✓`);
+      const j = await getJob({ data: { order_code: code } });
+      setJobInfo(j);
+    } catch (e: any) { flash(e.message ?? "Failed"); }
+    finally { setBusy(null); }
+  }
+
+  async function runAI() {
+    setBusy("ai");
+    try {
+      await analyze({ data: { order_code: code, service: "3d_printing", production_mode: mode } });
+      flash("Analysis complete ✓"); onChanged(); setTab("ai");
+    } catch (e: any) { flash(e.message ?? "AI failed"); }
+    finally { setBusy(null); }
+  }
+
+  async function setPriority(p: string) {
+    setBusy("priority");
+    try { await update({ data: { order_code: code, patch: { priority: p as any } } }); flash("Priority updated ✓"); setModal(null); onChanged(); }
+    catch (e: any) { flash(e.message ?? "Failed"); }
+    finally { setBusy(null); }
+  }
+
+  async function setStatus(s: string) {
+    setBusy("status");
+    try { await update({ data: { order_code: code, patch: { status: s } } }); flash("Status updated ✓ (customer notified)"); setModal(null); onChanged(); }
+    catch (e: any) { flash(e.message ?? "Failed"); }
+    finally { setBusy(null); }
+  }
+
+  async function doComplete() {
+    if (!confirm("Advance this order to the next production stage and notify the customer?")) return;
+    setBusy("complete");
+    try {
+      const r: any = await complete({ data: { order_code: code } });
+      flash(r?.unchanged ? "Already past production" : `Advanced → ${STATUS_LABEL[r.status] ?? r.status} ✓`);
+      onChanged();
+    } catch (e: any) { flash(e.message ?? "Failed"); }
+    finally { setBusy(null); }
+  }
+
+  async function onPhotos(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files?.length) return;
+    setBusy("photos");
+    try {
+      for (const file of Array.from(e.target.files)) {
+        const buf = await file.arrayBuffer();
+        const bytes = new Uint8Array(buf);
+        let bin = ""; for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
+        await upload({ data: { order_code: code, file_name: file.name, file_base64: btoa(bin), file_type: file.type, visibility: "customer", folder: "progress" } });
+      }
+      e.target.value = ""; flash("Photos uploaded ✓"); onChanged();
+    } catch (e: any) { flash(e.message ?? "Failed"); }
+    finally { setBusy(null); }
+  }
+
+  function openPrintable(kind: "quote" | "invoice") {
+    const url = `/admin/print/${kind}/${encodeURIComponent(code)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  const btn = "px-3 py-2 text-[10px] font-mono tracking-[0.25em] uppercase border rounded-sm transition-colors disabled:opacity-40";
+  const btnPri = `${btn} border-amber-300/40 hover:border-amber-300 text-amber-200`;
+  const btnDef = `${btn} border-white/10 hover:border-white/40 text-white/80`;
+  const btnOk = `${btn} border-emerald-400/40 hover:border-emerald-400 text-emerald-200`;
+  const btnBlue = `${btn} border-sky-400/40 hover:border-sky-400 text-sky-200`;
+
+  return (
+    <div className="border border-white/10 rounded-sm bg-white/[0.02] p-3">
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-[10px] font-mono tracking-[0.3em] uppercase text-white/40">Quick Actions</div>
+        {toast && <span className="text-[10px] font-mono tracking-[0.25em] text-emerald-300">{toast}</span>}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <button className={btnPri} disabled={busy === "ai"} onClick={runAI}>{busy === "ai" ? "RUNNING…" : "▶ RUN AI AGAIN"}</button>
+        <button className={btnDef} onClick={openAssign}>🖨 ASSIGN PRINTER</button>
+        <button className={btnDef} onClick={() => setModal("priority")}>⚑ CHANGE PRIORITY</button>
+        <button className={btnDef} onClick={openAssign}>≡ MOVE IN QUEUE</button>
+        <button className={btnDef} onClick={() => setModal("status")}>◐ CHANGE STATUS</button>
+        <input ref={photoRef} type="file" hidden multiple accept="image/*" onChange={onPhotos} />
+        <button className={btnDef} disabled={busy === "photos"} onClick={() => photoRef.current?.click()}>{busy === "photos" ? "UPLOADING…" : "📷 UPLOAD PHOTOS"}</button>
+        <button className={btnBlue} onClick={() => setModal("message")}>✉ SEND CUSTOMER UPDATE</button>
+        <button className={btnDef} onClick={() => openPrintable("quote")}>📄 QUOTE PDF</button>
+        <button className={btnDef} onClick={() => openPrintable("invoice")}>💳 INVOICE</button>
+        <button className={btnOk} disabled={busy === "complete"} onClick={doComplete}>✓ COMPLETE PRODUCTION</button>
+        <button className={btnBlue} onClick={() => setModal("tracking")}>📦 ADD TRACKING</button>
+      </div>
+
+      {modal === "priority" && (
+        <Modal onClose={() => setModal(null)} title="Change priority">
+          <div className="flex gap-2 flex-wrap">
+            {PRIORITIES.map((p) => (
+              <button key={p} onClick={() => setPriority(p)} disabled={busy === "priority"}
+                className={`${btn} ${o.priority === p ? "border-amber-300 text-amber-300 bg-amber-300/10" : "border-white/10 text-white/70 hover:border-white/40"}`}>
+                {p.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </Modal>
+      )}
+
+      {modal === "status" && (
+        <Modal onClose={() => setModal(null)} title="Change status (notifies customer)">
+          <div className="flex flex-wrap gap-2">
+            {STATUS_FLOW.map((s) => (
+              <button key={s} onClick={() => setStatus(s)} disabled={busy === "status"}
+                className={`${btn} ${o.status === s ? "border-amber-300 text-amber-300 bg-amber-300/10" : "border-white/10 text-white/70 hover:border-white/40"}`}>
+                {STATUS_LABEL[s]}
+              </button>
+            ))}
+          </div>
+        </Modal>
+      )}
+
+      {modal === "assign" && (
+        <Modal onClose={() => setModal(null)} title="Assign printer / move in queue">
+          <div className="space-y-4">
+            <div className="border border-white/10 rounded-sm p-3 bg-white/[0.02]">
+              <div className="text-[10px] font-mono tracking-[0.25em] uppercase text-white/40 mb-1">Current job</div>
+              {jobInfo === null && <div className="text-xs text-white/60">No production job yet — assign a printer to create one.</div>}
+              {jobInfo && (
+                <div className="text-xs text-white/80 space-y-0.5">
+                  <div>State: <span className="font-mono uppercase">{jobInfo.job?.state}</span></div>
+                  <div>Machine: {jobInfo.machine?.name ?? <span className="text-white/40">— unassigned —</span>}</div>
+                  <div>Queue position: {jobInfo.job?.queue_position ?? "—"}</div>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <div className="text-[10px] font-mono tracking-[0.25em] uppercase text-white/40 mb-2">Machines</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {machines.length === 0 && <div className="text-xs text-white/40">Loading machines…</div>}
+                {machines.map((m: any) => {
+                  const active = jobInfo?.job?.machine_id === m.id;
+                  return (
+                    <button key={m.id} onClick={() => doAssign(m.id)} disabled={busy === "assign"}
+                      className={`text-left px-3 py-2 border rounded-sm ${active ? "border-amber-300 bg-amber-300/10" : "border-white/10 hover:border-white/40"}`}>
+                      <div className="text-sm">{m.name}</div>
+                      <div className="text-[10px] font-mono text-white/40 uppercase">{m.kind} · {m.status}</div>
+                    </button>
+                  );
+                })}
+                <button onClick={() => doAssign(null)} disabled={busy === "assign"}
+                  className={`text-left px-3 py-2 border border-white/10 hover:border-red-400/40 rounded-sm text-red-300/80 text-xs`}>
+                  ✕ Unassign
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div className="text-[10px] font-mono tracking-[0.25em] uppercase text-white/40 mb-2">Move in queue</div>
+              <div className="flex gap-2 flex-wrap">
+                <button onClick={() => doMove("top")} disabled={busy === "move"} className={btnDef}>⇈ TOP</button>
+                <button onClick={() => doMove("up")} disabled={busy === "move"} className={btnDef}>↑ UP</button>
+                <button onClick={() => doMove("down")} disabled={busy === "move"} className={btnDef}>↓ DOWN</button>
+                <button onClick={() => doMove("bottom")} disabled={busy === "move"} className={btnDef}>⇊ BOTTOM</button>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {modal === "message" && <SendUpdateModal code={code} defaultTo={o.customer_email} onClose={() => setModal(null)} onSent={() => { flash("Update sent ✓"); onChanged(); }} sendFn={sendUpdate} />}
+      {modal === "tracking" && <TrackingModal o={o} code={code} onClose={() => setModal(null)} onSaved={() => { flash("Tracking saved ✓"); onChanged(); setModal(null); }} updateFn={update} />}
+    </div>
+  );
+}
+
+function SendUpdateModal({ code, defaultTo, onClose, onSent, sendFn }: any) {
+  const [subject, setSubject] = useState(`Update on your order ${code}`);
+  const [body, setBody] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  async function submit() {
+    if (!subject.trim() || !body.trim()) return;
+    setBusy(true); setErr(null);
+    try { await sendFn({ data: { order_code: code, subject: subject.trim(), body: body.trim() } }); onSent(); onClose(); }
+    catch (e: any) { setErr(e.message ?? "Failed"); }
+    finally { setBusy(false); }
+  }
+  return (
+    <Modal onClose={onClose} title="Send customer update">
+      <div className="space-y-3">
+        <div className="text-[10px] font-mono text-white/40 uppercase tracking-widest">To: {defaultTo}</div>
+        <Labeled label="Subject"><input className={inp} value={subject} onChange={(e) => setSubject(e.target.value)} /></Labeled>
+        <Labeled label="Message"><textarea rows={6} className={inp} value={body} onChange={(e) => setBody(e.target.value)} placeholder="Write a professional update. Do not mention internal AI or engineering settings." /></Labeled>
+        {err && <div className="text-xs text-red-400">{err}</div>}
+        <div className="flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 text-xs font-mono tracking-widest text-white/60">CANCEL</button>
+          <button onClick={submit} disabled={busy || !subject.trim() || !body.trim()} className="bg-amber-300 text-black px-4 py-2 text-xs font-mono tracking-widest font-semibold rounded-sm disabled:opacity-40">
+            {busy ? "SENDING…" : "SEND"}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function TrackingModal({ o, code, onClose, onSaved, updateFn }: any) {
+  const [f, setF] = useState({ courier: o.courier ?? "", tracking_number: o.tracking_number ?? "", tracking_url: o.tracking_url ?? "", estimated_delivery: o.estimated_delivery ?? "" });
+  const [busy, setBusy] = useState(false);
+  const [markShipped, setMarkShipped] = useState(true);
+  async function save() {
+    setBusy(true);
+    try {
+      const patch: any = {
+        courier: f.courier || null,
+        tracking_number: f.tracking_number || null,
+        tracking_url: f.tracking_url || null,
+        estimated_delivery: f.estimated_delivery || null,
+      };
+      if (markShipped) patch.status = "shipped";
+      await updateFn({ data: { order_code: code, patch } });
+      onSaved();
+    } finally { setBusy(false); }
+  }
+  return (
+    <Modal onClose={onClose} title="Add tracking information">
+      <div className="grid md:grid-cols-2 gap-3">
+        <Labeled label="Courier">
+          <select className={inp} value={f.courier} onChange={(e) => setF({ ...f, courier: e.target.value })}>
+            <option value="">— Not assigned —</option>
+            {COURIERS.map((c) => <option key={c}>{c}</option>)}
+          </select>
+        </Labeled>
+        <Labeled label="Tracking number"><input className={inp} value={f.tracking_number} onChange={(e) => setF({ ...f, tracking_number: e.target.value })} /></Labeled>
+        <Labeled label="Tracking URL"><input className={inp} value={f.tracking_url} onChange={(e) => setF({ ...f, tracking_url: e.target.value })} placeholder="https://…" /></Labeled>
+        <Labeled label="Estimated delivery"><input type="date" className={inp} value={f.estimated_delivery} onChange={(e) => setF({ ...f, estimated_delivery: e.target.value })} /></Labeled>
+      </div>
+      <label className="mt-3 flex items-center gap-2 text-xs text-white/70">
+        <input type="checkbox" checked={markShipped} onChange={(e) => setMarkShipped(e.target.checked)} />
+        Mark order as SHIPPED and notify customer
+      </label>
+      <div className="flex justify-end gap-2 mt-4">
+        <button onClick={onClose} className="px-4 py-2 text-xs font-mono tracking-widest text-white/60">CANCEL</button>
+        <button onClick={save} disabled={busy} className="bg-amber-300 text-black px-4 py-2 text-xs font-mono tracking-widest font-semibold rounded-sm disabled:opacity-40">
+          {busy ? "SAVING…" : "SAVE"}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+
+
 function TabAI({ code, orderMeta }: { code: string; orderMeta: any }) {
   const list = useServerFn(panelListAnalyses);
   const analyze = useServerFn(panelAnalyzeFile);
