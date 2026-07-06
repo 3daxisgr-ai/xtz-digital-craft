@@ -284,7 +284,7 @@ function QuotePage() {
                         </Suspense>
                       )}
                       <div className={file ? "" : "md:col-span-2"}>
-                        <AIAnalysisCard a={analysis} loading={analyzing && !analysis} />
+                        <AIAnalysisCard a={analysis} loading={analyzing && !analysis} customerView />
                       </div>
                     </div>
                   )}

@@ -171,7 +171,7 @@ function PortalOrderPage() {
               </Suspense>
             )}
             <div className={previewUrl ? "" : "md:col-span-2"}>
-              <AIAnalysisCard a={analysis} />
+              <AIAnalysisCard a={analysis} customerView />
             </div>
           </section>
         )}
