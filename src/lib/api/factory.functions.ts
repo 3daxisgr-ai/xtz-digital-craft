@@ -171,7 +171,9 @@ const settingsInput = z.object({
   notifications: z.record(z.string(), z.any()).optional(),
   timeline_stages: z.array(z.any()).optional(),
   ai_modules: z.record(z.string(), z.any()).optional(),
+  hide_out_of_stock_materials: z.boolean().optional(),
 });
+
 
 export const panelUpdateSettings = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => settingsInput.parse(d))
