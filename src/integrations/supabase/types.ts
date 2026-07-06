@@ -179,6 +179,7 @@ export type Database = {
           company_info: Json
           created_at: string
           currency: string
+          hide_out_of_stock_materials: boolean
           id: string
           min_hourly_rate_eur: number
           min_margin_pct: number
@@ -202,6 +203,7 @@ export type Database = {
           company_info?: Json
           created_at?: string
           currency?: string
+          hide_out_of_stock_materials?: boolean
           id?: string
           min_hourly_rate_eur?: number
           min_margin_pct?: number
@@ -225,6 +227,7 @@ export type Database = {
           company_info?: Json
           created_at?: string
           currency?: string
+          hide_out_of_stock_materials?: boolean
           id?: string
           min_hourly_rate_eur?: number
           min_margin_pct?: number
@@ -345,11 +348,16 @@ export type Database = {
           density_g_cm3: number | null
           family: string
           id: string
+          internal_notes: string | null
+          last_restocked_at: string | null
+          minimum_stock_kg: number | null
           name: string
           price_per_kg: number | null
           process: string
           properties: Json | null
+          status: string
           stock_kg: number | null
+          supplier: string | null
           updated_at: string
         }
         Insert: {
@@ -360,11 +368,16 @@ export type Database = {
           density_g_cm3?: number | null
           family: string
           id?: string
+          internal_notes?: string | null
+          last_restocked_at?: string | null
+          minimum_stock_kg?: number | null
           name: string
           price_per_kg?: number | null
           process: string
           properties?: Json | null
+          status?: string
           stock_kg?: number | null
+          supplier?: string | null
           updated_at?: string
         }
         Update: {
@@ -375,11 +388,16 @@ export type Database = {
           density_g_cm3?: number | null
           family?: string
           id?: string
+          internal_notes?: string | null
+          last_restocked_at?: string | null
+          minimum_stock_kg?: number | null
           name?: string
           price_per_kg?: number | null
           process?: string
           properties?: Json | null
+          status?: string
           stock_kg?: number | null
+          supplier?: string | null
           updated_at?: string
         }
         Relationships: []
