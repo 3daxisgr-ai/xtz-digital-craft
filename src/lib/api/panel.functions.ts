@@ -492,7 +492,7 @@ export const panelGetCustomer = createServerFn({ method: "POST" })
     const { data: orders } = await supabaseAdmin
       .from("orders")
       .select("id, order_code, status, service, quote_price, currency, created_at")
-      .ilike("customer_email", data.email)
+      .eq("customer_email", data.email.trim().toLowerCase())
       .order("created_at", { ascending: false });
     return { email: data.email, orders: orders ?? [] };
   });

@@ -341,12 +341,14 @@ export const trackOrder = createServerFn({ method: "POST" })
     const { data: order } = await supabaseAdmin
       .from("orders")
       .select(
-        "id, order_code, status, courier, tracking_number, tracking_url, estimated_delivery, created_at",
+        "id, order_code, status, courier, tracking_number, tracking_url, estimated_delivery, created_at, customer_email",
       )
       .eq("order_code", data.order_code)
-      .ilike("customer_email", data.email)
       .maybeSingle();
-    if (!order) return { found: false as const };
+    if (!order || String((order as any).customer_email ?? "").toLowerCase() !== data.email.trim().toLowerCase()) {
+      return { found: false as const };
+    }
+    
     const { data: events } = await supabaseAdmin
       .from("order_events")
       .select("event_type, title, description, created_at")

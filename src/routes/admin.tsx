@@ -26,6 +26,8 @@ import {
   panelGlobalSearch,
 } from "@/lib/api/panel.functions";
 import { STATUS_FLOW, STATUS_LABEL } from "@/lib/api/orders.functions";
+import { panelListAnalyses, panelAnalyzeFile, panelApplyOverride } from "@/lib/api/factory.functions";
+import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -399,7 +401,7 @@ function NewOrderModal({ create, onClose, onCreated }: any) {
 }
 
 // ============= ORDER DETAIL =============
-const ORDER_TABS = ["customer", "files", "updates", "tracking", "images", "comments", "status"] as const;
+const ORDER_TABS = ["customer", "ai", "files", "updates", "tracking", "images", "comments", "status"] as const;
 type OrderTab = typeof ORDER_TABS[number];
 
 function OrderDetail({ code, onBack }: { code: string; onBack: () => void }) {
@@ -457,12 +459,100 @@ function OrderDetail({ code, onBack }: { code: string; onBack: () => void }) {
       </div>
 
       {tab === "customer" && <TabCustomer o={o} patch={patch} />}
+      {tab === "ai" && <TabAI code={code} orderMeta={o} />}
       {tab === "files" && <TabFiles d={d} code={code} refresh={refresh} />}
       {tab === "updates" && <TabUpdates d={d} code={code} refresh={refresh} />}
       {tab === "tracking" && <TabTracking o={o} patch={patch} />}
       {tab === "images" && <TabImages d={d} code={code} refresh={refresh} />}
       {tab === "comments" && <TabComments d={d} code={code} refresh={refresh} />}
       {tab === "status" && <TabStatus o={o} patch={patch} />}
+    </div>
+  );
+}
+
+function TabAI({ code, orderMeta }: { code: string; orderMeta: any }) {
+  const list = useServerFn(panelListAnalyses);
+  const analyze = useServerFn(panelAnalyzeFile);
+  const override = useServerFn(panelApplyOverride);
+  const [rows, setRows] = useState<any[] | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [price, setPrice] = useState<string>("");
+
+  const meta = (orderMeta?.metadata ?? {}) as any;
+  const mode: "prototype" | "durable" | "decorative" =
+    meta.production_mode === "durable" || meta.production_mode === "functional" ? "durable" :
+    meta.production_mode === "decorative" || meta.production_mode === "display" ? "decorative" : "prototype";
+
+  async function refresh() {
+    try { const r = await list({ data: { order_code: code } }); setRows(r as any[]); }
+    catch (e: any) { setErr(e.message ?? "Failed to load analyses"); }
+  }
+  useEffect(() => { refresh(); /* eslint-disable-next-line */ }, [code]);
+
+  async function run() {
+    setBusy(true); setErr(null);
+    try {
+      await analyze({ data: { order_code: code, service: "3d_printing", production_mode: mode } });
+      await refresh();
+    } catch (e: any) { setErr(e.message ?? "Analysis failed"); }
+    finally { setBusy(false); }
+  }
+  async function saveOverride(id: string) {
+    const n = Number(price);
+    if (!Number.isFinite(n) || n < 0) return;
+    setBusy(true);
+    try { await override({ data: { id, patch: { quote_price_eur: n, note: "Admin override from order detail" } } }); setPrice(""); await refresh(); }
+    catch (e: any) { setErr(e.message ?? "Override failed"); }
+    finally { setBusy(false); }
+  }
+
+  const latest = rows?.[0] ?? null;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <div className="text-[10px] font-mono tracking-[0.3em] uppercase text-white/40">AI Manufacturing Analysis</div>
+          <div className="text-xs text-white/60 mt-1">Purpose: <span className="text-white capitalize">{mode}</span> · Timeline: <span className="text-white capitalize">{meta.timeline ?? "standard"}</span> · Qty: <span className="text-white">{orderMeta?.quantity ?? 1}</span></div>
+        </div>
+        <button onClick={run} disabled={busy} className="bg-amber-300 text-black rounded-sm px-4 py-2 text-[10px] font-mono tracking-[0.3em] font-semibold disabled:opacity-40">
+          {busy ? "ANALYZING…" : latest ? "RE-RUN ANALYSIS" : "RUN AI ANALYSIS"}
+        </button>
+      </div>
+      {err && <div className="text-xs text-red-300 border border-red-400/30 rounded p-2">{err}</div>}
+      {!rows && <div className="text-xs text-white/40">Loading…</div>}
+      {rows && rows.length === 0 && (
+        <div className="text-xs text-white/50 border border-white/10 rounded p-4">
+          No analysis yet. Click <span className="text-amber-300">Run AI Analysis</span> to generate one from the latest uploaded file.
+        </div>
+      )}
+      {latest && (
+        <>
+          <AIAnalysisCard a={latest} adminView />
+          <div className="border border-amber-300/20 rounded p-4 bg-amber-300/[0.02]">
+            <div className="text-[10px] font-mono tracking-[0.3em] uppercase text-amber-300/80 mb-2">Admin Price Override</div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-white/50">€</span>
+              <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder={String(latest.quote_price_eur ?? "")} className="bg-black/40 border border-white/10 rounded px-2 py-1.5 text-sm w-32 outline-none focus:border-amber-300/60" />
+              <button onClick={() => saveOverride(latest.id)} disabled={busy || !price} className="border border-amber-300/40 hover:border-amber-300 text-amber-200 rounded px-3 py-1.5 text-[10px] font-mono tracking-[0.3em] disabled:opacity-40">SAVE</button>
+              <span className="text-[10px] text-white/40 ml-2">Overrides sync to the order quote_price.</span>
+            </div>
+          </div>
+        </>
+      )}
+      {rows && rows.length > 1 && (
+        <details className="border border-white/10 rounded p-3">
+          <summary className="text-xs text-white/60 cursor-pointer">Previous analyses ({rows.length - 1})</summary>
+          <div className="mt-3 space-y-3">
+            {rows.slice(1).map((a) => (
+              <div key={a.id} className="text-xs text-white/50 border-t border-white/5 pt-2">
+                <span className="font-mono">{new Date(a.created_at).toLocaleString()}</span> · €{Number(a.quote_price_eur ?? 0).toFixed(2)} · {a.recommended_material}
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
     </div>
   );
 }

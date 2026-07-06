@@ -41,10 +41,13 @@ function PortalOrderPage() {
     try {
       const d = await get({ data: { order_code: orderCode } });
       setData(d);
-      // load latest AI analysis (best-effort)
-      listAnalyses({ data: { order_code: orderCode } })
-        .then((rows: any) => setAnalysis(Array.isArray(rows) && rows.length ? rows[0] : null))
-        .catch(() => {});
+      // load latest AI analysis (best-effort; requires the customer email for auth)
+      const email = (d as any)?.order?.customer_email;
+      if (email) {
+        listAnalyses({ data: { order_code: orderCode, email } })
+          .then((rows: any) => setAnalysis(Array.isArray(rows) && rows.length ? rows[0] : null))
+          .catch(() => {});
+      }
       // Preview first STL/OBJ file
       const previewable = (d?.files ?? []).find((f: any) =>
         /\.(stl|obj)$/i.test(f.file_name || ""),
