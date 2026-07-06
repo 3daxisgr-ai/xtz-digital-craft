@@ -38,6 +38,7 @@ import { Route as AdminConfigRouteImport } from './routes/admin_.config'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
@@ -187,6 +188,12 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -218,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -249,6 +257,7 @@ export interface FileRoutesByTo {
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -281,6 +290,7 @@ export interface FileRoutesById {
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
     | '/.mcp/invoke-tool/$tool'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
     | '/.mcp/invoke-tool/$tool'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
@@ -376,6 +388,7 @@ export interface FileRouteTypes {
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
     | '/.mcp/invoke-tool/$tool'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -407,6 +420,7 @@ export interface RootRouteChildren {
   GrCustomMetalPartsRoute: typeof GrCustomMetalPartsRoute
   GrRapidPrototypingRoute: typeof GrRapidPrototypingRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -614,6 +628,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -658,6 +679,7 @@ const rootRouteChildren: RootRouteChildren = {
   GrCustomMetalPartsRoute: GrCustomMetalPartsRoute,
   GrRapidPrototypingRoute: GrRapidPrototypingRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
