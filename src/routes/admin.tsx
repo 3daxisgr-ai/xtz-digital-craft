@@ -24,9 +24,15 @@ import {
   panelGetCustomer,
   panelListLogs,
   panelGlobalSearch,
+  panelSendCustomerUpdate,
+  panelCompleteProduction,
+  panelAssignPrinter,
+  panelMoveJobInQueue,
+  panelGetOrderJob,
+  panelFactoryDashboard,
 } from "@/lib/api/panel.functions";
 import { STATUS_FLOW, STATUS_LABEL } from "@/lib/api/orders.functions";
-import { panelListAnalyses, panelAnalyzeFile, panelApplyOverride } from "@/lib/api/factory.functions";
+import { panelListAnalyses, panelAnalyzeFile, panelApplyOverride, panelListMachines } from "@/lib/api/factory.functions";
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 
 export const Route = createFileRoute("/admin")({
