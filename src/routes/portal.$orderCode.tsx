@@ -297,7 +297,7 @@ function DelayAndAssistant({ orderCode }: { orderCode: string }) {
 
   return (
     <section className="border border-white/10 bg-white/[0.02] rounded-lg p-5 md:p-6">
-      <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40 mb-4">Delivery outlook & AI assistant</div>
+      <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40 mb-4">Delivery outlook & order assistant</div>
       {pred ? (
         <div className="grid md:grid-cols-3 gap-4 mb-6">
           <div>
