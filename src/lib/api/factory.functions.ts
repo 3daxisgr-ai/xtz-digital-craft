@@ -508,7 +508,7 @@ async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
     .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, service, "prototype"))
     .select("*").single();
   if (saveErr) throw saveErr;
-  await wireBackToOrder(order.id, parsed);
+  await wireBackToOrder(order.id, parsed, (saved as any)?.id);
   return saved;
 }
 
