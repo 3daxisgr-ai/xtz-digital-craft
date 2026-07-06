@@ -51,9 +51,9 @@ function LivePage() {
           <div className="text-xs text-white/40 mt-0.5">Refreshes every 15s · Updated {new Date(data.updated_at).toLocaleTimeString()}</div>
         </div>
         <div className="flex gap-3 text-xs">
-          <Link to="/admin_/scheduler" className="text-sky-300 hover:text-sky-200">Scheduler →</Link>
-          <Link to="/admin_/factory" className="text-sky-300 hover:text-sky-200">Factory →</Link>
-          <Link to="/admin_/config" className="text-sky-300 hover:text-sky-200">Config →</Link>
+          <Link to="/admin/scheduler" className="text-sky-300 hover:text-sky-200">Scheduler →</Link>
+          <Link to="/admin/factory" className="text-sky-300 hover:text-sky-200">Factory →</Link>
+          <Link to="/admin/config" className="text-sky-300 hover:text-sky-200">Config →</Link>
           <Link to="/admin" className="text-white/60 hover:text-white">Admin ←</Link>
         </div>
       </header>

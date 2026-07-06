@@ -35,7 +35,7 @@ function SchedulerPage() {
           <h1 className="text-xl font-semibold">Smart Scheduler & Production Queue</h1>
         </div>
         <div className="flex gap-3 text-sm">
-          <Link to="/admin_/factory" className="text-white/70 hover:text-white">Factory Control →</Link>
+          <Link to="/admin/factory" className="text-white/70 hover:text-white">Factory Control →</Link>
           <Link to="/admin" className="text-white/70 hover:text-white">← Admin</Link>
         </div>
       </header>
