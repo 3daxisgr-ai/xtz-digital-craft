@@ -116,10 +116,35 @@ export const panelDeleteMaterial = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     await requireAdminCookie();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("materials" as any).delete().eq("id", data.id);
+    // Soft-disable instead of hard-delete: materials are never destroyed
+    // (existing orders reference them for history + reporting).
+    const { error } = await supabaseAdmin
+      .from("materials" as any)
+      .update({ status: "disabled", active: false } as any)
+      .eq("id", data.id);
     if (error) throw error;
     return { ok: true };
   });
+
+export const panelSetMaterialStatus = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({
+      id: z.string().uuid(),
+      status: z.enum(["in_stock", "low_stock", "out_of_stock", "disabled"]),
+    }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Keep `active` flag in sync with the disabled status so legacy queries
+    // that still filter `.eq('active', true)` behave correctly.
+    const patch: any = { status: data.status, active: data.status !== "disabled" };
+    const { data: row, error } = await supabaseAdmin
+      .from("materials" as any).update(patch).eq("id", data.id).select("*").single();
+    if (error) throw error;
+    return row;
+  });
+
 
 // ---------------- FACTORY SETTINGS (profit protection) ----------------
 
