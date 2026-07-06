@@ -210,8 +210,16 @@ function QuotePage() {
       ? "Ελήφθη. Η μηχανική ομάδα μας ετοιμάζει την προσφορά σας."
       : "Received. Our engineering team is preparing your quote.",
     inStock: isGR ? "Διαθέσιμο" : "In stock",
+    lowStock: isGR ? "Χαμηλό απόθεμα" : "Low stock",
     oos: isGR ? "Εξαντλημένο" : "Out of stock",
+    lowStockWarn: isGR
+      ? "Περιορισμένη διαθεσιμότητα. Ο χρόνος παράδοσης ενδέχεται να επηρεαστεί."
+      : "Limited availability. Delivery time may be affected.",
+    oosWarn: isGR
+      ? "Αυτό το υλικό δεν είναι διαθέσιμο αυτή τη στιγμή. Επιλέξτε άλλο υλικό ή επικοινωνήστε με την TOREO."
+      : "This material is currently unavailable. Please choose another material or contact TOREO for a custom request.",
   };
+
 
   const purposes: Array<{ id: ProductionMode; title: string; blurb: string }> = [
     { id: "prototype", title: isGR ? "Πρωτότυπο" : "Prototype", blurb: isGR ? "Γρήγορο & οικονομικό. Για validation & fit test." : "Fast & economical. Concept validation & fit test." },
