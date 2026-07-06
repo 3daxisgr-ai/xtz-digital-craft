@@ -31,7 +31,9 @@ import { Route as GrCustomMetalPartsRouteImport } from './routes/gr.custom-metal
 import { Route as GrCncMachiningRouteImport } from './routes/gr.cnc-machining'
 import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
 import { Route as AdminSchedulerRouteImport } from './routes/admin_.scheduler'
+import { Route as AdminLiveRouteImport } from './routes/admin_.live'
 import { Route as AdminFactoryRouteImport } from './routes/admin_.factory'
+import { Route as AdminConfigRouteImport } from './routes/admin_.config'
 
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
@@ -143,9 +145,19 @@ const AdminSchedulerRoute = AdminSchedulerRouteImport.update({
   path: '/admin/scheduler',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLiveRoute = AdminLiveRouteImport.update({
+  id: '/admin_/live',
+  path: '/admin/live',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminFactoryRoute = AdminFactoryRouteImport.update({
   id: '/admin_/factory',
   path: '/admin/factory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminConfigRoute = AdminConfigRouteImport.update({
+  id: '/admin_/config',
+  path: '/admin/config',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -166,7 +178,9 @@ export interface FileRoutesByFullPath {
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/track': typeof TrackRoute
+  '/admin/config': typeof AdminConfigRoute
   '/admin/factory': typeof AdminFactoryRoute
+  '/admin/live': typeof AdminLiveRoute
   '/admin/scheduler': typeof AdminSchedulerRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
@@ -191,7 +205,9 @@ export interface FileRoutesByTo {
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/track': typeof TrackRoute
+  '/admin/config': typeof AdminConfigRoute
   '/admin/factory': typeof AdminFactoryRoute
+  '/admin/live': typeof AdminLiveRoute
   '/admin/scheduler': typeof AdminSchedulerRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
@@ -217,7 +233,9 @@ export interface FileRoutesById {
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
   '/track': typeof TrackRoute
+  '/admin_/config': typeof AdminConfigRoute
   '/admin_/factory': typeof AdminFactoryRoute
+  '/admin_/live': typeof AdminLiveRoute
   '/admin_/scheduler': typeof AdminSchedulerRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
@@ -244,7 +262,9 @@ export interface FileRouteTypes {
     | '/start'
     | '/start-project'
     | '/track'
+    | '/admin/config'
     | '/admin/factory'
+    | '/admin/live'
     | '/admin/scheduler'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
@@ -269,7 +289,9 @@ export interface FileRouteTypes {
     | '/start'
     | '/start-project'
     | '/track'
+    | '/admin/config'
     | '/admin/factory'
+    | '/admin/live'
     | '/admin/scheduler'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
@@ -294,7 +316,9 @@ export interface FileRouteTypes {
     | '/start'
     | '/start-project'
     | '/track'
+    | '/admin_/config'
     | '/admin_/factory'
+    | '/admin_/live'
     | '/admin_/scheduler'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
@@ -320,7 +344,9 @@ export interface RootRouteChildren {
   StartRoute: typeof StartRoute
   StartProjectRoute: typeof StartProjectRoute
   TrackRoute: typeof TrackRoute
+  AdminConfigRoute: typeof AdminConfigRoute
   AdminFactoryRoute: typeof AdminFactoryRoute
+  AdminLiveRoute: typeof AdminLiveRoute
   AdminSchedulerRoute: typeof AdminSchedulerRoute
   CapabilitiesSlugRoute: typeof CapabilitiesSlugRoute
   GrCncMachiningRoute: typeof GrCncMachiningRoute
@@ -484,11 +510,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSchedulerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/live': {
+      id: '/admin_/live'
+      path: '/admin/live'
+      fullPath: '/admin/live'
+      preLoaderRoute: typeof AdminLiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/factory': {
       id: '/admin_/factory'
       path: '/admin/factory'
       fullPath: '/admin/factory'
       preLoaderRoute: typeof AdminFactoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/config': {
+      id: '/admin_/config'
+      path: '/admin/config'
+      fullPath: '/admin/config'
+      preLoaderRoute: typeof AdminConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -522,7 +562,9 @@ const rootRouteChildren: RootRouteChildren = {
   StartRoute: StartRoute,
   StartProjectRoute: StartProjectRoute,
   TrackRoute: TrackRoute,
+  AdminConfigRoute: AdminConfigRoute,
   AdminFactoryRoute: AdminFactoryRoute,
+  AdminLiveRoute: AdminLiveRoute,
   AdminSchedulerRoute: AdminSchedulerRoute,
   CapabilitiesSlugRoute: CapabilitiesSlugRoute,
   GrCncMachiningRoute: GrCncMachiningRoute,

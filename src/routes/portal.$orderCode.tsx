@@ -8,6 +8,7 @@ import {
   getOrderFileUrl,
 } from "@/lib/api/orders.functions";
 import { getOrderAnalyses } from "@/lib/api/factory.functions";
+import { portalAiAssistant, portalDelayPrediction } from "@/lib/api/portal.functions";
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { StatusBadge, StatusProgress } from "@/components/portal/StatusProgress";
 const ModelViewer = lazy(() => import("@/components/factory/ModelViewer"));
@@ -175,6 +176,10 @@ function PortalOrderPage() {
           </section>
         )}
 
+        <DelayAndAssistant orderCode={orderCode} />
+
+
+
 
 
         <section className="border border-white/10 bg-white/[0.02] rounded-lg p-5 md:p-6">
@@ -257,5 +262,77 @@ function PortalOrderPage() {
         </section>
       </main>
     </div>
+  );
+}
+
+function DelayAndAssistant({ orderCode }: { orderCode: string }) {
+  const predict = useServerFn(portalDelayPrediction);
+  const ask = useServerFn(portalAiAssistant);
+  const [pred, setPred] = useState<any>(null);
+  const [q, setQ] = useState("");
+  const [conv, setConv] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    predict({ data: { order_code: orderCode } }).then(setPred).catch(() => {});
+  }, [orderCode]); // eslint-disable-line
+
+  async function send() {
+    const question = q.trim();
+    if (!question || busy) return;
+    setConv((c) => [...c, { role: "user", text: question }]);
+    setQ(""); setBusy(true);
+    try {
+      const r: any = await ask({ data: { order_code: orderCode, question } });
+      setConv((c) => [...c, { role: "assistant", text: r.answer }]);
+    } catch (e: any) {
+      setConv((c) => [...c, { role: "assistant", text: `Error: ${e.message ?? "assistant unavailable"}` }]);
+    } finally { setBusy(false); }
+  }
+
+  const riskColor = pred?.risk === "on_track" ? "text-emerald-300" : pred?.risk === "at_risk" ? "text-amber-300" : "text-red-400";
+
+  return (
+    <section className="border border-white/10 bg-white/[0.02] rounded-lg p-5 md:p-6">
+      <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40 mb-4">Delivery outlook & AI assistant</div>
+      {pred ? (
+        <div className="grid md:grid-cols-3 gap-4 mb-6">
+          <div>
+            <div className="text-[10px] font-mono uppercase text-white/40">Status</div>
+            <div className={`text-lg font-semibold uppercase font-mono ${riskColor}`}>{pred.risk.replace("_", " ")}</div>
+          </div>
+          <div>
+            <div className="text-[10px] font-mono uppercase text-white/40">Predicted delivery</div>
+            <div className="text-lg font-semibold">{new Date(pred.predicted_delivery).toLocaleDateString()}</div>
+            <div className="text-xs text-white/50">Target: {new Date(pred.due_date).toLocaleDateString()}</div>
+          </div>
+          <div>
+            <div className="text-[10px] font-mono uppercase text-white/40">Reasons</div>
+            <ul className="text-xs text-white/70 space-y-0.5 mt-1">
+              {pred.reasons.length === 0 ? <li className="text-emerald-300/70">On track ✓</li> : pred.reasons.map((r: string, i: number) => <li key={i}>· {r}</li>)}
+            </ul>
+          </div>
+        </div>
+      ) : (
+        <div className="text-xs text-white/40 mb-4">Calculating prediction…</div>
+      )}
+      <div className="border-t border-white/10 pt-4">
+        <div className="text-xs text-white/50 mb-2">Ask about your order — the assistant knows your current status, quote, and production plan.</div>
+        <div className="space-y-2 mb-3 max-h-64 overflow-y-auto">
+          {conv.map((m, i) => (
+            <div key={i} className={`text-sm rounded-md px-3 py-2 ${m.role === "user" ? "bg-sky-500/15 border border-sky-400/30 ml-8" : "bg-white/[0.04] border border-white/10 mr-8"}`}>
+              <div className="text-[10px] uppercase tracking-wider opacity-50 mb-1">{m.role === "user" ? "You" : "TOREO AI"}</div>
+              {m.text}
+            </div>
+          ))}
+          {busy && <div className="text-xs text-white/40 italic">Thinking…</div>}
+        </div>
+        <div className="flex gap-2">
+          <input value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()} placeholder="When will my order be ready?"
+            className="flex-1 bg-black/40 border border-white/10 rounded-md px-3 py-2 text-sm placeholder:text-white/30 focus:border-white/40 outline-none" />
+          <button onClick={send} disabled={busy || !q.trim()} className="bg-white text-black rounded-md px-4 text-sm font-semibold disabled:opacity-40">Ask</button>
+        </div>
+      </div>
+    </section>
   );
 }
