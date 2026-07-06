@@ -78,9 +78,15 @@ const materialInput = z.object({
   price_per_kg: z.number().nonnegative().optional().nullable(),
   density_g_cm3: z.number().positive().optional().nullable(),
   stock_kg: z.number().nonnegative().optional().nullable(),
+  minimum_stock_kg: z.number().nonnegative().optional().nullable(),
+  supplier: z.string().max(120).optional().nullable(),
+  last_restocked_at: z.string().optional().nullable(),
+  internal_notes: z.string().max(2000).optional().nullable(),
+  status: z.enum(["in_stock", "low_stock", "out_of_stock", "disabled"]).optional(),
   properties: z.record(z.string(), z.any()).optional().nullable(),
   active: z.boolean().default(true),
 });
+
 
 export const panelListMaterials = createServerFn({ method: "GET" }).handler(async () => {
   await requireAdminCookie();
