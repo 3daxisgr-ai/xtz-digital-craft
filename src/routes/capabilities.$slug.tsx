@@ -222,7 +222,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Series production", "OEM components", "Branded consumer products", "Replacement and spare parts"],
     seo: {
-      title: "Mass Production — CNC Machining & Custom Parts Manufacturing | TOREO",
+      title: "Mass Production — CNC & Custom Parts Manufacturing | TOREO",
       description: "Scale from prototype to series production with CNC machining, injection molding and trusted global partners — managed end to end by TOREO.",
     },
   },
