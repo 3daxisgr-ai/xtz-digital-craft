@@ -6,7 +6,9 @@ import {
   panelListMachines, panelUpsertMachine, panelDeleteMachine,
   panelListMaterials, panelUpsertMaterial, panelDeleteMaterial,
   panelAnalyzeFile, panelListAnalyses, panelDeleteAnalysis,
+  panelGetSettings, panelUpdateSettings, panelReadinessCheck, panelApplyOverride,
 } from "@/lib/api/factory.functions";
+import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -39,11 +41,129 @@ function FactoryPage() {
         <Link to="/admin" className="text-sm text-white/70 hover:text-white">← Back to Admin</Link>
       </header>
       <main className="p-6 grid gap-8 max-w-7xl mx-auto">
+        <div className="flex gap-4 text-sm">
+          <Link to="/admin_/scheduler" className="text-sky-300 hover:text-sky-200">→ Smart Scheduler</Link>
+        </div>
+        <SettingsPanel />
         <MachinesPanel />
         <MaterialsPanel />
         <AnalysisPanel />
+        <ReadinessPanel />
       </main>
     </div>
+  );
+}
+
+function SettingsPanel() {
+  const load = useServerFn(panelGetSettings);
+  const save = useServerFn(panelUpdateSettings);
+  const [s, setS] = useState<any>(null);
+  useEffect(() => { load().then(setS).catch(() => {}); }, []);
+  if (!s) return null;
+  const num = (k: string, label: string, suffix = "") => (
+    <label className="block">
+      <span className="text-[10px] uppercase tracking-widest text-white/40">{label}</span>
+      <div className="flex items-center gap-1 mt-1">
+        <Input type="number" step="0.01" value={s[k] ?? ""} onChange={(e) => setS({ ...s, [k]: e.target.value === "" ? null : Number(e.target.value) })} className="bg-black/40 border-white/10 text-white" />
+        {suffix && <span className="text-xs text-white/40">{suffix}</span>}
+      </div>
+    </label>
+  );
+  return (
+    <Card className="bg-neutral-900 border-white/10 text-white p-5">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-lg font-semibold">Business Settings — Profit Protection</h2>
+          <p className="text-sm text-white/50">Floors enforced on every AI quotation. Below these, the quote is bumped up automatically.</p>
+        </div>
+        <Button onClick={async () => { try { await save({ data: { min_margin_pct: Number(s.min_margin_pct), min_hourly_rate_eur: Number(s.min_hourly_rate_eur), min_production_charge_eur: Number(s.min_production_charge_eur), min_order_value_eur: Number(s.min_order_value_eur), allow_overnight_default: !!s.allow_overnight_default, work_start_hour: Number(s.work_start_hour), work_end_hour: Number(s.work_end_hour), currency: s.currency ?? "EUR" } }); toast.success("Saved"); } catch (e: any) { toast.error(e.message ?? String(e)); } }}>Save</Button>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {num("min_margin_pct", "Min margin", "%")}
+        {num("min_hourly_rate_eur", "Min hourly rate", "€/h")}
+        {num("min_production_charge_eur", "Min production charge", "€")}
+        {num("min_order_value_eur", "Min order value", "€")}
+        {num("work_start_hour", "Work start", "h")}
+        {num("work_end_hour", "Work end", "h")}
+        <label className="flex items-center gap-2 pt-6">
+          <input type="checkbox" checked={!!s.allow_overnight_default} onChange={(e) => setS({ ...s, allow_overnight_default: e.target.checked })} />
+          <span className="text-sm">Autonomous overnight OK by default</span>
+        </label>
+      </div>
+    </Card>
+  );
+}
+
+function ReadinessPanel() {
+  const check = useServerFn(panelReadinessCheck);
+  const override = useServerFn(panelApplyOverride);
+  const listA = useServerFn(panelListAnalyses);
+  const [code, setCode] = useState("");
+  const [result, setResult] = useState<any>(null);
+  const [analysis, setAnalysis] = useState<any>(null);
+  const [overrideForm, setOverrideForm] = useState({ quote_price_eur: "", note: "" });
+
+  async function run() {
+    if (!code.trim()) return;
+    try {
+      const r = await check({ data: { order_code: code.trim() } });
+      setResult(r);
+      const list: any = await listA({ data: { order_code: code.trim() } });
+      setAnalysis(Array.isArray(list) ? list[0] : null);
+    } catch (e: any) { toast.error(e.message ?? String(e)); }
+  }
+
+  async function submitOverride() {
+    if (!analysis) return;
+    const patch: any = { note: overrideForm.note || undefined };
+    if (overrideForm.quote_price_eur) patch.quote_price_eur = Number(overrideForm.quote_price_eur);
+    try { await override({ data: { id: analysis.id, patch } }); toast.success("Override logged"); setOverrideForm({ quote_price_eur: "", note: "" }); run(); }
+    catch (e: any) { toast.error(e.message ?? String(e)); }
+  }
+
+  const levelColor = result?.level === "production_ready" ? "text-emerald-300" : result?.level === "nearly_ready" ? "text-amber-300" : "text-red-300";
+  return (
+    <Card className="bg-neutral-900 border-white/10 text-white p-5">
+      <div className="flex items-end gap-3 mb-4">
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold">Manufacturing Readiness</h2>
+          <p className="text-sm text-white/50">Pre-production checklist. Run before scheduling any job.</p>
+        </div>
+        <div>
+          <label className="text-[10px] uppercase tracking-widest text-white/40">Order code</label>
+          <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="TR-2026-0001" className="bg-black/40 border-white/10 text-white w-40" />
+        </div>
+        <Button onClick={run}>Check</Button>
+      </div>
+
+      {result && (
+        <>
+          <div className={`text-sm font-mono uppercase tracking-widest ${levelColor}`}>Status · {result.level.replace(/_/g, " ")}</div>
+          <ul className="mt-3 divide-y divide-white/5">
+            {result.checks.map((c: any) => (
+              <li key={c.key} className="py-2 flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <span className={c.ok ? "text-emerald-400" : "text-red-400"}>{c.ok ? "✓" : "✗"}</span>
+                  <span className="text-sm">{c.label}</span>
+                </div>
+                {c.note && <span className="text-xs text-white/50 max-w-xs text-right">{c.note}</span>}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {analysis && (
+        <div className="mt-6">
+          <AIAnalysisCard a={analysis} adminView />
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            <Input placeholder="Override quote €" value={overrideForm.quote_price_eur} onChange={(e) => setOverrideForm({ ...overrideForm, quote_price_eur: e.target.value })} className="bg-black/40 border-white/10 text-white" />
+            <Input placeholder="Reason (logged)" value={overrideForm.note} onChange={(e) => setOverrideForm({ ...overrideForm, note: e.target.value })} className="bg-black/40 border-white/10 text-white col-span-1" />
+            <Button onClick={submitOverride} variant="secondary">Apply override</Button>
+          </div>
+        </div>
+      )}
+    </Card>
   );
 }
 

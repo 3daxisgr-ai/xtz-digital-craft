@@ -85,6 +85,54 @@ export type Database = {
           },
         ]
       }
+      factory_settings: {
+        Row: {
+          allow_overnight_default: boolean
+          created_at: string
+          currency: string
+          id: string
+          min_hourly_rate_eur: number
+          min_margin_pct: number
+          min_order_value_eur: number
+          min_production_charge_eur: number
+          singleton: boolean
+          updated_at: string
+          updated_by: string | null
+          work_end_hour: number
+          work_start_hour: number
+        }
+        Insert: {
+          allow_overnight_default?: boolean
+          created_at?: string
+          currency?: string
+          id?: string
+          min_hourly_rate_eur?: number
+          min_margin_pct?: number
+          min_order_value_eur?: number
+          min_production_charge_eur?: number
+          singleton?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          work_end_hour?: number
+          work_start_hour?: number
+        }
+        Update: {
+          allow_overnight_default?: boolean
+          created_at?: string
+          currency?: string
+          id?: string
+          min_hourly_rate_eur?: number
+          min_margin_pct?: number
+          min_order_value_eur?: number
+          min_production_charge_eur?: number
+          singleton?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          work_end_hour?: number
+          work_start_hour?: number
+        }
+        Relationships: []
+      }
       machine_calendar_blocks: {
         Row: {
           created_at: string
@@ -567,85 +615,136 @@ export type Database = {
       }
       project_analyses: {
         Row: {
+          actual_cost_eur: number | null
+          actual_material_g: number | null
+          actual_print_hours: number | null
+          admin_overrides: Json | null
           ai_recommendations: Json | null
           ai_summary: string | null
           ai_warnings: Json | null
+          complexity_band: string | null
           complexity_score: number | null
           confidence: number | null
+          confidence_band: string | null
+          cost_breakdown: Json | null
           created_at: string
           created_by: string | null
           dfm_score: number | null
           estimated_cost_eur: number | null
+          estimated_layers: number | null
           estimated_material_g: number | null
           estimated_print_hours: number | null
+          extrusion_length_m: number | null
           file_id: string | null
           file_name: string | null
           id: string
           order_id: string | null
+          price_explanation: string | null
           printability_score: number | null
           production_mode: string | null
           project_id: string | null
+          quality_predictions: Json | null
           quote_price_eur: number | null
           raw: Json | null
           recommended_infill_pct: number | null
           recommended_layer_height_mm: number | null
           recommended_material: string | null
           recommended_nozzle: string | null
+          recommended_orientation: string | null
+          risk_analysis: Json | null
           service: string
+          support_difficulty: string | null
+          support_hours: number | null
+          support_volume_cm3: number | null
+          travel_length_m: number | null
         }
         Insert: {
+          actual_cost_eur?: number | null
+          actual_material_g?: number | null
+          actual_print_hours?: number | null
+          admin_overrides?: Json | null
           ai_recommendations?: Json | null
           ai_summary?: string | null
           ai_warnings?: Json | null
+          complexity_band?: string | null
           complexity_score?: number | null
           confidence?: number | null
+          confidence_band?: string | null
+          cost_breakdown?: Json | null
           created_at?: string
           created_by?: string | null
           dfm_score?: number | null
           estimated_cost_eur?: number | null
+          estimated_layers?: number | null
           estimated_material_g?: number | null
           estimated_print_hours?: number | null
+          extrusion_length_m?: number | null
           file_id?: string | null
           file_name?: string | null
           id?: string
           order_id?: string | null
+          price_explanation?: string | null
           printability_score?: number | null
           production_mode?: string | null
           project_id?: string | null
+          quality_predictions?: Json | null
           quote_price_eur?: number | null
           raw?: Json | null
           recommended_infill_pct?: number | null
           recommended_layer_height_mm?: number | null
           recommended_material?: string | null
           recommended_nozzle?: string | null
+          recommended_orientation?: string | null
+          risk_analysis?: Json | null
           service?: string
+          support_difficulty?: string | null
+          support_hours?: number | null
+          support_volume_cm3?: number | null
+          travel_length_m?: number | null
         }
         Update: {
+          actual_cost_eur?: number | null
+          actual_material_g?: number | null
+          actual_print_hours?: number | null
+          admin_overrides?: Json | null
           ai_recommendations?: Json | null
           ai_summary?: string | null
           ai_warnings?: Json | null
+          complexity_band?: string | null
           complexity_score?: number | null
           confidence?: number | null
+          confidence_band?: string | null
+          cost_breakdown?: Json | null
           created_at?: string
           created_by?: string | null
           dfm_score?: number | null
           estimated_cost_eur?: number | null
+          estimated_layers?: number | null
           estimated_material_g?: number | null
           estimated_print_hours?: number | null
+          extrusion_length_m?: number | null
           file_id?: string | null
           file_name?: string | null
           id?: string
           order_id?: string | null
+          price_explanation?: string | null
           printability_score?: number | null
           production_mode?: string | null
           project_id?: string | null
+          quality_predictions?: Json | null
           quote_price_eur?: number | null
           raw?: Json | null
           recommended_infill_pct?: number | null
           recommended_layer_height_mm?: number | null
           recommended_material?: string | null
           recommended_nozzle?: string | null
+          recommended_orientation?: string | null
+          risk_analysis?: Json | null
           service?: string
+          support_difficulty?: string | null
+          support_hours?: number | null
+          support_volume_cm3?: number | null
+          travel_length_m?: number | null
         }
         Relationships: [
           {
