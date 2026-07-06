@@ -4,6 +4,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { useSession } from "@tanstack/react-start/server";
 import { z } from "zod";
+import { computePrice, type PriceInputs } from "@/lib/pricing";
 
 type AdminSession = { authed?: boolean; ts?: number };
 function sessionConfig() {
@@ -344,14 +345,8 @@ async function loadContext() {
   return { machines: machines ?? [], materials: materials ?? [], settings: settings ?? null };
 }
 
-// Enforce profit protection floors (post-AI safety net).
-function enforceMinimums(parsed: AiResult, settings: any): AiResult {
-  if (!settings) return parsed;
-  const minCharge = Number((settings as any).min_production_charge_eur ?? 0);
-  const minOrder = Number((settings as any).min_order_value_eur ?? 0);
-  const minMargin = Number((settings as any).min_margin_pct ?? 0) / 100;
-  const floor = Math.max(minCharge, minOrder, parsed.estimated_cost_eur * (1 + minMargin));
-  if (parsed.quote_price_eur < floor) parsed.quote_price_eur = Math.round(floor * 100) / 100;
+// Fill in bands only; the deterministic pricing engine (below) owns price.
+function enforceMinimums(parsed: AiResult, _settings: any): AiResult {
   if (!parsed.confidence_band) {
     parsed.confidence_band = parsed.confidence >= 95 ? "very_high" : parsed.confidence >= 85 ? "high" : parsed.confidence >= 70 ? "medium" : "review_recommended";
   }
@@ -360,6 +355,41 @@ function enforceMinimums(parsed: AiResult, settings: any): AiResult {
     parsed.complexity_band = c <= 20 ? "very_simple" : c <= 40 ? "simple" : c <= 60 ? "medium" : c <= 80 ? "complex" : "very_complex";
   }
   return parsed;
+}
+
+// Deterministic pricing — replaces AI-produced quote_price_eur with a formula
+// over stored machine/material/setting values. Same inputs → same price.
+async function applyDeterministicPricing(
+  parsed: AiResult,
+  order: any,
+  mode: "prototype" | "durable" | "decorative",
+  timeline: "flexible" | "standard" | "urgent",
+  ctx: { machines: any[]; materials: any[]; settings: any },
+  assignedMachine: any | null,
+) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: queued } = await supabaseAdmin
+    .from("production_jobs" as any).select("estimated_hours").eq("state", "queued");
+  const backlog_hours = ((queued ?? []) as any[]).reduce((n, j) => n + Number(j.estimated_hours ?? 0), 0);
+
+  const inputs: PriceInputs = {
+    material_grams: Number(parsed.estimated_material_g ?? 0),
+    print_hours: Number(parsed.estimated_print_hours ?? 0),
+    support_hours: parsed.support_hours ?? 0,
+    complexity_score: Number(parsed.complexity_score ?? 50),
+    production_mode: mode,
+    quantity: Math.max(1, Number((order as any)?.quantity ?? 1) || 1),
+    timeline,
+    recommended_material: parsed.recommended_material,
+  };
+  const priced = computePrice(inputs, {
+    materials: ctx.materials, machines: ctx.machines, settings: ctx.settings,
+    backlog_hours, assigned_machine: assignedMachine,
+  });
+  parsed.estimated_cost_eur = priced.estimated_cost_eur;
+  parsed.quote_price_eur = priced.quote_price_eur;
+  parsed.cost_breakdown = { ...(parsed.cost_breakdown ?? {}), ...priced.cost_breakdown } as any;
+  return { priced };
 }
 
 function pickMachine(machines: any[], parsed: AiResult, mode: string, timeline: string) {
@@ -502,6 +532,11 @@ export const panelAnalyzeFile = createServerFn({ method: "POST" })
 
     let parsed = await callAi(payload);
     parsed = enforceMinimums(parsed, settings);
+    // Deterministic pricing overrides AI-produced price.
+    const orderMeta = ((order as any)?.metadata ?? {}) as any;
+    const timelineAdmin = (["flexible","standard","urgent"].includes(String(orderMeta.timeline)) ? String(orderMeta.timeline) : "standard") as "flexible"|"standard"|"urgent";
+    const assigned = pickMachine(machines as any[], parsed, data.production_mode, timelineAdmin);
+    await applyDeterministicPricing(parsed, order, data.production_mode, timelineAdmin, { machines, materials, settings }, assigned);
 
     const { data: saved, error: saveErr } = await supabaseAdmin
       .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, data.service, data.production_mode))
@@ -559,25 +594,9 @@ async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
   };
   let parsed = await callAi(payload);
   parsed = enforceMinimums(parsed, settings);
-  // Urgency surcharge: apply if queue is heavily loaded or timeline is urgent.
-  const timeline = String(meta.timeline ?? "standard");
-  const s: any = settings ?? {};
-  const perUnit: Record<string, number> = {
-    flexible: Number(s.urgency_surcharge_flexible_eur ?? 0),
-    standard: Number(s.urgency_surcharge_standard_eur ?? 0),
-    urgent: Number(s.urgency_surcharge_urgent_eur ?? 10),
-  };
-  const threshold = Number(s.urgency_high_load_threshold_hours ?? 24);
-  const { data: queued } = await supabaseAdmin.from("production_jobs" as any).select("estimated_hours").eq("state", "queued");
-  const backlog = ((queued ?? []) as any[]).reduce((n, j) => n + Number(j.estimated_hours ?? 0), 0);
-  let surcharge = perUnit[timeline] ?? 0;
-  if (timeline === "urgent" && backlog >= threshold) surcharge += 5;
-  if (surcharge > 0) {
-    parsed.quote_price_eur = Math.round((parsed.quote_price_eur + surcharge) * 100) / 100;
-    const cb: any = parsed.cost_breakdown ?? {};
-    cb.urgency_surcharge_eur = surcharge;
-    parsed.cost_breakdown = cb;
-  }
+  const timeline = (["flexible","standard","urgent"].includes(String(meta.timeline)) ? String(meta.timeline) : "standard") as "flexible"|"standard"|"urgent";
+  const assigned = pickMachine(machines as any[], parsed, mode, timeline);
+  await applyDeterministicPricing(parsed, order, mode, timeline, { machines, materials, settings }, assigned);
   const { data: saved, error: saveErr } = await supabaseAdmin
     .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, service, mode))
     .select("*").single();
@@ -714,3 +733,37 @@ export const getPublicPrintingMaterials = createServerFn({ method: "GET" }).hand
   rows.sort((a, b) => (a.family + a.name).localeCompare(b.family + b.name));
   return rows;
 });
+
+// -------- Admin: Recalculate deterministic price for an existing analysis --------
+export const panelRecalculatePrice = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: a } = await supabaseAdmin.from("project_analyses" as any).select("*").eq("id", data.id).maybeSingle();
+    if (!a) throw new Error("Analysis not found");
+    const { data: order } = await supabaseAdmin.from("orders").select("*").eq("id", (a as any).order_id).single();
+    const ctx = await loadContext();
+    const meta = ((order as any)?.metadata ?? {}) as any;
+    const timeline = (["flexible","standard","urgent"].includes(String(meta.timeline)) ? String(meta.timeline) : "standard") as "flexible"|"standard"|"urgent";
+    const modeRaw = String((a as any).production_mode ?? meta.production_mode ?? "prototype");
+    const mode = (modeRaw === "durable" || modeRaw === "decorative" ? modeRaw : "prototype") as "prototype"|"durable"|"decorative";
+    const parsed: any = {
+      estimated_material_g: Number((a as any).estimated_material_g ?? 0),
+      estimated_print_hours: Number((a as any).estimated_print_hours ?? 0),
+      support_hours: Number((a as any).support_hours ?? 0),
+      complexity_score: Number((a as any).complexity_score ?? 50),
+      recommended_material: (a as any).recommended_material ?? null,
+      cost_breakdown: (a as any).cost_breakdown ?? {},
+      quote_price_eur: Number((a as any).quote_price_eur ?? 0),
+      estimated_cost_eur: Number((a as any).estimated_cost_eur ?? 0),
+    };
+    const assigned = ctx.machines.find((m: any) => m.id === (a as any).machine_id) ?? null;
+    await applyDeterministicPricing(parsed, order, mode, timeline, ctx, assigned);
+    const { data: saved, error } = await supabaseAdmin.from("project_analyses" as any)
+      .update({ quote_price_eur: parsed.quote_price_eur, estimated_cost_eur: parsed.estimated_cost_eur, cost_breakdown: parsed.cost_breakdown })
+      .eq("id", data.id).select("*").single();
+    if (error) throw error;
+    await supabaseAdmin.from("orders").update({ quote_price: parsed.quote_price_eur } as any).eq("id", (a as any).order_id);
+    return saved;
+  });
