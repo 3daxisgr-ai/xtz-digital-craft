@@ -60,7 +60,9 @@ function QuotePage() {
   const { lang } = useI18n();
   const isGR = lang === "GR";
 
-  const [materials, setMaterials] = useState<Array<{ code: string; name: string; family: string; in_stock: boolean }>>([]);
+  type MaterialStatus = "in_stock" | "low_stock" | "out_of_stock" | "disabled";
+  const [materials, setMaterials] = useState<Array<{ code: string; name: string; family: string; in_stock: boolean; status: MaterialStatus }>>([]);
+
   const [materialCode, setMaterialCode] = useState<string>("PLA-BLK");
   const [purpose, setPurpose] = useState<ProductionMode>("prototype");
   const [timeline, setTimeline] = useState<Timeline>("standard");
