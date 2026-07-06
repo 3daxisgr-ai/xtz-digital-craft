@@ -594,25 +594,9 @@ async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
   };
   let parsed = await callAi(payload);
   parsed = enforceMinimums(parsed, settings);
-  // Urgency surcharge: apply if queue is heavily loaded or timeline is urgent.
-  const timeline = String(meta.timeline ?? "standard");
-  const s: any = settings ?? {};
-  const perUnit: Record<string, number> = {
-    flexible: Number(s.urgency_surcharge_flexible_eur ?? 0),
-    standard: Number(s.urgency_surcharge_standard_eur ?? 0),
-    urgent: Number(s.urgency_surcharge_urgent_eur ?? 10),
-  };
-  const threshold = Number(s.urgency_high_load_threshold_hours ?? 24);
-  const { data: queued } = await supabaseAdmin.from("production_jobs" as any).select("estimated_hours").eq("state", "queued");
-  const backlog = ((queued ?? []) as any[]).reduce((n, j) => n + Number(j.estimated_hours ?? 0), 0);
-  let surcharge = perUnit[timeline] ?? 0;
-  if (timeline === "urgent" && backlog >= threshold) surcharge += 5;
-  if (surcharge > 0) {
-    parsed.quote_price_eur = Math.round((parsed.quote_price_eur + surcharge) * 100) / 100;
-    const cb: any = parsed.cost_breakdown ?? {};
-    cb.urgency_surcharge_eur = surcharge;
-    parsed.cost_breakdown = cb;
-  }
+  const timeline = (["flexible","standard","urgent"].includes(String(meta.timeline)) ? String(meta.timeline) : "standard") as "flexible"|"standard"|"urgent";
+  const assigned = pickMachine(machines as any[], parsed, mode, timeline);
+  await applyDeterministicPricing(parsed, order, mode, timeline, { machines, materials, settings }, assigned);
   const { data: saved, error: saveErr } = await supabaseAdmin
     .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, service, mode))
     .select("*").single();
