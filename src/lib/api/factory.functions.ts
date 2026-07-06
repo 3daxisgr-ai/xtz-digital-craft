@@ -363,8 +363,8 @@ async function wireBackToOrder(orderId: string, parsed: AiResult, analysisId?: s
     await supabaseAdmin.from("order_events").insert({
       order_id: orderId,
       event_type: "ai_analysis",
-      title: "AI Engineering Analysis Complete",
-      description: `DFM ${Math.round(parsed.dfm_score)}/100 · Printability ${Math.round(parsed.printability_score)}/100 · Est. €${Number(parsed.quote_price_eur).toFixed(2)}`,
+      title: "Engineering Review Complete",
+      description: `Preliminary estimate ready · €${Number(parsed.quote_price_eur).toFixed(2)}`,
       actor: "system",
       visibility: "customer",
       payload: {
