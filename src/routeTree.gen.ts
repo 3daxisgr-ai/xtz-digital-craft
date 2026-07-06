@@ -30,6 +30,7 @@ import { Route as GrRapidPrototypingRouteImport } from './routes/gr.rapid-protot
 import { Route as GrCustomMetalPartsRouteImport } from './routes/gr.custom-metal-parts'
 import { Route as GrCncMachiningRouteImport } from './routes/gr.cnc-machining'
 import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
+import { Route as AdminSchedulerRouteImport } from './routes/admin_.scheduler'
 import { Route as AdminFactoryRouteImport } from './routes/admin_.factory'
 
 const TrackRoute = TrackRouteImport.update({
@@ -137,6 +138,11 @@ const CapabilitiesSlugRoute = CapabilitiesSlugRouteImport.update({
   path: '/capabilities/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSchedulerRoute = AdminSchedulerRouteImport.update({
+  id: '/admin_/scheduler',
+  path: '/admin/scheduler',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminFactoryRoute = AdminFactoryRouteImport.update({
   id: '/admin_/factory',
   path: '/admin/factory',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/start-project': typeof StartProjectRoute
   '/track': typeof TrackRoute
   '/admin/factory': typeof AdminFactoryRoute
+  '/admin/scheduler': typeof AdminSchedulerRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByTo {
   '/start-project': typeof StartProjectRoute
   '/track': typeof TrackRoute
   '/admin/factory': typeof AdminFactoryRoute
+  '/admin/scheduler': typeof AdminSchedulerRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
@@ -210,6 +218,7 @@ export interface FileRoutesById {
   '/start-project': typeof StartProjectRoute
   '/track': typeof TrackRoute
   '/admin_/factory': typeof AdminFactoryRoute
+  '/admin_/scheduler': typeof AdminSchedulerRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
@@ -236,6 +245,7 @@ export interface FileRouteTypes {
     | '/start-project'
     | '/track'
     | '/admin/factory'
+    | '/admin/scheduler'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
@@ -260,6 +270,7 @@ export interface FileRouteTypes {
     | '/start-project'
     | '/track'
     | '/admin/factory'
+    | '/admin/scheduler'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
     | '/start-project'
     | '/track'
     | '/admin_/factory'
+    | '/admin_/scheduler'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
@@ -309,6 +321,7 @@ export interface RootRouteChildren {
   StartProjectRoute: typeof StartProjectRoute
   TrackRoute: typeof TrackRoute
   AdminFactoryRoute: typeof AdminFactoryRoute
+  AdminSchedulerRoute: typeof AdminSchedulerRoute
   CapabilitiesSlugRoute: typeof CapabilitiesSlugRoute
   GrCncMachiningRoute: typeof GrCncMachiningRoute
   GrCustomMetalPartsRoute: typeof GrCustomMetalPartsRoute
@@ -464,6 +477,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CapabilitiesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/scheduler': {
+      id: '/admin_/scheduler'
+      path: '/admin/scheduler'
+      fullPath: '/admin/scheduler'
+      preLoaderRoute: typeof AdminSchedulerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/factory': {
       id: '/admin_/factory'
       path: '/admin/factory'
@@ -503,6 +523,7 @@ const rootRouteChildren: RootRouteChildren = {
   StartProjectRoute: StartProjectRoute,
   TrackRoute: TrackRoute,
   AdminFactoryRoute: AdminFactoryRoute,
+  AdminSchedulerRoute: AdminSchedulerRoute,
   CapabilitiesSlugRoute: CapabilitiesSlugRoute,
   GrCncMachiningRoute: GrCncMachiningRoute,
   GrCustomMetalPartsRoute: GrCustomMetalPartsRoute,
