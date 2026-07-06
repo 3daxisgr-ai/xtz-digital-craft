@@ -41,7 +41,7 @@ type SectionId = typeof SECTIONS[number]["id"];
 function ConfigPage() {
   const check = useServerFn(adminCheck);
   const [authed, setAuthed] = useState<boolean | null>(null);
-  const search = useSearch({ from: "/admin/config" }) as { section?: string };
+  const search = useSearch({ from: "/admin_/config" }) as { section?: string };
   const [section, setSection] = useState<SectionId>(
     (SECTIONS.find((s) => s.id === search.section)?.id ?? "company") as SectionId,
   );
