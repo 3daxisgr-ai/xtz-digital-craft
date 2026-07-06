@@ -14,15 +14,15 @@ export const Route = createFileRoute("/3d-printing-quote")({
   head: () => ({
     meta: [
       { title: "Instant 3D Printing Quote — Rapid Prototyping | TOREO" },
-      { name: "description", content: "Upload your model, pick a material and purpose. TOREO's engineering AI prepares a preliminary quote automatically — final quote confirmed by our team." },
+      { name: "description", content: "Upload your model, pick a material and purpose. TOREO prepares a preliminary quote automatically — final quote confirmed by our engineering team." },
       { name: "keywords", content: "3D printing services, 3D printing quote, rapid prototyping, custom parts, PLA ABS PETG TPU PC, Greece" },
       { property: "og:title", content: "Instant 3D Printing Quote — Rapid Prototyping | TOREO" },
-      { property: "og:description", content: "Upload your model and describe what you need. Our engineering AI handles the technical decisions." },
+      { property: "og:description", content: "Upload your model and describe what you need. Our engineering team handles the technical decisions." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.toreo.gr/3d-printing-quote" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Instant 3D Printing Quote | TOREO" },
-      { name: "twitter:description", content: "Upload your model — our engineering team and AI decide how to manufacture it." },
+      { name: "twitter:description", content: "Upload your model — our engineering team decides how to manufacture it." },
     ],
     links: [{ rel: "canonical", href: "https://www.toreo.gr/3d-printing-quote" }],
     scripts: [
