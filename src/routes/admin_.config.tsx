@@ -58,9 +58,9 @@ function ConfigPage() {
           <h1 className="text-2xl font-semibold mt-1">Admin Control Panel</h1>
         </div>
         <div className="flex gap-4 text-xs text-white/60">
-          <Link to="/admin_/live" className="hover:text-white">Live</Link>
-          <Link to="/admin_/scheduler" className="hover:text-white">Scheduler</Link>
-          <Link to="/admin_/factory" className="hover:text-white">Factory</Link>
+          <Link to="/admin/live" className="hover:text-white">Live</Link>
+          <Link to="/admin/scheduler" className="hover:text-white">Scheduler</Link>
+          <Link to="/admin/factory" className="hover:text-white">Factory</Link>
           <Link to="/admin" className="hover:text-white">Orders</Link>
         </div>
       </header>
@@ -416,13 +416,13 @@ function SystemSection() {
   return (
     <Panel title="System">
       <div className="grid md:grid-cols-2 gap-3 text-xs">
-        <Link to="/admin_/live" className="border border-white/10 rounded p-3 hover:border-white/25 hover:bg-white/[0.03]">
+        <Link to="/admin/live" className="border border-white/10 rounded p-3 hover:border-white/25 hover:bg-white/[0.03]">
           <div className="text-white text-sm">Live Dashboard</div><div className="text-white/50 mt-1">Realtime factory telemetry, utilization, revenue.</div>
         </Link>
-        <Link to="/admin_/scheduler" className="border border-white/10 rounded p-3 hover:border-white/25 hover:bg-white/[0.03]">
+        <Link to="/admin/scheduler" className="border border-white/10 rounded p-3 hover:border-white/25 hover:bg-white/[0.03]">
           <div className="text-white text-sm">Smart Scheduler</div><div className="text-white/50 mt-1">Backlog, machine calendar, maintenance blocks.</div>
         </Link>
-        <Link to="/admin_/factory" className="border border-white/10 rounded p-3 hover:border-white/25 hover:bg-white/[0.03]">
+        <Link to="/admin/factory" className="border border-white/10 rounded p-3 hover:border-white/25 hover:bg-white/[0.03]">
           <div className="text-white text-sm">Factory Control</div><div className="text-white/50 mt-1">Machines, materials, AI analysis overrides.</div>
         </Link>
         <a href="mailto:INFO@TOREO.GR" className="border border-white/10 rounded p-3 hover:border-white/25 hover:bg-white/[0.03]">

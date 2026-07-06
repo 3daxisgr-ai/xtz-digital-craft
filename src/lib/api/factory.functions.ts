@@ -31,7 +31,7 @@ const machineInput = z.object({
   power_watts: z.number().int().nonnegative().optional().nullable(),
   status: z.enum(["idle", "running", "maintenance", "offline"]).default("idle"),
   active: z.boolean().default(true),
-  specs: z.record(z.any()).optional().nullable(),
+  specs: z.record(z.string(), z.any()).optional().nullable(),
 });
 
 export const panelListMachines = createServerFn({ method: "GET" }).handler(async () => {
@@ -78,7 +78,7 @@ const materialInput = z.object({
   price_per_kg: z.number().nonnegative().optional().nullable(),
   density_g_cm3: z.number().positive().optional().nullable(),
   stock_kg: z.number().nonnegative().optional().nullable(),
-  properties: z.record(z.any()).optional().nullable(),
+  properties: z.record(z.string(), z.any()).optional().nullable(),
   active: z.boolean().default(true),
 });
 
@@ -136,10 +136,10 @@ const settingsInput = z.object({
   urgency_surcharge_standard_eur: z.number().min(0).optional(),
   urgency_surcharge_urgent_eur: z.number().min(0).optional(),
   urgency_high_load_threshold_hours: z.number().min(0).optional(),
-  company_info: z.record(z.any()).optional(),
-  notifications: z.record(z.any()).optional(),
+  company_info: z.record(z.string(), z.any()).optional(),
+  notifications: z.record(z.string(), z.any()).optional(),
   timeline_stages: z.array(z.any()).optional(),
-  ai_modules: z.record(z.any()).optional(),
+  ai_modules: z.record(z.string(), z.any()).optional(),
 });
 
 export const panelUpdateSettings = createServerFn({ method: "POST" })
@@ -183,8 +183,8 @@ const AnalysisSchema = z.object({
   support_hours: z.number().nonnegative().optional().nullable(),
   support_difficulty: z.enum(["low", "medium", "high"]).optional().nullable(),
   // Predictions (low/medium/high with explanation)
-  quality_predictions: z.record(z.object({ level: z.enum(["low", "medium", "high"]), note: z.string().optional() })).optional().nullable(),
-  risk_analysis: z.record(z.object({ level: z.enum(["low", "medium", "high"]), note: z.string().optional() })).optional().nullable(),
+  quality_predictions: z.record(z.string(), z.object({ level: z.enum(["low", "medium", "high"]), note: z.string().optional() })).optional().nullable(),
+  risk_analysis: z.record(z.string(), z.object({ level: z.enum(["low", "medium", "high"]), note: z.string().optional() })).optional().nullable(),
   // Production
   estimated_print_hours: z.number().nonnegative(),
   estimated_material_g: z.number().nonnegative(),
