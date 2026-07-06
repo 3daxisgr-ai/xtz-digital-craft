@@ -85,6 +85,47 @@ export type Database = {
           },
         ]
       }
+      machine_calendar_blocks: {
+        Row: {
+          created_at: string
+          ends_at: string
+          id: string
+          kind: string
+          machine_id: string
+          notes: string | null
+          starts_at: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at: string
+          id?: string
+          kind?: string
+          machine_id: string
+          notes?: string | null
+          starts_at: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string
+          id?: string
+          kind?: string
+          machine_id?: string
+          notes?: string | null
+          starts_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machine_calendar_blocks_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       machines: {
         Row: {
           active: boolean
@@ -405,6 +446,91 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      production_jobs: {
+        Row: {
+          actual_finish: string | null
+          actual_start: string | null
+          analysis_id: string | null
+          created_at: string
+          estimated_hours: number | null
+          id: string
+          machine_id: string | null
+          material_code: string | null
+          notes: string | null
+          order_id: string
+          overnight_ok: boolean
+          planned_finish: string | null
+          planned_start: string | null
+          priority_score: number
+          queue_position: number | null
+          risk: Database["public"]["Enums"]["production_risk"]
+          state: Database["public"]["Enums"]["production_job_state"]
+          updated_at: string
+        }
+        Insert: {
+          actual_finish?: string | null
+          actual_start?: string | null
+          analysis_id?: string | null
+          created_at?: string
+          estimated_hours?: number | null
+          id?: string
+          machine_id?: string | null
+          material_code?: string | null
+          notes?: string | null
+          order_id: string
+          overnight_ok?: boolean
+          planned_finish?: string | null
+          planned_start?: string | null
+          priority_score?: number
+          queue_position?: number | null
+          risk?: Database["public"]["Enums"]["production_risk"]
+          state?: Database["public"]["Enums"]["production_job_state"]
+          updated_at?: string
+        }
+        Update: {
+          actual_finish?: string | null
+          actual_start?: string | null
+          analysis_id?: string | null
+          created_at?: string
+          estimated_hours?: number | null
+          id?: string
+          machine_id?: string | null
+          material_code?: string | null
+          notes?: string | null
+          order_id?: string
+          overnight_ok?: boolean
+          planned_finish?: string | null
+          planned_start?: string | null
+          priority_score?: number
+          queue_position?: number | null
+          risk?: Database["public"]["Enums"]["production_risk"]
+          state?: Database["public"]["Enums"]["production_job_state"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "production_jobs_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "project_analyses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_jobs_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_jobs_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -782,6 +908,15 @@ export type Database = {
         | "packaging"
         | "completed"
         | "rejected"
+      production_job_state:
+        | "queued"
+        | "ready"
+        | "running"
+        | "paused"
+        | "blocked"
+        | "done"
+        | "cancelled"
+      production_risk: "low" | "medium" | "high"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -930,6 +1065,16 @@ export const Constants = {
         "completed",
         "rejected",
       ],
+      production_job_state: [
+        "queued",
+        "ready",
+        "running",
+        "paused",
+        "blocked",
+        "done",
+        "cancelled",
+      ],
+      production_risk: ["low", "medium", "high"],
     },
   },
 } as const
