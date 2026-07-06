@@ -4,6 +4,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { useSession } from "@tanstack/react-start/server";
 import { z } from "zod";
+import { computePrice, type PriceInputs } from "@/lib/pricing";
 
 type AdminSession = { authed?: boolean; ts?: number };
 function sessionConfig() {
