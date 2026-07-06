@@ -1,6 +1,6 @@
 // Presentation card for a project_analyses row. Renders the extended
 // engineering report from Part 2.2A/B when those fields are present.
-type Props = { a: any | null; loading?: boolean; className?: string; adminView?: boolean };
+type Props = { a: any | null; loading?: boolean; className?: string; adminView?: boolean; customerView?: boolean };
 
 function Score({ label, value, tone = "sky" }: { label: string; value: number; tone?: "sky" | "emerald" | "amber" }) {
   const bar = tone === "emerald" ? "bg-emerald-400" : tone === "amber" ? "bg-amber-400" : "bg-sky-400";
