@@ -1,33 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
 import { useI18n } from "@/components/xtz/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { submitForm } from "@/lib/api/submissions.functions";
-import { runQuoteAnalysis } from "@/lib/api/factory.functions";
+import { runQuoteAnalysis, getPublicPrintingMaterials } from "@/lib/api/factory.functions";
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 const ModelViewer = lazy(() => import("@/components/factory/ModelViewer"));
-
 
 export const Route = createFileRoute("/3d-printing-quote")({
   head: () => ({
     meta: [
-      { title: "Instant 3D Printing Services Quote — Rapid Prototyping | TOREO" },
-      { name: "description", content: "Get an instant 3D printing services quote for rapid prototyping and custom parts manufacturing — pick your material, weight and print time for a price estimate from TOREO in Greece." },
-      { name: "keywords", content: "3D printing services, 3D printing quote, rapid prototyping, custom parts manufacturing, PLA ABS PETG TPU PC, Greece" },
+      { title: "Instant 3D Printing Quote — Rapid Prototyping | TOREO" },
+      { name: "description", content: "Upload your model, pick a material and purpose. TOREO's engineering AI prepares a preliminary quote automatically — final quote confirmed by our team." },
+      { name: "keywords", content: "3D printing services, 3D printing quote, rapid prototyping, custom parts, PLA ABS PETG TPU PC, Greece" },
       { property: "og:title", content: "Instant 3D Printing Quote — Rapid Prototyping | TOREO" },
-      { property: "og:description", content: "Configure material, weight and print time for an instant 3D printing services estimate from TOREO." },
+      { property: "og:description", content: "Upload your model and describe what you need. Our engineering AI handles the technical decisions." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.toreo.gr/3d-printing-quote" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Instant 3D Printing Quote | TOREO" },
-      { name: "twitter:description", content: "Configure your part and get an instant 3D printing estimate from TOREO." },
+      { name: "twitter:description", content: "Upload your model — our engineering team and AI decide how to manufacture it." },
     ],
-    links: [
-      { rel: "canonical", href: "https://www.toreo.gr/3d-printing-quote" },
-    ],
+    links: [{ rel: "canonical", href: "https://www.toreo.gr/3d-printing-quote" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -47,25 +44,10 @@ export const Route = createFileRoute("/3d-printing-quote")({
   component: QuotePage,
 });
 
-type Material = {
-  id: "PLA" | "ABS" | "PC" | "PETG" | "TPU";
-  available: boolean;
-  pricePerKg: number;
-};
-
-const MATERIALS: Material[] = [
-  { id: "PLA", available: true, pricePerKg: 25 },
-  { id: "ABS", available: true, pricePerKg: 30 },
-  { id: "PETG", available: false, pricePerKg: 35 },
-  { id: "TPU", available: false, pricePerKg: 45 },
-  { id: "PC", available: false, pricePerKg: 70 },
-];
-
-// Machine wear: 1.00€ every 3 hours of print time.
-const MACHINE_WEAR_PER_3H = 1.0;
-const ELECTRICITY_PER_HOUR = 0.15;
-
 const ACCEPTED_EXT = [".stl", ".step", ".stp", ".3mf", ".obj"];
+
+type ProductionMode = "prototype" | "durable" | "decorative";
+type Timeline = "flexible" | "standard" | "urgent";
 
 const schema = z.object({
   name: z.string().trim().min(1).max(80),
@@ -75,29 +57,39 @@ const schema = z.object({
 });
 
 function QuotePage() {
-  const { t, lang } = useI18n();
+  const { lang } = useI18n();
   const isGR = lang === "GR";
 
-  const [material, setMaterial] = useState<Material>(MATERIALS[0]);
-  const [weight, setWeight] = useState(100);
-  const [hours, setHours] = useState(1);
+  const [materials, setMaterials] = useState<Array<{ code: string; name: string; family: string; in_stock: boolean }>>([]);
+  const [materialCode, setMaterialCode] = useState<string>("PLA-BLK");
+  const [purpose, setPurpose] = useState<ProductionMode>("prototype");
+  const [timeline, setTimeline] = useState<Timeline>("standard");
+  const [quantity, setQuantity] = useState<number>(1);
   const [file, setFile] = useState<File | null>(null);
   const [sent, setSent] = useState(false);
   const [orderCode, setOrderCode] = useState<string | null>(null);
-  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<any | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-
-  const { materialCost, machineWearCost, electricityCost, estimatedPrice } = useMemo(() => {
-    const mc = (weight / 1000) * material.pricePerKg;
-    const mwc = (hours / 3) * MACHINE_WEAR_PER_3H;
-    const ec = hours * ELECTRICITY_PER_HOUR;
-    return { materialCost: mc, machineWearCost: mwc, electricityCost: ec, estimatedPrice: mc + mwc + ec };
-  }, [weight, hours, material]);
-
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    getPublicPrintingMaterials()
+      .then((rows) => {
+        setMaterials(rows);
+        if (rows.length && !rows.find((r) => r.code === materialCode)) {
+          const firstInStock = rows.find((r) => r.in_stock) ?? rows[0];
+          setMaterialCode(firstInStock.code);
+        }
+      })
+      .catch((e) => console.error("materials load failed", e));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const selectedMaterial = useMemo(
+    () => materials.find((m) => m.code === materialCode) ?? null,
+    [materials, materialCode],
+  );
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -114,45 +106,53 @@ function QuotePage() {
       setError(parsed.error.issues[0]?.message ?? "Invalid input");
       return;
     }
+    if (!file) {
+      setError(isGR ? "Παρακαλώ ανεβάστε το αρχείο σας." : "Please upload your file.");
+      return;
+    }
+    if (quantity < 1 || quantity > 999) {
+      setError(isGR ? "Μη έγκυρη ποσότητα." : "Invalid quantity.");
+      return;
+    }
 
     setSubmitting(true);
     try {
       let filePath: string | null = null;
       let fileName: string | null = null;
-      if (file) {
-        const ext = file.name.split(".").pop() ?? "bin";
-        const path = `3dp/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-        const { error: upErr } = await supabase.storage
-          .from("submission-files")
-          .upload(path, file, { upsert: false, contentType: file.type || "application/octet-stream" });
-        if (upErr) throw upErr;
-        filePath = path;
-        fileName = file.name;
-      }
+      const ext = file.name.split(".").pop() ?? "bin";
+      const path = `3dp/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("submission-files")
+        .upload(path, file, { upsert: false, contentType: file.type || "application/octet-stream" });
+      if (upErr) throw upErr;
+      filePath = path;
+      fileName = file.name;
 
+      const materialLabel = selectedMaterial ? `${selectedMaterial.family} · ${selectedMaterial.name}` : materialCode;
       const res = await submitForm({
         data: {
           source: "3d-printing-quote",
           name: data.name,
           email: data.email,
           phone: data.phone,
-          material: material.id,
-          weight_g: weight,
-          print_hours: hours,
-          estimated_price: Number(estimatedPrice.toFixed(2)),
+          material: materialCode,
+          quantity: String(quantity),
+          service: "3d_printing",
+          production_mode: purpose,
+          timeline,
           message: data.notes,
           file_path: filePath,
           file_name: fileName,
           metadata: {
-            materialCost: Number(materialCost.toFixed(2)),
-            machineWearCost: Number(machineWearCost.toFixed(2)),
-            electricityCost: Number(electricityCost.toFixed(2)),
+            material_label: materialLabel,
+            production_mode: purpose,
+            timeline,
+            quantity,
           },
         },
       });
       const code = (res as { order_code?: string | null })?.order_code ?? null;
       setOrderCode(code);
-      setSubmittedEmail(data.email);
       setSent(true);
       if (code) {
         setAnalyzing(true);
@@ -161,7 +161,6 @@ function QuotePage() {
           .catch((e) => console.error("auto analysis failed", e))
           .finally(() => setAnalyzing(false));
       }
-
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Submission failed. Please try again.");
@@ -184,40 +183,42 @@ function QuotePage() {
   };
 
   const L = {
-    kicker: isGR ? "ΥΠΟΛΟΓΙΣΤΗΣ ΠΡΟΣΦΟΡΑΣ" : "Quote Calculator",
+    kicker: isGR ? "ΑΙΤΗΜΑ ΠΡΟΣΦΟΡΑΣ" : "Quote Request",
     title: isGR ? "Άμεση προσφορά για 3D εκτύπωση." : "Instant 3D printing quote.",
     intro: isGR
-      ? "Επιλέξτε υλικό, βάρος και χρόνο εκτύπωσης για άμεσο εκτιμώμενο κόστος."
-      : "Pick a material, weight and print time to get an instant estimate.",
-    materialLabel: isGR ? "Υλικό" : "Material",
-    available: isGR ? "ΔΙΑΘΕΣΙΜΟ" : "Available",
-    oos: isGR ? "Εξαντλημένο" : "Out of Stock",
-    weight: isGR ? "ΒΑΡΟΣ" : "Weight",
-    printTime: isGR ? "ΧΡΟΝΟΣ ΕΚΤΥΠΩΣΗΣ" : "Print Time",
-    grams: "g",
-    hours: isGR ? "ώρες" : "hours",
-    summary: isGR ? "Σύνοψη" : "Summary",
-    materialCost: isGR ? "Κόστος υλικού" : "Material cost",
-    machineWearCost: isGR ? "Φθορά μηχανής" : "Machine wear cost",
-    electricityCost: isGR ? "Κόστος ρεύματος" : "Electricity cost",
-    estimatedTotal: isGR ? "Εκτιμώμενο Σύνολο" : "Estimated Total",
-    disclaimer: isGR
-      ? "Μόνο εκτιμώμενη τιμή. Η τελική τιμή μπορεί να διαφέρει ανάλογα με τη γεωμετρία του μοντέλου, τα υλικά υποστήριξης, τις ρυθμίσεις εκτύπωσης και τις απαιτήσεις φινιρίσματος."
-      : "Estimated price only. Final pricing may vary depending on model geometry, support material, print settings and post-processing requirements.",
-    upload: isGR ? "ΑΝΕΒΆΣΤΕ ΤΟ ΑΡΧΕΙΟ ΣΑΣ" : "Upload your file",
+      ? "Ανεβάστε το μοντέλο σας και πείτε μας τι χρειάζεστε. Η μηχανική μας ομάδα και το AI θα αποφασίσουν πώς θα κατασκευαστεί."
+      : "Upload your model and tell us what you need. Our engineering team and AI decide how to manufacture it.",
+    upload: isGR ? "ΑΝΕΒΆΣΤΕ ΤΟ ΑΡΧΕΙΟ" : "Upload your file",
     accepted: isGR ? "Αποδεκτά" : "Accepted",
     selectFile: isGR ? "Επιλέξτε αρχείο" : "Select file",
+    materialLabel: isGR ? "Υλικό" : "Material",
+    purposeLabel: isGR ? "Σκοπός Χρήσης" : "Production Purpose",
+    quantityLabel: isGR ? "Ποσότητα" : "Quantity",
+    timelineLabel: isGR ? "Χρονοδιάγραμμα" : "Timeline",
     yourInfo: isGR ? "ΤΑ ΣΤΟΙΧΕΙΑ ΣΑΣ" : "Your information",
-    name: isGR ? "ΟΝΟΜΑ *" : "Name",
+    name: isGR ? "Όνομα" : "Name",
     email: "Email",
-    phone: isGR ? "ΤΗΛΕΦΩΝΟ *" : "Phone",
-    notes: isGR ? "ΣΗΜΕΙΩΣΕΙΣ" : "Notes",
-    submit: isGR ? "Αίτημα Προσφοράς" : "Request Quote",
+    phone: isGR ? "Τηλέφωνο" : "Phone",
+    notes: isGR ? "Σημειώσεις (προαιρετικά)" : "Notes (optional)",
+    submit: isGR ? "Αποστολή αιτήματος" : "Submit request",
     sent: isGR
-      ? "Ελήφθη. Μηχανικός θα απαντήσει εντός μίας εργάσιμης."
-      : "Got it. An engineer will reply within one business day.",
-    perKg: isGR ? "/ κιλό" : "/ kg",
+      ? "Ελήφθη. Η μηχανική ομάδα μας ετοιμάζει την προσφορά σας."
+      : "Received. Our engineering team is preparing your quote.",
+    inStock: isGR ? "Διαθέσιμο" : "In stock",
+    oos: isGR ? "Εξαντλημένο" : "Out of stock",
   };
+
+  const purposes: Array<{ id: ProductionMode; title: string; blurb: string }> = [
+    { id: "prototype", title: isGR ? "Πρωτότυπο" : "Prototype", blurb: isGR ? "Γρήγορο & οικονομικό. Για validation & fit test." : "Fast & economical. Concept validation & fit test." },
+    { id: "durable", title: isGR ? "Λειτουργικό Εξάρτημα" : "Functional / Manufacturing Part", blurb: isGR ? "Για πραγματική χρήση. Προτεραιότητα στην αντοχή." : "For real-world use. Strength is the priority." },
+    { id: "decorative", title: isGR ? "Διακοσμητικό / Παρουσίασης" : "Decorative / Display", blurb: isGR ? "Προτεραιότητα στην εμφάνιση & φινίρισμα." : "Priority on appearance & surface finish." },
+  ];
+
+  const timelines: Array<{ id: Timeline; title: string; blurb: string }> = [
+    { id: "flexible", title: isGR ? "Ευέλικτο" : "Flexible", blurb: isGR ? "Χωρίς προθεσμία." : "No deadline." },
+    { id: "standard", title: isGR ? "Κανονικό" : "Standard", blurb: isGR ? "Κανονική ουρά παραγωγής." : "Normal production queue." },
+    { id: "urgent", title: isGR ? "Επείγον" : "Urgent", blurb: isGR ? "Υψηλή προτεραιότητα (ίσως προκύψει επιπλέον χρέωση)." : "Highest priority (a surcharge may apply)." },
+  ];
 
   return (
     <main className="bg-black text-foreground min-h-screen">
@@ -230,22 +231,22 @@ function QuotePage() {
         />
         <span className="absolute top-24 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">XYZ</span>
 
-        <div className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12">
+        <div className="relative z-10 mx-auto max-w-[1200px] px-6 md:px-12">
           <div className="flex items-center gap-4 mb-8">
             <span className="font-mono text-xs text-primary tracking-[0.3em]">3DP /</span>
             <span className="h-px w-16 bg-primary" />
-            <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">{isGR ? "ΥΠΟΛΟΓΙΣΤΗΣ ΠΡΟΣΦΟΡΑΣ" : L.kicker}</span>
+            <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">{L.kicker}</span>
           </div>
           <h1 className="font-display font-bold leading-[0.9] text-[clamp(2.5rem,6vw,5rem)] tracking-tighter mb-6 max-w-3xl">
             {L.title}
           </h1>
-          <p className="text-foreground/60 max-w-xl mb-12">{L.intro}</p>
+          <p className="text-foreground/60 max-w-2xl mb-12">{L.intro}</p>
 
           {sent ? (
             <div className="glass-panel grain p-8 md:p-12 max-w-2xl space-y-6">
               <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-primary">// 200 OK</div>
               <p className="font-display text-2xl md:text-3xl leading-tight">
-                {isGR ? "Το αίτημα προσφοράς υποβλήθηκε επιτυχώς." : "Quote Request Submitted Successfully"}
+                {isGR ? "Το αίτημα προσφοράς υποβλήθηκε επιτυχώς." : "Quote request submitted successfully."}
               </p>
               {orderCode ? (
                 <>
@@ -257,18 +258,13 @@ function QuotePage() {
                   </div>
                   <div>
                     <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-foreground/50 mb-2">
-                      {isGR ? "Τρέχουσα Κατάσταση" : "Current Status"}
+                      {isGR ? "Κατάσταση" : "Status"}
                     </div>
                     <div className="font-mono text-sm uppercase tracking-[0.2em] text-foreground/90">
-                      {isGR ? "Αναμονή Προσφοράς" : "Waiting for Quote"}
+                      {isGR ? "Σε αναθεώρηση από μηχανικό" : "Pending engineering review"}
                     </div>
                   </div>
                   <p className="text-sm text-foreground/60">{L.sent}</p>
-                  <p className="text-sm text-foreground/60">
-                    {isGR
-                      ? "Παρακαλούμε φυλάξτε αυτόν τον κωδικό. Μπορείτε να τον χρησιμοποιήσετε για να παρακολουθήσετε το αίτημά σας."
-                      : "Please keep this Order ID. You can use it to track your request or contact our team."}
-                  </p>
                   <a
                     href={`/track?code=${encodeURIComponent(orderCode)}`}
                     className="inline-block font-mono text-xs uppercase tracking-[0.3em] bg-primary text-primary-foreground px-6 py-3 rounded hover:bg-primary/90 transition"
@@ -284,108 +280,20 @@ function QuotePage() {
                         </Suspense>
                       )}
                       <div className={file ? "" : "md:col-span-2"}>
-                        <AIAnalysisCard a={analysis} loading={analyzing && !analysis} />
+                        <AIAnalysisCard a={analysis} loading={analyzing && !analysis} customerView />
                       </div>
                     </div>
                   )}
-                  {submittedEmail && null}
                 </>
               ) : (
                 <p className="text-sm text-foreground/70">{L.sent}</p>
               )}
             </div>
-
           ) : (
-            <div className="grid lg:grid-cols-[1.4fr_1fr] gap-6">
-              {/* Configurator */}
-              <div className="glass-panel grain p-8 md:p-12 space-y-10">
-                {/* Materials */}
-                <div>
-                  <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-4">
-                    {L.materialLabel}
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-                    {MATERIALS.map((m) => {
-                      const active = material.id === m.id;
-                      const disabled = !m.available;
-                      return (
-                        <button
-                          key={m.id}
-                          type="button"
-                          disabled={disabled}
-                          onClick={() => !disabled && setMaterial(m)}
-                          className={`relative p-4 border text-left transition-all ${
-                            disabled
-                              ? "border-border/40 opacity-40 cursor-not-allowed bg-white/[0.01]"
-                              : active
-                              ? "border-primary bg-primary/10 text-primary blue-glow"
-                              : "border-border hover:border-foreground/40 text-foreground"
-                          }`}
-                        >
-                          <div className="font-display text-2xl font-bold mb-2">{m.id}</div>
-                          <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                            {m.available ? L.available : L.oos}
-                          </div>
-                          {m.available && (
-                            <div className={`font-mono text-xs mt-1 ${active ? "text-primary" : "text-foreground/70"}`}>
-                              {m.pricePerKg}€ {L.perKg}
-                            </div>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Weight slider */}
-                <div>
-                  <div className="flex items-baseline justify-between mb-3">
-                    <span className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground">
-                      {L.weight}
-                    </span>
-                    <span className="font-mono text-primary text-lg">{weight} {L.grams}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={0}
-                    max={1000}
-                    step={10}
-                    value={weight}
-                    onChange={(e) => setWeight(+e.target.value)}
-                    aria-label={`${L.weight} ${weight} ${L.grams}`}
-                    className="w-full accent-primary"
-                  />
-                  <div className="flex justify-between font-mono text-[10px] text-muted-foreground mt-1">
-                    <span>0g</span>
-                    <span>1000g</span>
-                  </div>
-                </div>
-
-                {/* Print time slider */}
-                <div>
-                  <div className="flex items-baseline justify-between mb-3">
-                    <span className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground">
-                      {L.printTime}
-                    </span>
-                    <span className="font-mono text-primary text-lg">{hours} {L.hours}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={hours}
-                    onChange={(e) => setHours(+e.target.value)}
-                    aria-label={`${L.printTime} ${hours} ${L.hours}`}
-                    className="w-full accent-primary"
-                  />
-                  <div className="flex justify-between font-mono text-[10px] text-muted-foreground mt-1">
-                    <span>0h</span>
-                    <span>100h</span>
-                  </div>
-                </div>
-
-                {/* File upload */}
+            <form onSubmit={onSubmit} className="grid lg:grid-cols-[1.4fr_1fr] gap-6">
+              {/* Left: file + choices */}
+              <div className="glass-panel grain p-8 md:p-10 space-y-10">
+                {/* Upload */}
                 <div>
                   <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-3">
                     {L.upload}
@@ -397,12 +305,7 @@ function QuotePage() {
                     <span className="font-mono text-[14px] tracking-[0.3em] text-primary">
                       {L.selectFile.toUpperCase()}
                     </span>
-                    <input
-                      type="file"
-                      accept={ACCEPTED_EXT.join(",")}
-                      className="hidden"
-                      onChange={onFileChange}
-                    />
+                    <input type="file" accept={ACCEPTED_EXT.join(",")} className="hidden" onChange={onFileChange} />
                   </label>
                   {file && (
                     <div className="mt-3">
@@ -411,53 +314,144 @@ function QuotePage() {
                       </Suspense>
                     </div>
                   )}
+                </div>
 
+                {/* Material */}
+                <div>
+                  <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-3">
+                    {L.materialLabel}
+                  </div>
+                  {materials.length === 0 ? (
+                    <div className="font-mono text-xs text-muted-foreground">Loading materials…</div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                      {materials.map((m) => {
+                        const active = m.code === materialCode;
+                        const disabled = !m.in_stock;
+                        return (
+                          <button
+                            key={m.code}
+                            type="button"
+                            disabled={disabled}
+                            onClick={() => !disabled && setMaterialCode(m.code)}
+                            className={`relative p-3 border text-left transition-all ${
+                              disabled
+                                ? "border-border/40 opacity-40 cursor-not-allowed bg-white/[0.01]"
+                                : active
+                                  ? "border-primary bg-primary/10 text-primary blue-glow"
+                                  : "border-border hover:border-foreground/40 text-foreground"
+                            }`}
+                          >
+                            <div className="font-display text-lg font-bold">{m.family}</div>
+                            <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                              {m.name}
+                            </div>
+                            <div className="font-mono text-[10px] mt-1 opacity-70">
+                              {m.in_stock ? L.inStock : L.oos}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Production Purpose */}
+                <div>
+                  <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-3">
+                    {L.purposeLabel}
+                  </div>
+                  <div className="grid md:grid-cols-3 gap-2">
+                    {purposes.map((p) => {
+                      const active = purpose === p.id;
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => setPurpose(p.id)}
+                          className={`p-4 border text-left transition-all ${
+                            active
+                              ? "border-primary bg-primary/10 blue-glow"
+                              : "border-border hover:border-foreground/40"
+                          }`}
+                        >
+                          <div className={`font-display text-base font-semibold ${active ? "text-primary" : "text-foreground"}`}>{p.title}</div>
+                          <div className="mt-1 text-xs text-foreground/60 leading-snug">{p.blurb}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Quantity + Timeline */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-3">
+                      {L.quantityLabel}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        className="px-3 py-2 border border-border font-mono hover:border-primary/60"
+                        aria-label="decrease"
+                      >−</button>
+                      <input
+                        type="number"
+                        min={1}
+                        max={999}
+                        value={quantity}
+                        onChange={(e) => setQuantity(Math.max(1, Math.min(999, Number(e.target.value) || 1)))}
+                        className="w-24 bg-transparent border border-border focus:border-primary text-center font-mono py-2 outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => Math.min(999, q + 1))}
+                        className="px-3 py-2 border border-border font-mono hover:border-primary/60"
+                        aria-label="increase"
+                      >+</button>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-3">
+                      {L.timelineLabel}
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {timelines.map((t) => {
+                        const active = timeline === t.id;
+                        return (
+                          <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => setTimeline(t.id)}
+                            title={t.blurb}
+                            className={`px-3 py-3 border text-center transition-all ${
+                              active
+                                ? "border-primary bg-primary/10 text-primary blue-glow"
+                                : "border-border hover:border-foreground/40 text-foreground"
+                            }`}
+                          >
+                            <div className="font-display text-sm font-semibold">{t.title}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-2 text-[11px] text-foreground/50 leading-snug">
+                      {timelines.find((t) => t.id === timeline)?.blurb}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Live summary */}
-              <div className="relative">
-                <div className="glass-panel grain p-8 md:p-10 h-full flex flex-col">
-                  <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-muted-foreground">
-                    {L.summary}
-                  </div>
-
-                  <dl className="space-y-3 mb-6 font-mono text-sm">
-                    <Row k={L.materialLabel} v={material.id} />
-                    <Row k={L.weight} v={`${weight} g`} />
-                    <Row k={L.printTime} v={`${hours} ${L.hours}`} />
-                  </dl>
-
-                  <div className="border-t border-border pt-4 space-y-2 font-mono text-sm mb-6">
-                    <Row k={L.materialCost} v={`€${materialCost.toFixed(2)}`} />
-                    <Row k={L.machineWearCost} v={`€${machineWearCost.toFixed(2)}`} />
-                    <Row k={L.electricityCost} v={`€${electricityCost.toFixed(2)}`} />
-                  </div>
-
-                  <div className="pt-2">
-                    <div className="font-mono text-[14px] uppercase tracking-[0.3em] text-muted-foreground mb-2">
-                      {L.estimatedTotal}
-                    </div>
-                    <div className="font-display text-5xl font-bold text-primary text-glow">
-                      €{estimatedPrice.toFixed(2)}
-                    </div>
-                  </div>
-
-                  <p className="mt-6 text-xs text-foreground/55 leading-relaxed border-t border-border/50 pt-4">
-                    {L.disclaimer}
-                  </p>
-                </div>
-              </div>
-
-              {/* Customer info form spans full width */}
-              <form onSubmit={onSubmit} className="lg:col-span-2 glass-panel grain p-8 md:p-12 grid lg:grid-cols-2 gap-x-10 gap-y-6">
-                <div className="lg:col-span-2 font-mono text-[14px] uppercase tracking-[0.4em] text-primary/80 mb-2">
+              {/* Right: your info */}
+              <div className="glass-panel grain p-8 md:p-10 space-y-6">
+                <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-primary/80">
                   {L.yourInfo}
                 </div>
                 <Input name="name" label={L.name} required />
                 <Input name="email" label={L.email} type="email" required />
                 <Input name="phone" label={L.phone} required />
-                <div className="lg:col-span-2">
+                <div>
                   <Label htmlFor="quote-notes">{L.notes}</Label>
                   <textarea
                     id="quote-notes"
@@ -468,32 +462,30 @@ function QuotePage() {
                   />
                 </div>
 
-                {/* Hidden quote snapshot fields */}
-                <input type="hidden" name="material" value={material.id} />
-                <input type="hidden" name="weight_g" value={weight} />
-                <input type="hidden" name="hours" value={hours} />
-                <input type="hidden" name="estimated_price" value={estimatedPrice.toFixed(2)} />
-                <input type="hidden" name="filename" value={file?.name ?? ""} />
-
-                {error && (
-                  <div className="lg:col-span-2 font-mono text-xs text-destructive">// {error}</div>
-                )}
-
-                <div className="lg:col-span-2 pt-4 border-t border-border flex items-center justify-between gap-4 flex-wrap">
-                  <span className="font-mono text-[12px] uppercase tracking-[0.3em] text-muted-foreground">
-                    {material.id} · {weight}g · {hours}{isGR ? "ώ" : "h"} · €{estimatedPrice.toFixed(2)}
-                    {file ? ` · ${file.name}` : ""}
-                  </span>
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="px-8 py-4 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow disabled:opacity-60"
-                  >
-                    {submitting ? "…" : `${L.submit} →`}
-                  </button>
+                <div className="border-t border-border pt-4 space-y-1.5 font-mono text-xs text-foreground/60">
+                  <div>Material · <span className="text-foreground">{selectedMaterial ? `${selectedMaterial.family} — ${selectedMaterial.name}` : materialCode}</span></div>
+                  <div>Purpose · <span className="text-foreground">{purposes.find((p) => p.id === purpose)?.title}</span></div>
+                  <div>Quantity · <span className="text-foreground">{quantity}</span></div>
+                  <div>Timeline · <span className="text-foreground">{timelines.find((t) => t.id === timeline)?.title}</span></div>
+                  {file && <div>File · <span className="text-foreground truncate inline-block max-w-[200px] align-bottom">{file.name}</span></div>}
                 </div>
-              </form>
-            </div>
+
+                {error && <div className="font-mono text-xs text-destructive">// {error}</div>}
+
+                <button
+                  type="submit"
+                  disabled={submitting || !file}
+                  className="w-full px-8 py-4 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-[0.3em] hover:bg-primary/90 transition blue-glow disabled:opacity-50"
+                >
+                  {submitting ? "…" : `${L.submit} →`}
+                </button>
+                <p className="text-[11px] text-foreground/50 leading-relaxed">
+                  {isGR
+                    ? "Ένας μηχανικός θα σας απαντήσει εντός μίας εργάσιμης ημέρας. Δεν λαμβάνεται καμία χρέωση κατά την υποβολή."
+                    : "An engineer will reply within one business day. No charge is made at submission."}
+                </p>
+              </div>
+            </form>
           )}
         </div>
       </section>
@@ -527,15 +519,6 @@ function Input({ name, label, required, type = "text" }: { name: string; label: 
         maxLength={255}
         className="mt-3 w-full bg-transparent border-b border-border focus:border-primary outline-none px-1 py-2 font-sans text-base transition-colors"
       />
-    </div>
-  );
-}
-
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex justify-between gap-3">
-      <dt className="text-muted-foreground">{k}</dt>
-      <dd className="text-foreground text-right">{v}</dd>
     </div>
   );
 }

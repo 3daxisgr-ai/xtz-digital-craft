@@ -363,8 +363,8 @@ async function wireBackToOrder(orderId: string, parsed: AiResult, analysisId?: s
     await supabaseAdmin.from("order_events").insert({
       order_id: orderId,
       event_type: "ai_analysis",
-      title: "AI Engineering Analysis Complete",
-      description: `DFM ${Math.round(parsed.dfm_score)}/100 · Printability ${Math.round(parsed.printability_score)}/100 · Est. €${Number(parsed.quote_price_eur).toFixed(2)}`,
+      title: "Engineering Review Complete",
+      description: `Preliminary estimate ready · €${Number(parsed.quote_price_eur).toFixed(2)}`,
       actor: "system",
       visibility: "customer",
       payload: {
@@ -490,9 +490,15 @@ async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
   const { machines, materials, settings } = await loadContext();
   const svc = (serviceHint || "").toLowerCase();
   const service = svc.includes("cnc") ? "cnc" : svc.includes("laser") ? "laser" : svc.includes("weld") ? "welding" : "3d_printing";
+  const meta = (order?.metadata ?? {}) as any;
+  const rawMode = String(meta.production_mode ?? "prototype").toLowerCase();
+  const mode: "prototype" | "durable" | "decorative" =
+    rawMode === "functional" || rawMode === "durable" ? "durable" :
+    rawMode === "decorative" || rawMode === "display" ? "decorative" : "prototype";
+  const qty = Number(order?.quantity ?? 1) || 1;
   const payload = {
-    order: { code: order.order_code, service: order.service, note: order.message },
-    request: { service, production_mode: "prototype", material_hint: order.material ?? null, notes: order.message ?? null },
+    order: { code: order.order_code, service: order.service, note: order.message, quantity: qty, timeline: meta.timeline ?? "standard" },
+    request: { service, production_mode: mode, material_hint: order.material ?? null, notes: order.message ?? null },
     file: file ? { name: file.file_name, type: file.file_type, size_bytes: file.size_bytes, ext: file.file_name?.split(".").pop() ?? null } : null,
     catalogue: { machines, materials },
     profit_protection: (settings as any) ? {
@@ -505,7 +511,7 @@ async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
   let parsed = await callAi(payload);
   parsed = enforceMinimums(parsed, settings);
   const { data: saved, error: saveErr } = await supabaseAdmin
-    .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, service, "prototype"))
+    .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, service, mode))
     .select("*").single();
   if (saveErr) throw saveErr;
   await wireBackToOrder(order.id, parsed, (saved as any)?.id);
@@ -517,7 +523,7 @@ export const runQuoteAnalysis = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: order } = await supabaseAdmin.from("orders")
-      .select("id, order_code, customer_email, service, material, message, created_at").eq("order_code", data.order_code).maybeSingle();
+      .select("id, order_code, customer_email, service, material, message, quantity, metadata, created_at").eq("order_code", data.order_code).maybeSingle();
     if (!order) throw new Error("Order not found");
     if (String(order.customer_email).toLowerCase() !== data.email.toLowerCase()) throw new Error("Not authorized");
     if (Date.now() - new Date(order.created_at as any).getTime() > 24 * 60 * 60 * 1000) throw new Error("Analysis window expired");
@@ -620,3 +626,23 @@ export const panelReadinessCheck = createServerFn({ method: "POST" })
     const level = !a ? "blocked" : ok ? "production_ready" : checks.filter((c) => !c.ok).length <= 2 ? "nearly_ready" : "requires_review";
     return { ok, level, checks };
   });
+
+// -------- Public: available 3D-printing materials for the customer quote form --------
+export const getPublicPrintingMaterials = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const printingFamilies = ["PLA", "PLA+", "PETG", "ABS", "TPU", "PC", "PA-CF"];
+  const { data } = await supabaseAdmin
+    .from("materials" as any)
+    .select("code, name, family, stock_kg")
+    .eq("active", true)
+    .in("family", printingFamilies);
+  const rows = ((data ?? []) as any[]).map((m) => ({
+    code: m.code as string,
+    name: m.name as string,
+    family: m.family as string,
+    in_stock: Number(m.stock_kg ?? 0) > 0,
+  }));
+  // group by family, keep only in-stock or first-of-family, and stable order
+  rows.sort((a, b) => (a.family + a.name).localeCompare(b.family + b.name));
+  return rows;
+});

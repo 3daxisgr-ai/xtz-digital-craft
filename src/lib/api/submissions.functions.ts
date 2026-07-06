@@ -16,6 +16,8 @@ const submissionSchema = z.object({
   weight_g: z.number().nullable().optional(),
   print_hours: z.number().nullable().optional(),
   estimated_price: z.number().nullable().optional(),
+  production_mode: z.enum(["prototype", "durable", "decorative"]).optional().nullable(),
+  timeline: z.enum(["flexible", "standard", "urgent"]).optional().nullable(),
   message: z.string().trim().max(4000).optional().nullable(),
   file_path: z
     .string()
@@ -129,6 +131,15 @@ export const submitForm = createServerFn({ method: "POST" })
         .maybeSingle();
       const orderSource =
         data.source === "3d-printing-quote" ? "3dp_quote" : "inquiry";
+      const priorityMap: Record<string, "urgent" | "high" | "normal" | "low"> = {
+        urgent: "urgent", standard: "normal", flexible: "low",
+      };
+      const orderPriority = data.timeline ? priorityMap[data.timeline] : "normal";
+      const mergedMetadata = {
+        ...(data.metadata ?? {}),
+        production_mode: data.production_mode ?? null,
+        timeline: data.timeline ?? null,
+      };
       const { data: orderRow, error: orderErr } = await (supabaseAdmin as any)
         .from("orders")
         .insert({
@@ -144,7 +155,8 @@ export const submitForm = createServerFn({ method: "POST" })
           dimensions: data.dimensions ?? null,
           message: data.message ?? null,
           quote_price: data.estimated_price ?? null,
-          metadata: (data.metadata ?? {}) as never,
+          priority: orderPriority,
+          metadata: mergedMetadata as never,
         })
         .select("id, order_code")
         .single();

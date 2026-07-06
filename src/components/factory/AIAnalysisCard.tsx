@@ -1,6 +1,6 @@
 // Presentation card for a project_analyses row. Renders the extended
 // engineering report from Part 2.2A/B when those fields are present.
-type Props = { a: any | null; loading?: boolean; className?: string; adminView?: boolean };
+type Props = { a: any | null; loading?: boolean; className?: string; adminView?: boolean; customerView?: boolean };
 
 function Score({ label, value, tone = "sky" }: { label: string; value: number; tone?: "sky" | "emerald" | "amber" }) {
   const bar = tone === "emerald" ? "bg-emerald-400" : tone === "amber" ? "bg-amber-400" : "bg-sky-400";
@@ -58,19 +58,39 @@ const CPX_LABEL: Record<string, string> = {
   very_complex: "Very Complex",
 };
 
-export function AIAnalysisCard({ a, loading, className, adminView }: Props) {
+export function AIAnalysisCard({ a, loading, className, adminView, customerView }: Props) {
   if (loading) {
     return (
       <div className={"border border-white/10 rounded-lg p-5 md:p-6 bg-white/[0.02] " + (className ?? "")}>
-        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">AI Engineering Analysis</div>
+        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">{customerView ? "Preparing your estimate" : "AI Engineering Analysis"}</div>
         <div className="mt-4 flex items-center gap-3 text-white/60 text-sm">
           <div className="w-4 h-4 rounded-full border-2 border-sky-400 border-t-transparent animate-spin" />
-          Analysing your part…
+          {customerView ? "Our engineering AI is reviewing your part…" : "Analysing your part…"}
         </div>
       </div>
     );
   }
   if (!a) return null;
+
+  // Customer-safe variant: only price + friendly summary. All engineering
+  // details (scores, slicer settings, risks, costs, warnings) stay hidden.
+  if (customerView) {
+    const price = Number(a.quote_price_eur ?? 0);
+    return (
+      <div className={"border border-white/10 rounded-lg p-5 md:p-6 bg-gradient-to-b from-white/[0.03] to-white/[0.01] " + (className ?? "")}>
+        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50">Preliminary Estimate</div>
+        <div className="mt-4">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">Estimated price</div>
+          <div className="mt-1 font-display text-4xl font-bold text-primary tabular-nums">€{price.toFixed(2)}</div>
+        </div>
+        {a.ai_summary && <p className="mt-4 text-sm text-white/70 leading-relaxed">{a.ai_summary}</p>}
+        <div className="mt-5 text-[10px] font-mono uppercase tracking-widest text-white/30">
+          Reviewed automatically · Our engineering team will confirm the final quote.
+        </div>
+      </div>
+    );
+  }
+
 
   const price = Number(a.quote_price_eur ?? 0);
   const est = Number(a.estimated_print_hours ?? 0);
