@@ -184,6 +184,12 @@ export const panelUpdateOrder = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     await requireAdminCookie();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Read previous status so we only email on real transitions.
+    const { data: prev } = await supabaseAdmin
+      .from("orders")
+      .select("status")
+      .eq("order_code", data.order_code)
+      .maybeSingle();
     const { data: row, error } = await supabaseAdmin
       .from("orders")
       .update(data.patch as any)
@@ -192,6 +198,17 @@ export const panelUpdateOrder = createServerFn({ method: "POST" })
       .single();
     if (error) throw error;
     await logAction("order_updated", { type: "order", id: data.order_code }, { fields: Object.keys(data.patch) });
+
+    // Fire status email when status actually changed. Never blocks the update.
+    const newStatus = (data.patch as any).status as string | undefined;
+    if (newStatus && newStatus !== prev?.status) {
+      try {
+        const { sendStatusEmail } = await import("@/lib/email/order-notify.server");
+        await sendStatusEmail(row, newStatus);
+      } catch (e) {
+        console.error("panelUpdateOrder status email failed", e);
+      }
+    }
     return row;
   });
 
