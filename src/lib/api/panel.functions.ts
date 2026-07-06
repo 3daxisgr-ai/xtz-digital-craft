@@ -744,7 +744,7 @@ export const panelMoveJobInQueue = createServerFn({ method: "POST" })
       .in("state", ["queued", "ready", "paused"])
       .order("queue_position", { ascending: true, nullsFirst: false });
 
-    const list = (allJobs ?? []) as Array<{ id: string; order_id: string; queue_position: number | null }>;
+    const list = ((allJobs ?? []) as unknown) as Array<{ id: string; order_id: string; queue_position: number | null }>;
     // Normalize queue_positions
     const normalized = list.map((j, i) => ({ ...j, queue_position: j.queue_position ?? i + 1 }));
     const idx = normalized.findIndex((j) => j.order_id === (order as any).id);
