@@ -196,8 +196,8 @@ function QuotePage() {
     kicker: isGR ? "ΑΙΤΗΜΑ ΠΡΟΣΦΟΡΑΣ" : "Quote Request",
     title: isGR ? "Άμεση προσφορά για 3D εκτύπωση." : "Instant 3D printing quote.",
     intro: isGR
-      ? "Ανεβάστε το μοντέλο σας και πείτε μας τι χρειάζεστε. Η μηχανική μας ομάδα και το AI θα αποφασίσουν πώς θα κατασκευαστεί."
-      : "Upload your model and tell us what you need. Our engineering team and AI decide how to manufacture it.",
+      ? "Ανεβάστε το μοντέλο σας και πείτε μας τι χρειάζεστε. Η μηχανική μας ομάδα θα αποφασίσει πώς θα κατασκευαστεί."
+      : "Upload your model and tell us what you need. Our engineering team decides how to manufacture it.",
     upload: isGR ? "ΑΝΕΒΆΣΤΕ ΤΟ ΑΡΧΕΙΟ" : "Upload your file",
     accepted: isGR ? "Αποδεκτά" : "Accepted",
     selectFile: isGR ? "Επιλέξτε αρχείο" : "Select file",
