@@ -243,8 +243,13 @@ function TopBar({ onJumpOrder }: { onJumpOrder: (code: string) => void }) {
 // ============= DASHBOARD =============
 function Dashboard({ onOpenOrder }: { onOpenOrder: (c: string) => void }) {
   const stats = useServerFn(panelStats);
+  const factory = useServerFn(panelFactoryDashboard);
   const [d, setD] = useState<any | null>(null);
-  useEffect(() => { stats().then(setD).catch(() => setD(null)); }, []); // eslint-disable-line
+  const [fx, setFx] = useState<any | null>(null);
+  useEffect(() => {
+    stats().then(setD).catch(() => setD(null));
+    factory().then(setFx).catch(() => setFx(null));
+  }, []); // eslint-disable-line
 
   return (
     <div className="p-6 lg:p-10 space-y-8">
@@ -262,6 +267,27 @@ function Dashboard({ onOpenOrder }: { onOpenOrder: (c: string) => void }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Kpi label="Revenue (booked)" value={`€${Number(d.revenue || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`} accent="amber" wide />
           </div>
+
+          {/* Factory / Profit Dashboard — ADMIN ONLY. Never exposed to customer. */}
+          <div>
+            <div className="flex items-baseline gap-3 mb-3">
+              <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-amber-300/80">Factory / Profit</div>
+              <span className="text-[9px] font-mono tracking-widest uppercase text-red-400/60 border border-red-400/30 px-1.5 py-0.5 rounded-sm">ADMIN ONLY</span>
+            </div>
+            {!fx ? <div className="text-xs text-white/40">Loading factory metrics…</div> : (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <Kpi label="Today's Revenue" value={`€${fx.revenueToday.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} accent="amber" />
+                <Kpi label="Estimated Profit" value={`€${fx.estimatedProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} accent="emerald" />
+                <Kpi label="Machine Hours (queued)" value={`${fx.machineHours} h`} accent="sky" />
+                <Kpi label="Material Used (30d)" value={`${fx.materialUsedKg} kg`} />
+                <Kpi label="Average Quote" value={`€${fx.avgQuoteValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} />
+                <Kpi label="Most Used Material" value={fx.mostUsedMaterial ?? "—"} />
+                <Kpi label="Most Profitable Material" value={fx.mostProfitableMaterial ?? "—"} accent="emerald" />
+                <Kpi label="Busiest Machine" value={fx.busiestMachine ?? "—"} accent="sky" />
+              </div>
+            )}
+          </div>
+
 
           <div className="grid lg:grid-cols-3 gap-6">
             <Card title="Recent Orders" className="lg:col-span-2">
