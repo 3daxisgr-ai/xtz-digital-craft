@@ -119,6 +119,11 @@ function QuotePage() {
       setError(isGR ? "Μη έγκυρη ποσότητα." : "Invalid quantity.");
       return;
     }
+    if (selectedMaterial && (selectedMaterial.status === "out_of_stock" || selectedMaterial.status === "disabled")) {
+      setError(isGR ? "Το επιλεγμένο υλικό δεν είναι διαθέσιμο." : "The selected material is not available.");
+      return;
+    }
+
 
     setSubmitting(true);
     try {
