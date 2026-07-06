@@ -490,9 +490,15 @@ async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
   const { machines, materials, settings } = await loadContext();
   const svc = (serviceHint || "").toLowerCase();
   const service = svc.includes("cnc") ? "cnc" : svc.includes("laser") ? "laser" : svc.includes("weld") ? "welding" : "3d_printing";
+  const meta = (order?.metadata ?? {}) as any;
+  const rawMode = String(meta.production_mode ?? "prototype").toLowerCase();
+  const mode: "prototype" | "durable" | "decorative" =
+    rawMode === "functional" || rawMode === "durable" ? "durable" :
+    rawMode === "decorative" || rawMode === "display" ? "decorative" : "prototype";
+  const qty = Number(order?.quantity ?? 1) || 1;
   const payload = {
-    order: { code: order.order_code, service: order.service, note: order.message },
-    request: { service, production_mode: "prototype", material_hint: order.material ?? null, notes: order.message ?? null },
+    order: { code: order.order_code, service: order.service, note: order.message, quantity: qty, timeline: meta.timeline ?? "standard" },
+    request: { service, production_mode: mode, material_hint: order.material ?? null, notes: order.message ?? null },
     file: file ? { name: file.file_name, type: file.file_type, size_bytes: file.size_bytes, ext: file.file_name?.split(".").pop() ?? null } : null,
     catalogue: { machines, materials },
     profit_protection: (settings as any) ? {
@@ -505,7 +511,7 @@ async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
   let parsed = await callAi(payload);
   parsed = enforceMinimums(parsed, settings);
   const { data: saved, error: saveErr } = await supabaseAdmin
-    .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, service, "prototype"))
+    .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, service, mode))
     .select("*").single();
   if (saveErr) throw saveErr;
   await wireBackToOrder(order.id, parsed, (saved as any)?.id);
