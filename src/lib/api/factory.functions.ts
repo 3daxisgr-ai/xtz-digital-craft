@@ -339,9 +339,9 @@ async function loadContext() {
 // Enforce profit protection floors (post-AI safety net).
 function enforceMinimums(parsed: AiResult, settings: any): AiResult {
   if (!settings) return parsed;
-  const minCharge = Number(settings.min_production_charge_eur ?? 0);
-  const minOrder = Number(settings.min_order_value_eur ?? 0);
-  const minMargin = Number(settings.min_margin_pct ?? 0) / 100;
+  const minCharge = Number((settings as any).min_production_charge_eur ?? 0);
+  const minOrder = Number((settings as any).min_order_value_eur ?? 0);
+  const minMargin = Number((settings as any).min_margin_pct ?? 0) / 100;
   const floor = Math.max(minCharge, minOrder, parsed.estimated_cost_eur * (1 + minMargin));
   if (parsed.quote_price_eur < floor) parsed.quote_price_eur = Math.round(floor * 100) / 100;
   if (!parsed.confidence_band) {
@@ -430,11 +430,11 @@ export const panelAnalyzeFile = createServerFn({ method: "POST" })
         ? { name: file.file_name, type: file.file_type, size_bytes: file.size_bytes, ext: file.file_name?.split(".").pop() ?? null }
         : null,
       catalogue: { machines, materials },
-      profit_protection: settings ? {
-        currency: settings.currency, min_margin_pct: Number(settings.min_margin_pct),
-        min_hourly_rate_eur: Number(settings.min_hourly_rate_eur),
-        min_production_charge_eur: Number(settings.min_production_charge_eur),
-        min_order_value_eur: Number(settings.min_order_value_eur),
+      profit_protection: (settings as any) ? {
+        currency: (settings as any).currency, min_margin_pct: Number((settings as any).min_margin_pct),
+        min_hourly_rate_eur: Number((settings as any).min_hourly_rate_eur),
+        min_production_charge_eur: Number((settings as any).min_production_charge_eur),
+        min_order_value_eur: Number((settings as any).min_order_value_eur),
       } : { currency: "EUR", min_margin_pct: 45, min_hourly_rate_eur: 8, min_production_charge_eur: 15, min_order_value_eur: 15 },
     };
 
@@ -482,11 +482,11 @@ async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
     request: { service, production_mode: "prototype", material_hint: order.material ?? null, notes: order.message ?? null },
     file: file ? { name: file.file_name, type: file.file_type, size_bytes: file.size_bytes, ext: file.file_name?.split(".").pop() ?? null } : null,
     catalogue: { machines, materials },
-    profit_protection: settings ? {
-      currency: settings.currency, min_margin_pct: Number(settings.min_margin_pct),
-      min_hourly_rate_eur: Number(settings.min_hourly_rate_eur),
-      min_production_charge_eur: Number(settings.min_production_charge_eur),
-      min_order_value_eur: Number(settings.min_order_value_eur),
+    profit_protection: (settings as any) ? {
+      currency: (settings as any).currency, min_margin_pct: Number((settings as any).min_margin_pct),
+      min_hourly_rate_eur: Number((settings as any).min_hourly_rate_eur),
+      min_production_charge_eur: Number((settings as any).min_production_charge_eur),
+      min_order_value_eur: Number((settings as any).min_order_value_eur),
     } : { currency: "EUR", min_margin_pct: 45, min_hourly_rate_eur: 8, min_production_charge_eur: 15, min_order_value_eur: 15 },
   };
   let parsed = await callAi(payload);
