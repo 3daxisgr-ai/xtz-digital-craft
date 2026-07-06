@@ -39,6 +39,7 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as AdminPrintKindCodeRouteImport } from './routes/admin_.print.$kind.$code'
 
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
@@ -194,6 +195,11 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminPrintKindCodeRoute = AdminPrintKindCodeRouteImport.update({
+  id: '/admin_/print/$kind/$code',
+  path: '/admin/print/$kind/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/print/$kind/$code': typeof AdminPrintKindCodeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
@@ -257,6 +264,7 @@ export interface FileRoutesByTo {
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/print/$kind/$code': typeof AdminPrintKindCodeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -290,6 +298,7 @@ export interface FileRoutesById {
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin_/print/$kind/$code': typeof AdminPrintKindCodeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -324,6 +333,7 @@ export interface FileRouteTypes {
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/print/$kind/$code'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -356,6 +366,7 @@ export interface FileRouteTypes {
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/print/$kind/$code'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -388,6 +399,7 @@ export interface FileRouteTypes {
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin_/print/$kind/$code'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -420,6 +432,7 @@ export interface RootRouteChildren {
   GrCustomMetalPartsRoute: typeof GrCustomMetalPartsRoute
   GrRapidPrototypingRoute: typeof GrRapidPrototypingRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  AdminPrintKindCodeRoute: typeof AdminPrintKindCodeRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -635,6 +648,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/print/$kind/$code': {
+      id: '/admin_/print/$kind/$code'
+      path: '/admin/print/$kind/$code'
+      fullPath: '/admin/print/$kind/$code'
+      preLoaderRoute: typeof AdminPrintKindCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -679,6 +699,7 @@ const rootRouteChildren: RootRouteChildren = {
   GrCustomMetalPartsRoute: GrCustomMetalPartsRoute,
   GrRapidPrototypingRoute: GrRapidPrototypingRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  AdminPrintKindCodeRoute: AdminPrintKindCodeRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
