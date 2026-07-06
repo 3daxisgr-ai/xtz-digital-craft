@@ -354,13 +354,12 @@ function enforceMinimums(parsed: AiResult, settings: any): AiResult {
   return parsed;
 }
 
-async function wireBackToOrder(orderId: string, parsed: AiResult) {
+async function wireBackToOrder(orderId: string, parsed: AiResult, analysisId?: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   try {
-    const { data: currentOrder } = await supabaseAdmin.from("orders").select("quote_price").eq("id", orderId).maybeSingle();
-    if (currentOrder && (currentOrder.quote_price == null || Number(currentOrder.quote_price) === 0)) {
-      await supabaseAdmin.from("orders").update({ quote_price: parsed.quote_price_eur } as any).eq("id", orderId);
-    }
+    // Always sync AI quote to order (admins can still override via panelApplyOverride).
+    await supabaseAdmin.from("orders").update({ quote_price: parsed.quote_price_eur } as any).eq("id", orderId);
+
     await supabaseAdmin.from("order_events").insert({
       order_id: orderId,
       event_type: "ai_analysis",
@@ -380,6 +379,20 @@ async function wireBackToOrder(orderId: string, parsed: AiResult) {
         quote_price_eur: parsed.quote_price_eur,
       } as any,
     });
+
+    // Auto-create a production job so the scheduler / factory dashboard picks it up.
+    const { data: existing } = await supabaseAdmin
+      .from("production_jobs" as any).select("id").eq("order_id", orderId).limit(1);
+    if (!existing || existing.length === 0) {
+      await supabaseAdmin.from("production_jobs" as any).insert({
+        order_id: orderId,
+        analysis_id: analysisId ?? null,
+        estimated_hours: parsed.estimated_print_hours ?? 4,
+        material_code: parsed.recommended_material ?? null,
+        state: "queued",
+        risk: (parsed.printability_score ?? 100) < 60 ? "high" : (parsed.printability_score ?? 100) < 80 ? "medium" : "low",
+      } as any);
+    }
   } catch (e) {
     console.error("post-analysis wire-up failed", e);
   }
