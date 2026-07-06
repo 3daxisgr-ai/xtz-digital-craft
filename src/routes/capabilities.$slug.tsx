@@ -199,7 +199,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Startup MVPs", "New product development", "Reverse engineering", "Custom one-off parts"],
     seo: {
-      title: "Design → Prototype — Rapid Prototyping & Product Development | TOREO",
+      title: "Design → Prototype — Rapid Prototyping | TOREO",
       description: "Rapid prototyping and product development from idea to working prototype in days — end-to-end engineering services by TOREO.",
     },
   },
