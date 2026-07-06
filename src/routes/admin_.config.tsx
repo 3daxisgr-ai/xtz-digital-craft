@@ -196,56 +196,123 @@ function PricingSection() {
 }
 
 // ---------- MATERIALS ----------
+type MStatus = "in_stock" | "low_stock" | "out_of_stock" | "disabled";
+const STATUS_META: Record<MStatus, { dot: string; label: string; badge: string }> = {
+  in_stock:     { dot: "bg-emerald-400", label: "In stock",     badge: "border-emerald-400/40 text-emerald-300" },
+  low_stock:    { dot: "bg-amber-400",   label: "Low stock",    badge: "border-amber-400/40 text-amber-300" },
+  out_of_stock: { dot: "bg-red-400",     label: "Out of stock", badge: "border-red-400/40 text-red-300" },
+  disabled:     { dot: "bg-zinc-500",    label: "Disabled",     badge: "border-zinc-500/40 text-zinc-400" },
+};
+
 function MaterialsSection() {
   const list = useServerFn(panelListMaterials);
   const upsert = useServerFn(panelUpsertMaterial);
-  const del = useServerFn(panelDeleteMaterial);
+  const setStatus = useServerFn(panelSetMaterialStatus);
+  const { s, save } = useSettings();
   const [rows, setRows] = useState<any[]>([]);
   const [editing, setEditing] = useState<any | null>(null);
   async function refresh() { setRows(await list() as any[]); }
   useEffect(() => { refresh(); /* eslint-disable-next-line */ }, []);
-  async function save() {
+  async function save1() {
     if (!editing) return;
     const patch: any = {
       code: editing.code, name: editing.name, family: editing.family, process: editing.process ?? "3d_printing",
       color: editing.color ?? null, price_per_kg: Number(editing.price_per_kg) || null,
       density_g_cm3: Number(editing.density_g_cm3) || null, stock_kg: Number(editing.stock_kg) || null,
-      active: editing.active !== false,
+      minimum_stock_kg: editing.minimum_stock_kg === "" || editing.minimum_stock_kg == null ? null : Number(editing.minimum_stock_kg),
+      supplier: editing.supplier ?? null,
+      last_restocked_at: editing.last_restocked_at || null,
+      internal_notes: editing.internal_notes ?? null,
+      status: editing.status ?? "in_stock",
+      active: (editing.status ?? "in_stock") !== "disabled",
     };
     try { await upsert({ data: { id: editing.id, patch } }); toast.success("Saved"); setEditing(null); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Save failed"); }
   }
+  async function quickStatus(id: string, status: MStatus) {
+    try { await setStatus({ data: { id, status } }); toast.success(STATUS_META[status].label); refresh(); }
+    catch (e: any) { toast.error(e.message ?? "Status update failed"); }
+  }
+  const hideOOS = !!s?.hide_out_of_stock_materials;
   return (
-    <Panel title="Materials Catalog" right={<button onClick={() => setEditing({ family: "PLA", process: "3d_printing", active: true })} className="bg-amber-300 text-black text-xs font-mono px-3 py-1.5 rounded">+ NEW</button>}>
-      <div className="space-y-1">
-        {rows.map((m) => (
-          <div key={m.id} className="flex items-center justify-between border border-white/10 rounded px-3 py-2 text-sm">
-            <div><span className="font-mono text-xs text-amber-300/80">{m.code}</span> · {m.family} · {m.name} · <span className="text-white/50">{m.stock_kg ?? 0}kg · €{m.price_per_kg ?? 0}/kg</span></div>
-            <div className="flex gap-2">
-              <button onClick={() => setEditing(m)} className="text-xs text-sky-300 hover:underline">Edit</button>
-              <button onClick={async () => { if (confirm("Delete?")) { await del({ data: { id: m.id } }); refresh(); } }} className="text-xs text-red-300 hover:underline">Delete</button>
-            </div>
-          </div>
-        ))}
-        {rows.length === 0 && <div className="text-xs text-white/40">No materials yet.</div>}
-      </div>
-      {editing && (
-        <div className="mt-5 border border-amber-300/30 rounded p-4 bg-amber-300/[0.02] space-y-3">
-          <div className="grid md:grid-cols-3 gap-3">
-            {["code","name","family","process","color"].map((k) => (
-              <label key={k} className="text-xs"><Label>{k}</Label><input className={inp} value={editing[k] ?? ""} onChange={(e) => setEditing({ ...editing, [k]: e.target.value })} /></label>
-            ))}
-            {["price_per_kg","density_g_cm3","stock_kg"].map((k) => (
-              <label key={k} className="text-xs"><Label>{k}</Label><input className={inp} value={editing[k] ?? ""} onChange={(e) => setEditing({ ...editing, [k]: e.target.value })} /></label>
-            ))}
-          </div>
-          <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={editing.active !== false} onChange={(e) => setEditing({ ...editing, active: e.target.checked })} /> Active / in catalog</label>
-          <div className="flex gap-2"><button onClick={save} className="bg-amber-300 text-black text-xs font-mono px-4 py-2 rounded">SAVE</button><button onClick={() => setEditing(null)} className="border border-white/15 text-xs font-mono px-4 py-2 rounded">CANCEL</button></div>
+    <>
+      <Panel title="Customer visibility" >
+        <label className="flex items-center gap-3 text-sm">
+          <input
+            type="checkbox"
+            checked={hideOOS}
+            onChange={(e) => save({ hide_out_of_stock_materials: e.target.checked })}
+          />
+          <span>
+            Hide <strong className="text-red-300">Out of stock</strong> materials from the customer quote page.
+            <span className="block text-[11px] text-white/40 mt-0.5">When off, out-of-stock materials appear disabled with an "unavailable" note.</span>
+          </span>
+        </label>
+      </Panel>
+
+      <Panel title="Materials Catalog" right={<button onClick={() => setEditing({ family: "PLA", process: "3d_printing", status: "in_stock", active: true })} className="bg-amber-300 text-black text-xs font-mono px-3 py-1.5 rounded">+ NEW</button>}>
+        <div className="space-y-1">
+          {rows.map((m) => {
+            const st = (m.status ?? "in_stock") as MStatus;
+            const meta = STATUS_META[st];
+            return (
+              <div key={m.id} className="flex flex-wrap items-center justify-between gap-2 border border-white/10 rounded px-3 py-2 text-sm">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className={`inline-block h-2 w-2 rounded-full ${meta.dot}`} />
+                  <span className={`font-mono text-[10px] uppercase tracking-wider px-1.5 py-0.5 border rounded ${meta.badge}`}>{meta.label}</span>
+                  <span className="font-mono text-xs text-amber-300/80">{m.code}</span>
+                  <span className="text-white/70">· {m.family} · {m.name}</span>
+                  <span className="text-white/40">· {m.stock_kg ?? 0}kg · €{m.price_per_kg ?? 0}/kg</span>
+                </div>
+                <div className="flex gap-1 items-center">
+                  {(["in_stock","low_stock","out_of_stock","disabled"] as MStatus[]).map((s2) => (
+                    <button
+                      key={s2}
+                      title={STATUS_META[s2].label}
+                      onClick={() => quickStatus(m.id, s2)}
+                      className={`px-2 py-1 text-[10px] font-mono uppercase rounded border ${st === s2 ? STATUS_META[s2].badge : "border-white/10 text-white/40 hover:text-white"}`}
+                    >
+                      {s2 === "in_stock" ? "In" : s2 === "low_stock" ? "Low" : s2 === "out_of_stock" ? "OOS" : "Off"}
+                    </button>
+                  ))}
+                  <button onClick={() => setEditing({ ...m })} className="text-xs text-sky-300 hover:underline ml-2">Edit</button>
+                </div>
+              </div>
+            );
+          })}
+          {rows.length === 0 && <div className="text-xs text-white/40">No materials yet.</div>}
         </div>
-      )}
-    </Panel>
+        {editing && (
+          <div className="mt-5 border border-amber-300/30 rounded p-4 bg-amber-300/[0.02] space-y-3">
+            <div className="grid md:grid-cols-3 gap-3">
+              {["code","name","family","process","color"].map((k) => (
+                <label key={k} className="text-xs"><Label>{k}</Label><input className={inp} value={editing[k] ?? ""} onChange={(e) => setEditing({ ...editing, [k]: e.target.value })} /></label>
+              ))}
+              {["price_per_kg","density_g_cm3","stock_kg","minimum_stock_kg"].map((k) => (
+                <label key={k} className="text-xs"><Label>{k.replace(/_/g," ")}</Label><input className={inp} value={editing[k] ?? ""} onChange={(e) => setEditing({ ...editing, [k]: e.target.value })} /></label>
+              ))}
+              <label className="text-xs"><Label>supplier</Label><input className={inp} value={editing.supplier ?? ""} onChange={(e) => setEditing({ ...editing, supplier: e.target.value })} /></label>
+              <label className="text-xs"><Label>last restocked</Label><input type="date" className={inp} value={(editing.last_restocked_at ?? "").slice(0,10)} onChange={(e) => setEditing({ ...editing, last_restocked_at: e.target.value })} /></label>
+              <label className="text-xs"><Label>status</Label>
+                <select className={inp} value={editing.status ?? "in_stock"} onChange={(e) => setEditing({ ...editing, status: e.target.value })}>
+                  <option value="in_stock">In stock</option>
+                  <option value="low_stock">Low stock</option>
+                  <option value="out_of_stock">Out of stock</option>
+                  <option value="disabled">Disabled</option>
+                </select>
+              </label>
+            </div>
+            <label className="block text-xs"><Label>internal notes</Label>
+              <textarea rows={3} className={inp} value={editing.internal_notes ?? ""} onChange={(e) => setEditing({ ...editing, internal_notes: e.target.value })} />
+            </label>
+            <div className="flex gap-2"><button onClick={save1} className="bg-amber-300 text-black text-xs font-mono px-4 py-2 rounded">SAVE</button><button onClick={() => setEditing(null)} className="border border-white/15 text-xs font-mono px-4 py-2 rounded">CANCEL</button></div>
+          </div>
+        )}
+      </Panel>
+    </>
   );
 }
+
 
 // ---------- MACHINES ----------
 function MachinesSection() {
