@@ -105,7 +105,7 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Custom industrial parts", "Product prototypes", "Brackets and enclosures", "Architectural metalwork"],
     notes: "Accepted formats: .pdf, .jpg, .png, .step, .stp, .iges, .dwg, .dxf.",
     seo: {
-      title: "Design & Development — Product Development & Engineering Services | TOREO",
+      title: "Design & Development — Engineering Services | TOREO",
       description: "From sketch to manufacturable CAD. Product development, DFM, engineering services and full documentation by TOREO in Greece.",
     },
   },
