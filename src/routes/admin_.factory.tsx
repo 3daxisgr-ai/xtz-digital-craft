@@ -243,6 +243,7 @@ function AnalysisPanel() {
   const analyze = useServerFn(panelAnalyzeFile);
   const list = useServerFn(panelListAnalyses);
   const del = useServerFn(panelDeleteAnalysis);
+  const recalc = useServerFn(panelRecalculatePrice);
   const [orderCode, setOrderCode] = useState("");
   const [rows, setRows] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
