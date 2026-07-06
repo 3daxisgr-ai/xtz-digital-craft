@@ -532,6 +532,11 @@ export const panelAnalyzeFile = createServerFn({ method: "POST" })
 
     let parsed = await callAi(payload);
     parsed = enforceMinimums(parsed, settings);
+    // Deterministic pricing overrides AI-produced price.
+    const orderMeta = ((order as any)?.metadata ?? {}) as any;
+    const timelineAdmin = (["flexible","standard","urgent"].includes(String(orderMeta.timeline)) ? String(orderMeta.timeline) : "standard") as "flexible"|"standard"|"urgent";
+    const assigned = pickMachine(machines as any[], parsed, data.production_mode, timelineAdmin);
+    await applyDeterministicPricing(parsed, order, data.production_mode, timelineAdmin, { machines, materials, settings }, assigned);
 
     const { data: saved, error: saveErr } = await supabaseAdmin
       .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, data.service, data.production_mode))
