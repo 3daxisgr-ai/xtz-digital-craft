@@ -458,7 +458,7 @@ export const panelAnalyzeFile = createServerFn({ method: "POST" })
       .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, data.service, data.production_mode))
       .select("*").single();
     if (saveErr) throw saveErr;
-    await wireBackToOrder(order.id, parsed);
+    await wireBackToOrder(order.id, parsed, (saved as any)?.id);
     return saved;
   });
 
