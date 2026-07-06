@@ -176,7 +176,7 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Functional prototypes", "Jigs and fixtures", "Custom end-use parts", "Small batch production"],
     notes: "Send .stl, .step or .obj. Include build volume and quantity.",
     seo: {
-      title: "3D Printing Services — Rapid Prototyping & End-Use Parts | TOREO",
+      title: "3D Printing — Rapid Prototyping & End-Use Parts | TOREO",
       description: "Professional 3D printing services for rapid prototyping and end-use parts in engineering polymers — PLA, ABS, PETG, PC, TPU — by TOREO in Greece.",
     },
   },
