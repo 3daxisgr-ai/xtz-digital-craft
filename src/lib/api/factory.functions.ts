@@ -523,7 +523,7 @@ export const runQuoteAnalysis = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: order } = await supabaseAdmin.from("orders")
-      .select("id, order_code, customer_email, service, material, message, created_at").eq("order_code", data.order_code).maybeSingle();
+      .select("id, order_code, customer_email, service, material, message, quantity, metadata, created_at").eq("order_code", data.order_code).maybeSingle();
     if (!order) throw new Error("Order not found");
     if (String(order.customer_email).toLowerCase() !== data.email.toLowerCase()) throw new Error("Not authorized");
     if (Date.now() - new Date(order.created_at as any).getTime() > 24 * 60 * 60 * 1000) throw new Error("Analysis window expired");
