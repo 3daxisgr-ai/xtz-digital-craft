@@ -389,9 +389,16 @@ function QuotePage() {
                           {L.oosWarn}
                         </div>
                       )}
+                      <CustomerSuggestions
+                        isGR={isGR}
+                        materials={materials}
+                        selected={selectedMaterial}
+                        purpose={purpose}
+                      />
                     </>
                   )}
                 </div>
+
 
 
                 {/* Production Purpose */}
@@ -560,3 +567,79 @@ function Input({ name, label, required, type = "text" }: { name: string; label: 
     </div>
   );
 }
+
+type SuggMat = { code: string; name: string; family: string; status: "in_stock" | "low_stock" | "out_of_stock" | "disabled" };
+
+function CustomerSuggestions({
+  isGR,
+  materials,
+  selected,
+  purpose,
+}: {
+  isGR: boolean;
+  materials: SuggMat[];
+  selected: SuggMat | null;
+  purpose: ProductionMode;
+}) {
+  const available = materials.filter((m) => m.status === "in_stock" || m.status === "low_stock");
+  if (available.length === 0) return null;
+
+  const tips: string[] = [];
+
+  // If selected material is unavailable, propose an available alternative in the same family, else any available.
+  if (selected && (selected.status === "out_of_stock" || selected.status === "disabled")) {
+    const sameFamily = available.find((m) => m.family === selected.family);
+    const alt = sameFamily ?? available.find((m) => m.status === "in_stock") ?? available[0];
+    if (alt) {
+      tips.push(
+        isGR
+          ? `Το ${selected.family} δεν είναι διαθέσιμο αυτή τη στιγμή. Το ${alt.family} είναι διαθέσιμο και μπορεί να ταιριάζει σε αυτό το έργο.`
+          : `${selected.family} is currently unavailable. ${alt.family} is available and may be suitable for this project.`,
+      );
+    }
+  } else if (selected?.status === "low_stock") {
+    const alt = available.find((m) => m.status === "in_stock" && m.family !== selected.family);
+    if (alt) {
+      tips.push(
+        isGR
+          ? `Το ${selected.family} έχει περιορισμένη διαθεσιμότητα. Εναλλακτικά, το ${alt.family} είναι πλήρως διαθέσιμο.`
+          : `${selected.family} has limited availability. Alternatively, ${alt.family} is fully in stock.`,
+      );
+    }
+  }
+
+  // Purpose-driven, non-technical, price-neutral hints (never expose internal AI logic).
+  if (purpose === "decorative") {
+    tips.push(
+      isGR
+        ? "Για διακοσμητικά αντικείμενα, η επιλογή \"Διακοσμητικό / Παρουσίασης\" βελτιώνει την ποιότητα επιφάνειας και ενδέχεται να επηρεάσει ελαφρώς την τιμή."
+        : "For display pieces, choosing Decorative / Display improves surface finish and may slightly affect price.",
+    );
+  }
+  if (purpose === "durable") {
+    const strong = available.find((m) => /PETG|ABS|PA|PC|CF|Nylon/i.test(m.family + " " + m.name));
+    if (strong && selected && strong.code !== selected.code) {
+      tips.push(
+        isGR
+          ? `Για λειτουργικά εξαρτήματα, το ${strong.family} συχνά προσφέρει καλύτερη αντοχή. Είναι διαθέσιμο.`
+          : `For functional parts, ${strong.family} often provides better strength — it is currently available.`,
+      );
+    }
+  }
+
+  if (tips.length === 0) return null;
+
+  return (
+    <div className="mt-4 border border-primary/25 bg-primary/5 rounded p-3">
+      <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary/80 mb-2">
+        {isGR ? "Προτάσεις" : "Suggestions"}
+      </div>
+      <ul className="space-y-1.5 text-xs text-foreground/80">
+        {tips.map((t, i) => (
+          <li key={i} className="flex gap-2"><span className="text-primary/70">•</span><span>{t}</span></li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
