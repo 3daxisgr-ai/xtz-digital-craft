@@ -389,9 +389,16 @@ function QuotePage() {
                           {L.oosWarn}
                         </div>
                       )}
+                      <CustomerSuggestions
+                        isGR={isGR}
+                        materials={materials}
+                        selected={selectedMaterial}
+                        purpose={purpose}
+                      />
                     </>
                   )}
                 </div>
+
 
 
                 {/* Production Purpose */}
