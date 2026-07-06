@@ -100,7 +100,7 @@ export function ModelViewer({ file, url, fileName, className, height = 360 }: Pr
         <div className="absolute inset-0 flex flex-col gap-2 items-center justify-center text-white/50 text-xs font-mono tracking-widest uppercase text-center px-4">
           <div className="text-white/70">.{loaded.ext || "?"} preview unavailable</div>
           <div className="text-[10px] normal-case tracking-normal text-white/40">
-            Upload .stl or .obj to see a live 3D preview. Your file is still analysed by AI.
+            Upload .stl or .obj to see a live 3D preview. Your file will still be reviewed by our engineering team.
           </div>
         </div>
       )}
