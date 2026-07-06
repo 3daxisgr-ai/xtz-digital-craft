@@ -60,7 +60,9 @@ function QuotePage() {
   const { lang } = useI18n();
   const isGR = lang === "GR";
 
-  const [materials, setMaterials] = useState<Array<{ code: string; name: string; family: string; in_stock: boolean }>>([]);
+  type MaterialStatus = "in_stock" | "low_stock" | "out_of_stock" | "disabled";
+  const [materials, setMaterials] = useState<Array<{ code: string; name: string; family: string; in_stock: boolean; status: MaterialStatus }>>([]);
+
   const [materialCode, setMaterialCode] = useState<string>("PLA-BLK");
   const [purpose, setPurpose] = useState<ProductionMode>("prototype");
   const [timeline, setTimeline] = useState<Timeline>("standard");
@@ -76,15 +78,18 @@ function QuotePage() {
   useEffect(() => {
     getPublicPrintingMaterials()
       .then((rows) => {
-        setMaterials(rows);
-        if (rows.length && !rows.find((r) => r.code === materialCode)) {
-          const firstInStock = rows.find((r) => r.in_stock) ?? rows[0];
-          setMaterialCode(firstInStock.code);
+        const list = rows as Array<{ code: string; name: string; family: string; in_stock: boolean; status: MaterialStatus }>;
+        setMaterials(list);
+        const selectable = list.filter((r) => r.status === "in_stock" || r.status === "low_stock");
+        if (list.length && !selectable.find((r) => r.code === materialCode)) {
+          const first = selectable.find((r) => r.status === "in_stock") ?? selectable[0];
+          if (first) setMaterialCode(first.code);
         }
       })
       .catch((e) => console.error("materials load failed", e));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const selectedMaterial = useMemo(
     () => materials.find((m) => m.code === materialCode) ?? null,
@@ -114,6 +119,11 @@ function QuotePage() {
       setError(isGR ? "Μη έγκυρη ποσότητα." : "Invalid quantity.");
       return;
     }
+    if (selectedMaterial && (selectedMaterial.status === "out_of_stock" || selectedMaterial.status === "disabled")) {
+      setError(isGR ? "Το επιλεγμένο υλικό δεν είναι διαθέσιμο." : "The selected material is not available.");
+      return;
+    }
+
 
     setSubmitting(true);
     try {
@@ -205,8 +215,16 @@ function QuotePage() {
       ? "Ελήφθη. Η μηχανική ομάδα μας ετοιμάζει την προσφορά σας."
       : "Received. Our engineering team is preparing your quote.",
     inStock: isGR ? "Διαθέσιμο" : "In stock",
+    lowStock: isGR ? "Χαμηλό απόθεμα" : "Low stock",
     oos: isGR ? "Εξαντλημένο" : "Out of stock",
+    lowStockWarn: isGR
+      ? "Περιορισμένη διαθεσιμότητα. Ο χρόνος παράδοσης ενδέχεται να επηρεαστεί."
+      : "Limited availability. Delivery time may be affected.",
+    oosWarn: isGR
+      ? "Αυτό το υλικό δεν είναι διαθέσιμο αυτή τη στιγμή. Επιλέξτε άλλο υλικό ή επικοινωνήστε με την TOREO."
+      : "This material is currently unavailable. Please choose another material or contact TOREO for a custom request.",
   };
+
 
   const purposes: Array<{ id: ProductionMode; title: string; blurb: string }> = [
     { id: "prototype", title: isGR ? "Πρωτότυπο" : "Prototype", blurb: isGR ? "Γρήγορο & οικονομικό. Για validation & fit test." : "Fast & economical. Concept validation & fit test." },
@@ -324,37 +342,57 @@ function QuotePage() {
                   {materials.length === 0 ? (
                     <div className="font-mono text-xs text-muted-foreground">Loading materials…</div>
                   ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                      {materials.map((m) => {
-                        const active = m.code === materialCode;
-                        const disabled = !m.in_stock;
-                        return (
-                          <button
-                            key={m.code}
-                            type="button"
-                            disabled={disabled}
-                            onClick={() => !disabled && setMaterialCode(m.code)}
-                            className={`relative p-3 border text-left transition-all ${
-                              disabled
-                                ? "border-border/40 opacity-40 cursor-not-allowed bg-white/[0.01]"
-                                : active
-                                  ? "border-primary bg-primary/10 text-primary blue-glow"
-                                  : "border-border hover:border-foreground/40 text-foreground"
-                            }`}
-                          >
-                            <div className="font-display text-lg font-bold">{m.family}</div>
-                            <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-                              {m.name}
-                            </div>
-                            <div className="font-mono text-[10px] mt-1 opacity-70">
-                              {m.in_stock ? L.inStock : L.oos}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
+                    <>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                        {materials.map((m) => {
+                          const active = m.code === materialCode;
+                          const isOOS = m.status === "out_of_stock";
+                          const isLow = m.status === "low_stock";
+                          const disabled = isOOS;
+                          const dot = isOOS ? "bg-red-400" : isLow ? "bg-amber-400" : "bg-emerald-400";
+                          const statusLabel = isOOS ? L.oos : isLow ? L.lowStock : L.inStock;
+                          return (
+                            <button
+                              key={m.code}
+                              type="button"
+                              disabled={disabled}
+                              aria-disabled={disabled}
+                              onClick={() => !disabled && setMaterialCode(m.code)}
+                              title={isOOS ? L.oosWarn : isLow ? L.lowStockWarn : undefined}
+                              className={`relative p-3 border text-left transition-all ${
+                                disabled
+                                  ? "border-border/40 opacity-40 cursor-not-allowed bg-white/[0.01]"
+                                  : active
+                                    ? "border-primary bg-primary/10 text-primary blue-glow"
+                                    : "border-border hover:border-foreground/40 text-foreground"
+                              }`}
+                            >
+                              <div className="font-display text-lg font-bold">{m.family}</div>
+                              <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                                {m.name}
+                              </div>
+                              <div className="mt-1 flex items-center gap-1.5 font-mono text-[10px] opacity-80">
+                                <span className={`inline-block h-1.5 w-1.5 rounded-full ${dot}`} />
+                                <span>{statusLabel}</span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {selectedMaterial?.status === "low_stock" && (
+                        <div className="mt-3 border border-amber-400/30 bg-amber-400/5 text-amber-200 text-xs px-3 py-2 rounded">
+                          {L.lowStockWarn}
+                        </div>
+                      )}
+                      {selectedMaterial?.status === "out_of_stock" && (
+                        <div className="mt-3 border border-red-400/30 bg-red-400/5 text-red-200 text-xs px-3 py-2 rounded">
+                          {L.oosWarn}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
+
 
                 {/* Production Purpose */}
                 <div>

@@ -78,9 +78,15 @@ const materialInput = z.object({
   price_per_kg: z.number().nonnegative().optional().nullable(),
   density_g_cm3: z.number().positive().optional().nullable(),
   stock_kg: z.number().nonnegative().optional().nullable(),
+  minimum_stock_kg: z.number().nonnegative().optional().nullable(),
+  supplier: z.string().max(120).optional().nullable(),
+  last_restocked_at: z.string().optional().nullable(),
+  internal_notes: z.string().max(2000).optional().nullable(),
+  status: z.enum(["in_stock", "low_stock", "out_of_stock", "disabled"]).optional(),
   properties: z.record(z.string(), z.any()).optional().nullable(),
   active: z.boolean().default(true),
 });
+
 
 export const panelListMaterials = createServerFn({ method: "GET" }).handler(async () => {
   await requireAdminCookie();
@@ -110,10 +116,35 @@ export const panelDeleteMaterial = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     await requireAdminCookie();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("materials" as any).delete().eq("id", data.id);
+    // Soft-disable instead of hard-delete: materials are never destroyed
+    // (existing orders reference them for history + reporting).
+    const { error } = await supabaseAdmin
+      .from("materials" as any)
+      .update({ status: "disabled", active: false } as any)
+      .eq("id", data.id);
     if (error) throw error;
     return { ok: true };
   });
+
+export const panelSetMaterialStatus = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({
+      id: z.string().uuid(),
+      status: z.enum(["in_stock", "low_stock", "out_of_stock", "disabled"]),
+    }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Keep `active` flag in sync with the disabled status so legacy queries
+    // that still filter `.eq('active', true)` behave correctly.
+    const patch: any = { status: data.status, active: data.status !== "disabled" };
+    const { data: row, error } = await supabaseAdmin
+      .from("materials" as any).update(patch).eq("id", data.id).select("*").single();
+    if (error) throw error;
+    return row;
+  });
+
 
 // ---------------- FACTORY SETTINGS (profit protection) ----------------
 
@@ -140,7 +171,9 @@ const settingsInput = z.object({
   notifications: z.record(z.string(), z.any()).optional(),
   timeline_stages: z.array(z.any()).optional(),
   ai_modules: z.record(z.string(), z.any()).optional(),
+  hide_out_of_stock_materials: z.boolean().optional(),
 });
+
 
 export const panelUpdateSettings = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => settingsInput.parse(d))
@@ -715,24 +748,43 @@ export const panelReadinessCheck = createServerFn({ method: "POST" })
   });
 
 // -------- Public: available 3D-printing materials for the customer quote form --------
+// Returns explicit status so the quote page can render the traffic-light UI:
+//   in_stock    → selectable, green
+//   low_stock   → selectable, amber, shows "limited availability" warning
+//   out_of_stock→ shown disabled with "unavailable" note (unless the factory
+//                 setting hide_out_of_stock_materials is true, then omitted)
+//   disabled    → never returned to customers
 export const getPublicPrintingMaterials = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const printingFamilies = ["PLA", "PLA+", "PETG", "ABS", "TPU", "PC", "PA-CF"];
-  const { data } = await supabaseAdmin
-    .from("materials" as any)
-    .select("code, name, family, stock_kg")
-    .eq("active", true)
-    .in("family", printingFamilies);
-  const rows = ((data ?? []) as any[]).map((m) => ({
-    code: m.code as string,
-    name: m.name as string,
-    family: m.family as string,
-    in_stock: Number(m.stock_kg ?? 0) > 0,
-  }));
-  // group by family, keep only in-stock or first-of-family, and stable order
+  const [{ data }, { data: settings }] = await Promise.all([
+    supabaseAdmin
+      .from("materials" as any)
+      .select("code, name, family, stock_kg, status, active")
+      .in("family", printingFamilies),
+    supabaseAdmin.from("factory_settings" as any).select("hide_out_of_stock_materials").limit(1).maybeSingle(),
+  ]);
+  const hideOOS = !!(settings as any)?.hide_out_of_stock_materials;
+  const rows = ((data ?? []) as any[])
+    .map((m) => {
+      // Derive status: prefer explicit column, else fall back to legacy stock/active.
+      let status: "in_stock" | "low_stock" | "out_of_stock" | "disabled" =
+        (m.status as any) || "in_stock";
+      if (!m.active) status = "disabled";
+      return {
+        code: m.code as string,
+        name: m.name as string,
+        family: m.family as string,
+        status,
+        in_stock: status === "in_stock" || status === "low_stock",
+      };
+    })
+    .filter((m) => m.status !== "disabled")
+    .filter((m) => !(hideOOS && m.status === "out_of_stock"));
   rows.sort((a, b) => (a.family + a.name).localeCompare(b.family + b.name));
   return rows;
 });
+
 
 // -------- Admin: Recalculate deterministic price for an existing analysis --------
 export const panelRecalculatePrice = createServerFn({ method: "POST" })
