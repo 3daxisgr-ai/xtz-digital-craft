@@ -176,6 +176,10 @@ function PortalOrderPage() {
           </section>
         )}
 
+        <DelayAndAssistant orderCode={orderCode} />
+
+
+
 
 
         <section className="border border-white/10 bg-white/[0.02] rounded-lg p-5 md:p-6">
