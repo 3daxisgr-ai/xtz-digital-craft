@@ -8,8 +8,9 @@ import { adminCheck } from "@/lib/api/admin.functions";
 import {
   panelGetSettings, panelUpdateSettings,
   panelListMachines, panelUpsertMachine, panelDeleteMachine,
-  panelListMaterials, panelUpsertMaterial, panelDeleteMaterial, panelSetMaterialStatus,
+  panelListMaterials, panelUpsertMaterial, panelSetMaterialStatus,
 } from "@/lib/api/factory.functions";
+
 
 import { panelOvernightOptimize, panelBatchSuggest } from "@/lib/api/insights.functions";
 import { panelRecomputeSchedule } from "@/lib/api/scheduler.functions";
