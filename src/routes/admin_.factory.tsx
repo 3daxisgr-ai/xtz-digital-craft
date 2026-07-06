@@ -6,7 +6,9 @@ import {
   panelListMachines, panelUpsertMachine, panelDeleteMachine,
   panelListMaterials, panelUpsertMaterial, panelDeleteMaterial,
   panelAnalyzeFile, panelListAnalyses, panelDeleteAnalysis,
+  panelGetSettings, panelUpdateSettings, panelReadinessCheck, panelApplyOverride,
 } from "@/lib/api/factory.functions";
+import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
