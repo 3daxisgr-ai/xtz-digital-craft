@@ -345,14 +345,8 @@ async function loadContext() {
   return { machines: machines ?? [], materials: materials ?? [], settings: settings ?? null };
 }
 
-// Enforce profit protection floors (post-AI safety net).
-function enforceMinimums(parsed: AiResult, settings: any): AiResult {
-  if (!settings) return parsed;
-  const minCharge = Number((settings as any).min_production_charge_eur ?? 0);
-  const minOrder = Number((settings as any).min_order_value_eur ?? 0);
-  const minMargin = Number((settings as any).min_margin_pct ?? 0) / 100;
-  const floor = Math.max(minCharge, minOrder, parsed.estimated_cost_eur * (1 + minMargin));
-  if (parsed.quote_price_eur < floor) parsed.quote_price_eur = Math.round(floor * 100) / 100;
+// Fill in bands only; the deterministic pricing engine (below) owns price.
+function enforceMinimums(parsed: AiResult, _settings: any): AiResult {
   if (!parsed.confidence_band) {
     parsed.confidence_band = parsed.confidence >= 95 ? "very_high" : parsed.confidence >= 85 ? "high" : parsed.confidence >= 70 ? "medium" : "review_recommended";
   }
@@ -361,6 +355,41 @@ function enforceMinimums(parsed: AiResult, settings: any): AiResult {
     parsed.complexity_band = c <= 20 ? "very_simple" : c <= 40 ? "simple" : c <= 60 ? "medium" : c <= 80 ? "complex" : "very_complex";
   }
   return parsed;
+}
+
+// Deterministic pricing — replaces AI-produced quote_price_eur with a formula
+// over stored machine/material/setting values. Same inputs → same price.
+async function applyDeterministicPricing(
+  parsed: AiResult,
+  order: any,
+  mode: "prototype" | "durable" | "decorative",
+  timeline: "flexible" | "standard" | "urgent",
+  ctx: { machines: any[]; materials: any[]; settings: any },
+  assignedMachine: any | null,
+) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: queued } = await supabaseAdmin
+    .from("production_jobs" as any).select("estimated_hours").eq("state", "queued");
+  const backlog_hours = ((queued ?? []) as any[]).reduce((n, j) => n + Number(j.estimated_hours ?? 0), 0);
+
+  const inputs: PriceInputs = {
+    material_grams: Number(parsed.estimated_material_g ?? 0),
+    print_hours: Number(parsed.estimated_print_hours ?? 0),
+    support_hours: parsed.support_hours ?? 0,
+    complexity_score: Number(parsed.complexity_score ?? 50),
+    production_mode: mode,
+    quantity: Math.max(1, Number((order as any)?.quantity ?? 1) || 1),
+    timeline,
+    recommended_material: parsed.recommended_material,
+  };
+  const priced = computePrice(inputs, {
+    materials: ctx.materials, machines: ctx.machines, settings: ctx.settings,
+    backlog_hours, assigned_machine: assignedMachine,
+  });
+  parsed.estimated_cost_eur = priced.estimated_cost_eur;
+  parsed.quote_price_eur = priced.quote_price_eur;
+  parsed.cost_breakdown = { ...(parsed.cost_breakdown ?? {}), ...priced.cost_breakdown } as any;
+  return { priced };
 }
 
 function pickMachine(machines: any[], parsed: AiResult, mode: string, timeline: string) {
