@@ -44,14 +44,14 @@ const STATUS_FLOW = [
 ] as const;
 
 const STATUS_LABEL: Record<string, string> = {
-  quote_received: "Quote Received",
+  quote_received: "Quote Submitted",
   engineering_review: "Engineering Review",
-  quote_sent: "Quote Sent",
-  awaiting_approval: "Awaiting Approval",
-  payment_received: "Payment Received",
-  production: "Production",
-  quality_inspection: "Quality Inspection",
-  ready_for_shipping: "Ready for Shipping",
+  quote_sent: "Quote Ready",
+  awaiting_approval: "Quote Approved",
+  payment_received: "Scheduled for Production",
+  production: "Manufacturing",
+  quality_inspection: "Quality Control",
+  ready_for_shipping: "Packaging",
   shipped: "Shipped",
   delivered: "Delivered",
   cancelled: "Cancelled",
