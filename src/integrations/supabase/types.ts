@@ -87,7 +87,9 @@ export type Database = {
       }
       factory_settings: {
         Row: {
+          ai_modules: Json
           allow_overnight_default: boolean
+          company_info: Json
           created_at: string
           currency: string
           id: string
@@ -95,14 +97,22 @@ export type Database = {
           min_margin_pct: number
           min_order_value_eur: number
           min_production_charge_eur: number
+          notifications: Json
           singleton: boolean
+          timeline_stages: Json
           updated_at: string
           updated_by: string | null
+          urgency_high_load_threshold_hours: number
+          urgency_surcharge_flexible_eur: number
+          urgency_surcharge_standard_eur: number
+          urgency_surcharge_urgent_eur: number
           work_end_hour: number
           work_start_hour: number
         }
         Insert: {
+          ai_modules?: Json
           allow_overnight_default?: boolean
+          company_info?: Json
           created_at?: string
           currency?: string
           id?: string
@@ -110,14 +120,22 @@ export type Database = {
           min_margin_pct?: number
           min_order_value_eur?: number
           min_production_charge_eur?: number
+          notifications?: Json
           singleton?: boolean
+          timeline_stages?: Json
           updated_at?: string
           updated_by?: string | null
+          urgency_high_load_threshold_hours?: number
+          urgency_surcharge_flexible_eur?: number
+          urgency_surcharge_standard_eur?: number
+          urgency_surcharge_urgent_eur?: number
           work_end_hour?: number
           work_start_hour?: number
         }
         Update: {
+          ai_modules?: Json
           allow_overnight_default?: boolean
+          company_info?: Json
           created_at?: string
           currency?: string
           id?: string
@@ -125,9 +143,15 @@ export type Database = {
           min_margin_pct?: number
           min_order_value_eur?: number
           min_production_charge_eur?: number
+          notifications?: Json
           singleton?: boolean
+          timeline_stages?: Json
           updated_at?: string
           updated_by?: string | null
+          urgency_high_load_threshold_hours?: number
+          urgency_surcharge_flexible_eur?: number
+          urgency_surcharge_standard_eur?: number
+          urgency_surcharge_urgent_eur?: number
           work_end_hour?: number
           work_start_hour?: number
         }

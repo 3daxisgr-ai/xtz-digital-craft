@@ -131,6 +131,14 @@ const settingsInput = z.object({
   work_start_hour: z.number().min(0).max(24).optional(),
   work_end_hour: z.number().min(0).max(24).optional(),
   currency: z.string().max(8).optional(),
+  urgency_surcharge_flexible_eur: z.number().min(0).optional(),
+  urgency_surcharge_standard_eur: z.number().min(0).optional(),
+  urgency_surcharge_urgent_eur: z.number().min(0).optional(),
+  urgency_high_load_threshold_hours: z.number().min(0).optional(),
+  company_info: z.record(z.any()).optional(),
+  notifications: z.record(z.any()).optional(),
+  timeline_stages: z.array(z.any()).optional(),
+  ai_modules: z.record(z.any()).optional(),
 });
 
 export const panelUpdateSettings = createServerFn({ method: "POST" })
@@ -354,6 +362,34 @@ function enforceMinimums(parsed: AiResult, settings: any): AiResult {
   return parsed;
 }
 
+function pickMachine(machines: any[], parsed: AiResult, mode: string, timeline: string) {
+  // Rule-based auto-assignment for Bambu H2S + High Detail 0.2mm fleet.
+  const active = machines.filter((m) => m.active && m.status !== "offline");
+  if (!active.length) return null;
+  const isPrinter = (m: any) => {
+    const k = String(m.kind ?? "").toLowerCase();
+    return k.includes("print") || k.includes("fdm") || k.includes("3d") || k.includes("resin") || k.includes("sla");
+  };
+  const printers = active.filter(isPrinter);
+  const pool = printers.length ? printers : active;
+  const nozzle = (parsed.recommended_nozzle ?? "").replace(/\s/g, "");
+  const has02 = (m: any) => (m.nozzles ?? []).some((n: string) => String(n).includes("0.2"));
+  const has04 = (m: any) => (m.nozzles ?? []).some((n: string) => String(n).includes("0.4"));
+  const decorativeFineNeeded = mode === "decorative" && (parsed.recommended_layer_height_mm ?? 0.2) <= 0.15;
+  let candidates = pool;
+  if (nozzle.includes("0.2") || decorativeFineNeeded) {
+    const fine = pool.filter(has02);
+    if (fine.length) candidates = fine;
+  } else {
+    const std = pool.filter(has04);
+    if (std.length) candidates = std;
+  }
+  // Prefer idle machines; if urgent, avoid running/maintenance
+  const idle = candidates.filter((m) => m.status === "idle");
+  if (timeline === "urgent" && idle.length) return idle[0];
+  return (idle[0] ?? candidates[0]) ?? null;
+}
+
 async function wireBackToOrder(orderId: string, parsed: AiResult, analysisId?: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   try {
@@ -380,7 +416,15 @@ async function wireBackToOrder(orderId: string, parsed: AiResult, analysisId?: s
       } as any,
     });
 
-    // Auto-create a production job so the scheduler / factory dashboard picks it up.
+    // Auto-create a production job + assign a machine so the calendar picks it up.
+    const { data: order } = await supabaseAdmin
+      .from("orders").select("metadata, priority").eq("id", orderId).maybeSingle();
+    const meta = ((order as any)?.metadata ?? {}) as any;
+    const timeline: string = String(meta.timeline ?? "standard");
+    const mode: string = String(meta.production_mode ?? "prototype");
+    const { data: machines } = await supabaseAdmin.from("machines" as any).select("*").eq("active", true);
+    const machine = pickMachine((machines ?? []) as any[], parsed, mode, timeline);
+
     const { data: existing } = await supabaseAdmin
       .from("production_jobs" as any).select("id").eq("order_id", orderId).limit(1);
     if (!existing || existing.length === 0) {
@@ -390,8 +434,13 @@ async function wireBackToOrder(orderId: string, parsed: AiResult, analysisId?: s
         estimated_hours: parsed.estimated_print_hours ?? 4,
         material_code: parsed.recommended_material ?? null,
         state: "queued",
+        machine_id: machine?.id ?? null,
+        priority_score: timeline === "urgent" ? 90 : timeline === "flexible" ? 20 : 50,
         risk: (parsed.printability_score ?? 100) < 60 ? "high" : (parsed.printability_score ?? 100) < 80 ? "medium" : "low",
       } as any);
+    } else if (machine) {
+      await supabaseAdmin.from("production_jobs" as any)
+        .update({ machine_id: machine.id } as any).eq("order_id", orderId).is("machine_id", null);
     }
   } catch (e) {
     console.error("post-analysis wire-up failed", e);
@@ -510,6 +559,25 @@ async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
   };
   let parsed = await callAi(payload);
   parsed = enforceMinimums(parsed, settings);
+  // Urgency surcharge: apply if queue is heavily loaded or timeline is urgent.
+  const timeline = String(meta.timeline ?? "standard");
+  const s: any = settings ?? {};
+  const perUnit: Record<string, number> = {
+    flexible: Number(s.urgency_surcharge_flexible_eur ?? 0),
+    standard: Number(s.urgency_surcharge_standard_eur ?? 0),
+    urgent: Number(s.urgency_surcharge_urgent_eur ?? 10),
+  };
+  const threshold = Number(s.urgency_high_load_threshold_hours ?? 24);
+  const { data: queued } = await supabaseAdmin.from("production_jobs" as any).select("estimated_hours").eq("state", "queued");
+  const backlog = ((queued ?? []) as any[]).reduce((n, j) => n + Number(j.estimated_hours ?? 0), 0);
+  let surcharge = perUnit[timeline] ?? 0;
+  if (timeline === "urgent" && backlog >= threshold) surcharge += 5;
+  if (surcharge > 0) {
+    parsed.quote_price_eur = Math.round((parsed.quote_price_eur + surcharge) * 100) / 100;
+    const cb: any = parsed.cost_breakdown ?? {};
+    cb.urgency_surcharge_eur = surcharge;
+    parsed.cost_breakdown = cb;
+  }
   const { data: saved, error: saveErr } = await supabaseAdmin
     .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, service, mode))
     .select("*").single();
@@ -534,12 +602,12 @@ export const runQuoteAnalysis = createServerFn({ method: "POST" })
   });
 
 export const getOrderAnalyses = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({ order_code: z.string().min(3).max(40), email: z.string().email().optional() }).parse(d))
+  .inputValidator((d: unknown) => z.object({ order_code: z.string().min(3).max(40), email: z.string().email() }).parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: order } = await supabaseAdmin.from("orders").select("id, customer_email").eq("order_code", data.order_code).maybeSingle();
     if (!order) return [];
-    if (data.email && String(order.customer_email).toLowerCase() !== data.email.toLowerCase()) return [];
+    if (String(order.customer_email).toLowerCase() !== data.email.toLowerCase()) return [];
     const { data: rows } = await supabaseAdmin.from("project_analyses" as any).select("*").eq("order_id", order.id).order("created_at", { ascending: false });
     return rows ?? [];
   });
