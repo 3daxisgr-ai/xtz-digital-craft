@@ -8,6 +8,7 @@ import {
   getOrderFileUrl,
 } from "@/lib/api/orders.functions";
 import { getOrderAnalyses } from "@/lib/api/factory.functions";
+import { portalAiAssistant, portalDelayPrediction } from "@/lib/api/portal.functions";
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { StatusBadge, StatusProgress } from "@/components/portal/StatusProgress";
 const ModelViewer = lazy(() => import("@/components/factory/ModelViewer"));
