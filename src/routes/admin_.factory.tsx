@@ -41,8 +41,10 @@ function FactoryPage() {
         <Link to="/admin" className="text-sm text-white/70 hover:text-white">← Back to Admin</Link>
       </header>
       <main className="p-6 grid gap-8 max-w-7xl mx-auto">
-        <div className="flex gap-4 text-sm">
+        <div className="flex gap-4 text-sm flex-wrap">
+          <Link to="/admin_/live" className="text-emerald-300 hover:text-emerald-200">● Live Dashboard</Link>
           <Link to="/admin_/scheduler" className="text-sky-300 hover:text-sky-200">→ Smart Scheduler</Link>
+          <Link to="/admin_/config" className="text-amber-300 hover:text-amber-200">→ Config & Optimizers</Link>
         </div>
         <SettingsPanel />
         <MachinesPanel />
