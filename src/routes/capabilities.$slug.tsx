@@ -129,7 +129,7 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Brackets and panels", "Enclosures and chassis", "Decorative metal", "Industrial components"],
     notes: "Send .dxf, .dwg or .step. Always include thickness and material grade.",
     seo: {
-      title: "Fiber Laser Cutting — CNC Manufacturing & Custom Parts | TOREO",
+      title: "Fiber Laser Cutting — CNC & Custom Parts | TOREO",
       description: "Precision fiber laser cutting in steel, stainless and aluminum with ±0.05 mm tolerance — CNC manufacturing and custom parts manufacturing in Greece.",
     },
   },
