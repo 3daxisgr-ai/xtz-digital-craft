@@ -748,24 +748,43 @@ export const panelReadinessCheck = createServerFn({ method: "POST" })
   });
 
 // -------- Public: available 3D-printing materials for the customer quote form --------
+// Returns explicit status so the quote page can render the traffic-light UI:
+//   in_stock    → selectable, green
+//   low_stock   → selectable, amber, shows "limited availability" warning
+//   out_of_stock→ shown disabled with "unavailable" note (unless the factory
+//                 setting hide_out_of_stock_materials is true, then omitted)
+//   disabled    → never returned to customers
 export const getPublicPrintingMaterials = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const printingFamilies = ["PLA", "PLA+", "PETG", "ABS", "TPU", "PC", "PA-CF"];
-  const { data } = await supabaseAdmin
-    .from("materials" as any)
-    .select("code, name, family, stock_kg")
-    .eq("active", true)
-    .in("family", printingFamilies);
-  const rows = ((data ?? []) as any[]).map((m) => ({
-    code: m.code as string,
-    name: m.name as string,
-    family: m.family as string,
-    in_stock: Number(m.stock_kg ?? 0) > 0,
-  }));
-  // group by family, keep only in-stock or first-of-family, and stable order
+  const [{ data }, { data: settings }] = await Promise.all([
+    supabaseAdmin
+      .from("materials" as any)
+      .select("code, name, family, stock_kg, status, active")
+      .in("family", printingFamilies),
+    supabaseAdmin.from("factory_settings" as any).select("hide_out_of_stock_materials").limit(1).maybeSingle(),
+  ]);
+  const hideOOS = !!(settings as any)?.hide_out_of_stock_materials;
+  const rows = ((data ?? []) as any[])
+    .map((m) => {
+      // Derive status: prefer explicit column, else fall back to legacy stock/active.
+      let status: "in_stock" | "low_stock" | "out_of_stock" | "disabled" =
+        (m.status as any) || "in_stock";
+      if (!m.active) status = "disabled";
+      return {
+        code: m.code as string,
+        name: m.name as string,
+        family: m.family as string,
+        status,
+        in_stock: status === "in_stock" || status === "low_stock",
+      };
+    })
+    .filter((m) => m.status !== "disabled")
+    .filter((m) => !(hideOOS && m.status === "out_of_stock"));
   rows.sort((a, b) => (a.family + a.name).localeCompare(b.family + b.name));
   return rows;
 });
+
 
 // -------- Admin: Recalculate deterministic price for an existing analysis --------
 export const panelRecalculatePrice = createServerFn({ method: "POST" })
