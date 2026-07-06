@@ -449,6 +449,8 @@ function OrderDetail({ code, onBack }: { code: string; onBack: () => void }) {
         </div>
       </div>
 
+      <QuickActions o={o} code={code} onChanged={refresh} setTab={setTab} />
+
       <div className="flex flex-wrap gap-1 border-b border-white/10">
         {ORDER_TABS.map((t) => (
           <button key={t} onClick={() => setTab(t)}
