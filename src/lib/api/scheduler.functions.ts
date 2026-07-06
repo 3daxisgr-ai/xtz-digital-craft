@@ -116,15 +116,19 @@ export const panelRecomputeSchedule = createServerFn({ method: "POST" }).handler
     // Pick machine with earliest possible finish for a compatible kind.
     let best: { id: string; start: Date; finish: Date } | null = null;
     for (const m of machineList) {
-      // Compatibility: if analysis/order specifies a service, match kind (fdm/cnc/laser).
+      // Compatibility: normalize kind + match by service family.
       const svc = (job.orders?.service ?? "").toLowerCase();
-      const kind = (m.kind ?? "").toLowerCase();
+      const kind = (m.kind ?? "").toString().trim().toLowerCase();
+      const is3d = ["printer", "fdm", "sla", "sls", "3d", "3d_printing", "resin"].some(k => kind.includes(k)) || kind === "stratza";
+      const isCnc = kind.includes("cnc") || kind.includes("mill") || kind.includes("lathe");
+      const isLaser = kind.includes("laser");
+      const isWeld = kind.includes("weld") || kind.includes("mig") || kind.includes("tig");
       const compatible =
         !svc ||
-        (svc.includes("3d") && (kind === "fdm" || kind === "sla" || kind === "sls")) ||
-        (svc.includes("cnc") && kind === "cnc") ||
-        (svc.includes("laser") && kind === "laser") ||
-        (svc.includes("weld") && kind === "weld");
+        (svc.includes("3d") && is3d) ||
+        (svc.includes("cnc") && isCnc) ||
+        (svc.includes("laser") && isLaser) ||
+        (svc.includes("weld") && isWeld);
       if (!compatible) continue;
 
       const c = cursor.get(m.id)!;
