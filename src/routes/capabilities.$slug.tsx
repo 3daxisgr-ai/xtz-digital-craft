@@ -152,7 +152,7 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Frames and chassis", "Enclosures and cabinets", "Architectural panels", "Welded assemblies"],
     seo: {
-      title: "Sheet Metal Forming & Welding — Custom Parts Manufacturing | TOREO",
+      title: "Sheet Metal Forming & Welding — Custom Parts | TOREO",
       description: "Press brake forming, MIG/TIG/spot welding and assembly in steel, stainless and aluminum — custom parts manufacturing by TOREO in Greece.",
     },
   },
