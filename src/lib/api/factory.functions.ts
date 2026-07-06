@@ -626,3 +626,23 @@ export const panelReadinessCheck = createServerFn({ method: "POST" })
     const level = !a ? "blocked" : ok ? "production_ready" : checks.filter((c) => !c.ok).length <= 2 ? "nearly_ready" : "requires_review";
     return { ok, level, checks };
   });
+
+// -------- Public: available 3D-printing materials for the customer quote form --------
+export const getPublicPrintingMaterials = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const printingFamilies = ["PLA", "PLA+", "PETG", "ABS", "TPU", "PC", "PA-CF"];
+  const { data } = await supabaseAdmin
+    .from("materials" as any)
+    .select("code, name, family, stock_kg")
+    .eq("active", true)
+    .in("family", printingFamilies);
+  const rows = ((data ?? []) as any[]).map((m) => ({
+    code: m.code as string,
+    name: m.name as string,
+    family: m.family as string,
+    in_stock: Number(m.stock_kg ?? 0) > 0,
+  }));
+  // group by family, keep only in-stock or first-of-family, and stable order
+  rows.sort((a, b) => (a.family + a.name).localeCompare(b.family + b.name));
+  return rows;
+});
