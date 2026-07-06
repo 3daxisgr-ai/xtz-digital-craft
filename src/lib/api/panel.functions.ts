@@ -184,6 +184,12 @@ export const panelUpdateOrder = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     await requireAdminCookie();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Read previous status so we only email on real transitions.
+    const { data: prev } = await supabaseAdmin
+      .from("orders")
+      .select("status")
+      .eq("order_code", data.order_code)
+      .maybeSingle();
     const { data: row, error } = await supabaseAdmin
       .from("orders")
       .update(data.patch as any)
@@ -192,6 +198,17 @@ export const panelUpdateOrder = createServerFn({ method: "POST" })
       .single();
     if (error) throw error;
     await logAction("order_updated", { type: "order", id: data.order_code }, { fields: Object.keys(data.patch) });
+
+    // Fire status email when status actually changed. Never blocks the update.
+    const newStatus = (data.patch as any).status as string | undefined;
+    if (newStatus && newStatus !== prev?.status) {
+      try {
+        const { sendStatusEmail } = await import("@/lib/email/order-notify.server");
+        await sendStatusEmail(row, newStatus);
+      } catch (e) {
+        console.error("panelUpdateOrder status email failed", e);
+      }
+    }
     return row;
   });
 
@@ -540,3 +557,350 @@ export const panelGlobalSearch = createServerFn({ method: "POST" })
     ]);
     return { orders, quotes };
   });
+
+// ---------------- QUICK ACTIONS (order detail) ----------------
+
+// Send a branded customer update: email + customer-visible timeline event.
+export const panelSendCustomerUpdate = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        order_code: z.string().min(1),
+        subject: z.string().trim().min(1).max(160),
+        body: z.string().trim().min(1).max(4000),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await supabaseAdmin
+      .from("orders")
+      .select("id, order_code, customer_email")
+      .eq("order_code", data.order_code)
+      .maybeSingle();
+    if (!order) throw new Error("Not found");
+
+    const safeBody = data.body.replace(/</g, "&lt;").replace(/\n/g, "<br/>");
+    try {
+      const { sendCustomerEmail } = await import("@/lib/email/order-notify.server");
+      await sendCustomerEmail(
+        (order as any).customer_email,
+        data.subject,
+        `<div style="white-space:pre-wrap">${safeBody}</div>`,
+        {
+          kicker: "Order Update",
+          headline: data.subject,
+          orderCode: (order as any).order_code ?? undefined,
+          cta: { label: "Open your portal", url: "https://www.toreo.gr/portal" },
+        },
+      );
+    } catch (e) {
+      console.error("panelSendCustomerUpdate email failed", e);
+    }
+
+    await supabaseAdmin.from("order_events").insert({
+      order_id: (order as any).id,
+      event_type: "update",
+      title: data.subject,
+      description: data.body,
+      actor: "admin",
+      visibility: "customer",
+    });
+    await logAction("customer_update_sent", { type: "order", id: data.order_code }, { subject: data.subject });
+    return { ok: true };
+  });
+
+// Advance the order through the production tail:
+// production → quality_inspection → ready_for_shipping.
+export const panelCompleteProduction = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ order_code: z.string().min(1) }).parse(d))
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await supabaseAdmin
+      .from("orders")
+      .select("id, status, order_code, customer_email, quote_price, courier, tracking_number, tracking_url, estimated_delivery")
+      .eq("order_code", data.order_code)
+      .maybeSingle();
+    if (!order) throw new Error("Not found");
+    const cur = (order as any).status as string;
+    const next =
+      cur === "production" ? "quality_inspection" :
+      cur === "quality_inspection" ? "ready_for_shipping" :
+      cur === "awaiting_approval" || cur === "quote_sent" || cur === "payment_received" ? "production" :
+      cur;
+    if (next === cur) return { ok: true, status: cur, unchanged: true };
+    const { data: updated, error } = await supabaseAdmin
+      .from("orders")
+      .update({ status: next as any })
+      .eq("id", (order as any).id)
+      .select("*")
+      .single();
+    if (error) throw error;
+
+    // Mark related production job done when moving out of production.
+    if (cur === "production") {
+      await supabaseAdmin
+        .from("production_jobs" as any)
+        .update({ state: "done" as any })
+        .eq("order_id", (order as any).id);
+    }
+
+    try {
+      const { sendStatusEmail } = await import("@/lib/email/order-notify.server");
+      await sendStatusEmail(updated, next);
+    } catch (e) {
+      console.error("panelCompleteProduction email failed", e);
+    }
+    await logAction("production_advanced", { type: "order", id: data.order_code }, { from: cur, to: next });
+    return { ok: true, status: next };
+  });
+
+// Assign or re-assign a printer/machine for the order's production job.
+// Creates the job if one doesn't exist yet.
+export const panelAssignPrinter = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ order_code: z.string().min(1), machine_id: z.string().uuid().nullable() }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await supabaseAdmin
+      .from("orders")
+      .select("id, order_code, service, material, priority")
+      .eq("order_code", data.order_code)
+      .maybeSingle();
+    if (!order) throw new Error("Not found");
+
+    const { data: existing } = await supabaseAdmin
+      .from("production_jobs" as any)
+      .select("id")
+      .eq("order_id", (order as any).id)
+      .maybeSingle();
+
+    if (existing) {
+      const { error } = await supabaseAdmin
+        .from("production_jobs" as any)
+        .update({ machine_id: data.machine_id, state: data.machine_id ? "ready" : "queued" } as any)
+        .eq("id", (existing as any).id);
+      if (error) throw error;
+    } else {
+      const { error } = await supabaseAdmin.from("production_jobs" as any).insert({
+        order_id: (order as any).id,
+        machine_id: data.machine_id,
+        state: data.machine_id ? "ready" : "queued",
+        priority_score:
+          (order as any).priority === "urgent" ? 90 :
+          (order as any).priority === "high" ? 60 :
+          (order as any).priority === "low" ? 20 : 50,
+      });
+      if (error) throw error;
+    }
+
+    // Machine name is read via panelGetOrderJob join; no denormalized column on orders.
+
+
+    await logAction("printer_assigned", { type: "order", id: data.order_code }, { machine_id: data.machine_id });
+    return { ok: true };
+  });
+
+// Move the order's job in the shared production queue.
+// Swaps queue_position with the neighbor above or below among "ready"/"queued" jobs.
+export const panelMoveJobInQueue = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        order_code: z.string().min(1),
+        direction: z.enum(["up", "down", "top", "bottom"]),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await supabaseAdmin
+      .from("orders")
+      .select("id")
+      .eq("order_code", data.order_code)
+      .maybeSingle();
+    if (!order) throw new Error("Not found");
+
+    const { data: allJobs } = await supabaseAdmin
+      .from("production_jobs" as any)
+      .select("id, order_id, queue_position, state")
+      .in("state", ["queued", "ready", "paused"])
+      .order("queue_position", { ascending: true, nullsFirst: false });
+
+    const list = ((allJobs ?? []) as unknown) as Array<{ id: string; order_id: string; queue_position: number | null }>;
+    // Normalize queue_positions
+    const normalized = list.map((j, i) => ({ ...j, queue_position: j.queue_position ?? i + 1 }));
+    const idx = normalized.findIndex((j) => j.order_id === (order as any).id);
+    if (idx < 0) throw new Error("No production job for this order. Assign a printer first.");
+
+    let updates: Array<{ id: string; queue_position: number }> = [];
+    if (data.direction === "up" && idx > 0) {
+      updates = [
+        { id: normalized[idx].id, queue_position: normalized[idx - 1].queue_position! },
+        { id: normalized[idx - 1].id, queue_position: normalized[idx].queue_position! },
+      ];
+    } else if (data.direction === "down" && idx < normalized.length - 1) {
+      updates = [
+        { id: normalized[idx].id, queue_position: normalized[idx + 1].queue_position! },
+        { id: normalized[idx + 1].id, queue_position: normalized[idx].queue_position! },
+      ];
+    } else if (data.direction === "top") {
+      const minPos = Math.min(...normalized.map((j) => j.queue_position!));
+      updates = [{ id: normalized[idx].id, queue_position: minPos - 1 }];
+    } else if (data.direction === "bottom") {
+      const maxPos = Math.max(...normalized.map((j) => j.queue_position!));
+      updates = [{ id: normalized[idx].id, queue_position: maxPos + 1 }];
+    }
+    for (const u of updates) {
+      await supabaseAdmin
+        .from("production_jobs" as any)
+        .update({ queue_position: u.queue_position } as any)
+        .eq("id", u.id);
+    }
+    await logAction("queue_moved", { type: "order", id: data.order_code }, { direction: data.direction });
+    return { ok: true, moved: updates.length };
+  });
+
+// Get the current production job for an order (includes machine name/queue position).
+export const panelGetOrderJob = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ order_code: z.string().min(1) }).parse(d))
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await supabaseAdmin
+      .from("orders")
+      .select("id")
+      .eq("order_code", data.order_code)
+      .maybeSingle();
+    if (!order) return null;
+    const { data: job } = await supabaseAdmin
+      .from("production_jobs" as any)
+      .select("id, state, machine_id, queue_position, planned_start, planned_finish, estimated_hours")
+      .eq("order_id", (order as any).id)
+      .maybeSingle();
+    if (!job) return null;
+    const { data: machine } = (job as any).machine_id
+      ? await supabaseAdmin
+          .from("machines" as any)
+          .select("id, name, kind, status")
+          .eq("id", (job as any).machine_id)
+          .maybeSingle()
+      : { data: null };
+    return { job, machine };
+  });
+
+// ---------------- FACTORY / PROFIT DASHBOARD (admin only) ----------------
+
+export const panelFactoryDashboard = createServerFn({ method: "GET" }).handler(async () => {
+  await requireAdminCookie();
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const monthAgo = new Date(Date.now() - 30 * 24 * 3600 * 1000);
+
+  const [
+    { data: todayOrders },
+    { data: allPaid },
+    { data: recentAnalyses },
+    { data: jobs },
+    { data: machines },
+  ] = await Promise.all([
+    supabaseAdmin
+      .from("orders")
+      .select("quote_price, material, created_at, status")
+      .gte("created_at", todayStart.toISOString()),
+    supabaseAdmin
+      .from("orders")
+      .select("id, quote_price, material, status, created_at")
+      .in("status", ["payment_received", "production", "quality_inspection", "ready_for_shipping", "shipped", "delivered"] as any),
+    supabaseAdmin
+      .from("project_analyses" as any)
+      .select("order_id, quote_price_eur, estimated_cost_eur, estimated_material_g, estimated_print_hours, recommended_material, created_at")
+      .gte("created_at", monthAgo.toISOString())
+      .order("created_at", { ascending: false })
+      .limit(1000),
+    supabaseAdmin
+      .from("production_jobs" as any)
+      .select("machine_id, estimated_hours, state"),
+    supabaseAdmin
+      .from("machines" as any)
+      .select("id, name, status, active"),
+  ]);
+
+  const revenueToday = (todayOrders ?? []).reduce(
+    (s: number, o: any) => s + (Number(o.quote_price) || 0),
+    0,
+  );
+
+  // Latest analysis per order → profit estimate = quote - cost.
+  const latestByOrder = new Map<string, any>();
+  for (const a of (recentAnalyses ?? []) as any[]) {
+    if (!latestByOrder.has(a.order_id)) latestByOrder.set(a.order_id, a);
+  }
+  const paidIds = new Set(((allPaid ?? []) as any[]).map((o) => o.id));
+  let estimatedProfit = 0;
+  let materialGrams = 0;
+  const profitByMaterial = new Map<string, { profit: number; count: number }>();
+  for (const [oid, a] of latestByOrder) {
+    if (!paidIds.has(oid)) continue;
+    const q = Number(a.quote_price_eur) || 0;
+    const c = Number(a.estimated_cost_eur) || 0;
+    estimatedProfit += q - c;
+    materialGrams += Number(a.estimated_material_g) || 0;
+    const key = a.recommended_material || "unknown";
+    const cur = profitByMaterial.get(key) ?? { profit: 0, count: 0 };
+    cur.profit += q - c;
+    cur.count += 1;
+    profitByMaterial.set(key, cur);
+  }
+
+  const withPrice = ((allPaid ?? []) as any[]).filter((o) => Number(o.quote_price) > 0);
+  const avgQuoteValue = withPrice.length
+    ? withPrice.reduce((s, o) => s + Number(o.quote_price), 0) / withPrice.length
+    : 0;
+
+  const matCount = new Map<string, number>();
+  for (const o of withPrice) {
+    const m = (o.material || "").trim();
+    if (!m) continue;
+    matCount.set(m, (matCount.get(m) ?? 0) + 1);
+  }
+  const mostUsedMaterial =
+    Array.from(matCount.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+  const mostProfitableMaterial =
+    Array.from(profitByMaterial.entries()).sort((a, b) => b[1].profit - a[1].profit)[0]?.[0] ?? null;
+
+  const machineName = new Map<string, string>();
+  for (const m of (machines ?? []) as any[]) machineName.set(m.id, m.name);
+  const jobsByMachine = new Map<string, number>();
+  let machineHours = 0;
+  for (const j of (jobs ?? []) as any[]) {
+    if (["queued", "ready", "running", "paused"].includes(j.state)) {
+      machineHours += Number(j.estimated_hours) || 0;
+    }
+    if (j.machine_id) {
+      jobsByMachine.set(j.machine_id, (jobsByMachine.get(j.machine_id) ?? 0) + 1);
+    }
+  }
+  const busiestMachineId =
+    Array.from(jobsByMachine.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+  const busiestMachine = busiestMachineId ? machineName.get(busiestMachineId) ?? null : null;
+
+  return {
+    revenueToday: Math.round(revenueToday * 100) / 100,
+    estimatedProfit: Math.round(estimatedProfit * 100) / 100,
+    machineHours: Math.round(machineHours * 10) / 10,
+    materialUsedKg: Math.round((materialGrams / 1000) * 100) / 100,
+    avgQuoteValue: Math.round(avgQuoteValue * 100) / 100,
+    mostUsedMaterial,
+    mostProfitableMaterial,
+    busiestMachine,
+  };
+});
+
