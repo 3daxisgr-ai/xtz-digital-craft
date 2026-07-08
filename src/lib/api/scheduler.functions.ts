@@ -333,3 +333,73 @@ export const panelFactoryCapacity = createServerFn({ method: "GET" }).handler(as
     open_jobs: (jobs ?? []).length,
   };
 });
+
+// -------- Machine health & service tracking (Batch C) --------
+
+export const panelMachineHealth = createServerFn({ method: "GET" }).handler(async () => {
+  await requireAdminCookie();
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
+    .from("machines" as any)
+    .select("id, name, kind, status, active, total_hours, hours_since_service, service_interval_hours, last_service_at")
+    .order("name");
+  if (error) throw error;
+  return (data ?? []).map((m: any) => {
+    const interval = Number(m.service_interval_hours ?? 200);
+    const since = Number(m.hours_since_service ?? 0);
+    const pct = interval > 0 ? Math.min(100, Math.round((since / interval) * 100)) : 0;
+    return {
+      ...m,
+      service_progress_pct: pct,
+      due_for_service: since >= interval,
+      warning: since >= interval * 0.85 && since < interval,
+    };
+  });
+});
+
+export const panelLogMachineService = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({
+      machine_id: z.string().uuid(),
+      note: z.string().max(500).optional(),
+      new_interval_hours: z.number().positive().optional(),
+    }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const patch: any = { hours_since_service: 0, last_service_at: new Date().toISOString() };
+    if (data.new_interval_hours) patch.service_interval_hours = data.new_interval_hours;
+    const { error } = await supabaseAdmin.from("machines" as any).update(patch).eq("id", data.machine_id);
+    if (error) throw error;
+    // Log a maintenance block record for the calendar (5-minute stamp).
+    const now = new Date();
+    const end = new Date(now.getTime() + 5 * 60_000);
+    await supabaseAdmin.from("machine_calendar_blocks" as any).insert({
+      machine_id: data.machine_id,
+      kind: "service",
+      starts_at: now.toISOString(),
+      ends_at: end.toISOString(),
+      notes: data.note ?? "Service logged",
+    } as any);
+    return { ok: true };
+  });
+
+export const panelUpdateMachineService = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({
+      machine_id: z.string().uuid(),
+      service_interval_hours: z.number().positive().optional(),
+      total_hours: z.number().nonnegative().optional(),
+      hours_since_service: z.number().nonnegative().optional(),
+    }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { machine_id, ...patch } = data;
+    if (Object.keys(patch).length === 0) return { ok: true };
+    const { error } = await supabaseAdmin.from("machines" as any).update(patch).eq("id", machine_id);
+    if (error) throw error;
+    return { ok: true };
+  });
