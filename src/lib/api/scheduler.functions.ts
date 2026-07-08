@@ -241,8 +241,34 @@ export const panelUpdateJob = createServerFn({ method: "POST" })
     if (patch.state === "done" || patch.state === "cancelled") patch.actual_finish = new Date().toISOString();
     const { data: row, error } = await supabaseAdmin.from("production_jobs" as any).update(patch).eq("id", data.id).select("*").single();
     if (error) throw error;
+
+    // Accrue machine hours when a job completes.
+    if (patch.state === "done" && (row as any)?.machine_id) {
+      const r: any = row;
+      const startTs = r.actual_start ? new Date(r.actual_start).getTime() : null;
+      const endTs = r.actual_finish ? new Date(r.actual_finish).getTime() : Date.now();
+      const elapsed = startTs ? Math.max(0, (endTs - startTs) / 3600_000) : Number(r.estimated_hours ?? 0);
+      const hrs = Math.round(elapsed * 100) / 100;
+      if (hrs > 0) {
+        const { data: m } = await supabaseAdmin
+          .from("machines" as any)
+          .select("total_hours, hours_since_service")
+          .eq("id", r.machine_id)
+          .single();
+        if (m) {
+          await supabaseAdmin
+            .from("machines" as any)
+            .update({
+              total_hours: Number((m as any).total_hours ?? 0) + hrs,
+              hours_since_service: Number((m as any).hours_since_service ?? 0) + hrs,
+            })
+            .eq("id", r.machine_id);
+        }
+      }
+    }
     return row;
   });
+
 
 export const panelDeleteJob = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
