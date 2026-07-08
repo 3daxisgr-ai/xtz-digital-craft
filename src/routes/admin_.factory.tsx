@@ -9,6 +9,8 @@ import {
   panelGetSettings, panelUpdateSettings, panelReadinessCheck, panelApplyOverride,
   panelRecalculatePrice,
 } from "@/lib/api/factory.functions";
+import { panelMachineHealth, panelLogMachineService, panelUpdateMachineService } from "@/lib/api/scheduler.functions";
+
 
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { Button } from "@/components/ui/button";
