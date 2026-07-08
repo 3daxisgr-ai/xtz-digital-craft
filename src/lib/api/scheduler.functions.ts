@@ -18,19 +18,36 @@ async function requireAdminCookie() {
 
 const WORK_START_H = 8.5; // 08:30
 const WORK_END_H = 16;    // 16:00
+// Daily factory-wide maintenance window: 12:00 → 12:05. Every job planned
+// through the scheduler skips past this window so no printer is scheduled
+// during the routine daily service slot.
+const DAILY_MAINT_START_MIN = 12 * 60;      // 12:00
+const DAILY_MAINT_END_MIN = 12 * 60 + 5;    // 12:05
+
+function skipDailyMaintenance(d: Date): Date {
+  const mins = d.getHours() * 60 + d.getMinutes();
+  if (mins >= DAILY_MAINT_START_MIN && mins < DAILY_MAINT_END_MIN) {
+    const out = new Date(d);
+    out.setHours(12, 5, 0, 0);
+    return out;
+  }
+  return d;
+}
 
 function ceilToWorkingWindow(d: Date, allowOvernight: boolean): Date {
-  const out = new Date(d);
-  if (allowOvernight) return out;
-  const h = out.getHours() + out.getMinutes() / 60;
-  if (h < WORK_START_H) {
-    out.setHours(8, 30, 0, 0);
-  } else if (h >= WORK_END_H) {
-    out.setDate(out.getDate() + 1);
-    out.setHours(8, 30, 0, 0);
+  let out = new Date(d);
+  if (!allowOvernight) {
+    const h = out.getHours() + out.getMinutes() / 60;
+    if (h < WORK_START_H) {
+      out.setHours(8, 30, 0, 0);
+    } else if (h >= WORK_END_H) {
+      out.setDate(out.getDate() + 1);
+      out.setHours(8, 30, 0, 0);
+    }
   }
-  return out;
+  return skipDailyMaintenance(out);
 }
+
 
 // -------- Queue / listing --------
 
