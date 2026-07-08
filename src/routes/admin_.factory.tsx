@@ -9,6 +9,8 @@ import {
   panelGetSettings, panelUpdateSettings, panelReadinessCheck, panelApplyOverride,
   panelRecalculatePrice,
 } from "@/lib/api/factory.functions";
+import { panelMachineHealth, panelLogMachineService, panelUpdateMachineService } from "@/lib/api/scheduler.functions";
+
 
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { Button } from "@/components/ui/button";
@@ -175,13 +177,21 @@ function MachinesPanel() {
   const list = useServerFn(panelListMachines);
   const upsert = useServerFn(panelUpsertMachine);
   const del = useServerFn(panelDeleteMachine);
+  const health = useServerFn(panelMachineHealth);
+  const logService = useServerFn(panelLogMachineService);
+  const updService = useServerFn(panelUpdateMachineService);
   const [rows, setRows] = useState<any[]>([]);
+  const [hmap, setHmap] = useState<Record<string, any>>({});
   const [form, setForm] = useState({ name: "", kind: "printer", vendor: "", model: "", hourly_cost: 0 });
-  const refresh = () => list().then(setRows).catch((e) => toast.error(String(e)));
+  const refresh = () => {
+    list().then(setRows).catch((e) => toast.error(String(e)));
+    health().then((hs: any[]) => setHmap(Object.fromEntries(hs.map((h) => [h.id, h])))).catch(() => {});
+  };
   useEffect(() => { refresh(); }, []);
   return (
     <Card className="bg-neutral-900 border-white/10 text-white p-5">
-      <h2 className="text-lg font-semibold mb-4">Machines</h2>
+      <h2 className="text-lg font-semibold mb-1">Machines</h2>
+      <p className="text-xs text-white/50 mb-4">Scheduler automatically skips a factory-wide maintenance window every day at <b>12:00 → 12:05</b>. Each machine tracks its run hours and warns before the next service.</p>
       <div className="grid md:grid-cols-5 gap-2 mb-4">
         <Input placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
         <Input placeholder="Kind (printer/cnc/laser)" value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })} />
@@ -193,17 +203,61 @@ function MachinesPanel() {
         </div>
       </div>
       <div className="grid gap-2">
-        {rows.map((r) => (
-          <div key={r.id} className="flex items-center justify-between border border-white/10 rounded px-3 py-2">
-            <div className="text-sm"><b>{r.name}</b> · {r.kind} · {r.vendor} {r.model} · €{r.hourly_cost}/h · <span className="text-white/60">{r.status}</span></div>
-            <Button size="sm" variant="ghost" onClick={async () => { await del({ data: { id: r.id } }); refresh(); }}>Delete</Button>
-          </div>
-        ))}
+        {rows.map((r) => {
+          const h = hmap[r.id] ?? {};
+          const pct = h.service_progress_pct ?? 0;
+          const barColor = h.due_for_service ? "bg-red-400" : h.warning ? "bg-amber-400" : "bg-emerald-400";
+          const chip = h.due_for_service
+            ? <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 border rounded text-red-300 border-red-400/40">Service due</span>
+            : h.warning
+              ? <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 border rounded text-amber-300 border-amber-400/40">Service soon</span>
+              : <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 border rounded text-emerald-300 border-emerald-400/40">Healthy</span>;
+          return (
+            <div key={r.id} className="border border-white/10 rounded px-3 py-2 space-y-2">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="text-sm flex items-center gap-2 min-w-0">
+                  {chip}
+                  <b>{r.name}</b> · {r.kind} · {r.vendor} {r.model} · €{r.hourly_cost}/h · <span className="text-white/60">{r.status}</span>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="secondary" onClick={async () => { try { await logService({ data: { machine_id: r.id } }); toast.success("Service logged"); refresh(); } catch (e: any) { toast.error(e.message ?? String(e)); } }}>Log service</Button>
+                  <Button size="sm" variant="ghost" onClick={async () => { if (!confirm("Delete machine?")) return; await del({ data: { id: r.id } }); refresh(); }}>Delete</Button>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 text-[11px] text-white/60">
+                <div className="flex-1">
+                  <div className="flex justify-between mb-1">
+                    <span>Service cycle: {Number(r.hours_since_service ?? 0).toFixed(1)}h / {Number(r.service_interval_hours ?? 200).toFixed(0)}h</span>
+                    <span className="tabular-nums">{pct}%</span>
+                  </div>
+                  <div className="h-1.5 bg-white/5 rounded overflow-hidden">
+                    <div className={`h-full ${barColor}`} style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+                <div className="text-white/50 whitespace-nowrap">
+                  Total {Number(r.total_hours ?? 0).toFixed(1)}h · Last {r.last_service_at ? new Date(r.last_service_at).toLocaleDateString() : "—"}
+                </div>
+                <label className="flex items-center gap-1">
+                  <span>Interval</span>
+                  <Input type="number" defaultValue={r.service_interval_hours ?? 200} className="bg-black/40 border-white/10 text-white h-7 w-20 text-xs"
+                    onBlur={async (e) => {
+                      const v = Number((e.target as HTMLInputElement).value);
+                      if (v > 0 && v !== Number(r.service_interval_hours)) {
+                        try { await updService({ data: { machine_id: r.id, service_interval_hours: v } }); refresh(); } catch (err: any) { toast.error(err.message ?? String(err)); }
+                      }
+                    }} />
+                  <span>h</span>
+                </label>
+              </div>
+            </div>
+          );
+        })}
         {!rows.length && <div className="text-sm text-white/50">No machines yet.</div>}
       </div>
     </Card>
   );
 }
+
 
 const MAT_STATUSES = ["in_stock","low_stock","out_of_stock","disabled"] as const;
 type MatStatus = typeof MAT_STATUSES[number];

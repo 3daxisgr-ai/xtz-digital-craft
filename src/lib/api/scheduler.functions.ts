@@ -18,19 +18,36 @@ async function requireAdminCookie() {
 
 const WORK_START_H = 8.5; // 08:30
 const WORK_END_H = 16;    // 16:00
+// Daily factory-wide maintenance window: 12:00 → 12:05. Every job planned
+// through the scheduler skips past this window so no printer is scheduled
+// during the routine daily service slot.
+const DAILY_MAINT_START_MIN = 12 * 60;      // 12:00
+const DAILY_MAINT_END_MIN = 12 * 60 + 5;    // 12:05
+
+function skipDailyMaintenance(d: Date): Date {
+  const mins = d.getHours() * 60 + d.getMinutes();
+  if (mins >= DAILY_MAINT_START_MIN && mins < DAILY_MAINT_END_MIN) {
+    const out = new Date(d);
+    out.setHours(12, 5, 0, 0);
+    return out;
+  }
+  return d;
+}
 
 function ceilToWorkingWindow(d: Date, allowOvernight: boolean): Date {
-  const out = new Date(d);
-  if (allowOvernight) return out;
-  const h = out.getHours() + out.getMinutes() / 60;
-  if (h < WORK_START_H) {
-    out.setHours(8, 30, 0, 0);
-  } else if (h >= WORK_END_H) {
-    out.setDate(out.getDate() + 1);
-    out.setHours(8, 30, 0, 0);
+  let out = new Date(d);
+  if (!allowOvernight) {
+    const h = out.getHours() + out.getMinutes() / 60;
+    if (h < WORK_START_H) {
+      out.setHours(8, 30, 0, 0);
+    } else if (h >= WORK_END_H) {
+      out.setDate(out.getDate() + 1);
+      out.setHours(8, 30, 0, 0);
+    }
   }
-  return out;
+  return skipDailyMaintenance(out);
 }
+
 
 // -------- Queue / listing --------
 
@@ -224,8 +241,34 @@ export const panelUpdateJob = createServerFn({ method: "POST" })
     if (patch.state === "done" || patch.state === "cancelled") patch.actual_finish = new Date().toISOString();
     const { data: row, error } = await supabaseAdmin.from("production_jobs" as any).update(patch).eq("id", data.id).select("*").single();
     if (error) throw error;
+
+    // Accrue machine hours when a job completes.
+    if (patch.state === "done" && (row as any)?.machine_id) {
+      const r: any = row;
+      const startTs = r.actual_start ? new Date(r.actual_start).getTime() : null;
+      const endTs = r.actual_finish ? new Date(r.actual_finish).getTime() : Date.now();
+      const elapsed = startTs ? Math.max(0, (endTs - startTs) / 3600_000) : Number(r.estimated_hours ?? 0);
+      const hrs = Math.round(elapsed * 100) / 100;
+      if (hrs > 0) {
+        const { data: m } = await supabaseAdmin
+          .from("machines" as any)
+          .select("total_hours, hours_since_service")
+          .eq("id", r.machine_id)
+          .single();
+        if (m) {
+          await supabaseAdmin
+            .from("machines" as any)
+            .update({
+              total_hours: Number((m as any).total_hours ?? 0) + hrs,
+              hours_since_service: Number((m as any).hours_since_service ?? 0) + hrs,
+            })
+            .eq("id", r.machine_id);
+        }
+      }
+    }
     return row;
   });
+
 
 export const panelDeleteJob = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
@@ -290,3 +333,73 @@ export const panelFactoryCapacity = createServerFn({ method: "GET" }).handler(as
     open_jobs: (jobs ?? []).length,
   };
 });
+
+// -------- Machine health & service tracking (Batch C) --------
+
+export const panelMachineHealth = createServerFn({ method: "GET" }).handler(async () => {
+  await requireAdminCookie();
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
+    .from("machines" as any)
+    .select("id, name, kind, status, active, total_hours, hours_since_service, service_interval_hours, last_service_at")
+    .order("name");
+  if (error) throw error;
+  return (data ?? []).map((m: any) => {
+    const interval = Number(m.service_interval_hours ?? 200);
+    const since = Number(m.hours_since_service ?? 0);
+    const pct = interval > 0 ? Math.min(100, Math.round((since / interval) * 100)) : 0;
+    return {
+      ...m,
+      service_progress_pct: pct,
+      due_for_service: since >= interval,
+      warning: since >= interval * 0.85 && since < interval,
+    };
+  });
+});
+
+export const panelLogMachineService = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({
+      machine_id: z.string().uuid(),
+      note: z.string().max(500).optional(),
+      new_interval_hours: z.number().positive().optional(),
+    }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const patch: any = { hours_since_service: 0, last_service_at: new Date().toISOString() };
+    if (data.new_interval_hours) patch.service_interval_hours = data.new_interval_hours;
+    const { error } = await supabaseAdmin.from("machines" as any).update(patch).eq("id", data.machine_id);
+    if (error) throw error;
+    // Log a maintenance block record for the calendar (5-minute stamp).
+    const now = new Date();
+    const end = new Date(now.getTime() + 5 * 60_000);
+    await supabaseAdmin.from("machine_calendar_blocks" as any).insert({
+      machine_id: data.machine_id,
+      kind: "service",
+      starts_at: now.toISOString(),
+      ends_at: end.toISOString(),
+      notes: data.note ?? "Service logged",
+    } as any);
+    return { ok: true };
+  });
+
+export const panelUpdateMachineService = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({
+      machine_id: z.string().uuid(),
+      service_interval_hours: z.number().positive().optional(),
+      total_hours: z.number().nonnegative().optional(),
+      hours_since_service: z.number().nonnegative().optional(),
+    }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { machine_id, ...patch } = data;
+    if (Object.keys(patch).length === 0) return { ok: true };
+    const { error } = await supabaseAdmin.from("machines" as any).update(patch).eq("id", machine_id);
+    if (error) throw error;
+    return { ok: true };
+  });

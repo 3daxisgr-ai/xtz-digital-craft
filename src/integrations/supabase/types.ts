@@ -294,14 +294,18 @@ export type Database = {
           build_volume_mm: Json | null
           created_at: string
           hourly_cost: number | null
+          hours_since_service: number
           id: string
           kind: string
+          last_service_at: string | null
           model: string | null
           name: string
           nozzles: Json | null
           power_watts: number | null
+          service_interval_hours: number
           specs: Json | null
           status: string
+          total_hours: number
           updated_at: string
           vendor: string | null
         }
@@ -310,14 +314,18 @@ export type Database = {
           build_volume_mm?: Json | null
           created_at?: string
           hourly_cost?: number | null
+          hours_since_service?: number
           id?: string
           kind: string
+          last_service_at?: string | null
           model?: string | null
           name: string
           nozzles?: Json | null
           power_watts?: number | null
+          service_interval_hours?: number
           specs?: Json | null
           status?: string
+          total_hours?: number
           updated_at?: string
           vendor?: string | null
         }
@@ -326,14 +334,18 @@ export type Database = {
           build_volume_mm?: Json | null
           created_at?: string
           hourly_cost?: number | null
+          hours_since_service?: number
           id?: string
           kind?: string
+          last_service_at?: string | null
           model?: string | null
           name?: string
           nozzles?: Json | null
           power_watts?: number | null
+          service_interval_hours?: number
           specs?: Json | null
           status?: string
+          total_hours?: number
           updated_at?: string
           vendor?: string | null
         }
