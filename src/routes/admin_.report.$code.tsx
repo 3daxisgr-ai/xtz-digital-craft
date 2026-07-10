@@ -2,7 +2,8 @@ import { createFileRoute, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getManufacturingReport } from "@/lib/api/features.functions";
-import toreoLogo from "@/assets/toreo-logo.png";
+import toreoLogoAsset from "@/assets/toreo-logo.png.asset.json";
+const toreoLogo = toreoLogoAsset.url;
 
 export const Route = createFileRoute("/admin_/report/$code")({
   ssr: false,
