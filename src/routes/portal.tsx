@@ -80,7 +80,7 @@ function PortalPage() {
             <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mt-2">Your orders</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Link to="/portal_/projects" className="border border-white/15 hover:border-white/40 rounded-md px-4 py-2.5 text-sm font-mono tracking-wide uppercase">Library</Link>
+            <Link to="/portal/projects" className="border border-white/15 hover:border-white/40 rounded-md px-4 py-2.5 text-sm font-mono tracking-wide uppercase">Library</Link>
             <Link
               to="/start"
               className="bg-white text-black hover:bg-white/90 rounded-md px-5 py-2.5 text-sm font-semibold tracking-wide uppercase font-mono"
