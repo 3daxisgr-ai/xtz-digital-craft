@@ -9,6 +9,12 @@ import {
 } from "@/lib/api/orders.functions";
 import { getOrderAnalyses } from "@/lib/api/factory.functions";
 import { portalAiAssistant, portalDelayPrediction } from "@/lib/api/portal.functions";
+import {
+  listProductionPhotos,
+  customerRespondPhotos,
+  submitReview,
+  getMyReview,
+} from "@/lib/api/features.functions";
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { StatusBadge, StatusProgress } from "@/components/portal/StatusProgress";
 const ModelViewer = lazy(() => import("@/components/factory/ModelViewer"));
@@ -179,7 +185,14 @@ function PortalOrderPage() {
           </section>
         )}
 
+        <ProductionPhotos orderCode={orderCode} status={order.status} onChange={reload} />
+
+        <QrAndReport orderCode={orderCode} />
+
+        {order.status === "delivered" && <ReviewSection orderCode={orderCode} />}
+
         <DelayAndAssistant orderCode={orderCode} />
+
 
 
 
