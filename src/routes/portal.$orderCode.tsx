@@ -352,3 +352,136 @@ function DelayAndAssistant({ orderCode }: { orderCode: string }) {
     </section>
   );
 }
+
+function ProductionPhotos({ orderCode, status, onChange }: { orderCode: string; status: string; onChange: () => void }) {
+  const load = useServerFn(listProductionPhotos);
+  const respond = useServerFn(customerRespondPhotos);
+  const [data, setData] = useState<any>(null);
+  const [comment, setComment] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function reload() {
+    try { setData(await load({ data: { order_code: orderCode } })); } catch {}
+  }
+  useEffect(() => { reload(); }, [orderCode]); // eslint-disable-line
+
+  if (!data || data.photos.length === 0) return null;
+  const approval = data.approval;
+  const canRespond = !approval || approval === "pending" || approval === "changes_requested";
+  const showApprove = canRespond && ["production", "quality_inspection"].includes(status);
+
+  async function act(action: "approve" | "request_changes") {
+    setBusy(true);
+    try {
+      await respond({ data: { order_code: orderCode, action, comment: comment || undefined } });
+      setComment("");
+      await reload();
+      onChange();
+    } catch (e: any) { alert(e.message); } finally { setBusy(false); }
+  }
+
+  return (
+    <section className="border border-white/10 bg-white/[0.02] rounded-lg p-5 md:p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">Production Photos</div>
+        {approval === "approved" && <span className="text-xs text-emerald-300">✓ Approved</span>}
+        {approval === "changes_requested" && <span className="text-xs text-amber-300">Changes requested</span>}
+      </div>
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+        {data.photos.map((p: any) => (
+          <div key={p.id} className="border border-white/10 rounded-md overflow-hidden">
+            {p.url && <img src={p.url} alt={p.file_name} className="w-full h-40 object-cover" />}
+            <div className="p-2 text-[10px] text-white/50">
+              <div className="font-mono">{new Date(p.created_at).toLocaleDateString()}</div>
+              {p.caption && <div className="text-white/70 mt-0.5">{p.caption}</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+      {showApprove && (
+        <div className="mt-4 border-t border-white/10 pt-4 space-y-2">
+          <textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Optional comment…"
+            className="w-full bg-black/40 border border-white/10 rounded-md px-3 py-2 text-sm" rows={2} />
+          <div className="flex gap-2">
+            <button disabled={busy} onClick={() => act("approve")} className="bg-emerald-500 text-black rounded-md px-4 py-2 text-sm font-semibold disabled:opacity-50">Approve Production →</button>
+            <button disabled={busy} onClick={() => act("request_changes")} className="border border-amber-400/50 text-amber-200 rounded-md px-4 py-2 text-sm disabled:opacity-50">Request Changes</button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function QrAndReport({ orderCode }: { orderCode: string }) {
+  const trackUrl = `${typeof window !== "undefined" ? window.location.origin : "https://www.toreo.gr"}/track?code=${encodeURIComponent(orderCode)}`;
+  const qr = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(trackUrl)}`;
+  return (
+    <section className="border border-white/10 bg-white/[0.02] rounded-lg p-5 md:p-6 flex items-center gap-4 flex-wrap">
+      <img src={qr} alt="QR" className="rounded-md bg-white p-1" width={100} height={100} />
+      <div className="flex-1 min-w-0">
+        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">Share / Track</div>
+        <div className="text-sm mt-1 truncate">{trackUrl}</div>
+        <div className="mt-2 flex gap-2">
+          <a href={`/admin_/report/${orderCode}`} target="_blank" rel="noreferrer" className="text-xs px-3 py-1.5 border border-white/20 hover:border-white/40 rounded-sm">Manufacturing Report</a>
+          <a href={qr} download={`${orderCode}-qr.png`} className="text-xs px-3 py-1.5 border border-white/20 hover:border-white/40 rounded-sm">Download QR</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ReviewSection({ orderCode }: { orderCode: string }) {
+  const load = useServerFn(getMyReview);
+  const send = useServerFn(submitReview);
+  const [existing, setExisting] = useState<any>(null);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => { load({ data: { order_code: orderCode } }).then(setExisting).catch(() => {}); }, [orderCode]); // eslint-disable-line
+
+  if (existing || done) {
+    return (
+      <section className="border border-emerald-400/30 bg-emerald-400/5 rounded-lg p-5">
+        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-emerald-300/80">Thank you</div>
+        <div className="text-sm mt-1">Your review has been submitted{existing && !existing.approved ? " and is awaiting approval." : "."}</div>
+      </section>
+    );
+  }
+
+  async function submit() {
+    setBusy(true);
+    try {
+      let photo_base64: string | undefined;
+      if (photo) {
+        const b = await photo.arrayBuffer();
+        photo_base64 = btoa(String.fromCharCode(...new Uint8Array(b)));
+      }
+      await send({ data: { order_code: orderCode, rating, comment: comment || undefined, photo_base64, photo_name: photo?.name } });
+      setDone(true);
+    } catch (e: any) { alert(e.message); } finally { setBusy(false); }
+  }
+
+  return (
+    <section className="border border-amber-400/30 bg-amber-400/5 rounded-lg p-5 md:p-6">
+      <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-amber-300/80">Leave a Review</div>
+      <div className="text-sm mt-1 text-white/70">How was your experience with TOREO?</div>
+      <div className="mt-3 flex gap-1">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button key={n} type="button" onClick={() => setRating(n)} className={`text-2xl ${n <= rating ? "text-amber-300" : "text-white/20"}`}>★</button>
+        ))}
+      </div>
+      <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={3} placeholder="Tell us about your project…"
+        className="mt-3 w-full bg-black/40 border border-white/10 rounded-md px-3 py-2 text-sm" />
+      <div className="mt-2">
+        <input type="file" accept="image/*" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} className="text-xs" />
+      </div>
+      <button disabled={busy} onClick={submit} className="mt-3 bg-white text-black rounded-md px-5 py-2 text-sm font-semibold disabled:opacity-50">
+        {busy ? "Sending…" : "Submit Review"}
+      </button>
+    </section>
+  );
+}
+
