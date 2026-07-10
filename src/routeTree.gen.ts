@@ -35,6 +35,7 @@ import { Route as GrCncMachiningRouteImport } from './routes/gr.cnc-machining'
 import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
 import { Route as AdminShippingRouteImport } from './routes/admin_.shipping'
 import { Route as AdminSchedulerRouteImport } from './routes/admin_.scheduler'
+import { Route as AdminReviewsRouteImport } from './routes/admin_.reviews'
 import { Route as AdminLiveRouteImport } from './routes/admin_.live'
 import { Route as AdminFactoryRouteImport } from './routes/admin_.factory'
 import { Route as AdminConfigRouteImport } from './routes/admin_.config'
@@ -175,6 +176,11 @@ const AdminSchedulerRoute = AdminSchedulerRouteImport.update({
   path: '/admin/scheduler',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/admin_/reviews',
+  path: '/admin/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLiveRoute = AdminLiveRouteImport.update({
   id: '/admin_/live',
   path: '/admin/live',
@@ -249,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/admin/config': typeof AdminConfigRoute
   '/admin/factory': typeof AdminFactoryRoute
   '/admin/live': typeof AdminLiveRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/scheduler': typeof AdminSchedulerRoute
   '/admin/shipping': typeof AdminShippingRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
@@ -286,6 +293,7 @@ export interface FileRoutesByTo {
   '/admin/config': typeof AdminConfigRoute
   '/admin/factory': typeof AdminFactoryRoute
   '/admin/live': typeof AdminLiveRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/scheduler': typeof AdminSchedulerRoute
   '/admin/shipping': typeof AdminShippingRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
@@ -324,6 +332,7 @@ export interface FileRoutesById {
   '/admin_/config': typeof AdminConfigRoute
   '/admin_/factory': typeof AdminFactoryRoute
   '/admin_/live': typeof AdminLiveRoute
+  '/admin_/reviews': typeof AdminReviewsRoute
   '/admin_/scheduler': typeof AdminSchedulerRoute
   '/admin_/shipping': typeof AdminShippingRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
@@ -363,6 +372,7 @@ export interface FileRouteTypes {
     | '/admin/config'
     | '/admin/factory'
     | '/admin/live'
+    | '/admin/reviews'
     | '/admin/scheduler'
     | '/admin/shipping'
     | '/capabilities/$slug'
@@ -400,6 +410,7 @@ export interface FileRouteTypes {
     | '/admin/config'
     | '/admin/factory'
     | '/admin/live'
+    | '/admin/reviews'
     | '/admin/scheduler'
     | '/admin/shipping'
     | '/capabilities/$slug'
@@ -437,6 +448,7 @@ export interface FileRouteTypes {
     | '/admin_/config'
     | '/admin_/factory'
     | '/admin_/live'
+    | '/admin_/reviews'
     | '/admin_/scheduler'
     | '/admin_/shipping'
     | '/capabilities/$slug'
@@ -475,6 +487,7 @@ export interface RootRouteChildren {
   AdminConfigRoute: typeof AdminConfigRoute
   AdminFactoryRoute: typeof AdminFactoryRoute
   AdminLiveRoute: typeof AdminLiveRoute
+  AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSchedulerRoute: typeof AdminSchedulerRoute
   AdminShippingRoute: typeof AdminShippingRoute
   CapabilitiesSlugRoute: typeof CapabilitiesSlugRoute
@@ -672,6 +685,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSchedulerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/reviews': {
+      id: '/admin_/reviews'
+      path: '/admin/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/live': {
       id: '/admin_/live'
       path: '/admin/live'
@@ -774,6 +794,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConfigRoute: AdminConfigRoute,
   AdminFactoryRoute: AdminFactoryRoute,
   AdminLiveRoute: AdminLiveRoute,
+  AdminReviewsRoute: AdminReviewsRoute,
   AdminSchedulerRoute: AdminSchedulerRoute,
   AdminShippingRoute: AdminShippingRoute,
   CapabilitiesSlugRoute: CapabilitiesSlugRoute,
