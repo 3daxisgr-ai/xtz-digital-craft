@@ -37,6 +37,7 @@ function ProjectLibraryPage() {
     setBusy(code);
     try {
       const r = await repeat({ data: { order_code: code } });
+      if (!r?.order_code) throw new Error("Repeat order did not return a code");
       navigate({ to: "/portal/$orderCode", params: { orderCode: r.order_code } });
     } catch (e: any) { alert(e.message); } finally { setBusy(null); }
   }
