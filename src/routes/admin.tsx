@@ -192,6 +192,11 @@ function Sidebar({ active, onNav, onLogout }: { active: Section; onNav: (s: Sect
             {n.label}
           </button>
         ))}
+        <div className="border-t border-white/10 mt-3 pt-3">
+          <a href="/admin_/shipping" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-sky-300/80 hover:text-sky-200 border-l-2 border-transparent hover:border-sky-300">→ Shipping</a>
+          <a href="/admin_/reviews" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-amber-300/80 hover:text-amber-200 border-l-2 border-transparent hover:border-amber-300">→ Reviews</a>
+          <a href="/admin_/factory" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-emerald-300/80 hover:text-emerald-200 border-l-2 border-transparent hover:border-emerald-300">→ Factory</a>
+        </div>
       </nav>
       <button onClick={onLogout} className="m-3 border border-white/10 hover:border-red-400/40 hover:text-red-300 rounded-sm py-2 text-[10px] font-mono tracking-[0.3em] text-white/60">
         LOGOUT
