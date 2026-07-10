@@ -361,6 +361,12 @@ function QuotePage() {
                     </span>
                     <input type="file" accept={ACCEPTED_EXT.join(",")} className="hidden" onChange={onFileChange} />
                   </label>
+                  {validating && <div className="mt-2 font-mono text-[10px] text-primary tracking-widest">VALIDATING FILE…</div>}
+                  {fileWarning && (
+                    <div className="mt-2 border border-amber-400/30 bg-amber-400/5 text-amber-200 text-xs px-3 py-2 rounded">
+                      ⚠ {fileWarning}
+                    </div>
+                  )}
                   {file && (
                     <div className="mt-3">
                       <Suspense fallback={<div className="h-[280px] rounded-lg bg-white/[0.02] border border-white/10" />}>
