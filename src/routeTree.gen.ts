@@ -13,6 +13,7 @@ import { Route as TrackRouteImport } from './routes/track'
 import { Route as StartProjectRouteImport } from './routes/start-project'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as RapidPrototypingRouteImport } from './routes/rapid-prototyping'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -26,17 +27,20 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as R3dPrintingQuoteRouteImport } from './routes/3d-printing-quote'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PortalProjectsRouteImport } from './routes/portal_.projects'
 import { Route as PortalOrderCodeRouteImport } from './routes/portal.$orderCode'
 import { Route as GrRapidPrototypingRouteImport } from './routes/gr.rapid-prototyping'
 import { Route as GrCustomMetalPartsRouteImport } from './routes/gr.custom-metal-parts'
 import { Route as GrCncMachiningRouteImport } from './routes/gr.cnc-machining'
 import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
+import { Route as AdminShippingRouteImport } from './routes/admin_.shipping'
 import { Route as AdminSchedulerRouteImport } from './routes/admin_.scheduler'
 import { Route as AdminLiveRouteImport } from './routes/admin_.live'
 import { Route as AdminFactoryRouteImport } from './routes/admin_.factory'
 import { Route as AdminConfigRouteImport } from './routes/admin_.config'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as AdminReportCodeRouteImport } from './routes/admin_.report.$code'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as AdminPrintKindCodeRouteImport } from './routes/admin_.print.$kind.$code'
@@ -59,6 +63,11 @@ const StartRoute = StartRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewsRoute = ReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RapidPrototypingRoute = RapidPrototypingRouteImport.update({
@@ -126,6 +135,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortalProjectsRoute = PortalProjectsRouteImport.update({
+  id: '/portal_/projects',
+  path: '/portal/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortalOrderCodeRoute = PortalOrderCodeRouteImport.update({
   id: '/$orderCode',
   path: '/$orderCode',
@@ -149,6 +163,11 @@ const GrCncMachiningRoute = GrCncMachiningRouteImport.update({
 const CapabilitiesSlugRoute = CapabilitiesSlugRouteImport.update({
   id: '/capabilities/$slug',
   path: '/capabilities/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminShippingRoute = AdminShippingRouteImport.update({
+  id: '/admin_/shipping',
+  path: '/admin/shipping',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSchedulerRoute = AdminSchedulerRouteImport.update({
@@ -183,6 +202,11 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminReportCodeRoute = AdminReportCodeRouteImport.update({
+  id: '/admin_/report/$code',
+  path: '/admin/report/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -215,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/portal': typeof PortalRouteWithChildren
   '/rapid-prototyping': typeof RapidPrototypingRoute
+  '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
@@ -225,12 +250,15 @@ export interface FileRoutesByFullPath {
   '/admin/factory': typeof AdminFactoryRoute
   '/admin/live': typeof AdminLiveRoute
   '/admin/scheduler': typeof AdminSchedulerRoute
+  '/admin/shipping': typeof AdminShippingRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
+  '/portal/projects': typeof PortalProjectsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/report/$code': typeof AdminReportCodeRoute
   '/admin/print/$kind/$code': typeof AdminPrintKindCodeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -248,6 +276,7 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/portal': typeof PortalRouteWithChildren
   '/rapid-prototyping': typeof RapidPrototypingRoute
+  '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
@@ -258,12 +287,15 @@ export interface FileRoutesByTo {
   '/admin/factory': typeof AdminFactoryRoute
   '/admin/live': typeof AdminLiveRoute
   '/admin/scheduler': typeof AdminSchedulerRoute
+  '/admin/shipping': typeof AdminShippingRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
+  '/portal/projects': typeof PortalProjectsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/report/$code': typeof AdminReportCodeRoute
   '/admin/print/$kind/$code': typeof AdminPrintKindCodeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -282,6 +314,7 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/portal': typeof PortalRouteWithChildren
   '/rapid-prototyping': typeof RapidPrototypingRoute
+  '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
   '/start-project': typeof StartProjectRoute
@@ -292,12 +325,15 @@ export interface FileRoutesById {
   '/admin_/factory': typeof AdminFactoryRoute
   '/admin_/live': typeof AdminLiveRoute
   '/admin_/scheduler': typeof AdminSchedulerRoute
+  '/admin_/shipping': typeof AdminShippingRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
   '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
+  '/portal_/projects': typeof PortalProjectsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin_/report/$code': typeof AdminReportCodeRoute
   '/admin_/print/$kind/$code': typeof AdminPrintKindCodeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -317,6 +353,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/portal'
     | '/rapid-prototyping'
+    | '/reviews'
     | '/sitemap.xml'
     | '/start'
     | '/start-project'
@@ -327,12 +364,15 @@ export interface FileRouteTypes {
     | '/admin/factory'
     | '/admin/live'
     | '/admin/scheduler'
+    | '/admin/shipping'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
+    | '/portal/projects'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/report/$code'
     | '/admin/print/$kind/$code'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
@@ -350,6 +390,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/portal'
     | '/rapid-prototyping'
+    | '/reviews'
     | '/sitemap.xml'
     | '/start'
     | '/start-project'
@@ -360,12 +401,15 @@ export interface FileRouteTypes {
     | '/admin/factory'
     | '/admin/live'
     | '/admin/scheduler'
+    | '/admin/shipping'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
+    | '/portal/projects'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/report/$code'
     | '/admin/print/$kind/$code'
     | '/lovable/email/queue/process'
   id:
@@ -383,6 +427,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/portal'
     | '/rapid-prototyping'
+    | '/reviews'
     | '/sitemap.xml'
     | '/start'
     | '/start-project'
@@ -393,12 +438,15 @@ export interface FileRouteTypes {
     | '/admin_/factory'
     | '/admin_/live'
     | '/admin_/scheduler'
+    | '/admin_/shipping'
     | '/capabilities/$slug'
     | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
+    | '/portal_/projects'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin_/report/$code'
     | '/admin_/print/$kind/$code'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
@@ -417,6 +465,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   PortalRoute: typeof PortalRouteWithChildren
   RapidPrototypingRoute: typeof RapidPrototypingRoute
+  ReviewsRoute: typeof ReviewsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StartRoute: typeof StartRoute
   StartProjectRoute: typeof StartProjectRoute
@@ -427,11 +476,14 @@ export interface RootRouteChildren {
   AdminFactoryRoute: typeof AdminFactoryRoute
   AdminLiveRoute: typeof AdminLiveRoute
   AdminSchedulerRoute: typeof AdminSchedulerRoute
+  AdminShippingRoute: typeof AdminShippingRoute
   CapabilitiesSlugRoute: typeof CapabilitiesSlugRoute
   GrCncMachiningRoute: typeof GrCncMachiningRoute
   GrCustomMetalPartsRoute: typeof GrCustomMetalPartsRoute
   GrRapidPrototypingRoute: typeof GrRapidPrototypingRoute
+  PortalProjectsRoute: typeof PortalProjectsRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  AdminReportCodeRoute: typeof AdminReportCodeRoute
   AdminPrintKindCodeRoute: typeof AdminPrintKindCodeRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
@@ -464,6 +516,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reviews': {
+      id: '/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof ReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rapid-prototyping': {
@@ -557,6 +616,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portal_/projects': {
+      id: '/portal_/projects'
+      path: '/portal/projects'
+      fullPath: '/portal/projects'
+      preLoaderRoute: typeof PortalProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portal/$orderCode': {
       id: '/portal/$orderCode'
       path: '/$orderCode'
@@ -590,6 +656,13 @@ declare module '@tanstack/react-router' {
       path: '/capabilities/$slug'
       fullPath: '/capabilities/$slug'
       preLoaderRoute: typeof CapabilitiesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/shipping': {
+      id: '/admin_/shipping'
+      path: '/admin/shipping'
+      fullPath: '/admin/shipping'
+      preLoaderRoute: typeof AdminShippingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/scheduler': {
@@ -632,6 +705,13 @@ declare module '@tanstack/react-router' {
       path: '/.mcp/list-tools'
       fullPath: '/.mcp/list-tools'
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/report/$code': {
+      id: '/admin_/report/$code'
+      path: '/admin/report/$code'
+      fullPath: '/admin/report/$code'
+      preLoaderRoute: typeof AdminReportCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/invoke-tool/$tool': {
@@ -683,6 +763,7 @@ const rootRouteChildren: RootRouteChildren = {
   McpRoute: McpRoute,
   PortalRoute: PortalRouteWithChildren,
   RapidPrototypingRoute: RapidPrototypingRoute,
+  ReviewsRoute: ReviewsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StartRoute: StartRoute,
   StartProjectRoute: StartProjectRoute,
@@ -694,11 +775,14 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFactoryRoute: AdminFactoryRoute,
   AdminLiveRoute: AdminLiveRoute,
   AdminSchedulerRoute: AdminSchedulerRoute,
+  AdminShippingRoute: AdminShippingRoute,
   CapabilitiesSlugRoute: CapabilitiesSlugRoute,
   GrCncMachiningRoute: GrCncMachiningRoute,
   GrCustomMetalPartsRoute: GrCustomMetalPartsRoute,
   GrRapidPrototypingRoute: GrRapidPrototypingRoute,
+  PortalProjectsRoute: PortalProjectsRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  AdminReportCodeRoute: AdminReportCodeRoute,
   AdminPrintKindCodeRoute: AdminPrintKindCodeRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
