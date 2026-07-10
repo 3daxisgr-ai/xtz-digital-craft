@@ -179,8 +179,39 @@ function QuotePage() {
     }
   };
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [fileWarning, setFileWarning] = useState<string | null>(null);
+  const [validating, setValidating] = useState(false);
+
+  const validateFile = async (f: File): Promise<{ ok: boolean; error?: string; warning?: string }> => {
+    if (f.size === 0) return { ok: false, error: isGR ? "Το αρχείο είναι κενό." : "File is empty." };
+    if (f.size > 200 * 1024 * 1024) return { ok: false, error: isGR ? "Το αρχείο είναι πολύ μεγάλο (>200MB)." : "File too large (>200MB)." };
+    if (f.size < 200) return { ok: false, error: isGR ? "Το αρχείο είναι πολύ μικρό — πιθανώς κατεστραμμένο." : "File too small — likely corrupted." };
+    const name = f.name.toLowerCase();
+    if (name.endsWith(".stl")) {
+      try {
+        const head = new Uint8Array(await f.slice(0, 84).arrayBuffer());
+        const txt = new TextDecoder().decode(head.slice(0, 5)).toLowerCase();
+        const isAscii = txt === "solid";
+        if (!isAscii) {
+          // binary STL: bytes 80-83 = triangle count
+          const dv = new DataView(head.buffer, head.byteOffset, head.byteLength);
+          const tri = dv.getUint32(80, true);
+          const expected = 84 + tri * 50;
+          if (tri === 0) return { ok: false, error: isGR ? "Το STL δεν περιέχει γεωμετρία." : "STL contains no geometry." };
+          if (Math.abs(expected - f.size) > 4) return { ok: true, warning: isGR ? "Πιθανώς μη έγκυρο STL — μπορεί να χρειαστεί επιδιόρθωση." : "Possibly invalid STL — may need repair." };
+          if (tri < 4) return { ok: true, warning: isGR ? "Πολύ λίγα τρίγωνα — ελέγξτε αν είναι πλήρες μοντέλο." : "Very few triangles — please verify the model is complete." };
+        } else {
+          const full = await f.text();
+          if (!/facet\s+normal/i.test(full.slice(0, 5000))) return { ok: false, error: "Invalid ASCII STL." };
+        }
+      } catch (e) { return { ok: true, warning: isGR ? "Δεν ήταν δυνατή η πλήρης επικύρωση." : "Could not fully validate." }; }
+    }
+    return { ok: true };
+  };
+
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] ?? null;
+    setFileWarning(null);
     if (!f) return setFile(null);
     const ok = ACCEPTED_EXT.some((ext) => f.name.toLowerCase().endsWith(ext));
     if (!ok) {
@@ -189,6 +220,11 @@ function QuotePage() {
       return;
     }
     setError(null);
+    setValidating(true);
+    const r = await validateFile(f);
+    setValidating(false);
+    if (!r.ok) { setError(r.error ?? "Invalid file"); e.target.value = ""; return; }
+    if (r.warning) setFileWarning(r.warning);
     setFile(f);
   };
 
@@ -325,6 +361,12 @@ function QuotePage() {
                     </span>
                     <input type="file" accept={ACCEPTED_EXT.join(",")} className="hidden" onChange={onFileChange} />
                   </label>
+                  {validating && <div className="mt-2 font-mono text-[10px] text-primary tracking-widest">VALIDATING FILE…</div>}
+                  {fileWarning && (
+                    <div className="mt-2 border border-amber-400/30 bg-amber-400/5 text-amber-200 text-xs px-3 py-2 rounded">
+                      ⚠ {fileWarning}
+                    </div>
+                  )}
                   {file && (
                     <div className="mt-3">
                       <Suspense fallback={<div className="h-[280px] rounded-lg bg-white/[0.02] border border-white/10" />}>

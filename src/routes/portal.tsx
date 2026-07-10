@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { listMyOrders, meIsAdmin } from "@/lib/api/orders.functions";
+import { getMyLoyalty } from "@/lib/api/features.functions";
 import { StatusBadge } from "@/components/portal/StatusProgress";
 
 export const Route = createFileRoute("/portal")({
@@ -20,10 +21,12 @@ function PortalPage() {
   const navigate = useNavigate();
   const list = useServerFn(listMyOrders);
   const checkAdmin = useServerFn(meIsAdmin);
+  const loyalty = useServerFn(getMyLoyalty);
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState<any[]>([]);
   const [email, setEmail] = useState<string>("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loy, setLoy] = useState<any>(null);
 
   useEffect(() => {
     (async () => {
@@ -34,16 +37,17 @@ function PortalPage() {
       }
       setEmail(data.session.user.email ?? "");
       try {
-        const [rows, a] = await Promise.all([list({} as any), checkAdmin({} as any)]);
+        const [rows, a, l] = await Promise.all([list({} as any), checkAdmin({} as any), loyalty().catch(() => null)]);
         setOrders(rows as any[]);
         setIsAdmin(a.admin);
+        setLoy(l);
       } catch (e) {
         console.error(e);
       } finally {
         setLoading(false);
       }
     })();
-  }, [navigate, list, checkAdmin]);
+  }, [navigate, list, checkAdmin, loyalty]);
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -75,13 +79,33 @@ function PortalPage() {
             <div className="font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase">Customer Portal</div>
             <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mt-2">Your orders</h1>
           </div>
-          <Link
-            to="/start"
-            className="bg-white text-black hover:bg-white/90 rounded-md px-5 py-2.5 text-sm font-semibold tracking-wide uppercase font-mono"
-          >
-            New Project
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link to="/portal_/projects" className="border border-white/15 hover:border-white/40 rounded-md px-4 py-2.5 text-sm font-mono tracking-wide uppercase">Library</Link>
+            <Link
+              to="/start"
+              className="bg-white text-black hover:bg-white/90 rounded-md px-5 py-2.5 text-sm font-semibold tracking-wide uppercase font-mono"
+            >
+              New Project
+            </Link>
+          </div>
         </div>
+
+        {loy && (
+          <div className="mt-6 border border-amber-400/20 bg-amber-400/5 rounded-lg p-4 flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <div className="font-mono text-[10px] tracking-[0.3em] text-amber-300/80 uppercase">Loyalty · {loy.tier.level}</div>
+              <div className="text-sm mt-1">
+                <span className="text-white/80">{loy.orders_count} orders · €{loy.total_spent.toFixed(2)} lifetime</span>
+                {loy.tier.discount_pct > 0 && <span className="ml-2 text-emerald-300">{loy.tier.discount_pct}% discount active</span>}
+              </div>
+            </div>
+            {loy.next && (
+              <div className="text-xs text-white/60">
+                Next: <span className="text-white">{loy.next.level}</span> at {loy.next.min_orders} orders ({loy.orders_to_next} to go, {loy.next.discount_pct}% off)
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="mt-8">
           {loading ? (

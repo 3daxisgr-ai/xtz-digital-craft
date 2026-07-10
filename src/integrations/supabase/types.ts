@@ -474,6 +474,7 @@ export type Database = {
           file_path: string
           file_type: string | null
           id: string
+          metadata: Json
           order_id: string
           size_bytes: number | null
           uploaded_by: Database["public"]["Enums"]["actor_role"]
@@ -485,6 +486,7 @@ export type Database = {
           file_path: string
           file_type?: string | null
           id?: string
+          metadata?: Json
           order_id: string
           size_bytes?: number | null
           uploaded_by?: Database["public"]["Enums"]["actor_role"]
@@ -496,6 +498,7 @@ export type Database = {
           file_path?: string
           file_type?: string | null
           id?: string
+          metadata?: Json
           order_id?: string
           size_bytes?: number | null
           uploaded_by?: Database["public"]["Enums"]["actor_role"]
@@ -913,10 +916,12 @@ export type Database = {
       }
       projects: {
         Row: {
+          archived: boolean
           created_at: string
           customer_email: string
           customer_name: string | null
           id: string
+          name: string | null
           notes: string | null
           order_id: string | null
           priority: string
@@ -928,10 +933,12 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          archived?: boolean
           created_at?: string
           customer_email: string
           customer_name?: string | null
           id?: string
+          name?: string | null
           notes?: string | null
           order_id?: string | null
           priority?: string
@@ -943,10 +950,12 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          archived?: boolean
           created_at?: string
           customer_email?: string
           customer_name?: string | null
           id?: string
+          name?: string | null
           notes?: string | null
           order_id?: string | null
           priority?: string
@@ -1020,6 +1029,53 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          approved: boolean
+          comment: string | null
+          created_at: string
+          customer_name: string | null
+          id: string
+          order_id: string
+          photo_path: string | null
+          rating: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          approved?: boolean
+          comment?: string | null
+          created_at?: string
+          customer_name?: string | null
+          id?: string
+          order_id: string
+          photo_path?: string | null
+          rating: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          approved?: boolean
+          comment?: string | null
+          created_at?: string
+          customer_name?: string | null
+          id?: string
+          order_id?: string
+          photo_path?: string | null
+          rating?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       submissions: {
         Row: {
