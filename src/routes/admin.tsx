@@ -602,7 +602,7 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
         const buf = await file.arrayBuffer();
         const bytes = new Uint8Array(buf);
         let bin = ""; for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
-        await upload({ data: { order_code: code, file_name: file.name, file_base64: btoa(bin), file_type: file.type, visibility: "customer", folder: "progress" } });
+        await upload({ data: { order_code: code, file_name: file.name, file_base64: btoa(bin), file_type: file.type, visibility: "customer", folder: "production_photos" } });
       }
       e.target.value = ""; flash("Photos uploaded ✓"); onChanged();
     } catch (e: any) { flash(e.message ?? "Failed"); }
@@ -637,6 +637,7 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
         <button className={btnBlue} onClick={() => setModal("message")}>✉ SEND CUSTOMER UPDATE</button>
         <button className={btnDef} onClick={() => openPrintable("quote")}>📄 QUOTE PDF</button>
         <button className={btnDef} onClick={() => openPrintable("invoice")}>💳 INVOICE</button>
+        <button className={btnDef} onClick={() => window.open(`/admin_/report/${encodeURIComponent(code)}`, "_blank", "noopener,noreferrer")}>📋 MFG REPORT</button>
         <button className={btnOk} disabled={busy === "complete"} onClick={doComplete}>✓ COMPLETE PRODUCTION</button>
         <button className={btnBlue} onClick={() => setModal("tracking")}>📦 ADD TRACKING</button>
       </div>
