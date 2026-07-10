@@ -474,6 +474,7 @@ export type Database = {
           file_path: string
           file_type: string | null
           id: string
+          metadata: Json
           order_id: string
           size_bytes: number | null
           uploaded_by: Database["public"]["Enums"]["actor_role"]
@@ -485,6 +486,7 @@ export type Database = {
           file_path: string
           file_type?: string | null
           id?: string
+          metadata?: Json
           order_id: string
           size_bytes?: number | null
           uploaded_by?: Database["public"]["Enums"]["actor_role"]
@@ -496,6 +498,7 @@ export type Database = {
           file_path?: string
           file_type?: string | null
           id?: string
+          metadata?: Json
           order_id?: string
           size_bytes?: number | null
           uploaded_by?: Database["public"]["Enums"]["actor_role"]
