@@ -422,7 +422,7 @@ function QrAndReport({ orderCode }: { orderCode: string }) {
         <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">Share / Track</div>
         <div className="text-sm mt-1 truncate">{trackUrl}</div>
         <div className="mt-2 flex gap-2">
-          <a href={`/admin_/report/${orderCode}`} target="_blank" rel="noreferrer" className="text-xs px-3 py-1.5 border border-white/20 hover:border-white/40 rounded-sm">Manufacturing Report</a>
+          <a href={`/admin/report/${orderCode}`} target="_blank" rel="noreferrer" className="text-xs px-3 py-1.5 border border-white/20 hover:border-white/40 rounded-sm">Manufacturing Report</a>
           <a href={qr} download={`${orderCode}-qr.png`} className="text-xs px-3 py-1.5 border border-white/20 hover:border-white/40 rounded-sm">Download QR</a>
         </div>
       </div>
