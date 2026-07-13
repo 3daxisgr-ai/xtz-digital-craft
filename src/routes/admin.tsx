@@ -193,9 +193,12 @@ function Sidebar({ active, onNav, onLogout }: { active: Section; onNav: (s: Sect
           </button>
         ))}
         <div className="border-t border-white/10 mt-3 pt-3">
-          <a href="/admin_/shipping" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-sky-300/80 hover:text-sky-200 border-l-2 border-transparent hover:border-sky-300">→ Shipping</a>
-          <a href="/admin_/reviews" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-amber-300/80 hover:text-amber-200 border-l-2 border-transparent hover:border-amber-300">→ Reviews</a>
-          <a href="/admin_/factory" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-emerald-300/80 hover:text-emerald-200 border-l-2 border-transparent hover:border-emerald-300">→ Factory</a>
+          <a href="/admin/shipping" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-sky-300/80 hover:text-sky-200 border-l-2 border-transparent hover:border-sky-300">→ Shipping</a>
+          <a href="/admin/reviews" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-amber-300/80 hover:text-amber-200 border-l-2 border-transparent hover:border-amber-300">→ Reviews</a>
+          <a href="/admin/factory" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-emerald-300/80 hover:text-emerald-200 border-l-2 border-transparent hover:border-emerald-300">→ Factory</a>
+          <a href="/admin/scheduler" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-fuchsia-300/80 hover:text-fuchsia-200 border-l-2 border-transparent hover:border-fuchsia-300">→ Scheduler</a>
+          <a href="/admin/live" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-cyan-300/80 hover:text-cyan-200 border-l-2 border-transparent hover:border-cyan-300">→ Live Feed</a>
+          <a href="/admin/config" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-white/60 hover:text-white border-l-2 border-transparent hover:border-white/50">→ Config</a>
         </div>
       </nav>
       <button onClick={onLogout} className="m-3 border border-white/10 hover:border-red-400/40 hover:text-red-300 rounded-sm py-2 text-[10px] font-mono tracking-[0.3em] text-white/60">
@@ -642,7 +645,7 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
         <button className={btnBlue} onClick={() => setModal("message")}>✉ SEND CUSTOMER UPDATE</button>
         <button className={btnDef} onClick={() => openPrintable("quote")}>📄 QUOTE PDF</button>
         <button className={btnDef} onClick={() => openPrintable("invoice")}>💳 INVOICE</button>
-        <button className={btnDef} onClick={() => window.open(`/admin_/report/${encodeURIComponent(code)}`, "_blank", "noopener,noreferrer")}>📋 MFG REPORT</button>
+        <button className={btnDef} onClick={() => window.open(`/admin/report/${encodeURIComponent(code)}`, "_blank", "noopener,noreferrer")}>📋 MFG REPORT</button>
         <button className={btnOk} disabled={busy === "complete"} onClick={doComplete}>✓ COMPLETE PRODUCTION</button>
         <button className={btnBlue} onClick={() => setModal("tracking")}>📦 ADD TRACKING</button>
       </div>
