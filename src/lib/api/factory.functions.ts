@@ -678,39 +678,9 @@ export const panelAnalyzeFile = createServerFn({ method: "POST" })
       file = files?.[0] ?? null;
     }
 
-    const { machines, materials, settings } = await loadContext();
-    const payload = {
-      order: { code: order.order_code, service: order.service, note: order.message },
-      request: {
-        service: data.service, production_mode: data.production_mode,
-        material_hint: data.material_hint ?? order.material ?? null, notes: data.notes ?? null,
-      },
-      file: file
-        ? { name: file.file_name, type: file.file_type, size_bytes: file.size_bytes, ext: file.file_name?.split(".").pop() ?? null }
-        : null,
-      catalogue: { machines, materials },
-      profit_protection: (settings as any) ? {
-        currency: (settings as any).currency, min_margin_pct: Number((settings as any).min_margin_pct),
-        min_hourly_rate_eur: Number((settings as any).min_hourly_rate_eur),
-        min_production_charge_eur: Number((settings as any).min_production_charge_eur),
-        min_order_value_eur: Number((settings as any).min_order_value_eur),
-      } : { currency: "EUR", min_margin_pct: 45, min_hourly_rate_eur: 8, min_production_charge_eur: 15, min_order_value_eur: 15 },
-    };
-
-    let parsed = await callAi(payload);
-    parsed = enforceMinimums(parsed, settings);
-    // Deterministic pricing overrides AI-produced price.
-    const orderMeta = ((order as any)?.metadata ?? {}) as any;
-    const timelineAdmin = (["flexible","standard","urgent"].includes(String(orderMeta.timeline)) ? String(orderMeta.timeline) : "standard") as "flexible"|"standard"|"urgent";
-    const assigned = pickMachine(machines as any[], parsed, data.production_mode, timelineAdmin);
-    await applyDeterministicPricing(parsed, order, data.production_mode, timelineAdmin, { machines, materials, settings }, assigned);
-
-    const { data: saved, error: saveErr } = await supabaseAdmin
-      .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, data.service, data.production_mode))
-      .select("*").single();
-    if (saveErr) throw saveErr;
-    await wireBackToOrder(order.id, parsed, (saved as any)?.id);
-    return saved;
+    const useType = normalizeUseType(data.production_mode);
+    const materialCode = normalizeMaterialCode(data.material_hint ?? (order as any).material);
+    return await runAnalysisV2(order, file, data.service, useType, materialCode, { force: !!data.force, adminNotes: data.notes ?? null });
   });
 
 export const panelListAnalyses = createServerFn({ method: "POST" })
