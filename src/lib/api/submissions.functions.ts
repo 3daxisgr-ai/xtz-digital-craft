@@ -16,7 +16,7 @@ const submissionSchema = z.object({
   weight_g: z.number().nullable().optional(),
   print_hours: z.number().nullable().optional(),
   estimated_price: z.number().nullable().optional(),
-  production_mode: z.enum(["prototype", "durable", "decorative"]).optional().nullable(),
+  production_mode: z.enum(["prototype", "manufacture", "durable", "decorative"]).optional().nullable(),
   timeline: z.enum(["flexible", "standard", "urgent"]).optional().nullable(),
   message: z.string().trim().max(4000).optional().nullable(),
   file_path: z
