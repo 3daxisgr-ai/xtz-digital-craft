@@ -46,7 +46,7 @@ export const Route = createFileRoute("/3d-printing-quote")({
 
 const ACCEPTED_EXT = [".stl", ".step", ".stp", ".3mf", ".obj"];
 
-type ProductionMode = "prototype" | "durable" | "decorative";
+type ProductionMode = "prototype" | "manufacture" | "durable" | "decorative";
 type Timeline = "flexible" | "standard" | "urgent";
 
 const schema = z.object({
@@ -264,7 +264,8 @@ function QuotePage() {
 
   const purposes: Array<{ id: ProductionMode; title: string; blurb: string }> = [
     { id: "prototype", title: isGR ? "Πρωτότυπο" : "Prototype", blurb: isGR ? "Γρήγορο & οικονομικό. Για validation & fit test." : "Fast & economical. Concept validation & fit test." },
-    { id: "durable", title: isGR ? "Λειτουργικό Εξάρτημα" : "Functional / Manufacturing Part", blurb: isGR ? "Για πραγματική χρήση. Προτεραιότητα στην αντοχή." : "For real-world use. Strength is the priority." },
+    { id: "manufacture", title: isGR ? "Παραγωγή" : "Manufacture", blurb: isGR ? "Λειτουργικό εξάρτημα παραγωγής." : "Functional production part." },
+    { id: "durable", title: isGR ? "Ανθεκτικό" : "Durable", blurb: isGR ? "Μέγιστη αντοχή, υψηλή πληρότητα." : "High strength, high infill." },
     { id: "decorative", title: isGR ? "Διακοσμητικό / Παρουσίασης" : "Decorative / Display", blurb: isGR ? "Προτεραιότητα στην εμφάνιση & φινίρισμα." : "Priority on appearance & surface finish." },
   ];
 

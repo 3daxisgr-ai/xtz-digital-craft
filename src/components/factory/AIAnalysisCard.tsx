@@ -77,15 +77,22 @@ export function AIAnalysisCard({ a, loading, className, adminView, customerView 
   // quotation, never an AI-labelled analysis.
   if (customerView) {
     const price = Number(a.quote_price_eur ?? 0);
+    const lockedUntil = a.locked_until ? new Date(a.locked_until) : null;
+    const validDays = lockedUntil ? Math.max(0, Math.ceil((lockedUntil.getTime() - Date.now()) / (24 * 60 * 60 * 1000))) : null;
     return (
       <div className={"border border-white/10 rounded-lg p-5 md:p-6 bg-gradient-to-b from-white/[0.03] to-white/[0.01] " + (className ?? "")}>
-        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50">Estimated Quote</div>
+        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50">TOREO Quotation</div>
         <div className="mt-4">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">Estimated price</div>
+          <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">Final price</div>
           <div className="mt-1 font-display text-4xl font-bold text-primary tabular-nums">€{price.toFixed(2)}</div>
         </div>
-        <div className="mt-5 text-[10px] font-mono uppercase tracking-widest text-white/30">
-          Preliminary TOREO estimate · Final quote confirmed by our engineering team.
+        {validDays !== null && (
+          <div className="mt-4 text-[11px] font-mono uppercase tracking-widest text-white/50">
+            Valid for {validDays} day{validDays === 1 ? "" : "s"}
+          </div>
+        )}
+        <div className="mt-4 text-[10px] font-mono uppercase tracking-widest text-white/30">
+          Price locked · Same file & options always return the same quote.
         </div>
       </div>
     );
@@ -155,17 +162,37 @@ export function AIAnalysisCard({ a, loading, className, adminView, customerView 
         </div>
       )}
 
-      {adminView && cbEntries.length > 0 && (
+      {adminView && (
         <div className="mt-5 border-t border-white/10 pt-4">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-white/40 mb-2">Cost Breakdown (admin)</div>
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">Pricing (v2, admin)</div>
+            <div className="flex gap-2 text-[10px] font-mono">
+              {a.pricing_engine_version && <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-white/60">{a.pricing_engine_version}</span>}
+              {a.from_cache ? <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-400/30 text-emerald-200">CACHED</span> : <span className="px-1.5 py-0.5 rounded bg-sky-500/10 border border-sky-400/30 text-sky-200">NEW</span>}
+              {a.locked_until && <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-white/60">locked → {new Date(a.locked_until).toLocaleDateString()}</span>}
+            </div>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-            {cbEntries.map(([k, v]) => (
-              <div key={k} className="flex justify-between bg-white/[0.02] border border-white/5 rounded px-2 py-1.5">
-                <span className="text-white/50 capitalize">{k.replace(/_eur$/, "").replace(/_/g, " ")}</span>
-                <span className="text-white tabular-nums">€{Number(v).toFixed(2)}</span>
+            {[
+              ["Material",  a.material_cost_eur],
+              ["Machine",   a.machine_cost_eur],
+              ["Prep fee",  a.preparation_fee_eur],
+              ["Int. cost", a.internal_cost_eur],
+              ["Profit",    a.profit_eur],
+              ["Margin",    a.margin_pct != null ? `${Number(a.margin_pct).toFixed(2)}%` : null],
+              ["Selling",   a.quote_price_eur],
+            ].filter(([, v]) => v != null).map(([k, v]) => (
+              <div key={String(k)} className="flex justify-between bg-white/[0.02] border border-white/5 rounded px-2 py-1.5">
+                <span className="text-white/50">{k}</span>
+                <span className="text-white tabular-nums">{typeof v === "number" ? `€${Number(v).toFixed(2)}` : String(v)}</span>
               </div>
             ))}
           </div>
+          {a.geometry_hash && (
+            <div className="mt-2 text-[10px] font-mono text-white/40 truncate">
+              geom: {String(a.geometry_hash).slice(0, 16)}… · fp: {String(a.quote_fingerprint ?? "").slice(0, 16)}…
+            </div>
+          )}
           {a.price_explanation && <p className="mt-3 text-xs text-white/60 italic">{a.price_explanation}</p>}
         </div>
       )}

@@ -5,6 +5,14 @@ import { createServerFn } from "@tanstack/react-start";
 import { useSession } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { computePrice, type PriceInputs } from "@/lib/pricing";
+import {
+  computePriceV2,
+  PRICING_ENGINE_VERSION,
+  profileForUseType,
+  snapInfill,
+  snapLayerHeight,
+  type UseType,
+} from "@/lib/pricing-v2";
 
 type AdminSession = { authed?: boolean; ts?: number };
 function sessionConfig() {
@@ -510,15 +518,141 @@ async function wireBackToOrder(orderId: string, parsed: AiResult, analysisId?: s
   }
 }
 
+// ============================================================================
+// PRICING ENGINE v2 — deterministic, fingerprint-cached, 45% margin enforced.
+// Same actual geometry + same material + same qty + same use_type → same price.
+// ============================================================================
+
+const USE_TYPES = ["prototype", "manufacture", "durable", "decorative"] as const;
+
+function normalizeUseType(input: unknown): UseType {
+  const s = String(input ?? "").toLowerCase().trim();
+  if (s === "manufacture" || s === "manufacturing" || s === "functional" || s === "production") return "manufacture";
+  if (s === "durable" || s === "strong" || s === "heavy_duty") return "durable";
+  if (s === "decorative" || s === "display" || s === "cosmetic") return "decorative";
+  return "prototype";
+}
+
+function normalizeMaterialCode(code: string | null | undefined): string {
+  return String(code ?? "").trim().toUpperCase();
+}
+
+/** 15-day quote lock window. */
+const QUOTE_LOCK_MS = 15 * 24 * 60 * 60 * 1000;
+
+async function ensureGeometryHashForOrderFile(fileRow: any, orderId: string): Promise<string | null> {
+  if (!fileRow) return null;
+  if (fileRow.geometry_hash) return String(fileRow.geometry_hash);
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const path: string | null = fileRow.file_path ?? null;
+  if (!path) return null;
+  try {
+    // Files created via the public 3D-printing quote form live in submission-files.
+    // Admin-uploaded files may live in order-files. Try both.
+    let bytes: Uint8Array | null = null;
+    for (const bucket of ["submission-files", "order-files"]) {
+      const { data, error } = await supabaseAdmin.storage.from(bucket).download(path);
+      if (!error && data) {
+        bytes = new Uint8Array(await data.arrayBuffer());
+        break;
+      }
+    }
+    if (!bytes) return null;
+    const { computeGeometryHash } = await import("@/lib/geometry-hash.server");
+    const { hash } = await computeGeometryHash(bytes, String(fileRow.file_name ?? path));
+    await supabaseAdmin.from("order_files").update({ geometry_hash: hash } as any).eq("id", fileRow.id);
+    return hash;
+  } catch (e) {
+    console.error("geometry hash compute failed", e);
+    return null;
+  }
+}
+
+async function findCachedAnalysis(fingerprint: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("project_analyses" as any)
+    .select("*")
+    .eq("quote_fingerprint", fingerprint)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  const row = (data ?? [])[0] as any;
+  if (!row) return null;
+  // Honor 15-day lock: within window, always return snapshot.
+  if (row.locked_until && new Date(row.locked_until).getTime() > Date.now()) return row;
+  // Expired lock → treat as stale, force new analysis.
+  return null;
+}
+
+function applyDeterministicProfile(parsed: any, useType: UseType) {
+  const profile = profileForUseType(useType);
+  parsed.recommended_layer_height_mm = snapLayerHeight(parsed.recommended_layer_height_mm, profile.layer_height_mm);
+  parsed.recommended_infill_pct = snapInfill(parsed.recommended_infill_pct, profile.infill_pct);
+}
+
+function applyPricingV2(
+  parsed: any,
+  quantity: number,
+  useType: UseType,
+  materialCode: string,
+  materials: any[],
+) {
+  applyDeterministicProfile(parsed, useType);
+  const mat = materials.find(
+    (m: any) => normalizeMaterialCode(m?.code) === normalizeMaterialCode(materialCode) ||
+                normalizeMaterialCode(m?.name) === normalizeMaterialCode(materialCode),
+  );
+  const perKg = Number(mat?.price_per_kg ?? 50);
+  const priced = computePriceV2({
+    material_grams_per_part: Number(parsed.estimated_material_g ?? 0),
+    print_hours_per_part: Number(parsed.estimated_print_hours ?? 0),
+    quantity,
+    material_price_per_kg: perKg,
+    waste_factor: 0.03,
+  });
+  parsed.estimated_material_g = Number((Number(parsed.estimated_material_g ?? 0)).toFixed(2));
+  parsed.estimated_print_hours = Number((Number(parsed.estimated_print_hours ?? 0)).toFixed(2));
+  parsed.estimated_cost_eur = priced.internal_cost_eur;
+  parsed.quote_price_eur = priced.selling_price_eur;
+  parsed.cost_breakdown = {
+    material_eur: priced.material_cost_eur,
+    machine_time_eur: priced.machine_cost_eur,
+    preparation_fee_eur: priced.preparation_fee_eur,
+    internal_cost_eur: priced.internal_cost_eur,
+    margin_eur: priced.profit_eur,
+  } as any;
+  parsed.price_explanation = `v2: ${priced.total_grams}g × €${(perKg/1000).toFixed(3)}/g + ${priced.total_hours}h × €${(2).toFixed(2)}/h + prep €${priced.preparation_fee_eur} → cost €${priced.internal_cost_eur} → /0.55 → €${priced.selling_price_eur} (margin ${priced.margin_pct}%).`;
+  return priced;
+}
+
+function analysisInsertRowV2(parsed: any, order: any, file: any, service: string, useType: UseType, priced: ReturnType<typeof computePriceV2>, geometryHash: string | null, fingerprint: string, materialCode: string) {
+  return {
+    ...analysisInsertRow(parsed, order, file, service, useType),
+    use_type: useType,
+    recommended_material: materialCode || parsed.recommended_material,
+    geometry_hash: geometryHash,
+    quote_fingerprint: fingerprint,
+    pricing_engine_version: PRICING_ENGINE_VERSION,
+    locked_until: new Date(Date.now() + QUOTE_LOCK_MS).toISOString(),
+    material_cost_eur: priced.material_cost_eur,
+    machine_cost_eur: priced.machine_cost_eur,
+    preparation_fee_eur: priced.preparation_fee_eur,
+    internal_cost_eur: priced.internal_cost_eur,
+    profit_eur: priced.profit_eur,
+    margin_pct: priced.margin_pct,
+  };
+}
+
 // -------- Admin: analyze a file on an order --------
 
 const analyzeInput = z.object({
   order_code: z.string().min(1),
   file_id: z.string().uuid().optional(),
   service: z.enum(["3d_printing", "cnc", "laser", "welding", "other"]).default("3d_printing"),
-  production_mode: z.enum(["prototype", "durable", "decorative"]).default("prototype"),
+  production_mode: z.enum(USE_TYPES).default("prototype"),
   material_hint: z.string().max(60).optional(),
   notes: z.string().max(2000).optional(),
+  force: z.boolean().optional(),
 });
 
 export const panelAnalyzeFile = createServerFn({ method: "POST" })
@@ -544,39 +678,9 @@ export const panelAnalyzeFile = createServerFn({ method: "POST" })
       file = files?.[0] ?? null;
     }
 
-    const { machines, materials, settings } = await loadContext();
-    const payload = {
-      order: { code: order.order_code, service: order.service, note: order.message },
-      request: {
-        service: data.service, production_mode: data.production_mode,
-        material_hint: data.material_hint ?? order.material ?? null, notes: data.notes ?? null,
-      },
-      file: file
-        ? { name: file.file_name, type: file.file_type, size_bytes: file.size_bytes, ext: file.file_name?.split(".").pop() ?? null }
-        : null,
-      catalogue: { machines, materials },
-      profit_protection: (settings as any) ? {
-        currency: (settings as any).currency, min_margin_pct: Number((settings as any).min_margin_pct),
-        min_hourly_rate_eur: Number((settings as any).min_hourly_rate_eur),
-        min_production_charge_eur: Number((settings as any).min_production_charge_eur),
-        min_order_value_eur: Number((settings as any).min_order_value_eur),
-      } : { currency: "EUR", min_margin_pct: 45, min_hourly_rate_eur: 8, min_production_charge_eur: 15, min_order_value_eur: 15 },
-    };
-
-    let parsed = await callAi(payload);
-    parsed = enforceMinimums(parsed, settings);
-    // Deterministic pricing overrides AI-produced price.
-    const orderMeta = ((order as any)?.metadata ?? {}) as any;
-    const timelineAdmin = (["flexible","standard","urgent"].includes(String(orderMeta.timeline)) ? String(orderMeta.timeline) : "standard") as "flexible"|"standard"|"urgent";
-    const assigned = pickMachine(machines as any[], parsed, data.production_mode, timelineAdmin);
-    await applyDeterministicPricing(parsed, order, data.production_mode, timelineAdmin, { machines, materials, settings }, assigned);
-
-    const { data: saved, error: saveErr } = await supabaseAdmin
-      .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, data.service, data.production_mode))
-      .select("*").single();
-    if (saveErr) throw saveErr;
-    await wireBackToOrder(order.id, parsed, (saved as any)?.id);
-    return saved;
+    const useType = normalizeUseType(data.production_mode);
+    const materialCode = normalizeMaterialCode(data.material_hint ?? (order as any).material);
+    return await runAnalysisV2(order, file, data.service, useType, materialCode, { force: !!data.force, adminNotes: data.notes ?? null });
   });
 
 export const panelListAnalyses = createServerFn({ method: "POST" })
@@ -600,44 +704,71 @@ export const panelDeleteAnalysis = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-// -------- Public auto-analysis for new quote submissions --------
+// -------- v2 pipeline shared by admin + public --------
 
-async function runAnalysisForOrder(order: any, file: any, serviceHint: string) {
+async function runAnalysisV2(
+  order: any,
+  file: any,
+  serviceHint: string,
+  useType: UseType,
+  materialCode: string,
+  opts: { force?: boolean; adminNotes?: string | null } = {},
+) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { machines, materials, settings } = await loadContext();
   const svc = (serviceHint || "").toLowerCase();
   const service = svc.includes("cnc") ? "cnc" : svc.includes("laser") ? "laser" : svc.includes("weld") ? "welding" : "3d_printing";
+  const qty = Math.max(1, Number(order?.quantity ?? 1) || 1);
   const meta = (order?.metadata ?? {}) as any;
-  const rawMode = String(meta.production_mode ?? "prototype").toLowerCase();
-  const mode: "prototype" | "durable" | "decorative" =
-    rawMode === "functional" || rawMode === "durable" ? "durable" :
-    rawMode === "decorative" || rawMode === "display" ? "decorative" : "prototype";
-  const qty = Number(order?.quantity ?? 1) || 1;
+
+  // 1. Geometry hash (single source of "identity")
+  const geometryHash = await ensureGeometryHashForOrderFile(file, order.id);
+
+  // 2. Quote fingerprint = geometry + material + qty + use_type + engine version
+  const { quoteFingerprint } = await import("@/lib/geometry-hash.server");
+  const fingerprint = quoteFingerprint({
+    geometry_hash: geometryHash ?? `nohash:${order.id}:${file?.id ?? "nofile"}`,
+    material_code: normalizeMaterialCode(materialCode),
+    quantity: qty,
+    use_type: useType,
+    pricing_engine_version: PRICING_ENGINE_VERSION,
+  });
+
+  // 3. Cache lookup — reuse locked analysis without calling AI again.
+  if (!opts.force) {
+    const cached = await findCachedAnalysis(fingerprint);
+    if (cached) return { ...cached, from_cache: true };
+  }
+
+  // 4. AI (technical estimates only — never the price).
   const payload = {
     order: { code: order.order_code, service: order.service, note: order.message, quantity: qty, timeline: meta.timeline ?? "standard" },
-    request: { service, production_mode: mode, material_hint: order.material ?? null, notes: order.message ?? null },
-    file: file ? { name: file.file_name, type: file.file_type, size_bytes: file.size_bytes, ext: file.file_name?.split(".").pop() ?? null } : null,
+    request: {
+      service, production_mode: useType, material_hint: materialCode || order.material || null,
+      notes: opts.adminNotes ?? order.message ?? null,
+      // Locked print profile — AI must not override these downstream.
+      locked_profile: profileForUseType(useType),
+    },
+    file: file ? { name: file.file_name, type: file.file_type, size_bytes: file.size_bytes, ext: file.file_name?.split(".").pop() ?? null, geometry_hash: geometryHash } : null,
     catalogue: { machines, materials },
-    profit_protection: (settings as any) ? {
-      currency: (settings as any).currency, min_margin_pct: Number((settings as any).min_margin_pct),
-      min_hourly_rate_eur: Number((settings as any).min_hourly_rate_eur),
-      min_production_charge_eur: Number((settings as any).min_production_charge_eur),
-      min_order_value_eur: Number((settings as any).min_order_value_eur),
-    } : { currency: "EUR", min_margin_pct: 45, min_hourly_rate_eur: 8, min_production_charge_eur: 15, min_order_value_eur: 15 },
+    profit_protection: { currency: "EUR", min_margin_pct: 45, engine_version: PRICING_ENGINE_VERSION, note: "Pricing is computed deterministically by the server. Return technical estimates only." },
   };
   let parsed = await callAi(payload);
   parsed = enforceMinimums(parsed, settings);
-  const timeline = (["flexible","standard","urgent"].includes(String(meta.timeline)) ? String(meta.timeline) : "standard") as "flexible"|"standard"|"urgent";
-  const assigned = pickMachine(machines as any[], parsed, mode, timeline);
-  await applyDeterministicPricing(parsed, order, mode, timeline, { machines, materials, settings }, assigned);
+
+  // 5. Deterministic v2 pricing — replaces anything the AI returned for cost/price.
+  const priced = applyPricingV2(parsed, qty, useType, materialCode, materials);
+
+  // 6. Persist snapshot with locked_until = now + 15 days.
+  const insertRow = analysisInsertRowV2(parsed, order, file, service, useType, priced, geometryHash, fingerprint, normalizeMaterialCode(materialCode));
   const { data: saved, error: saveErr } = await supabaseAdmin
-    .from("project_analyses" as any).insert(analysisInsertRow(parsed, order, file, service, mode))
-    .select("*").single();
+    .from("project_analyses" as any).insert(insertRow as any).select("*").single();
   if (saveErr) throw saveErr;
   await wireBackToOrder(order.id, parsed, (saved as any)?.id);
-  return saved;
+  return { ...(saved as any), from_cache: false };
 }
 
+// Public entry point: called from the customer-facing quote page.
 export const runQuoteAnalysis = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ order_code: z.string().min(3).max(40), email: z.string().email() }).parse(d))
   .handler(async ({ data }) => {
@@ -646,11 +777,22 @@ export const runQuoteAnalysis = createServerFn({ method: "POST" })
       .select("id, order_code, customer_email, service, material, message, quantity, metadata, created_at").eq("order_code", data.order_code).maybeSingle();
     if (!order) throw new Error("Order not found");
     if (String(order.customer_email).toLowerCase() !== data.email.toLowerCase()) throw new Error("Not authorized");
-    if (Date.now() - new Date(order.created_at as any).getTime() > 24 * 60 * 60 * 1000) throw new Error("Analysis window expired");
-    const { data: existing } = await supabaseAdmin.from("project_analyses" as any).select("*").eq("order_id", order.id).order("created_at", { ascending: false }).limit(1);
-    if (existing && existing.length > 0) return existing[0];
+
+    // Prefer a locked snapshot if any exists for this order (idempotent under refresh/relogin).
+    const { data: existing } = await supabaseAdmin.from("project_analyses" as any)
+      .select("*").eq("order_id", order.id)
+      .not("quote_fingerprint", "is", null)
+      .order("created_at", { ascending: false }).limit(1);
+    const cur = (existing ?? [])[0] as any;
+    if (cur && cur.locked_until && new Date(cur.locked_until).getTime() > Date.now()) {
+      return { ...cur, from_cache: true };
+    }
+
     const { data: files } = await supabaseAdmin.from("order_files").select("*").eq("order_id", order.id).order("created_at").limit(1);
-    return await runAnalysisForOrder(order, files?.[0] ?? null, order.service ?? "3d_printing");
+    const meta = ((order as any)?.metadata ?? {}) as any;
+    const useType = normalizeUseType(meta.production_mode);
+    const materialCode = normalizeMaterialCode((order as any).material);
+    return await runAnalysisV2(order, files?.[0] ?? null, order.service ?? "3d_printing", useType, materialCode);
   });
 
 export const getOrderAnalyses = createServerFn({ method: "POST" })

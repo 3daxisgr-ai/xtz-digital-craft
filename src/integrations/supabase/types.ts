@@ -473,6 +473,7 @@ export type Database = {
           file_name: string
           file_path: string
           file_type: string | null
+          geometry_hash: string | null
           id: string
           metadata: Json
           order_id: string
@@ -485,6 +486,7 @@ export type Database = {
           file_name: string
           file_path: string
           file_type?: string | null
+          geometry_hash?: string | null
           id?: string
           metadata?: Json
           order_id: string
@@ -497,6 +499,7 @@ export type Database = {
           file_name?: string
           file_path?: string
           file_type?: string | null
+          geometry_hash?: string | null
           id?: string
           metadata?: Json
           order_id?: string
@@ -781,13 +784,23 @@ export type Database = {
           extrusion_length_m: number | null
           file_id: string | null
           file_name: string | null
+          geometry_hash: string | null
           id: string
+          internal_cost_eur: number | null
+          locked_until: string | null
+          machine_cost_eur: number | null
+          margin_pct: number | null
+          material_cost_eur: number | null
           order_id: string | null
+          preparation_fee_eur: number | null
           price_explanation: string | null
+          pricing_engine_version: string | null
           printability_score: number | null
           production_mode: string | null
+          profit_eur: number | null
           project_id: string | null
           quality_predictions: Json | null
+          quote_fingerprint: string | null
           quote_price_eur: number | null
           raw: Json | null
           recommended_infill_pct: number | null
@@ -801,6 +814,7 @@ export type Database = {
           support_hours: number | null
           support_volume_cm3: number | null
           travel_length_m: number | null
+          use_type: string | null
         }
         Insert: {
           actual_cost_eur?: number | null
@@ -825,13 +839,23 @@ export type Database = {
           extrusion_length_m?: number | null
           file_id?: string | null
           file_name?: string | null
+          geometry_hash?: string | null
           id?: string
+          internal_cost_eur?: number | null
+          locked_until?: string | null
+          machine_cost_eur?: number | null
+          margin_pct?: number | null
+          material_cost_eur?: number | null
           order_id?: string | null
+          preparation_fee_eur?: number | null
           price_explanation?: string | null
+          pricing_engine_version?: string | null
           printability_score?: number | null
           production_mode?: string | null
+          profit_eur?: number | null
           project_id?: string | null
           quality_predictions?: Json | null
+          quote_fingerprint?: string | null
           quote_price_eur?: number | null
           raw?: Json | null
           recommended_infill_pct?: number | null
@@ -845,6 +869,7 @@ export type Database = {
           support_hours?: number | null
           support_volume_cm3?: number | null
           travel_length_m?: number | null
+          use_type?: string | null
         }
         Update: {
           actual_cost_eur?: number | null
@@ -869,13 +894,23 @@ export type Database = {
           extrusion_length_m?: number | null
           file_id?: string | null
           file_name?: string | null
+          geometry_hash?: string | null
           id?: string
+          internal_cost_eur?: number | null
+          locked_until?: string | null
+          machine_cost_eur?: number | null
+          margin_pct?: number | null
+          material_cost_eur?: number | null
           order_id?: string | null
+          preparation_fee_eur?: number | null
           price_explanation?: string | null
+          pricing_engine_version?: string | null
           printability_score?: number | null
           production_mode?: string | null
+          profit_eur?: number | null
           project_id?: string | null
           quality_predictions?: Json | null
+          quote_fingerprint?: string | null
           quote_price_eur?: number | null
           raw?: Json | null
           recommended_infill_pct?: number | null
@@ -889,6 +924,7 @@ export type Database = {
           support_hours?: number | null
           support_volume_cm3?: number | null
           travel_length_m?: number | null
+          use_type?: string | null
         }
         Relationships: [
           {
