@@ -77,15 +77,22 @@ export function AIAnalysisCard({ a, loading, className, adminView, customerView 
   // quotation, never an AI-labelled analysis.
   if (customerView) {
     const price = Number(a.quote_price_eur ?? 0);
+    const lockedUntil = a.locked_until ? new Date(a.locked_until) : null;
+    const validDays = lockedUntil ? Math.max(0, Math.ceil((lockedUntil.getTime() - Date.now()) / (24 * 60 * 60 * 1000))) : null;
     return (
       <div className={"border border-white/10 rounded-lg p-5 md:p-6 bg-gradient-to-b from-white/[0.03] to-white/[0.01] " + (className ?? "")}>
-        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50">Estimated Quote</div>
+        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50">TOREO Quotation</div>
         <div className="mt-4">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">Estimated price</div>
+          <div className="text-[10px] font-mono uppercase tracking-widest text-white/40">Final price</div>
           <div className="mt-1 font-display text-4xl font-bold text-primary tabular-nums">€{price.toFixed(2)}</div>
         </div>
-        <div className="mt-5 text-[10px] font-mono uppercase tracking-widest text-white/30">
-          Preliminary TOREO estimate · Final quote confirmed by our engineering team.
+        {validDays !== null && (
+          <div className="mt-4 text-[11px] font-mono uppercase tracking-widest text-white/50">
+            Valid for {validDays} day{validDays === 1 ? "" : "s"}
+          </div>
+        )}
+        <div className="mt-4 text-[10px] font-mono uppercase tracking-widest text-white/30">
+          Price locked · Same file & options always return the same quote.
         </div>
       </div>
     );
