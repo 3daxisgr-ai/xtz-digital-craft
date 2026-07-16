@@ -46,7 +46,7 @@ export const Route = createFileRoute("/3d-printing-quote")({
 
 const ACCEPTED_EXT = [".stl", ".step", ".stp", ".3mf", ".obj"];
 
-type ProductionMode = "prototype" | "durable" | "decorative";
+type ProductionMode = "prototype" | "manufacture" | "durable" | "decorative";
 type Timeline = "flexible" | "standard" | "urgent";
 
 const schema = z.object({
