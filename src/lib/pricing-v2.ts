@@ -100,7 +100,7 @@ export function computePriceV2(inp: PricingV2Inputs): PricingV2Result {
  * The AI is NOT allowed to freely choose these — we clamp to allowed values.
  */
 export const ALLOWED_LAYER_HEIGHTS: readonly number[] = [0.08, 0.12, 0.16, 0.2, 0.24, 0.28];
-export const ALLOWED_INFILL = [10, 15, 20, 25, 30, 40, 50, 60, 80, 100] as const;
+export const ALLOWED_INFILL: readonly number[] = [10, 15, 20, 25, 30, 40, 50, 60, 80, 100];
 
 export type PrintProfile = {
   layer_height_mm: number;
