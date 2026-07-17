@@ -62,7 +62,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
         specs: [
           "Πηγή Fiber Laser 2kW",
           "Επιφάνεια εργασίας: 1500 × 3000 mm",
-          "Ακριβής έλεγχος CNC",
+          "Ακριβής ηλεκτροϋδραυλικός έλεγχος",
         ],
         groups: [
           {
@@ -82,17 +82,17 @@ function getItems(lang: "EN" | "GR"): Item[] {
       },
       {
         id: "press-brakes",
-        title: "DURMAPRESS CNC Πρέσες Στραντζαρίσματος",
+        title: "DURMAPRESS Πρέσες Στραντζαρίσματος",
         quantity: "2 Μονάδες",
         image: pressBrake.url,
-        alt: "DURMAPRESS CNC press brake bending sheet metal",
+        alt: "DURMAPRESS press brake bending sheet metal",
         description:
-          "Κάμψη λαμαρίνας υψηλής ακρίβειας με CNC για πρωτότυπα, custom εξαρτήματα και εξαρτήματα παραγωγής. 6+1 άξονες Ηλεκτροϋδραυλική με χειριστήριο Delem",
+          "Κάμψη λαμαρίνας υψηλής ακρίβειας με για πρωτότυπα, custom εξαρτήματα και εξαρτήματα παραγωγής. 6+1 άξονες Ηλεκτροϋδραυλική με χειριστήριο Delem (ηλεκτροϋδραυλικό)",
         groups: [
           {
             label: "Δυνατότητες",
             items: [
-              "CNC Ελεγχόμενη Κάμψη",
+              "Ελεγχόμενη Κάμψη",
               "Υψηλή Επαναληψιμότητα",
               "Ακριβής Διαμόρφωση",
               "Custom Μεταλλικά Εξαρτήματα",
@@ -165,7 +165,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
       specs: [
         "2kW Fiber Laser Source",
         "Working Area: 1500 × 3000 mm",
-        "Precision CNC Control",
+        "Precision Electro-hydraulic Control",
       ],
       groups: [
         {
@@ -185,17 +185,17 @@ function getItems(lang: "EN" | "GR"): Item[] {
     },
     {
       id: "press-brakes",
-      title: "DURMAPRESS CNC Press Brakes",
+      title: "DURMAPRESS Press Brakes",
       quantity: "2 Units",
       image: pressBrake.url,
-      alt: "DURMAPRESS CNC press brake bending sheet metal",
+      alt: "DURMAPRESS press brake bending sheet metal",
       description:
-        "High-precision CNC sheet metal bending for prototypes, custom parts and production components.",
+        "High-precision precision sheet metal bending for prototypes, custom parts and production components.",
       groups: [
         {
           label: "Capabilities",
           items: [
-            "CNC Controlled Bending",
+            "Controlled Bending",
             "High Repeatability",
             "Precision Forming",
             "Custom Metal Components",

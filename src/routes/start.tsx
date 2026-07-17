@@ -9,15 +9,15 @@ import laserAsset from "@/assets/fiber-laser-machine.jpg.asset.json";
 export const Route = createFileRoute("/start")({
   head: () => ({
     meta: [
-      { title: "Start a Manufacturing Project — 3D Printing, CNC & Laser | TOREO" },
-      { name: "description", content: "Start your custom parts manufacturing project with TOREO — choose 3D printing services, fiber laser cutting or sheet metal forming for rapid prototyping and production in Greece." },
-      { property: "og:title", content: "Start a Manufacturing Project — 3D Printing, CNC & Laser | TOREO" },
-      { property: "og:description", content: "Pick a service to begin: 3D printing services, fiber laser cutting or sheet metal — engineering-led custom parts manufacturing by TOREO." },
+      { title: "Start a Project — 3D Printing, Laser Cutting & Sheet Metal | TOREO" },
+      { name: "description", content: "Start your project with TOREO — choose 3D printing, fiber laser cutting or sheet metal bending & welding. Project requirements are reviewed before quotation." },
+      { property: "og:title", content: "Start a Project — 3D Printing, Laser Cutting & Sheet Metal | TOREO" },
+      { property: "og:description", content: "Pick a service to begin: 3D printing, fiber laser cutting or sheet metal — engineering-led custom parts by TOREO." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.toreo.gr/start" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Start a Manufacturing Project | TOREO" },
-      { name: "twitter:description", content: "Choose a service to start your rapid prototyping or production project with TOREO." },
+      { name: "twitter:title", content: "Start a Project | TOREO" },
+      { name: "twitter:description", content: "Choose a service to start your project with TOREO." },
     ],
     links: [{ rel: "canonical", href: "https://www.toreo.gr/start" }],
   }),

@@ -7,24 +7,24 @@ import { useI18n } from "@/components/xtz/i18n";
 export const Route = createFileRoute("/equipment")({
   head: () => ({
     meta: [
-      { title: "CNC Manufacturing Equipment & Technology | TOREO" },
+      { title: "Manufacturing Equipment & Technology | TOREO" },
       {
         name: "description",
         content:
-          "Discover TOREO's manufacturing equipment for rapid prototyping, 3D printing services and CNC machining — Bambu Lab H2S printers, AKJ1530F fiber laser, press brakes and welding stations in Thessaloniki, Greece.",
+          "TOREO's manufacturing equipment: Bambu Lab H2S 3D printers, AKJ1530F fiber laser, press brakes and welding stations in Thessaloniki, Greece.",
       },
-      { name: "keywords", content: "CNC manufacturing, 3D printing equipment, fiber laser cutting, rapid prototyping, sheet metal Thessaloniki, Greece" },
-      { property: "og:title", content: "CNC Manufacturing Equipment & Technology | TOREO" },
+      { name: "keywords", content: "3D printing equipment, fiber laser cutting, press brake, welding, sheet metal, Thessaloniki, Greece" },
+      { property: "og:title", content: "Manufacturing Equipment & Technology | TOREO" },
       {
         property: "og:description",
         content:
-          "Professional manufacturing equipment — 3D printing, fiber laser cutting, press brakes and welding — for prototype and custom parts manufacturing.",
+          "Professional equipment — 3D printing, fiber laser cutting, press brakes and welding — in our Thessaloniki workshop.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.toreo.gr/equipment" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "CNC Manufacturing Equipment & Technology | TOREO" },
-      { name: "twitter:description", content: "Professional equipment for 3D printing, fiber laser cutting and sheet metal manufacturing at TOREO." },
+      { name: "twitter:title", content: "Manufacturing Equipment & Technology | TOREO" },
+      { name: "twitter:description", content: "Equipment for 3D printing, fiber laser cutting and sheet metal at TOREO." },
     ],
     links: [
       { rel: "canonical", href: "https://www.toreo.gr/equipment" },
