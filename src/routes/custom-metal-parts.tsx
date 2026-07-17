@@ -5,7 +5,7 @@ import { buildServiceHead } from "@/lib/seo/service-head";
 const FAQ = [
   {
     q: "What kind of custom metal parts does TOREO make?",
-    a: "Brackets, enclosures, frames, plates, mounts, hardware, jigs, fixtures and bespoke assemblies — anything that can be cut, bent, machined or welded from sheet metal, plate, tube or billet.",
+    a: "Brackets, enclosures, frames, plates, mounts, hardware, jigs, fixtures and bespoke assemblies — anything that can be laser-cut, bent or welded from sheet metal.",
   },
   {
     q: "Which metals do you work with?",
