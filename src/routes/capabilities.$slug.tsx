@@ -129,8 +129,8 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Brackets and panels", "Enclosures and chassis", "Decorative metal", "Industrial components"],
     notes: "Send .dxf, .dwg or .step. Always include thickness and material grade.",
     seo: {
-      title: "Fiber Laser Cutting — CNC & Custom Parts | TOREO",
-      description: "Precision fiber laser cutting in steel, stainless and aluminum with ±0.05 mm tolerance — CNC manufacturing and custom parts manufacturing in Greece.",
+      title: "Fiber Laser Cutting — Custom Parts | TOREO",
+      description: "Precision fiber laser cutting in steel, stainless and aluminum. Tighter tolerances evaluated per project.",
     },
   },
   "sheet-metal-forming-welding": {
@@ -208,7 +208,7 @@ const details: Record<CapabilitySlug, Detail> = {
     intro:
       "Trusted manufacturing partners for series production. Scale from prototype to thousands of units — quality and logistics handled.",
     what: [
-      "Vetted partners for CNC, casting, injection molding and more.",
+      "Vetted partners for casting, injection molding and additional processes.",
       "Scale from hundreds to tens of thousands of units.",
       "Quality control and inspection on your behalf.",
       "Logistics, customs and delivery managed end to end.",
@@ -222,8 +222,8 @@ const details: Record<CapabilitySlug, Detail> = {
     ],
     applications: ["Series production", "OEM components", "Branded consumer products", "Replacement and spare parts"],
     seo: {
-      title: "Mass Production — CNC & Custom Parts Manufacturing | TOREO",
-      description: "Scale from prototype to series production with CNC machining, injection molding and trusted global partners — managed end to end by TOREO.",
+      title: "Global Manufacturing Network — Trusted Production Partners | TOREO",
+      description: "Scale from prototype to series production through TOREO's network of trusted production partners. Availability depends on the specific project.",
     },
   },
 };

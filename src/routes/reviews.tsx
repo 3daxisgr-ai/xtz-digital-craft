@@ -9,7 +9,7 @@ export const Route = createFileRoute("/reviews")({
   head: () => ({
     meta: [
       { title: "Customer Reviews — TOREO" },
-      { name: "description", content: "Verified reviews from TOREO manufacturing customers — 3D printing, CNC, laser cutting, and welding projects delivered across Greece and the EU." },
+      { name: "description", content: "Verified reviews from TOREO customers — 3D printing, fiber laser cutting, sheet metal and welding projects delivered across Greece and the EU." },
       { property: "og:title", content: "Customer Reviews — TOREO" },
       { property: "og:description", content: "Real feedback from real TOREO manufacturing projects." },
       { property: "og:type", content: "website" },
@@ -59,7 +59,7 @@ function ReviewsPage() {
           </div>
         )}
         <div className="mt-12">
-          <Link to="/start" className="inline-block bg-white text-black rounded-md px-6 py-3 text-sm font-semibold uppercase tracking-wider">Start Your Project</Link>
+          <Link to="/start-project" className="inline-block bg-white text-black rounded-md px-6 py-3 text-sm font-semibold uppercase tracking-wider">Upload CAD & Request a Quote</Link>
         </div>
       </main>
       <Footer />

@@ -1,10 +1,10 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 
 const SERVICES = [
-  { slug: "3d-printing", name: "3D Printing", description: "FDM & resin printing on Bambu Lab H2S and High-Detail 0.2 mm printers.", quote_url: "/3d-printing-quote" },
-  { slug: "cnc-machining", name: "CNC Machining", description: "Milling and turning of metals and engineering plastics.", quote_url: "/start-project" },
-  { slug: "rapid-prototyping", name: "Rapid Prototyping", description: "Fast-turnaround prototypes across 3D printing, CNC and sheet metal.", quote_url: "/start-project" },
-  { slug: "custom-metal-parts", name: "Custom Metal Parts", description: "Laser cutting, press-brake bending and welding for custom metal parts.", quote_url: "/start-project" },
+  { slug: "3d-printing", name: "3D Printing", description: "FDM 3D printing on Bambu Lab H2S printers for prototypes and functional parts.", quote_url: "/3d-printing-quote" },
+  { slug: "fiber-laser-cutting", name: "Fiber Laser Cutting", description: "Precision cutting of steel, stainless and aluminium sheet metal.", quote_url: "/start-project" },
+  { slug: "sheet-metal-fabrication", name: "Sheet Metal Bending & Welding", description: "Press-brake bending, MIG and TIG welding and assembly of custom metal parts.", quote_url: "/start-project" },
+  { slug: "cad-design-prototyping", name: "CAD Design & Prototyping", description: "CAD design and prototyping support from concept through manufacturable files.", quote_url: "/start-project" },
 ];
 
 export default defineTool({

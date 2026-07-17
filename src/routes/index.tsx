@@ -13,17 +13,17 @@ import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "TOREO — Prototyping, 3D Printing & CNC Manufacturing" },
-      { name: "description", content: "Engineering-led rapid prototyping, 3D printing, CNC machining and fiber laser cutting under one roof in Thessaloniki, Greece." },
-      { name: "keywords", content: "rapid prototyping, 3D printing services, CNC machining, CNC manufacturing, product development, prototype manufacturing, engineering services, custom parts manufacturing, Greece, Thessaloniki" },
+      { title: "TOREO — 3D Printing, Fiber Laser Cutting & Sheet Metal Fabrication" },
+      { name: "description", content: "Engineering-led 3D printing, fiber laser cutting, sheet metal bending, MIG/TIG welding and prototyping in Thessaloniki, Greece." },
+      { name: "keywords", content: "3D printing, fiber laser cutting, sheet metal bending, MIG welding, TIG welding, CAD design, prototyping, Thessaloniki, Greece" },
       { property: "og:title", content: "TOREO — Engineering-Led Manufacturing in Thessaloniki" },
-      { property: "og:description", content: "Prototyping, 3D printing, CNC machining and product development by TOREO in Greece." },
+      { property: "og:description", content: "3D printing, fiber laser cutting, sheet metal bending, welding and CAD design by TOREO in Greece." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.toreo.gr/" },
       { property: "og:image", content: `https://www.toreo.gr${heroLaser.url}` },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "TOREO — Rapid Prototyping, 3D Printing & CNC Manufacturing" },
-      { name: "twitter:description", content: "Engineering-led rapid prototyping, 3D printing services, CNC machining and product development by TOREO." },
+      { name: "twitter:title", content: "TOREO — 3D Printing, Fiber Laser Cutting & Sheet Metal Fabrication" },
+      { name: "twitter:description", content: "Engineering-led 3D printing, fiber laser cutting, sheet metal fabrication and prototyping by TOREO." },
       { name: "twitter:image", content: `https://www.toreo.gr${heroLaser.url}` },
     ],
     links: [
@@ -39,10 +39,10 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@type": "ItemList",
           itemListElement: [
-            { "@type": "Service", position: 1, name: "Rapid Prototyping & Product Development", description: "From sketch to working prototype in days — engineering services and DFM by TOREO.", provider: { "@type": "Organization", name: "TOREO" }, areaServed: ["GR", "EU"] },
-            { "@type": "Service", position: 2, name: "3D Printing Services", description: "Functional parts and short runs in engineering polymers — PLA, ABS, PETG, PC, TPU.", provider: { "@type": "Organization", name: "TOREO" }, areaServed: ["GR", "EU"] },
-            { "@type": "Service", position: 3, name: "CNC Manufacturing & Fiber Laser Cutting", description: "Micron-level precision cutting and CNC manufacturing on steel, stainless and aluminium.", provider: { "@type": "Organization", name: "TOREO" }, areaServed: ["GR", "EU"] },
-            { "@type": "Service", position: 4, name: "Sheet Metal Forming & Welding", description: "Bending, welding and assembly of finished custom metal parts.", provider: { "@type": "Organization", name: "TOREO" }, areaServed: ["GR", "EU"] },
+            { "@type": "Service", position: 1, name: "3D Printing", description: "Functional parts and short runs in engineering polymers — PLA, ABS, PETG, PC, TPU.", provider: { "@type": "Organization", name: "TOREO" }, areaServed: ["GR", "EU"] },
+            { "@type": "Service", position: 2, name: "Fiber Laser Cutting", description: "Precision cutting in steel, stainless and aluminium.", provider: { "@type": "Organization", name: "TOREO" }, areaServed: ["GR", "EU"] },
+            { "@type": "Service", position: 3, name: "Sheet Metal Bending & Welding", description: "Press-brake bending, MIG and TIG welding and assembly of finished metal parts.", provider: { "@type": "Organization", name: "TOREO" }, areaServed: ["GR", "EU"] },
+            { "@type": "Service", position: 4, name: "CAD Design & Prototyping", description: "CAD design and prototyping support from concept through manufacturable files.", provider: { "@type": "Organization", name: "TOREO" }, areaServed: ["GR", "EU"] },
           ],
         }),
       },

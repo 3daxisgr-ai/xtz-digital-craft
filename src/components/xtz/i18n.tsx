@@ -14,8 +14,8 @@ const en: Dict = {
   "nav.equipment": "Equipment",
   "nav.forum": "Forum",
   "nav.company": "Company",
-  "nav.inquiry": "Start a Project",
-  "nav.cta": "Start a Project",
+  "nav.inquiry": "Upload CAD & Request a Quote",
+  "nav.cta": "Upload CAD & Request a Quote",
 
   // Hero
   "intro.headline": "TOREO",
@@ -26,8 +26,8 @@ const en: Dict = {
   // Concept (what we do)
   "concept.kicker": "What we do",
   "concept.title": "We design, prototype and build real products.",
-  "concept.body": "Send us your idea, sketch or CAD file. We engineer it, prototype it, and manufacture the final part — fast.",
-  "concept.cta": "Start a Project",
+  "concept.body": "Send us your idea, sketch or CAD file. We engineer it, prototype it, and manufacture the final part.",
+  "concept.cta": "Upload CAD & Request a Quote",
 
   // Capabilities
   "cap.kicker": "Capabilities",
@@ -107,7 +107,7 @@ const en: Dict = {
   // Finale
   "finale.kicker": "Ready to build?",
   "finale.statement": "From concept to reality.",
-  "finale.cta": "Start a Project",
+  "finale.cta": "Upload CAD & Request a Quote",
   "finale.foot1": "© TOREO",
   "finale.foot2": "​",
   "finale.foot3": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
@@ -118,7 +118,7 @@ const en: Dict = {
   "about.title.l1": "A COMPLETE",
   "about.title.l2": "MANUFACTURING",
   "about.title.l3": "PARTNER.",
-  "about.body": "Not just laser shop. Not a print shop. A full-stack manufacturing partner taking projects from concept to scalable production — under one roof.",
+  "about.body": "Not just a laser shop. Not a print shop. A manufacturing partner taking projects from concept through prototype and finished part.",
   "about.specialize": "We specialize in",
 
   // How it works
@@ -146,12 +146,12 @@ const en: Dict = {
   "cta.lead": "START HERE.",
   "cta.body1": "Whether you have a drawing, an existing design or just an idea — we can help turn it into a real product.",
   "cta.body2": "From design and prototyping to manufacturing and series production, we are ready to help.",
-  "cta.button": "START YOUR PROJECT",
+  "cta.button": "UPLOAD CAD & REQUEST A QUOTE",
 
   // Capability page
   "capp.crumb.home": "Home",
   "capp.crumb.caps": "Capabilities",
-  "capp.cta.quote": "Request a Quote",
+  "capp.cta.quote": "Upload CAD & Request a Quote",
   "capp.cta.all": "All Capabilities",
   "capp.h.what": "What we do",
   "capp.h.materials": "Materials & Technologies",
@@ -204,8 +204,8 @@ const gr: Dict = {
   "nav.equipment": "ΕΞΟΠΛΙΣΜΟΣ",
   "nav.forum": "ΝΕΑ",
   "nav.company": "Η ΕΤΑΙΡΕΙΑ",
-  "nav.inquiry": "START PROJECT",
-  "nav.cta": "START PROJECT",
+  "nav.inquiry": "ΑΝΕΒΑΣΤΕ CAD & ΖΗΤΗΣΤΕ ΠΡΟΣΦΟΡΑ",
+  "nav.cta": "ΑΝΕΒΑΣΤΕ CAD & ΖΗΤΗΣΤΕ ΠΡΟΣΦΟΡΑ",
 
   "intro.headline": "ΑΠΟ ΤΗΝ ΙΔΕΑ ΣΤΗΝ ΠΡΑΓΜΑΤΙΚΟΤΗΤΑ",
   "intro.sub": "​",
@@ -214,8 +214,8 @@ const gr: Dict = {
 
   "concept.kicker": "Τι κάνουμε",
   "concept.title": "Σχεδιάζουμε, πρωτοτυποποιούμε και κατασκευάζουμε πραγματικά προϊόντα.",
-  "concept.body": "Στείλτε μας την ιδέα, το σκίτσο ή το αρχείο CAD σας. Το μελετάμε, το πρωτοτυποποιούμε και κατασκευάζουμε το τελικό εξάρτημα — γρήγορα.",
-  "concept.cta": "Ξεκινήστε Έργο",
+  "concept.body": "Στείλτε μας την ιδέα, το σκίτσο ή το αρχείο CAD σας. Το μελετάμε, το πρωτοτυποποιούμε και κατασκευάζουμε το τελικό εξάρτημα.",
+  "concept.cta": "Ανεβάστε CAD & Ζητήστε Προσφορά",
 
   "cap.kicker": "Δυνατότητες",
   "cap.title": "Έξι πράγματα που κάνουμε εξαιρετικά.",
@@ -289,7 +289,7 @@ const gr: Dict = {
 
   "finale.kicker": "Έτοιμοι να φτιάξετε κάτι;",
   "finale.statement": "Από την ιδέα στην πραγματικότητα.",
-  "finale.cta": "Ξεκινήστε το Έργο σας",
+  "finale.cta": "Ανεβάστε CAD & Ζητήστε Προσφορά",
   "finale.foot1": "© TOREO",
   "finale.foot2": "​",
   "finale.foot3": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
@@ -300,7 +300,7 @@ const gr: Dict = {
   "about.title.l1": "ΟΛΟΚΛΗΡΩΜΕΝΟΣ ΣΥΝΕΡΓΑΤΗΣ",
   "about.title.l2": "",
   "about.title.l3": "",
-  "about.body": "Δεν είμαστε ενα απλώ εργαστήριο laser. Δεν είμαστε ενα απλώ εργαστήριο 3D εκτυπώσεων. Είμαστε ένας ολοκληρωμένος συνεργάτης , που αναλαμβάνει έργα από την ιδέα έως την μαζική παραγωγή — όλα κάτω από μία στέγη.",
+  "about.body": "Δεν είμαστε ένα απλό εργαστήριο laser. Δεν είμαστε ένα απλό εργαστήριο 3D εκτυπώσεων. Είμαστε ένας κατασκευαστικός συνεργάτης που αναλαμβάνει έργα από την ιδέα, στο πρωτότυπο, μέχρι το τελικό εξάρτημα.",
   "about.specialize": "Εξειδικευόμαστε σε",
 
   // How it works
@@ -328,12 +328,12 @@ const gr: Dict = {
   "cta.lead": "ΞΕΚΙΝΗΣΤΕ ΕΔΩ.",
   "cta.body1": "Είτε έχετε σχέδιο, υπάρχουσα μελέτη ή απλώς μια ιδέα — μπορούμε να τη μετατρέψουμε σε πραγματικό προϊόν.",
   "cta.body2": "Από τον σχεδιασμό και την πρωτοτυποποίηση έως την κατασκευή και τη μαζική παραγωγή, είμαστε στη διάθεσή σας.",
-  "cta.button": "ΣΤΕΙΛΤΕ ΤΟ ΕΡΓΟ ΣΑΣ",
+  "cta.button": "ΑΝΕΒΑΣΤΕ CAD & ΖΗΤΗΣΤΕ ΠΡΟΣΦΟΡΑ",
 
   // Capability page
   "capp.crumb.home": "Αρχική",
   "capp.crumb.caps": "Δυνατότητες",
-  "capp.cta.quote": "Ζητήστε Προσφορά",
+  "capp.cta.quote": "Ανεβάστε CAD & Ζητήστε Προσφορά",
   "capp.cta.all": "Όλες οι Δυνατότητες",
   "capp.h.what": "Τι κάνουμε",
   "capp.h.materials": "ΥΛΙΚΑ & ΤΕΧΝΟΛΟΓΙΕΣ",

@@ -14,16 +14,16 @@ export const Route = createFileRoute("/company")({
   head: () => ({
     meta: [
       { title: "About TOREO — Engineering & Product Development in Greece" },
-      { name: "description", content: "TOREO is a Thessaloniki manufacturer offering engineering services, product development, 3D printing and CNC machining across Greece and Europe." },
-      { name: "keywords", content: "engineering services, product development, prototype manufacturing, custom parts manufacturing, CNC machining Greece, Thessaloniki manufacturing" },
+      { name: "description", content: "TOREO is a Thessaloniki manufacturer offering 3D printing, fiber laser cutting, sheet metal bending, welding and CAD design across Greece and Europe." },
+      { name: "keywords", content: "3D printing Greece, fiber laser cutting, sheet metal, welding, CAD design, Thessaloniki manufacturing" },
       { property: "og:title", content: "About TOREO — Engineering & Product Development in Greece" },
-      { property: "og:description", content: "Engineering ideas into reality through modern manufacturing — 3D printing, CNC, laser cutting and product development in Thessaloniki." },
+      { property: "og:description", content: "Modern manufacturing in Thessaloniki — 3D printing, fiber laser cutting, sheet metal and welding." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.toreo.gr/company" },
       { property: "og:image", content: `https://www.toreo.gr${heroLaser.url}` },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "About TOREO — Engineering & Product Development" },
-      { name: "twitter:description", content: "Modern manufacturing partner in Greece for prototyping, 3D printing, CNC and custom parts." },
+      { name: "twitter:description", content: "Manufacturing partner in Greece — 3D printing, fiber laser cutting, sheet metal and welding." },
       { name: "twitter:image", content: `https://www.toreo.gr${heroLaser.url}` },
     ],
     links: [
@@ -95,7 +95,7 @@ const en = {
   s5Body3: "By combining technology, craftsmanship, and problem solving, we aim to help transform ideas into successful products.",
   quote: "From the craftsmanship of the past to the manufacturing of the future.",
   quoteTag: "Our promise",
-  cta: "Start a Project",
+  cta: "Upload CAD & Request a Quote",
 };
 
 const gr: typeof en = {
@@ -143,7 +143,7 @@ const gr: typeof en = {
   s5Body3: "Συνδυάζοντας τεχνολογία, δεξιοτεχνία και επίλυση προβλημάτων, στόχος μας είναι να βοηθήσουμε στη μετατροπή των ιδεών σε επιτυχημένα προϊόντα.",
   quote: "Από τη δεξιοτεχνία του παρελθόντος, στην κατασκευή του μέλλοντος.",
   quoteTag: "Η δέσμευσή μας",
-  cta: "Ξεκινήστε Έργο",
+  cta: "Ανεβάστε CAD & Ζητήστε Προσφορά",
 };
 
 // Inline minimalist line icons (white strokes)

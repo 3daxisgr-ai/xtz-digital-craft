@@ -83,12 +83,10 @@ export function Footer() {
           <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 font-display text-base md:text-lg">
             {(lang === "GR"
               ? [
-                  { to: "/gr/cnc-machining" as const, label: "CNC Κατεργασίες" },
                   { to: "/gr/rapid-prototyping" as const, label: "Rapid Prototyping" },
                   { to: "/gr/custom-metal-parts" as const, label: "Custom Μεταλλικά Εξαρτήματα" },
                 ]
               : [
-                  { to: "/cnc-machining" as const, label: "CNC Machining" },
                   { to: "/rapid-prototyping" as const, label: "Rapid Prototyping" },
                   { to: "/custom-metal-parts" as const, label: "Custom Metal Parts" },
                 ]

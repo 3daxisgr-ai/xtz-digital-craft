@@ -7,8 +7,8 @@ export const Route = createFileRoute("/start-project")({
   head: () => ({
     meta: [
       { title: "Start a Project — Custom Parts & Prototype Manufacturing | TOREO" },
-      { name: "description", content: "Send TOREO your custom parts manufacturing or prototype project. Every inquiry is reviewed by an engineer and answered within one business day — 3D printing, CNC machining and laser cutting in Greece." },
-      { name: "keywords", content: "custom parts manufacturing, prototype manufacturing, engineering services, rapid prototyping Greece, CNC machining" },
+      { name: "description", content: "Upload your CAD, sketch or prototype and TOREO reviews every inquiry with an engineer before quotation — 3D printing, fiber laser cutting, sheet metal bending and welding in Greece." },
+      { name: "keywords", content: "custom parts, prototype manufacturing, 3D printing Greece, fiber laser cutting, sheet metal, welding" },
       { property: "og:title", content: "Start a Project — Custom Parts & Prototype Manufacturing | TOREO" },
       { property: "og:description", content: "Send TOREO your project — every inquiry is reviewed by an engineer and answered within one business day." },
       { property: "og:type", content: "website" },
