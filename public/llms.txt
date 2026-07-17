@@ -1,13 +1,13 @@
 # TOREO
 
-> Engineering-led manufacturing partner in Thessaloniki, Greece. Rapid prototyping, 3D printing services, CNC machining, fiber laser cutting, sheet metal forming and welding — from concept to scalable production, under one roof.
+> Engineering-led manufacturing partner in Thessaloniki, Greece. 3D printing, fiber laser cutting, sheet metal bending, MIG/TIG welding, CAD design and prototyping — from concept through manufacturable parts.
 
 ## Pages
 
-- [Home](https://www.toreo.gr/): Overview of TOREO — design, prototype, manufacture, deliver.
+- [Home](https://www.toreo.gr/): 3D printing, fiber laser cutting, sheet metal bending, welding, CAD design and prototyping.
 - [Start a Project](https://www.toreo.gr/start): Pick a service to begin your project.
-- [Custom Inquiry](https://www.toreo.gr/start-project): Send us your sketch, CAD file or prototype for an engineer-reviewed quote.
-- [3D Printing Instant Quote](https://www.toreo.gr/3d-printing-quote): Upload STL/STEP for an AI-assisted instant quote.
+- [Custom Inquiry](https://www.toreo.gr/start-project): Upload CAD and request a quote — every inquiry reviewed by an engineer.
+- [3D Printing Instant Quote](https://www.toreo.gr/3d-printing-quote): Upload STL/STEP for an AI-assisted 3D printing quote.
 - [Track an Order](https://www.toreo.gr/track): Look up order status with your Order ID and email.
 - [Company](https://www.toreo.gr/company): Who we are and how we work.
 - [Equipment](https://www.toreo.gr/equipment): Machines and technology in our workshop.
@@ -17,7 +17,6 @@
 
 ## Services
 
-- [CNC Machining](https://www.toreo.gr/cnc-machining)
 - [Rapid Prototyping](https://www.toreo.gr/rapid-prototyping)
 - [Custom Metal Parts](https://www.toreo.gr/custom-metal-parts)
 
@@ -32,6 +31,5 @@
 
 ## Greek Locale
 
-- [CNC Machining (GR)](https://www.toreo.gr/gr/cnc-machining)
 - [Rapid Prototyping (GR)](https://www.toreo.gr/gr/rapid-prototyping)
 - [Custom Metal Parts (GR)](https://www.toreo.gr/gr/custom-metal-parts)
