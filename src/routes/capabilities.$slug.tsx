@@ -114,7 +114,7 @@ const details: Record<CapabilitySlug, Detail> = {
     intro:
       "Precision fiber laser cutting for sheet metal — clean edges, tight tolerances, ready for forming, welding or finishing.",
     what: [
-      "High-precision cuts down to ±0.05 mm tolerance.",
+      "Precise cuts with tolerance evaluated per project.",
       "Industrial sheet sizes and complex contours.",
       "Minimal heat-affected zone and clean edges.",
       "Nesting and material optimization.",
@@ -249,7 +249,7 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
   "fiber-laser-cutting": {
     intro: "Ακριβής κοπή fiber laser για λαμαρίνα , έτοιμη για στραντζάρισμα, συγκόλληση ή φινίρισμα.",
     what: [
-      "Υψηλή ακρίβεια με ανοχή έως ±0.05 mm.",
+      "Ακρίβεια που αξιολογείται ανά έργο, ανάλογα με υλικό και πάχος.",
       "Βιομηχανικά μεγέθη φύλλων και πολύπλοκα περιγράμματα.",
       "Ελάχιστη θερμικά επηρεαζόμενη ζώνη και καθαρές ακμές.",
       "Nesting και βελτιστοποίηση υλικού.",

@@ -29,24 +29,24 @@ function getItems(lang: "EN" | "GR"): Item[] {
       {
         id: "bambu",
         title: "Bambu Lab H2S",
-        quantity: "4 ΜΟΝΆΔΕΣ",
+        quantity: "3 ΜΟΝΆΔΕΣ",
         image: bambu.url,
         alt: "Bambu Lab H2S 3D printer",
         description:
-          "Επαγγελματική 3D εκτύπωση υψηλής ταχύτητας για πρωτότυπα, λειτουργικά εξαρτήματα και μικρή παραγωγή.",
+          "Επαγγελματική 3D εκτύπωση για πρωτότυπα, λειτουργικά εξαρτήματα και μικρή παραγωγή. 2 μονάδες με ακροφύσιο 0.4 mm και 1 μονάδα με ακροφύσιο 0.2 mm για λεπτομέρεια.",
         specs: [
-          "Μέγιστη εκτύπωση: 340× 320 × 340 mm",
-          "Ακρίβεια: ±0.1 mm",
+          "Μέγιστη εκτύπωση: 340 × 320 × 340 mm",
+          "2× ακροφύσιο 0.4 mm · 1× ακροφύσιο 0.2 mm",
           "Πολλαπλά υλικά & χρώματα (AMS 2 Pro)",
         ],
         groups: [
           {
             label: "Δυνατότητες",
             items: [
-              "πολύχρωμη εκτύπωση",
+              "Πολύχρωμη εκτύπωση",
               "Υψηλή ταχύτητα",
               "Πρωτότυπα μηχανικής",
-              "Έτοιμα για παραγωγή εξαρτήματα",
+              "Λεπτομέρεια με ακροφύσιο 0.2 mm",
             ],
           },
         ],
@@ -132,14 +132,14 @@ function getItems(lang: "EN" | "GR"): Item[] {
     {
       id: "bambu",
       title: "Bambu Lab H2S",
-      quantity: "2 Units",
+      quantity: "3 Units",
       image: bambu.url,
       alt: "Bambu Lab H2S 3D printer",
       description:
-        "High-speed professional 3D printing for prototypes, functional parts and low-volume production.",
+        "Professional 3D printing for prototypes, functional parts and low-volume production. 2 units with a 0.4 mm nozzle and 1 unit with a 0.2 mm nozzle for finer detail.",
       specs: [
-        "Build Volume: 350 × 320 × 325 mm",
-        "Accuracy: ±0.1 mm",
+        "Build Volume: 340 × 320 × 340 mm",
+        "2× 0.4 mm nozzle · 1× 0.2 mm nozzle",
         "Multi-material & multi-color (AMS 2 Pro)",
       ],
       groups: [
@@ -149,7 +149,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
             "Multi-color printing",
             "High-speed printing",
             "Engineering prototypes",
-            "Production-ready parts",
+            "Fine-detail 0.2 mm nozzle",
           ],
         },
       ],

@@ -85,7 +85,7 @@ function Page() {
       why={[
         { title: "Right process, first time", body: "We pick the manufacturing route that fits your part — not the one we want to upsell." },
         { title: "DFM included", body: "Every quote includes design-for-manufacture notes so the next revision is cheaper and faster." },
-        { title: "Engineer reviewed", body: "Every inquiry is reviewed by an engineer before quotation." },
+        { title: "Reviewed by our production team", body: "Every inquiry is reviewed by our production team before quotation." },
         { title: "Production-ready", body: "Prototypes designed with scale-up in mind, so you don't restart at production." },
       ]}
       faqTitle="Frequently asked questions"

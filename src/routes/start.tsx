@@ -146,9 +146,8 @@ function StartPage() {
                 : "Don't see what you need? Contact us and we will help you directly."}
             </p>
             <a
-              href="https://mail.google.com/mail/u/0/#inbox?compose=GTvVlcSGMTCKJLvnQhClPDqtcHPPlxjhRPdDrBRcztPMCChwXVBflsktlkxnJKVGMnXMMBPvxxmpq"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="mailto:info@toreo.gr"
+              rel="noopener"
               className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm text-foreground/60 hover:text-foreground hover:border-primary hover:blue-glow transition-all duration-300"
             >
               {isGR ? "Επικοινωνία" : "Contact Us"}
