@@ -84,7 +84,7 @@ function Page() {
       whyTitle="Why TOREO for custom metal parts"
       why={[
         { title: "In-house fabrication", body: "Cutting, bending and welding on our own equipment." },
-        { title: "Engineer reviewed", body: "Every inquiry is reviewed by an engineer before quotation." },
+        { title: "Reviewed by our production team", body: "Every inquiry is reviewed by our production team before quotation." },
         { title: "Honest lead times", body: "Lead time depends on material, quantity and complexity — we commit to dates we can hit." },
         { title: "EU coverage", body: "Tracked delivery across the EU with documentation." },
       ]}

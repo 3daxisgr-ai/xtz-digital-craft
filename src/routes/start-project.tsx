@@ -7,15 +7,15 @@ export const Route = createFileRoute("/start-project")({
   head: () => ({
     meta: [
       { title: "Start a Project — Custom Parts & Prototype Manufacturing | TOREO" },
-      { name: "description", content: "Upload your CAD, sketch or prototype and TOREO reviews every inquiry with an engineer before quotation — 3D printing, fiber laser cutting, sheet metal bending and welding in Greece." },
+      { name: "description", content: "Upload your CAD, sketch or prototype and TOREO's production team reviews every inquiry before quotation — 3D printing, fiber laser cutting, sheet metal bending and welding in Greece." },
       { name: "keywords", content: "custom parts, prototype manufacturing, 3D printing Greece, fiber laser cutting, sheet metal, welding" },
       { property: "og:title", content: "Start a Project — Custom Parts & Prototype Manufacturing | TOREO" },
-      { property: "og:description", content: "Send TOREO your project — every inquiry is reviewed by an engineer and answered within one business day." },
+      { property: "og:description", content: "Send TOREO your project — every inquiry is reviewed by our production team and answered within one business day." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.toreo.gr/start-project" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Start a Project | TOREO" },
-      { name: "twitter:description", content: "Send your custom parts or prototype project — engineer reviewed within one business day." },
+      { name: "twitter:description", content: "Send your custom parts or prototype project — reviewed by our production team within one business day." },
     ],
     links: [
       { rel: "canonical", href: "https://www.toreo.gr/start-project" },

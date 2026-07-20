@@ -18,7 +18,7 @@ const EN: Category[] = [
     id: "laser-cutting",
     label: "Laser Cutting",
     items: [
-      { q: "What tolerances do you hold?", a: "Typical fiber-laser tolerance is ±0.05 mm depending on material and thickness." },
+      { q: "What tolerances do you hold?", a: "Achievable tolerance depends on material and thickness. Tight tolerances are evaluated per project — send your drawing and we will confirm." },
       { q: "Which file types do you accept?", a: ".dxf, .dwg, or .step. Specify material, thickness and quantity." },
       { q: "What is the max thickness?", a: "Up to industrial standard for steel, stainless and aluminum. Send specs and we'll confirm." },
     ],
@@ -60,7 +60,7 @@ const EN: Category[] = [
     id: "pricing",
     label: "Pricing Process",
     items: [
-      { q: "How do I get a quote?", a: "Send the inquiry form. An engineer reviews every request and replies within one business day." },
+      { q: "How do I get a quote?", a: "Send the inquiry form. Every request is reviewed by our production team and we reply within one business day." },
       { q: "Is quoting automatic?", a: "No. Every quote is reviewed manually so we can advise on the best approach." },
     ],
   },
@@ -86,7 +86,7 @@ const GR: Category[] = [
     id: "laser-cutting",
     label: "ΚΟΠΗ LASER",
     items: [
-      { q: "​Τι επίπεδο ακρίβειας προσφέρουμε;", a: "Τυπικά ±0.05 mm ανάλογα με υλικό και πάχος." },
+      { q: "​Τι επίπεδο ακρίβειας προσφέρουμε;", a: "Η ακρίβεια εξαρτάται από το υλικό και το πάχος. Οι στενές ανοχές αξιολογούνται ανά έργο — στείλτε το σχέδιο και θα επιβεβαιώσουμε." },
       { q: "Τι αρχεία δέχεστε;", a: ".dxf, .dwg ή .step. Δηλώστε υλικό, πάχος και ποσότητα." },
     ],
   },
@@ -124,7 +124,7 @@ const GR: Category[] = [
     id: "pricing",
     label: "ΠΡΟΣΦΟΡΑ",
     items: [
-      { q: "Πώς στέλνω προσφορά;", a: "συμπληρώνετε τη φόρμα αιτήματος. O μηχανικός μας απαντά εντός μιας εργάσιμης ημέρας" },
+      { q: "Πώς στέλνω προσφορά;", a: "Συμπληρώνετε τη φόρμα αιτήματος. Η ομάδα παραγωγής μας αξιολογεί κάθε αίτημα και απαντά εντός μίας εργάσιμης ημέρας." },
     ],
   },
 ];

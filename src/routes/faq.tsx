@@ -8,7 +8,7 @@ const FAQ_QA: { q: string; a: string }[] = [
   { q: "Is 3D printing only for prototypes?", a: "No. We print prototypes, functional end-use parts, custom components, and small to medium production runs." },
   { q: "Which file types do you accept for 3D printing?", a: ".stl, .step (.stp), or .obj. Include quantity and any surface finish requirements." },
   { q: "How big can you print?", a: "Most parts fit our build volumes; larger parts are split and bonded. Send dimensions and we'll confirm." },
-  { q: "What tolerances do you hold for laser cutting?", a: "Typical fiber-laser tolerance is ±0.05 mm depending on material and thickness. Tighter tolerances are evaluated individually per project." },
+  { q: "What tolerances do you hold for laser cutting?", a: "Achievable tolerance depends on material and thickness. Tight tolerances are evaluated individually per project — send your drawing and we will confirm." },
   { q: "Which file types do you accept for laser cutting?", a: ".dxf, .dwg, or .step. Specify material, thickness and quantity." },
   { q: "Which metals do you cut?", a: "Mild steel, stainless steel, aluminum, brass. Copper on request." },
   { q: "Which polymers do you print?", a: "PLA, ABS, PETG, Nylon (PA), PC, plus TPU. Additional materials evaluated per project." },
@@ -17,7 +17,7 @@ const FAQ_QA: { q: string; a: string }[] = [
   { q: "Do I need a finished design first?", a: "No. We can start from a sketch or idea and develop it into a manufacturable design." },
   { q: "Do you offer finishing such as powder coating or anodising?", a: "Additional finishing options may be available through selected production partners. Availability depends on the specific project — please describe the finish you need and we will confirm." },
   { q: "Can you do large volumes?", a: "For larger series, production can be handled either in-house or through trusted partners in our network, depending on the project." },
-  { q: "How do I get a quote?", a: "Send the inquiry form. An engineer reviews every request and replies within one business day." },
+  { q: "How do I get a quote?", a: "Send the inquiry form. Every request is reviewed by our production team and we reply within one business day." },
 ];
 
 export const Route = createFileRoute("/faq")({
