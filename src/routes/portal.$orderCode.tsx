@@ -18,6 +18,7 @@ import {
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { StatusBadge, StatusProgress } from "@/components/portal/StatusProgress";
 const ModelViewer = lazy(() => import("@/components/factory/ModelViewer"));
+import { RequestSummary } from "@/components/xtz/RequestSummary";
 
 
 export const Route = createFileRoute("/portal/$orderCode")({
