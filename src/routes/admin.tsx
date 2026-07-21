@@ -34,6 +34,7 @@ import {
 import { STATUS_FLOW, STATUS_LABEL } from "@/lib/api/orders.functions";
 import { panelListAnalyses, panelAnalyzeFile, panelApplyOverride, panelListMachines } from "@/lib/api/factory.functions";
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
+import { RequestSummary } from "@/components/xtz/RequestSummary";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -500,7 +501,12 @@ function OrderDetail({ code, onBack }: { code: string; onBack: () => void }) {
         ))}
       </div>
 
-      {tab === "customer" && <TabCustomer o={o} patch={patch} />}
+      {tab === "customer" && (
+        <div className="space-y-4">
+          <RequestSummary metadata={(o as any).metadata} />
+          <TabCustomer o={o} patch={patch} />
+        </div>
+      )}
       {tab === "ai" && <TabAI code={code} orderMeta={o} />}
       {tab === "files" && <TabFiles d={d} code={code} refresh={refresh} />}
       {tab === "updates" && <TabUpdates d={d} code={code} refresh={refresh} />}

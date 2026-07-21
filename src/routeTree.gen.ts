@@ -14,6 +14,7 @@ import { Route as StartProjectRouteImport } from './routes/start-project'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ReviewsRouteImport } from './routes/reviews'
+import { Route as RequestRouteImport } from './routes/request'
 import { Route as RapidPrototypingRouteImport } from './routes/rapid-prototyping'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -69,6 +70,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ReviewsRoute = ReviewsRouteImport.update({
   id: '/reviews',
   path: '/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RequestRoute = RequestRouteImport.update({
+  id: '/request',
+  path: '/request',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RapidPrototypingRoute = RapidPrototypingRouteImport.update({
@@ -245,6 +251,7 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/portal': typeof PortalRouteWithChildren
   '/rapid-prototyping': typeof RapidPrototypingRoute
+  '/request': typeof RequestRoute
   '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
@@ -283,6 +290,7 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/portal': typeof PortalRouteWithChildren
   '/rapid-prototyping': typeof RapidPrototypingRoute
+  '/request': typeof RequestRoute
   '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
@@ -322,6 +330,7 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/portal': typeof PortalRouteWithChildren
   '/rapid-prototyping': typeof RapidPrototypingRoute
+  '/request': typeof RequestRoute
   '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/start': typeof StartRoute
@@ -362,6 +371,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/portal'
     | '/rapid-prototyping'
+    | '/request'
     | '/reviews'
     | '/sitemap.xml'
     | '/start'
@@ -400,6 +410,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/portal'
     | '/rapid-prototyping'
+    | '/request'
     | '/reviews'
     | '/sitemap.xml'
     | '/start'
@@ -438,6 +449,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/portal'
     | '/rapid-prototyping'
+    | '/request'
     | '/reviews'
     | '/sitemap.xml'
     | '/start'
@@ -477,6 +489,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   PortalRoute: typeof PortalRouteWithChildren
   RapidPrototypingRoute: typeof RapidPrototypingRoute
+  RequestRoute: typeof RequestRoute
   ReviewsRoute: typeof ReviewsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StartRoute: typeof StartRoute
@@ -536,6 +549,13 @@ declare module '@tanstack/react-router' {
       path: '/reviews'
       fullPath: '/reviews'
       preLoaderRoute: typeof ReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/request': {
+      id: '/request'
+      path: '/request'
+      fullPath: '/request'
+      preLoaderRoute: typeof RequestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rapid-prototyping': {
@@ -783,6 +803,7 @@ const rootRouteChildren: RootRouteChildren = {
   McpRoute: McpRoute,
   PortalRoute: PortalRouteWithChildren,
   RapidPrototypingRoute: RapidPrototypingRoute,
+  RequestRoute: RequestRoute,
   ReviewsRoute: ReviewsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StartRoute: StartRoute,

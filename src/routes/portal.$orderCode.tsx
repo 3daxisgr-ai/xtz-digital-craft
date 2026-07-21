@@ -18,6 +18,7 @@ import {
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { StatusBadge, StatusProgress } from "@/components/portal/StatusProgress";
 const ModelViewer = lazy(() => import("@/components/factory/ModelViewer"));
+import { RequestSummary } from "@/components/xtz/RequestSummary";
 
 
 export const Route = createFileRoute("/portal/$orderCode")({
@@ -139,6 +140,9 @@ function PortalOrderPage() {
             <StatusProgress status={order.status} />
           </div>
         </section>
+
+        <RequestSummary metadata={(order as any).metadata} />
+
 
         <div className="grid md:grid-cols-2 gap-6">
           <section className="border border-white/10 bg-white/[0.02] rounded-lg p-5">
