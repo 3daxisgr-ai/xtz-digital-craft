@@ -500,7 +500,12 @@ function OrderDetail({ code, onBack }: { code: string; onBack: () => void }) {
         ))}
       </div>
 
-      {tab === "customer" && <TabCustomer o={o} patch={patch} />}
+      {tab === "customer" && (
+        <div className="space-y-4">
+          <RequestSummary metadata={(o as any).metadata} />
+          <TabCustomer o={o} patch={patch} />
+        </div>
+      )}
       {tab === "ai" && <TabAI code={code} orderMeta={o} />}
       {tab === "files" && <TabFiles d={d} code={code} refresh={refresh} />}
       {tab === "updates" && <TabUpdates d={d} code={code} refresh={refresh} />}
