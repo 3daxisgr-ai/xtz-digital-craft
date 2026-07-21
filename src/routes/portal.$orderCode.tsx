@@ -141,6 +141,9 @@ function PortalOrderPage() {
           </div>
         </section>
 
+        <RequestSummary metadata={(order as any).metadata} />
+
+
         <div className="grid md:grid-cols-2 gap-6">
           <section className="border border-white/10 bg-white/[0.02] rounded-lg p-5">
             <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40 mb-3">Quote</div>
