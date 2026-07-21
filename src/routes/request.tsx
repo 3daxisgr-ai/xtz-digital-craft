@@ -906,7 +906,7 @@ function Text({ label, name, values, onChange, placeholder, type = "text" }: any
     </div>
   );
 }
-function TextCtl({ label, v, onChange, type = "text", placeholder, autoComplete }: any) {
+function TextCtl({ label, v, onChange, type = "text", placeholder, autoComplete }: { label: string; v: string; onChange: (val: string) => void; type?: string; placeholder?: string; autoComplete?: string }) {
   return (
     <div>
       <FieldLabel>{label}</FieldLabel>
