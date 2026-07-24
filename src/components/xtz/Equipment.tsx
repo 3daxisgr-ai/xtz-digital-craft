@@ -33,7 +33,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
         image: bambu.url,
         alt: "Bambu Lab H2S 3D printer",
         description:
-          "Επαγγελματική 3D εκτύπωση για πρωτότυπα, λειτουργικά εξαρτήματα και μικρή παραγωγή. 2 μονάδες με ακροφύσιο 0.4 mm και 1 μονάδα με ακροφύσιο 0.2 mm για λεπτομέρεια.",
+          "Ο εξοπλισμός 3D εκτύπωσης χρησιμοποιείται για λειτουργικά πρωτότυπα, ανταλλακτικά, βάσεις, καλύμματα, βοηθητικά εξαρτήματα παραγωγής και εξαρτήματα τελικής χρήσης σε μικρές σειρές. Το υλικό και οι ρυθμίσεις εκτύπωσης επιλέγονται ανάλογα με τη χρήση και τις απαιτήσεις κάθε εξαρτήματος.",
         specs: [
           "Μέγιστη εκτύπωση: 340 × 320 × 340 mm",
           "2× ακροφύσιο 0.4 mm · 1× ακροφύσιο 0.2 mm",
@@ -41,12 +41,13 @@ function getItems(lang: "EN" | "GR"): Item[] {
         ],
         groups: [
           {
-            label: "Δυνατότητες",
+            label: "Τυπικές εφαρμογές",
             items: [
-              "Πολύχρωμη εκτύπωση",
-              "Υψηλή ταχύτητα",
-              "Πρωτότυπα μηχανικής",
-              "Λεπτομέρεια με ακροφύσιο 0.2 mm",
+              "Λειτουργικά πρωτότυπα",
+              "Ανταλλακτικά",
+              "Βάσεις & καλύμματα",
+              "Βοηθητικά παραγωγής",
+              "Μικρές σειρές τελικής χρήσης",
             ],
           },
         ],
@@ -58,27 +59,28 @@ function getItems(lang: "EN" | "GR"): Item[] {
         image: laserMachine.url,
         alt: "AKJ1530F fiber laser cutter",
         description:
-          "Κοπή μετάλλων υψηλής ακρίβειας για πρωτότυπα, custom εξαρτήματα και παραγωγή.",
+          "Το fiber laser χρησιμοποιείται για την κοπή λαμαρίνας με καθαρές ακμές και σταθερή επαναληψιμότητα. Είναι κατάλληλο για εξαρτήματα, βάσεις, καλύμματα, πάνελ, κουτιά και custom μεταλλικά μέρη που κατασκευάζονται σύμφωνα με τα σχέδια του πελάτη.",
         specs: [
-          "Πηγή Fiber Laser 2kW",
+          "Πηγή Fiber Laser 2 kW",
           "Επιφάνεια εργασίας: 1500 × 3000 mm",
-          "Ακριβής ηλεκτροϋδραυλικός έλεγχος",
+          "Σταθερή και ακριβής κοπή λαμαρίνας, κατάλληλη για μεμονωμένα εξαρτήματα καθώς και για μικρές ή μεγαλύτερες σειρές παραγωγής",
+          "Αποδεκτά αρχεία: DXF, DWG",
         ],
         groups: [
           {
-            label: "ΥΛΙΚΑ",
+            label: "Υλικά",
             items: ["Χάλυβας", "Ανοξείδωτος Χάλυβας", "Αλουμίνιο", "Ορείχαλκος", "Χαλκός"],
           },
         ],
       },
       {
         id: "fiber-laser-2",
-        title: "Σύστημα Κοπής CO2 Laser",
+        title: "Σύστημα Κοπής CO₂ Laser",
         quantity: "1 Σύστημα",
         image: laserWorkshop.url,
-        alt: "Fiber laser cutting workshop",
+        alt: "CO2 laser cutting workshop",
         description:
-          "Επιπλέον δυναμικότητα κοπής co2 laser - Χάραξη με λέιζερ για αποδοτική παραγωγή και γρήγορους χρόνους παράδοσης.",
+          "Το CO₂ laser χρησιμοποιείται για κοπή και χάραξη μη μεταλλικών υλικών. Είναι κατάλληλο για ταμπέλες, καλύμματα, πατρόν, διακοσμητικά εξαρτήματα και custom μέρη από υλικά όπως ακρυλικό και ξύλο.",
       },
       {
         id: "press-brakes",
@@ -87,16 +89,20 @@ function getItems(lang: "EN" | "GR"): Item[] {
         image: pressBrake.url,
         alt: "DURMAPRESS press brake bending sheet metal",
         description:
-          "Κάμψη λαμαρίνας υψηλής ακρίβειας με για πρωτότυπα, custom εξαρτήματα και εξαρτήματα παραγωγής. 6+1 άξονες Ηλεκτροϋδραυλική με χειριστήριο Delem (ηλεκτροϋδραυλικό)",
+          "Η πρέσα στραντζαρίσματος χρησιμοποιείται για την κάμψη και διαμόρφωση μεταλλικών εξαρτημάτων σε συγκεκριμένες γωνίες και διαστάσεις. Είναι κατάλληλη για βάσεις, κουτιά, καλύμματα, στηρίγματα και custom εξαρτήματα από λαμαρίνα.",
+        specs: [
+          "Κάμψη λαμαρίνας και διαμόρφωση με ελεγχόμενες γωνίες και σταθερή επαναληψιμότητα",
+          "Ηλεκτροϋδραυλικό χειριστήριο Delem, 6+1 άξονες",
+        ],
         groups: [
           {
-            label: "Δυνατότητες",
+            label: "Τυπικές εφαρμογές",
             items: [
-              "Ελεγχόμενη Κάμψη",
-              "Υψηλή Επαναληψιμότητα",
-              "Ακριβής Διαμόρφωση",
-              "Custom Μεταλλικά Εξαρτήματα",
-              "Σειρές Παραγωγής",
+              "Βάσεις & στηρίγματα",
+              "Κουτιά & καλύμματα",
+              "Πάνελ & πλαίσια",
+              "Custom εξαρτήματα λαμαρίνας",
+              "Σειρές παραγωγής",
             ],
           },
         ],
@@ -108,7 +114,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
         image: shear.url,
         alt: "Hydraulic sheet metal shear",
         description:
-          "Ακριβής και αποδοτική κοπή λαμαρίνας για έργα μεταλλικών κατασκευών.",
+          "Ευθεία κοπή λαμαρίνας σε λωρίδες και πλάκες, για την προετοιμασία υλικού πριν από τις επόμενες εργασίες κατεργασίας.",
       },
       {
         id: "welding",
@@ -117,11 +123,11 @@ function getItems(lang: "EN" | "GR"): Item[] {
         image: welding.url,
         alt: "Welding workshop",
         description:
-          "Επαγγελματικές υπηρεσίες συγκόλλησης και συναρμολόγησης για custom έργα κατασκευής.",
+          "Ο εξοπλισμός συγκόλλησης χρησιμοποιείται για τη συναρμολόγηση μεταλλικών εξαρτημάτων και την ολοκλήρωση custom μεταλλικών κατασκευών. Η μέθοδος συγκόλλησης επιλέγεται ανάλογα με το υλικό, το πάχος, τη γεωμετρία και τις απαιτήσεις κάθε έργου.",
         groups: [
           {
-            label: "Δυνατότητες",
-            items: ["MIG Welding", "TIG Welding", "ΣΥΓΚΟΛΛΗΣΗ LASER", "ΠΟΝΤΑ"],
+            label: "Διαθέσιμες μέθοδοι",
+            items: ["MIG", "TIG", "Συγκόλληση Laser", "Πονταρίσματα (RSW)"],
           },
         ],
       },
@@ -132,11 +138,11 @@ function getItems(lang: "EN" | "GR"): Item[] {
     {
       id: "bambu",
       title: "Bambu Lab H2S",
-      quantity: "3 Units",
+      quantity: "3 UNITS",
       image: bambu.url,
       alt: "Bambu Lab H2S 3D printer",
       description:
-        "Professional 3D printing for prototypes, functional parts and low-volume production. 2 units with a 0.4 mm nozzle and 1 unit with a 0.2 mm nozzle for finer detail.",
+        "Our 3D printing equipment is used for functional prototypes, replacement parts, brackets, covers, production aids, and small-series end-use components. The material and print settings are selected according to the intended use and requirements of each part.",
       specs: [
         "Build Volume: 340 × 320 × 340 mm",
         "2× 0.4 mm nozzle · 1× 0.2 mm nozzle",
@@ -144,12 +150,13 @@ function getItems(lang: "EN" | "GR"): Item[] {
       ],
       groups: [
         {
-          label: "Highlights",
+          label: "Typical applications",
           items: [
-            "Multi-color printing",
-            "High-speed printing",
-            "Engineering prototypes",
-            "Fine-detail 0.2 mm nozzle",
+            "Functional prototypes",
+            "Replacement parts",
+            "Brackets & covers",
+            "Production aids",
+            "Small-series end-use parts",
           ],
         },
       ],
@@ -161,11 +168,12 @@ function getItems(lang: "EN" | "GR"): Item[] {
       image: laserMachine.url,
       alt: "AKJ1530F fiber laser cutter",
       description:
-        "High-precision metal cutting for prototypes, custom parts and production runs.",
+        "Our fiber laser is used to cut sheet metal with clean edges and consistent repeatability. It is suitable for components, brackets, covers, panels, enclosures, and custom metal parts manufactured according to the customer's drawings.",
       specs: [
-        "2kW Fiber Laser Source",
+        "2 kW Fiber Laser Source",
         "Working Area: 1500 × 3000 mm",
-        "Precision Electro-hydraulic Control",
+        "Consistent and accurate sheet metal cutting, suitable for individual parts as well as small or larger production runs",
+        "Accepted files: DXF, DWG",
       ],
       groups: [
         {
@@ -176,12 +184,12 @@ function getItems(lang: "EN" | "GR"): Item[] {
     },
     {
       id: "fiber-laser-2",
-      title: "CO2 Laser Cutting System",
+      title: "CO₂ Laser Cutting System",
       quantity: "1 System",
       image: laserWorkshop.url,
-      alt: "Fiber laser cutting workshop",
+      alt: "CO2 laser cutting workshop",
       description:
-        "Additional co2 laser - engraving capacity for efficient production and fast turnaround times.",
+        "The CO₂ laser is used for cutting and engraving non-metal materials. It is suitable for signs, covers, templates, decorative components, and custom parts made from materials such as acrylic and wood.",
     },
     {
       id: "press-brakes",
@@ -190,16 +198,20 @@ function getItems(lang: "EN" | "GR"): Item[] {
       image: pressBrake.url,
       alt: "DURMAPRESS press brake bending sheet metal",
       description:
-        "High-precision precision sheet metal bending for prototypes, custom parts and production components.",
+        "The press brake is used to bend and form sheet metal parts according to specific angles and dimensions. It is suitable for brackets, boxes, enclosures, covers, supports, and custom sheet metal components.",
+      specs: [
+        "Sheet metal bending and forming with controlled angles and consistent repeatability",
+        "Electro-hydraulic Delem control, 6+1 axes",
+      ],
       groups: [
         {
-          label: "Capabilities",
+          label: "Typical applications",
           items: [
-            "Controlled Bending",
-            "High Repeatability",
-            "Precision Forming",
-            "Custom Metal Components",
-            "Production Runs",
+            "Brackets & supports",
+            "Boxes & enclosures",
+            "Panels & frames",
+            "Custom sheet metal parts",
+            "Production runs",
           ],
         },
       ],
@@ -211,7 +223,7 @@ function getItems(lang: "EN" | "GR"): Item[] {
       image: shear.url,
       alt: "Hydraulic sheet metal shear",
       description:
-        "Accurate and efficient cutting of sheet metal for fabrication projects.",
+        "Straight cutting of sheet metal into strips and blanks, used to prepare material before subsequent forming and fabrication steps.",
     },
     {
       id: "welding",
@@ -220,11 +232,11 @@ function getItems(lang: "EN" | "GR"): Item[] {
       image: welding.url,
       alt: "Welding workshop",
       description:
-        "Professional welding and assembly services for custom manufacturing projects.",
+        "Our welding equipment is used to assemble metal components and complete custom metal constructions. The welding method is selected according to the material, thickness, geometry, and requirements of each project.",
       groups: [
         {
-          label: "Capabilities",
-          items: ["MIG Welding", "TIG Welding", "LASER WELDING", "RSW WELDING"],
+          label: "Available methods",
+          items: ["MIG", "TIG", "Laser Welding", "Spot Welding (RSW)"],
         },
       ],
     },
