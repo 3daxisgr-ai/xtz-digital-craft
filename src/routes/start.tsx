@@ -4,6 +4,10 @@ import { Footer } from "@/components/xtz/Footer";
 import { useI18n } from "@/components/xtz/i18n";
 import bambuAsset from "@/assets/bambu-3d-printing.png.asset.json";
 import laserAsset from "@/assets/fiber-laser-machine.jpg.asset.json";
+import bendingAsset from "@/assets/durmapress-stratza.webp.asset.json";
+import weldingAsset from "@/assets/laser-welding.jpg.asset.json";
+import designAsset from "@/assets/cad-design-sheet-metal.png.asset.json";
+import replacementAsset from "@/assets/3d-printed-replacement-part.png.asset.json";
 
 
 export const Route = createFileRoute("/start")({
