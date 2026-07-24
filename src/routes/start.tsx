@@ -4,6 +4,10 @@ import { Footer } from "@/components/xtz/Footer";
 import { useI18n } from "@/components/xtz/i18n";
 import bambuAsset from "@/assets/bambu-3d-printing.png.asset.json";
 import laserAsset from "@/assets/fiber-laser-machine.jpg.asset.json";
+import bendingAsset from "@/assets/durmapress-stratza.webp.asset.json";
+import weldingAsset from "@/assets/laser-welding.jpg.asset.json";
+import designAsset from "@/assets/cad-design-sheet-metal.png.asset.json";
+import replacementAsset from "@/assets/3d-printed-replacement-part.png.asset.json";
 
 
 export const Route = createFileRoute("/start")({
@@ -66,8 +70,8 @@ const categories: Category[] = [
     descGR: "Κάμψη και διαμόρφωση μεταλλικών εξαρτημάτων.",
     to: "/request",
     search: { service: "bending" },
-    image: "/laser-welding.png",
-    imageAlt: "Sheet metal bending",
+    image: bendingAsset.url,
+    imageAlt: "Press brake bending a sheet metal part",
   },
   {
     id: "welding",
@@ -77,8 +81,8 @@ const categories: Category[] = [
     descGR: "Πλαίσια, βάσεις, δομές και πλήρεις μεταλλικές κατασκευές.",
     to: "/request",
     search: { service: "welding" },
-    image: "/laser-welding.png",
-    imageAlt: "Welding operation",
+    image: weldingAsset.url,
+    imageAlt: "MIG/TIG welding of a metal structure",
   },
   {
     id: "replacement",
@@ -88,8 +92,8 @@ const categories: Category[] = [
     descGR: "Αναπαραγωγή κατεστραμμένου ή μη διαθέσιμου εξαρτήματος από φωτογραφίες ή διαστάσεις.",
     to: "/request",
     search: { service: "replacement" },
-    image: laserAsset.url,
-    imageAlt: "Replacement metal part",
+    image: replacementAsset.url,
+    imageAlt: "3D-printed replacement bracket component",
   },
   {
     id: "design",
@@ -99,8 +103,8 @@ const categories: Category[] = [
     descGR: "Ξεκινήστε με ιδέα, σκίτσο ή αναφορά και λάβετε υποστήριξη σχεδιασμού.",
     to: "/request",
     search: { service: "design" },
-    image: bambuAsset.url,
-    imageAlt: "Product design sketches",
+    image: designAsset.url,
+    imageAlt: "CAD design of a sheet-metal part next to the manufactured piece",
   },
 ];
 
