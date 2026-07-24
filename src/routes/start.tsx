@@ -81,8 +81,8 @@ const categories: Category[] = [
     descGR: "Πλαίσια, βάσεις, δομές και πλήρεις μεταλλικές κατασκευές.",
     to: "/request",
     search: { service: "welding" },
-    image: "/laser-welding.png",
-    imageAlt: "Welding operation",
+    image: weldingAsset.url,
+    imageAlt: "MIG/TIG welding of a metal structure",
   },
   {
     id: "replacement",
