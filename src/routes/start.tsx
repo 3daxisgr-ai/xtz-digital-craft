@@ -103,8 +103,8 @@ const categories: Category[] = [
     descGR: "Ξεκινήστε με ιδέα, σκίτσο ή αναφορά και λάβετε υποστήριξη σχεδιασμού.",
     to: "/request",
     search: { service: "design" },
-    image: bambuAsset.url,
-    imageAlt: "Product design sketches",
+    image: designAsset.url,
+    imageAlt: "CAD design of a sheet-metal part next to the manufactured piece",
   },
 ];
 
