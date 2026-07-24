@@ -70,8 +70,8 @@ const categories: Category[] = [
     descGR: "Κάμψη και διαμόρφωση μεταλλικών εξαρτημάτων.",
     to: "/request",
     search: { service: "bending" },
-    image: "/laser-welding.png",
-    imageAlt: "Sheet metal bending",
+    image: bendingAsset.url,
+    imageAlt: "Press brake bending a sheet metal part",
   },
   {
     id: "welding",
