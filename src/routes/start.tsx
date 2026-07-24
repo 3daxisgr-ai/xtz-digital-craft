@@ -92,8 +92,8 @@ const categories: Category[] = [
     descGR: "Αναπαραγωγή κατεστραμμένου ή μη διαθέσιμου εξαρτήματος από φωτογραφίες ή διαστάσεις.",
     to: "/request",
     search: { service: "replacement" },
-    image: laserAsset.url,
-    imageAlt: "Replacement metal part",
+    image: replacementAsset.url,
+    imageAlt: "3D-printed replacement bracket component",
   },
   {
     id: "design",
