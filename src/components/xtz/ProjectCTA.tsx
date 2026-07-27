@@ -66,9 +66,6 @@ export function ProjectCTA() {
       <span className="absolute top-6 left-6 md:top-10 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/40">
         {t("cta.tag")}
       </span>
-      <span className="absolute top-6 right-6 md:top-10 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/40">
-        XYZ
-      </span>
 
       {/* Content */}
       <div className="relative z-10 mx-auto flex min-h-[58vh] max-w-[1400px] flex-col items-center justify-center px-6 py-20 md:py-24 text-center md:px-12">
