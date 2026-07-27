@@ -585,7 +585,7 @@ function CapabilityPage() {
                 {t("capp.h.process")}
               </h2>
               <p className="font-display text-3xl md:text-5xl tracking-tight text-white leading-[1.05]">
-                {cap.slug === "global-manufacturing-network" && isGR ? "Μαζικής Παραγωγής" : titleMap[cap.slug]}
+                {cap.slug === "global-manufacturing-network" && isGR ? "Σειριακής Παραγωγής με Συνεργάτες" : titleMap[cap.slug]}
               </p>
             </div>
           </div>
