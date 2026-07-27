@@ -1,13 +1,13 @@
 # TOREO
 
-> Engineering-led manufacturing partner in Thessaloniki, Greece. 3D printing, fiber laser cutting, sheet metal bending, MIG/TIG welding, CAD design and prototyping — from concept through manufacturable parts.
+> Manufacturing workshop in Thessaloniki, Greece. 3D printing, fiber laser cutting, sheet metal bending, MIG/TIG welding, CAD design and prototyping — from concept through manufacturable parts. Larger volumes coordinated through selected external partners when required.
 
 ## Pages
 
 - [Home](https://www.toreo.gr/): 3D printing, fiber laser cutting, sheet metal bending, welding, CAD design and prototyping.
 - [Start a Project](https://www.toreo.gr/start): Pick a service to begin your project.
-- [Custom Inquiry](https://www.toreo.gr/start-project): Upload CAD and request a quote — every inquiry reviewed by an engineer.
-- [3D Printing Instant Quote](https://www.toreo.gr/3d-printing-quote): Upload STL/STEP for an AI-assisted 3D printing quote.
+- [Request a Quote](https://www.toreo.gr/start-project): Upload CAD and request a quote — every inquiry is technically reviewed by our team.
+- [3D Printing Quote](https://www.toreo.gr/3d-printing-quote): Upload STL/STEP and receive a preliminary 3D printing quote, confirmed by our team.
 - [Track an Order](https://www.toreo.gr/track): Look up order status with your Order ID and email.
 - [Company](https://www.toreo.gr/company): Who we are and how we work.
 - [Equipment](https://www.toreo.gr/equipment): Machines and technology in our workshop.
@@ -27,7 +27,7 @@
 - [Sheet Metal Forming & Welding](https://www.toreo.gr/capabilities/sheet-metal-forming-welding)
 - [3D Printing](https://www.toreo.gr/capabilities/3d-printing)
 - [Design to Prototype](https://www.toreo.gr/capabilities/design-to-prototype)
-- [Global Manufacturing Network](https://www.toreo.gr/capabilities/global-manufacturing-network)
+- [Series Production with Partners](https://www.toreo.gr/capabilities/global-manufacturing-network)
 
 ## Greek Locale
 

@@ -7,14 +7,14 @@ export function GlobalNetwork() {
 
   const bullets = isGR
     ? [
-        "Trusted Manufacturing Partners",
-        "Scalable Production Solutions",
-        "​Mass production",
+        "Επιλεγμένοι κατασκευαστικοί συνεργάτες",
+        "Παραγωγή μικρών και μεσαίων σειρών",
+        "Συντονισμός παραγωγής όταν απαιτείται",
       ]
     : [
-        "Trusted Manufacturing Partners",
-        "Scalable Production Solutions",
-        "​Mass production",
+        "Selected manufacturing partners",
+        "Small and medium production runs",
+        "Production coordinated when required",
       ];
 
   return (
@@ -34,22 +34,19 @@ export function GlobalNetwork() {
       <span className="absolute top-10 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         {isGR ? "—  / Δίκτυο" : "—  / Network"}
       </span>
-      <span className="absolute top-10 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
-        XYZ
-      </span>
 
       <div className="relative mx-auto max-w-[1400px] px-6 md:px-12 grid lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-7">
           <div className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary mb-6">
-            {isGR ? "Παγκόσμιο Δίκτυο" : "Global Reach"}
+            {isGR ? "Δίκτυο Συνεργατών" : "Partner Network"}
           </div>
           <h2 className="font-display font-bold leading-[0.9] text-[clamp(2.4rem,6vw,5rem)] tracking-tighter mb-8">
-            {isGR ? "Παγκόσμιο Δίκτυο Παραγωγής." : "​Mass production."}
+            {isGR ? "Σειριακή παραγωγή με συνεργάτες." : "Series production with partners."}
           </h2>
           <p className="text-foreground/70 text-base md:text-lg max-w-xl leading-relaxed font-light">
             {isGR
-              ? "Για έργα που απαιτούν παραγωγή μεγάλης κλίμακας, η TOREO υποστηρίζει τους πελάτες της μέσω αξιόπιστων κατασκευαστικών συνεργατών, οδηγώντας τα προϊόντα από το πρωτότυπο σε κλιμακούμενη παραγωγή."
-              : "For projects requiring large-scale production, TOREO can assist clients through trusted manufacturing partners, helping transition products from prototype to scalable production."}
+              ? "Όπου ένα έργο απαιτεί επιπλέον κατασκευαστικές δυνατότητες ή μεγαλύτερους όγκους παραγωγής, η TOREO μπορεί να συντονίσει την παραγωγή μέσω επιλεγμένων εξωτερικών συνεργατών. Η διαθεσιμότητα και ο χρόνος παράδοσης επιβεβαιώνονται μετά τον έλεγχο του έργου."
+              : "Where a project requires additional manufacturing capabilities or higher production volumes, TOREO may coordinate production through selected external partners. Availability and lead time are confirmed after project review."}
           </p>
         </div>
 

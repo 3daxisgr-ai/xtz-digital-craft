@@ -57,9 +57,6 @@ export function Capabilities() {
       <span className="absolute top-10 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         02 / CAPABILITIES
       </span>
-      <span className="absolute top-10 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
-        XYZ
-      </span>
 
       <div className="relative z-10 mx-auto max-w-[1500px] px-6 md:px-12">
         <div className="flex items-center gap-4 mb-8">

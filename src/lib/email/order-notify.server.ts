@@ -18,14 +18,14 @@ const STATUS_TEMPLATES: Record<string, StatusTemplate> = {
     kicker: "Order Received",
     headline: () => "We have received your request.",
     intro: () =>
-      `<p style="margin:0">Our engineering team will review your files and respond within one business day.</p>`,
+      `<p style="margin:0">Our team will review your files and respond within one business day.</p>`,
   },
   engineering_review: {
-    subject: (c) => `Engineering Review Started – ${c}`,
-    kicker: "Engineering Review",
-    headline: () => "Your project is under engineering review.",
+    subject: (c) => `Technical Review Started – ${c}`,
+    kicker: "Technical Review",
+    headline: () => "Your project is under technical review.",
     intro: () =>
-      `<p style="margin:0">Our engineers are reviewing technical feasibility, materials, and tolerances. You will receive a formal quotation shortly.</p>`,
+      `<p style="margin:0">Our team is reviewing technical feasibility, materials, and tolerances. You will receive a formal quotation shortly.</p>`,
   },
   quote_sent: {
     subject: (c) => `Your TOREO Quote is Ready – ${c}`,

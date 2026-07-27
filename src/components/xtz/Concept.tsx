@@ -50,12 +50,7 @@ export function Concept() {
 
       <span className="absolute top-10 left-6 md:left-12 z-10 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         — / WHAT WE DO
-      </span>
-      <span className="absolute top-10 right-6 md:right-12 z-10 font-mono text-[14px] tracking-[0.4em] text-primary/60">
-        XYZ
-      </span>
-
-      <div className="relative z-10 mx-auto w-full max-w-[1600px] px-6 md:px-12">
+      </span><div className="relative z-10 mx-auto w-full max-w-[1600px] px-6 md:px-12">
         <div className="cn-reveal max-w-2xl space-y-7">
           <div className="flex items-center gap-4">
             <span className="font-mono text-xs text-primary tracking-[0.3em]">— /</span>

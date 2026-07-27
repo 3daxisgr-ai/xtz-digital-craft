@@ -62,7 +62,7 @@ export function AIAnalysisCard({ a, loading, className, adminView, customerView 
   if (loading) {
     return (
       <div className={"border border-white/10 rounded-lg p-5 md:p-6 bg-white/[0.02] " + (className ?? "")}>
-        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">{customerView ? "Preparing your estimate" : "AI Engineering Analysis"}</div>
+        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">{customerView ? "Preparing your estimate" : "Technical Analysis"}</div>
         <div className="mt-4 flex items-center gap-3 text-white/60 text-sm">
           <div className="w-4 h-4 rounded-full border-2 border-sky-400 border-t-transparent animate-spin" />
           {customerView ? "Preparing your estimate…" : "Analysing your part…"}

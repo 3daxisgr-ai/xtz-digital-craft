@@ -26,7 +26,7 @@ const en: Dict = {
   // Concept (what we do)
   "concept.kicker": "What we do",
   "concept.title": "We design, prototype and build real products.",
-  "concept.body": "Send us your idea, sketch or CAD file. We engineer it, prototype it, and manufacture the final part.",
+  "concept.body": "Send us your idea, sketch or CAD file. We design it, prototype it, and manufacture the final part.",
   "concept.cta": "Upload CAD & Request a Quote",
 
   // Capabilities
@@ -45,8 +45,8 @@ const en: Dict = {
   "cap.04.d": "Functional parts and small production runs.",
   "cap.05.t": "Design → Prototype",
   "cap.05.d": "From sketch to working prototype in days.",
-  "cap.06.t": "Mass Production",
-  "cap.06.d": "Scale to series production with trusted partners.",
+  "cap.06.t": "Series Production with Partners",
+  "cap.06.d": "Small and medium production runs — larger volumes coordinated through selected manufacturing partners when required.",
 
   // Chapters
   "ch.idea.k": "Step 1",
@@ -54,7 +54,7 @@ const en: Dict = {
   "ch.idea.d": "A sketch, a photo, or a CAD file. If you don't have one, we'll help you make one.",
   "ch.design.k": "Step 2",
   "ch.design.t": "We design it.",
-  "ch.design.d": "Our engineers turn your idea into a precise, manufacturable file.",
+  "ch.design.d": "Our team turns your idea into a precise, manufacturable file.",
   "ch.proto.k": "Step 3",
   "ch.proto.t": "We prototype it.",
   "ch.proto.d": "Hold a working version in your hands within days — not months.",
@@ -77,13 +77,13 @@ const en: Dict = {
   "p.proto.d": "Working sample, fast.",
   "p.mfg.t": "Manufacture",
   "p.mfg.d": "Laser, forming, welding, 3D printing.",
-  "p.deliver.t": "Mass Production",
-  "p.deliver.d": "Scalable production with trusted partners.",
+  "p.deliver.t": "Delivery",
+  "p.deliver.d": "Finished parts shipped to you across Greece and the EU.",
 
   // Inquiry
   "inquiry.kicker": "Start a Project",
   "inquiry.title": "Tell us what you need.",
-  "inquiry.intro": "Every inquiry is reviewed by an engineer and answered within one business day.",
+  "inquiry.intro": "Every inquiry is technically reviewed by our team and answered within one business day.",
   "f.name": "Name",
   "f.surname": "Surname",
   "f.email": "Email",
@@ -100,9 +100,9 @@ const en: Dict = {
   "f.desc": "Project description",
   "f.desc.ph": "What is it for, where will it be used, when do you need it?",
   "f.submit": "Send",
-  "f.sent": "Got it. An engineer will reply within one business day.",
+  "f.sent": "Got it. Our team will reply within one business day.",
   "f.select": "Select…",
-  "f.review": "Manual engineering review · 1 business day",
+  "f.review": "Manual technical review · 1 business day",
 
   // Finale
   "finale.kicker": "Ready to build?",
@@ -160,7 +160,7 @@ const en: Dict = {
   "capp.h.related": "Related Capabilities",
   "capp.step": "STEP",
   "capp.ready1": "Ready to build with",
-  "capp.ready.body": "Send your files or a brief. An engineer will review and reply within one business day.",
+  "capp.ready.body": "Send your files or a brief. Our team will review and reply within one business day.",
   "capp.notfound": "Capability not found.",
   "capp.back": "← All capabilities",
   "capp.view": "View capability",
@@ -175,7 +175,7 @@ const en: Dict = {
   "faqp.intro": "Everything you need to know before starting a project.",
 
   // Footer
-  "foot.tag": "XYZ — coordinates of every build",
+  "foot.tag": "Concept · Design · Prototype · Manufacture",
   "foot.tagline": "From Concept to Reality",
   "foot.contact": "Contact",
   "foot.studio": "Studio",
@@ -232,15 +232,15 @@ const gr: Dict = {
   "cap.04.d": "Λειτουργικά εξαρτήματα και μικρές παραγωγές",
   "cap.05.t": "Σχεδιασμός → Πρωτότυπο",
   "cap.05.d": "Από το σκίτσο σε λειτουργικό πρωτότυπο μέσα σε ημέρες.",
-  "cap.06.t": "Μαζική Παραγωγή",
-  "cap.06.d": "Κλιμάκωση σε σειριακή παραγωγή με αξιόπιστους συνεργάτες.",
+  "cap.06.t": "Σειριακή Παραγωγή με Συνεργάτες",
+  "cap.06.d": "Παραγωγή μικρών και μεσαίων σειρών — μεγαλύτερες ποσότητες συντονίζονται μέσω επιλεγμένων συνεργατών όταν απαιτείται.",
 
   "ch.idea.k": "Βήμα 1",
   "ch.idea.t": "Στείλτε μας την ιδέα σας.",
   "ch.idea.d": "Σκίτσο, φωτογραφία ή αρχείο CAD. Αν δεν έχετε, σας βοηθάμε να το φτιάξετε.",
   "ch.design.k": "Βήμα 2",
   "ch.design.t": "Τη σχεδιάζουμε.",
-  "ch.design.d": "Οι μηχανικοί μας τη μετατρέπουν σε ακριβές, κατασκευάσιμο αρχείο.",
+  "ch.design.d": "Η ομάδα μας τη μετατρέπει σε ακριβές, κατασκευάσιμο αρχείο.",
   "ch.proto.k": "Βήμα 3",
   "ch.proto.t": "Φτιάχνουμε το πρωτότυπο.",
   "ch.proto.d": "Κρατάτε λειτουργική έκδοση στα χέρια σας μέσα σε ημέρες — όχι μήνες.",
@@ -261,12 +261,12 @@ const gr: Dict = {
   "p.proto.d": "Λειτουργικό δείγμα, γρήγορα.",
   "p.mfg.t": "Κατασκευή",
   "p.mfg.d": "Laser, στραντζάρισμα, συγκολλήσεις, 3D εκτύπωση.",
-  "p.deliver.t": "Μαζική Παραγωγή",
-  "p.deliver.d": "Κλιμακούμενη παραγωγή με αξιόπιστους συνεργάτες.",
+  "p.deliver.t": "Παράδοση",
+  "p.deliver.d": "Τα έτοιμα εξαρτήματα αποστέλλονται σε Ελλάδα και ΕΕ.",
 
   "inquiry.kicker": "ΞΕΚΙΝΗΣΤΕ ΕΡΓΟ",
   "inquiry.title": "Πείτε μας τι χρειάζεστε.",
-  "inquiry.intro": "Κάθε αίτημα ελέγχεται από μηχανικό και απαντάται εντός μίας εργάσιμης ημέρας.",
+  "inquiry.intro": "Κάθε αίτημα ελέγχεται τεχνικά από την ομάδα μας και απαντάται εντός μίας εργάσιμης ημέρας.",
   "f.name": "ΟΝΟΜΑ *",
   "f.surname": "ΕΠΩΝΥΜΟ *",
   "f.email": "Email",
@@ -283,9 +283,9 @@ const gr: Dict = {
   "f.desc": "ΠΕΡΙΓΡΑΦΗ ΕΡΓΟΥ",
   "f.desc.ph": "Σε τι χρησιμεύει, πού θα χρησιμοποιηθεί, πότε το χρειάζεστε;",
   "f.submit": "ΑΠΟΣΤΟΛΗ",
-  "f.sent": "Ελήφθη. Μηχανικός θα σας απαντήσει εντός μίας εργάσιμης ημέρας.",
+  "f.sent": "Ελήφθη. Η ομάδα μας θα σας απαντήσει εντός μίας εργάσιμης ημέρας.",
   "f.select": "Επιλέξτε…",
-  "f.review": "ΕΛΕΓΧΟΣ ΑΠΌ ΜΗΧΑΝΙΚΟ · 1 ΕΡΓΑΣΙΜΗ ΗΜΕΡΑ",
+  "f.review": "ΤΕΧΝΙΚΟΣ ΕΛΕΓΧΟΣ · 1 ΕΡΓΑΣΙΜΗ ΗΜΕΡΑ",
 
   "finale.kicker": "Έτοιμοι να φτιάξετε κάτι;",
   "finale.statement": "Από την ιδέα στην πραγματικότητα.",
@@ -342,7 +342,7 @@ const gr: Dict = {
   "capp.h.related": "Συναφείς Δυνατότητες",
   "capp.step": "ΒΗΜΑ",
   "capp.ready1": "Έτοιμοι να ξεκινήσετε με",
-  "capp.ready.body": "Στείλτε τα αρχεία ή μια σύντομη περιγραφή. Μηχανικός θα ελέγξει και θα απαντήσει εντός μίας εργάσιμης ημέρας.",
+  "capp.ready.body": "Στείλτε τα αρχεία ή μια σύντομη περιγραφή. Η ομάδα μας θα ελέγξει και θα απαντήσει εντός μίας εργάσιμης ημέρας.",
   "capp.notfound": "Η δυνατότητα δεν βρέθηκε.",
   "capp.back": "← Όλες οι δυνατότητες",
   "capp.view": "Δείτε τη δυνατότητα",
@@ -357,7 +357,7 @@ const gr: Dict = {
   "faqp.intro": "Όλα όσα χρειάζεται να γνωρίζετε πριν ξεκινήσετε ένα έργο.",
 
   // Footer
-  "foot.tag": "XYZ — ΟΙ ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΚΑΘΕ ΚΑΤΑΣΚΕΥΗΣ",
+  "foot.tag": "ΙΔΕΑ · ΣΧΕΔΙΑΣΜΟΣ · ΠΡΩΤΟΤΥΠΟ · ΚΑΤΑΣΚΕΥΗ",
   "foot.tagline": "ΑΠΟ ΤΗΝ ΙΔΕΑ ΣΤΗΝ ΠΡΑΓΜΑΤΙΚΟΤΗΤΑ",
   "foot.contact": "ΕΠΙΚΟΙΝΩΝΙΑ",
   "foot.studio": "ΣΤΟΥΝΤΙΟ",

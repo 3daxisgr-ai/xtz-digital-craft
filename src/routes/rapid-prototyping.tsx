@@ -36,7 +36,7 @@ export const Route = createFileRoute("/rapid-prototyping")({
       locale: "en",
       serviceName: "Rapid Prototyping Services",
       serviceDescription:
-        "Engineering-led rapid prototyping combining 3D printing, fiber laser cutting and sheet metal fabrication for industrial clients.",
+        "Rapid prototyping combining 3D printing, fiber laser cutting and sheet metal fabrication for industrial clients.",
       faq: FAQ,
     }),
   component: Page,
@@ -53,13 +53,13 @@ function Page() {
       ctaTo="/start-project"
       introTitle="Validate, iterate, and ship"
       introBody={[
-        "Rapid prototyping closes the gap between a CAD model and a part you can hold, test and put in front of a customer. Picking the right process — print, cut, fold or weld — is half the work, and that's where our engineering team starts every project.",
+        "Rapid prototyping closes the gap between a CAD model and a part you can hold, test and put in front of a customer. Picking the right process — print, cut, fold or weld — is half the work, and that's where our team starts every project.",
         "We've prototyped everything from consumer electronics housings to custom brackets and architectural hardware. The output isn't a generic 3D print: it's a representative part that behaves like the production version.",
       ]}
       industriesTitle="Who we prototype for"
       industries={[
         { title: "Product startups", body: "Functional MVPs for investor demos and user testing." },
-        { title: "Industrial R&D", body: "In-house engineers needing fast iterations on jigs, fixtures and tooling." },
+        { title: "Industrial R&D", body: "In-house teams needing fast iterations on jigs, fixtures and tooling." },
         { title: "Robotics & automation", body: "Custom mounts, brackets and end-effectors for one-off and small-series builds." },
         { title: "Architecture & design", body: "Scale models, bespoke hardware and unique structural details." },
         { title: "Automotive & aftermarket", body: "Custom brackets and validation prototypes." },
