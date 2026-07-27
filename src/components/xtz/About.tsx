@@ -78,9 +78,6 @@ export function About() {
       <span className="absolute top-8 left-6 md:left-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
         {t("about.tag")}
       </span>
-      <span className="absolute top-8 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">
-        XYZ
-      </span>
 
       <div className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12 grid md:grid-cols-12 gap-10 md:gap-16">
         <div className="ab-reveal md:col-span-6 space-y-8">

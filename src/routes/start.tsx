@@ -16,7 +16,7 @@ export const Route = createFileRoute("/start")({
       { title: "Start a Project — 3D Printing, Laser Cutting & Sheet Metal | TOREO" },
       { name: "description", content: "Start your project with TOREO — choose 3D printing, fiber laser cutting or sheet metal bending & welding. Project requirements are reviewed before quotation." },
       { property: "og:title", content: "Start a Project — 3D Printing, Laser Cutting & Sheet Metal | TOREO" },
-      { property: "og:description", content: "Pick a service to begin: 3D printing, fiber laser cutting or sheet metal — engineering-led custom parts by TOREO." },
+      { property: "og:description", content: "Pick a service to begin: 3D printing, fiber laser cutting or sheet metal fabrication — custom parts by TOREO in Thessaloniki." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.toreo.gr/start" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -120,7 +120,7 @@ function StartPage() {
           className="absolute inset-0 opacity-40 pointer-events-none"
           style={{ background: "radial-gradient(ellipse at 20% 50%, oklch(0.45 0.2 245 / 0.5), transparent 60%)" }}
         />
-        <span className="absolute top-6 right-6 md:top-10 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">XYZ</span>
+        
 
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12">
           <div className="flex items-center gap-4 mb-8">

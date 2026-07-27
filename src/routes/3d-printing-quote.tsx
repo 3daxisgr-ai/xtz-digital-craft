@@ -14,15 +14,15 @@ export const Route = createFileRoute("/3d-printing-quote")({
   head: () => ({
     meta: [
       { title: "Instant 3D Printing Quote — Rapid Prototyping | TOREO" },
-      { name: "description", content: "Upload your model, pick a material and purpose. TOREO prepares a preliminary quote automatically — final quote confirmed by our engineering team." },
+      { name: "description", content: "Upload your model, pick a material and purpose. TOREO prepares a preliminary quote automatically — final quote confirmed by our team after review." },
       { name: "keywords", content: "3D printing services, 3D printing quote, rapid prototyping, custom parts, PLA ABS PETG TPU PC, Greece" },
       { property: "og:title", content: "Instant 3D Printing Quote — Rapid Prototyping | TOREO" },
-      { property: "og:description", content: "Upload your model and describe what you need. Our engineering team handles the technical decisions." },
+      { property: "og:description", content: "Upload your model and describe what you need. Our team reviews the file and confirms the quote." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.toreo.gr/3d-printing-quote" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Instant 3D Printing Quote | TOREO" },
-      { name: "twitter:description", content: "Upload your model — our engineering team decides how to manufacture it." },
+      { name: "twitter:description", content: "Upload your model — our team decides how to manufacture it." },
     ],
     links: [{ rel: "canonical", href: "https://www.toreo.gr/3d-printing-quote" }],
     scripts: [
@@ -232,8 +232,8 @@ function QuotePage() {
     kicker: isGR ? "ΑΙΤΗΜΑ ΠΡΟΣΦΟΡΑΣ" : "Quote Request",
     title: isGR ? "Άμεση προσφορά για 3D εκτύπωση." : "Instant 3D printing quote.",
     intro: isGR
-      ? "Ανεβάστε το μοντέλο σας και πείτε μας τι χρειάζεστε. Η μηχανική μας ομάδα θα αποφασίσει πώς θα κατασκευαστεί."
-      : "Upload your model and tell us what you need. Our engineering team decides how to manufacture it.",
+      ? "Ανεβάστε το μοντέλο σας και πείτε μας τι χρειάζεστε. Η ομάδα μας θα αποφασίσει πώς θα κατασκευαστεί."
+      : "Upload your model and tell us what you need. Our team decides how to manufacture it.",
     upload: isGR ? "ΑΝΕΒΆΣΤΕ ΤΟ ΑΡΧΕΙΟ" : "Upload your file",
     accepted: isGR ? "Αποδεκτά" : "Accepted",
     selectFile: isGR ? "Επιλέξτε αρχείο" : "Select file",
@@ -248,8 +248,8 @@ function QuotePage() {
     notes: isGR ? "Σημειώσεις (προαιρετικά)" : "Notes (optional)",
     submit: isGR ? "Αποστολή αιτήματος" : "Submit request",
     sent: isGR
-      ? "Ελήφθη. Η μηχανική ομάδα μας ετοιμάζει την προσφορά σας."
-      : "Received. Our engineering team is preparing your quote.",
+      ? "Ελήφθη. Η ομάδα μας ετοιμάζει την προσφορά σας."
+      : "Received. Our team is preparing your quote.",
     inStock: isGR ? "Διαθέσιμο" : "In stock",
     lowStock: isGR ? "Χαμηλό απόθεμα" : "Low stock",
     oos: isGR ? "Εξαντλημένο" : "Out of stock",
@@ -316,7 +316,7 @@ function QuotePage() {
                       {isGR ? "Κατάσταση" : "Status"}
                     </div>
                     <div className="font-mono text-sm uppercase tracking-[0.2em] text-foreground/90">
-                      {isGR ? "Σε αναθεώρηση από μηχανικό" : "Pending engineering review"}
+                      {isGR ? "Σε τεχνικό έλεγχο" : "Pending technical review"}
                     </div>
                   </div>
                   <p className="text-sm text-foreground/60">{L.sent}</p>
@@ -569,8 +569,8 @@ function QuotePage() {
                 </button>
                 <p className="text-[11px] text-foreground/50 leading-relaxed">
                   {isGR
-                    ? "Ένας μηχανικός θα σας απαντήσει εντός μίας εργάσιμης ημέρας. Δεν λαμβάνεται καμία χρέωση κατά την υποβολή."
-                    : "An engineer will reply within one business day. No charge is made at submission."}
+                    ? "Η ομάδα μας θα σας απαντήσει εντός μίας εργάσιμης ημέρας. Δεν λαμβάνεται καμία χρέωση κατά την υποβολή."
+                    : "Our team will reply within one business day. No charge is made at submission."}
                 </p>
               </div>
             </form>

@@ -21,7 +21,7 @@ const FAQ = [
   },
   {
     q: "How do I get pricing for a custom metal part?",
-    a: "Send your CAD file (STEP, IGES, DWG, DXF) through our quote form. Project requirements are reviewed by an engineer before quotation.",
+    a: "Send your CAD file (STEP, IGES, DWG, DXF) through our quote form. Project requirements are technically reviewed by our team before quotation.",
   },
 ];
 
@@ -91,7 +91,7 @@ function Page() {
       faqTitle="Frequently asked questions"
       faq={FAQ}
       finalTitle="Need a custom metal part? Send your file."
-      finalBody="STEP, DWG or DXF — project requirements are reviewed by an engineer before quotation."
+      finalBody="STEP, DWG or DXF — project requirements are technically reviewed by our team before quotation."
     />
   );
 }

@@ -14,7 +14,7 @@ const en = {
   introBody1:
     "For centuries, craftsmen transformed raw materials into tools, structures and creations that served a purpose. While technology has evolved dramatically, the essence of manufacturing remains unchanged: turning an idea into something real.",
   introBody2:
-    "At TOREO, we carry that same mindset into the modern era through advanced digital manufacturing technologies, combining engineering expertise with precision production.",
+    "At TOREO, we carry that same mindset into the modern era through advanced digital manufacturing technologies, combining technical expertise with precision production.",
   b1Tag: "01 — Purpose",
   b1Title: "More Than Manufacturing",
   b1Lead: "We do not simply produce parts.",
