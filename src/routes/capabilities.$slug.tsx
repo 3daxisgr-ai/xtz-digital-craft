@@ -72,7 +72,7 @@ const titles: Record<CapabilitySlug, string> = {
   "sheet-metal-forming-welding": "Sheet Metal Forming & Welding",
   "3d-printing": "3D Printing",
   "design-to-prototype": "Design → Prototype",
-  "global-manufacturing-network": "Mass Production",
+  "global-manufacturing-network": "Series Production with Partners",
 };
 
 const titlesGR: Record<CapabilitySlug, string> = {
@@ -81,7 +81,7 @@ const titlesGR: Record<CapabilitySlug, string> = {
   "sheet-metal-forming-welding": "Στραντζάρισμα & Συγκολλήσεις",
   "3d-printing": "3D ΕΚΤΥΠΩΣΗ",
   "design-to-prototype": "Σχεδιασμός → Πρωτότυπο",
-  "global-manufacturing-network": "ΜΑΖΙΚΗ ΠΑΡΑΓΩΓΗ",
+  "global-manufacturing-network": "ΣΕΙΡΙΑΚΗ ΠΑΡΑΓΩΓΗ ΜΕ ΣΥΝΕΡΓΑΤΕΣ",
 };
 
 const details: Record<CapabilitySlug, Detail> = {
@@ -105,8 +105,8 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Custom industrial parts", "Product prototypes", "Brackets and enclosures", "Architectural metalwork"],
     notes: "Accepted formats: .pdf, .jpg, .png, .step, .stp, .iges, .dwg, .dxf.",
     seo: {
-      title: "Design & Development — Engineering Services | TOREO",
-      description: "From sketch to manufacturable CAD. Product development, DFM, engineering services and full documentation by TOREO in Greece.",
+      title: "Design & Development — CAD & DFM Services | TOREO",
+      description: "From sketch to manufacturable CAD. Product development, DFM and full documentation by TOREO in Greece.",
     },
   },
   "fiber-laser-cutting": {
@@ -122,9 +122,9 @@ const details: Record<CapabilitySlug, Detail> = {
     materials: ["Mild steel", "Stainless steel", "Aluminum", "Brass", "Copper (on request)"],
     process: [
       { t: "Files", d: "Send .dxf, .dwg or .step with material and thickness." },
-      { t: "Quote", d: "Reviewed by an engineer within one business day." },
+      { t: "Quote", d: "Reviewed by our team within one business day." },
       { t: "Cut", d: "Nested, cut and edge-checked." },
-      { t: "Mass Production", d: "Ready for next step or shipped to you." },
+      { t: "Delivery", d: "Ready for next step or shipped to you." },
     ],
     applications: ["Brackets and panels", "Enclosures and chassis", "Decorative metal", "Industrial components"],
     notes: "Send .dxf, .dwg or .step. Always include thickness and material grade.",
@@ -187,7 +187,7 @@ const details: Record<CapabilitySlug, Detail> = {
     what: [
       "Concept, CAD, prototype and iteration loop.",
       "Single point of contact across all stages.",
-      "Real engineers reviewing every revision.",
+      "Our team reviews every revision.",
       "Quick turnaround — days, not months.",
     ],
     materials: ["Sketch / brief", "Reference photos", "CAD files", "Existing parts to copy or improve"],
@@ -200,30 +200,30 @@ const details: Record<CapabilitySlug, Detail> = {
     applications: ["Startup MVPs", "New product development", "Reverse engineering", "Custom one-off parts"],
     seo: {
       title: "Design → Prototype — Rapid Prototyping | TOREO",
-      description: "Rapid prototyping and product development from idea to working prototype in days — end-to-end engineering services by TOREO.",
+      description: "Rapid prototyping and product development from idea to working prototype in days — end-to-end support by TOREO.",
     },
   },
   "global-manufacturing-network": {
     slug: "global-manufacturing-network",
     intro:
-      "Trusted manufacturing partners for series production. Scale from prototype to thousands of units — quality and logistics handled.",
+      "For higher volumes or additional processes, TOREO may coordinate production through selected external partners. Availability depends on the specific project.",
     what: [
-      "Vetted partners for casting, injection molding and additional processes.",
-      "Scale from hundreds to tens of thousands of units.",
+      "Selected partners for casting, injection molding and additional processes.",
+      "Small and medium production runs; larger volumes evaluated per project.",
       "Quality control and inspection on your behalf.",
-      "Logistics, customs and delivery managed end to end.",
+      "Logistics and delivery coordinated end to end.",
     ],
-    materials: ["Metals (steel, stainless, aluminum, brass)", "Engineering polymers", "3d printed parts", "Composite materials"],
+    materials: ["Metals (steel, stainless, aluminum, brass)", "Engineering polymers", "3D printed parts", "Composite materials"],
     process: [
       { t: "Spec", d: "Prototype, drawings and tolerances locked in." },
       { t: "Sourcing", d: "We match the part to the right partner." },
       { t: "Production", d: "Pilot run, QC and full production." },
-      { t: "Mass Production", d: "Inspected, packed and shipped to you." },
+      { t: "Delivery", d: "Inspected, packed and shipped to you." },
     ],
     applications: ["Series production", "OEM components", "Branded consumer products", "Replacement and spare parts"],
     seo: {
-      title: "Global Manufacturing Network — Trusted Production Partners | TOREO",
-      description: "Scale from prototype to series production through TOREO's network of trusted production partners. Availability depends on the specific project.",
+      title: "Series Production with Partners | TOREO",
+      description: "Scale from prototype to series production through TOREO's network of selected production partners. Availability confirmed after project review.",
     },
   },
 };
@@ -256,7 +256,7 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
     ],
     process: [
       { t: "ΑΡΧΕΙΑ", d: "Στείλτε .dxf, .dwg ή .step με υλικό και πάχος." },
-      { t: "ΠΡΟΣΦΟΡΑ", d: "Έλεγχος από μηχανικό εντός μίας εργάσιμης ημέρας." },
+      { t: "ΠΡΟΣΦΟΡΑ", d: "Τεχνικός έλεγχος από την ομάδα μας εντός μίας εργάσιμης ημέρας." },
       { t: "Κοπή", d: "Nesting, κοπή και έλεγχος ακμών." },
       { t: "Παράδοση", d: "Έτοιμα για το επόμενο βήμα ή αποστολή σε εσάς." },
     ],
@@ -301,7 +301,7 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
     what: [
       "Ιδέα , CAD, πρωτότυπο και κύκλος βελτιώσεων.",
       "Ενιαίο σημείο επαφής σε όλα τα στάδια.",
-      "Πραγματικοί μηχανικοί ελέγχουν κάθε αναθεώρηση.",
+      "Η ομάδα μας ελέγχει κάθε αναθεώρηση.",
       "Γρήγοροι χρόνοι — ημέρες, όχι μήνες.",
     ],
     process: [
@@ -313,18 +313,18 @@ const detailsGR: Record<CapabilitySlug, Pick<Detail, "intro" | "what" | "process
     applications: ["Startup MVPs", "Ανάπτυξη νέων προϊόντων", "Reverse engineering", "Custom μοναδικά εξαρτήματα"],
   },
   "global-manufacturing-network": {
-    intro: "Από το πρωτότυπο στη ΜΑΖΙΚΗ ΠΑΡΑΓΩΓΗ.",
+    intro: "Για μεγαλύτερους όγκους ή επιπλέον διεργασίες, η TOREO μπορεί να συντονίσει την παραγωγή μέσω επιλεγμένων εξωτερικών συνεργατών. Η διαθεσιμότητα επιβεβαιώνεται μετά τον έλεγχο του έργου.",
     what: [
-      "Επιλεγμένοι συνεργάτες για 3d printing, injection και άλλα.",
-      "Κλιμάκωση από εκατοντάδες σε δεκάδες χιλιάδες μονάδες.",
+      "Επιλεγμένοι συνεργάτες για 3D printing, injection και άλλες διεργασίες.",
+      "Μικρές και μεσαίες σειρές· μεγαλύτερες ποσότητες αξιολογούνται ανά έργο.",
       "Έλεγχος ποιότητας και επιθεωρήσεις εκ μέρους σας.",
       "Logistics και παράδοση από άκρη σε άκρη.",
     ],
     process: [
       { t: "Προδιαγραφές", d: "Πρωτότυπο, σχέδια και ανοχές οριστικοποιημένα." },
-      { t: "Εύρεση συνεργάτη", d: "Βρίσκουμε τον κατάλληλο συνεργάτη παραγωγής με βάση τις απαιτήσεις του έργου σας." },
-      { t: "ΠΑΡΑΓΩΓΗ", d: "Δοκιμαστική σειρά, ποιοτικός έλεγχος και πλήρης παραγωγή." },
-      { t: "ΜΑΖΙΚΗ ΠΑΡΑΓΩΓΗ", d: "Ελεγμένα, συσκευασμένα και αποστολή σε εσάς." },
+      { t: "Εύρεση συνεργάτη", d: "Βρίσκουμε τον κατάλληλο συνεργάτη παραγωγής." },
+      { t: "Παραγωγή", d: "Δοκιμαστική σειρά, ποιοτικός έλεγχος και παραγωγή." },
+      { t: "Παράδοση", d: "Ελεγμένα, συσκευασμένα και αποστολή σε εσάς." },
     ],
     applications: ["Σειριακή παραγωγή", "OEM εξαρτήματα", "Branded καταναλωτικά προϊόντα", "Ανταλλακτικά"],
   },
@@ -340,7 +340,7 @@ export const Route = createFileRoute("/capabilities/$slug")({
   head: ({ loaderData, params }) => {
     const seo = loaderData?.detail?.seo ?? {
       title: "Capability — TOREO",
-      description: "Engineering and manufacturing capability at TOREO.",
+      description: "Manufacturing capability at TOREO.",
     };
     const url = `https://www.toreo.gr/capabilities/${params.slug}`;
     const serviceName = loaderData?.cap ? titles[loaderData.cap.slug] : "Manufacturing service";
