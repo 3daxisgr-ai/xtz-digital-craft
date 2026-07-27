@@ -284,7 +284,6 @@ function QuotePage() {
           className="absolute inset-0 opacity-40 pointer-events-none"
           style={{ background: "radial-gradient(ellipse at 80% 30%, oklch(0.45 0.2 245 / 0.5), transparent 60%)" }}
         />
-        <span className="absolute top-24 right-6 md:right-12 font-mono text-[14px] tracking-[0.4em] text-primary/60">XYZ</span>
 
         <div className="relative z-10 mx-auto max-w-[1200px] px-6 md:px-12">
           <div className="flex items-center gap-4 mb-8">
