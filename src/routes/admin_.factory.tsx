@@ -194,7 +194,7 @@ function MachinesPanel() {
       <p className="text-xs text-white/50 mb-4">Scheduler automatically skips a factory-wide maintenance window every day at <b>12:00 → 12:05</b>. Each machine tracks its run hours and warns before the next service.</p>
       <div className="grid md:grid-cols-5 gap-2 mb-4">
         <Input placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-        <Input placeholder="Kind (printer/cnc/laser)" value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })} />
+        <Input placeholder="Kind (printer/laser/press)" value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })} />
         <Input placeholder="Vendor" value={form.vendor} onChange={(e) => setForm({ ...form, vendor: e.target.value })} />
         <Input placeholder="Model" value={form.model} onChange={(e) => setForm({ ...form, model: e.target.value })} />
         <div className="flex gap-2">
