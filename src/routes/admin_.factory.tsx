@@ -337,6 +337,12 @@ function AnalysisPanel() {
   const [rows, setRows] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
   const [mode, setMode] = useState<"prototype"|"durable"|"decorative">("prototype");
+  // NOTE: the "cnc" literal remains in this union only for historical
+  // read-compatibility with legacy analyses created before CNC was removed
+  // from the public catalogue. It is intentionally NOT offered as an option
+  // in the dropdown below and must not be selectable for new analyses.
+  // Do not remove the literal without a proper data migration for existing
+  // rows, and do not re-add the <option value="cnc"> below.
   const [service, setService] = useState<"3d_printing"|"cnc"|"laser"|"welding"|"other">("3d_printing");
   const load = async () => { if (!orderCode) return; try { setRows(await list({ data: { order_code: orderCode } })); } catch (e) { toast.error(String(e)); } };
 
@@ -347,7 +353,7 @@ function AnalysisPanel() {
       <div className="grid md:grid-cols-5 gap-2 mb-3">
         <Input placeholder="TR-2026-0001" value={orderCode} onChange={(e) => setOrderCode(e.target.value)} onBlur={load} />
         <select className="bg-neutral-800 border border-white/10 rounded px-2 text-sm" value={service} onChange={(e) => setService(e.target.value as any)}>
-          <option value="3d_printing">3D printing</option><option value="cnc">CNC</option><option value="laser">Laser</option><option value="welding">Welding</option><option value="other">Other</option>
+          <option value="3d_printing">3D printing</option><option value="laser">Laser</option><option value="welding">Welding</option><option value="other">Other</option>
         </select>
         <select className="bg-neutral-800 border border-white/10 rounded px-2 text-sm" value={mode} onChange={(e) => setMode(e.target.value as any)}>
           <option value="prototype">Prototype</option><option value="durable">Durable</option><option value="decorative">Decorative</option>
