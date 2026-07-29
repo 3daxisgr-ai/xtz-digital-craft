@@ -35,6 +35,8 @@ import { STATUS_FLOW, STATUS_LABEL } from "@/lib/api/orders.functions";
 import { panelListAnalyses, panelAnalyzeFile, panelApplyOverride, panelListMachines } from "@/lib/api/factory.functions";
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { RequestSummary } from "@/components/xtz/RequestSummary";
+import { acceptQuote, declineQuote } from "@/lib/api/quote-decision.functions";
+import { createProforma } from "@/lib/api/proforma.functions";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
