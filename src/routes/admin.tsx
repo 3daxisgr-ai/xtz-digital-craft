@@ -1595,3 +1595,76 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
   );
 }
 function Skeleton() { return <div className="h-40 animate-pulse bg-white/[0.03] rounded-sm" />; }
+
+function AcceptForm({ defaultPrice, defaultEmail, onSubmit, busy }: { defaultPrice: number; defaultEmail: string; onSubmit: (p: any) => void; busy: boolean }) {
+  const [price, setPrice] = useState(String(defaultPrice || 0));
+  const [delivery, setDelivery] = useState("");
+  const [terms, setTerms] = useState("50% deposit / 50% before shipping");
+  const [msg, setMsg] = useState("");
+  const [email, setEmail] = useState(defaultEmail ?? "");
+  const [send, setSend] = useState(true);
+  return (
+    <div className="space-y-3 text-xs">
+      <label className="block">Accepted price (EUR)
+        <input value={price} onChange={(e) => setPrice(e.target.value)} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="block">Delivery time
+        <input value={delivery} onChange={(e) => setDelivery(e.target.value)} placeholder="e.g. 7–10 working days" className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="block">Payment terms
+        <input value={terms} onChange={(e) => setTerms(e.target.value)} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="block">Message to customer (optional)
+        <textarea value={msg} onChange={(e) => setMsg(e.target.value)} rows={3} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="block">Recipient email
+        <input value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="flex items-center gap-2"><input type="checkbox" checked={send} onChange={(e) => setSend(e.target.checked)} /> Send email now</label>
+      <button disabled={busy} onClick={() => onSubmit({ accepted_price: Number(price) || 0, currency: "EUR", delivery_time: delivery || null, payment_terms: terms || null, customer_message: msg || null, recipient_email: email || null, send_email: send })}
+        className="px-4 py-2 bg-emerald-500 text-black text-[11px] font-mono tracking-widest uppercase rounded-sm disabled:opacity-40">
+        {busy ? "Accepting…" : "✓ Confirm & Accept"}
+      </button>
+    </div>
+  );
+}
+
+const DECLINE_REASONS = [
+  { code: "not_manufacturable", label: "Not manufacturable" },
+  { code: "outside_capabilities", label: "Outside capabilities" },
+  { code: "unavailable_material", label: "Material unavailable" },
+  { code: "price_disagreement", label: "Price disagreement" },
+  { code: "customer_cancelled", label: "Customer cancelled" },
+  { code: "other", label: "Other" },
+];
+
+function DeclineForm({ defaultEmail, onSubmit, busy }: { defaultEmail: string; onSubmit: (p: any) => void; busy: boolean }) {
+  const [reason, setReason] = useState("outside_capabilities");
+  const [reasonText, setReasonText] = useState("");
+  const [msg, setMsg] = useState("");
+  const [email, setEmail] = useState(defaultEmail ?? "");
+  const [send, setSend] = useState(true);
+  return (
+    <div className="space-y-3 text-xs">
+      <label className="block">Reason
+        <select value={reason} onChange={(e) => setReason(e.target.value)} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm">
+          {DECLINE_REASONS.map((r) => <option key={r.code} value={r.code}>{r.label}</option>)}
+        </select>
+      </label>
+      <label className="block">Internal / customer-visible note (optional)
+        <textarea value={reasonText} onChange={(e) => setReasonText(e.target.value)} rows={2} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="block">Message to customer (optional)
+        <textarea value={msg} onChange={(e) => setMsg(e.target.value)} rows={3} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="block">Recipient email
+        <input value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="flex items-center gap-2"><input type="checkbox" checked={send} onChange={(e) => setSend(e.target.checked)} /> Send email now</label>
+      <button disabled={busy} onClick={() => onSubmit({ reason_code: reason, reason_text: reasonText || null, customer_message: msg || null, recipient_email: email || null, send_email: send })}
+        className="px-4 py-2 bg-red-500 text-black text-[11px] font-mono tracking-widest uppercase rounded-sm disabled:opacity-40">
+        {busy ? "Declining…" : "✕ Confirm & Decline"}
+      </button>
+    </div>
+  );
+}
