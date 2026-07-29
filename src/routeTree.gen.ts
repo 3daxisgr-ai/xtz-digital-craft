@@ -43,6 +43,7 @@ import { Route as AdminConfigRouteImport } from './routes/admin_.config'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AdminReportCodeRouteImport } from './routes/admin_.report.$code'
+import { Route as AdminProformaNumberRouteImport } from './routes/admin_.proforma.$number'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as AdminPrintKindCodeRouteImport } from './routes/admin_.print.$kind.$code'
@@ -219,6 +220,11 @@ const AdminReportCodeRoute = AdminReportCodeRouteImport.update({
   path: '/admin/report/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProformaNumberRoute = AdminProformaNumberRouteImport.update({
+  id: '/admin_/proforma/$number',
+  path: '/admin/proforma/$number',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -272,6 +278,7 @@ export interface FileRoutesByFullPath {
   '/portal/$orderCode': typeof PortalOrderCodeRoute
   '/portal/projects': typeof PortalProjectsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/proforma/$number': typeof AdminProformaNumberRoute
   '/admin/report/$code': typeof AdminReportCodeRoute
   '/admin/print/$kind/$code': typeof AdminPrintKindCodeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -311,6 +318,7 @@ export interface FileRoutesByTo {
   '/portal/$orderCode': typeof PortalOrderCodeRoute
   '/portal/projects': typeof PortalProjectsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/proforma/$number': typeof AdminProformaNumberRoute
   '/admin/report/$code': typeof AdminReportCodeRoute
   '/admin/print/$kind/$code': typeof AdminPrintKindCodeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -351,6 +359,7 @@ export interface FileRoutesById {
   '/portal/$orderCode': typeof PortalOrderCodeRoute
   '/portal_/projects': typeof PortalProjectsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin_/proforma/$number': typeof AdminProformaNumberRoute
   '/admin_/report/$code': typeof AdminReportCodeRoute
   '/admin_/print/$kind/$code': typeof AdminPrintKindCodeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -392,6 +401,7 @@ export interface FileRouteTypes {
     | '/portal/$orderCode'
     | '/portal/projects'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/proforma/$number'
     | '/admin/report/$code'
     | '/admin/print/$kind/$code'
     | '/lovable/email/queue/process'
@@ -431,6 +441,7 @@ export interface FileRouteTypes {
     | '/portal/$orderCode'
     | '/portal/projects'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/proforma/$number'
     | '/admin/report/$code'
     | '/admin/print/$kind/$code'
     | '/lovable/email/queue/process'
@@ -470,6 +481,7 @@ export interface FileRouteTypes {
     | '/portal/$orderCode'
     | '/portal_/projects'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin_/proforma/$number'
     | '/admin_/report/$code'
     | '/admin_/print/$kind/$code'
     | '/lovable/email/queue/process'
@@ -509,6 +521,7 @@ export interface RootRouteChildren {
   GrRapidPrototypingRoute: typeof GrRapidPrototypingRoute
   PortalProjectsRoute: typeof PortalProjectsRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  AdminProformaNumberRoute: typeof AdminProformaNumberRoute
   AdminReportCodeRoute: typeof AdminReportCodeRoute
   AdminPrintKindCodeRoute: typeof AdminPrintKindCodeRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -754,6 +767,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminReportCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/proforma/$number': {
+      id: '/admin_/proforma/$number'
+      path: '/admin/proforma/$number'
+      fullPath: '/admin/proforma/$number'
+      preLoaderRoute: typeof AdminProformaNumberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -824,6 +844,7 @@ const rootRouteChildren: RootRouteChildren = {
   GrRapidPrototypingRoute: GrRapidPrototypingRoute,
   PortalProjectsRoute: PortalProjectsRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  AdminProformaNumberRoute: AdminProformaNumberRoute,
   AdminReportCodeRoute: AdminReportCodeRoute,
   AdminPrintKindCodeRoute: AdminPrintKindCodeRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
