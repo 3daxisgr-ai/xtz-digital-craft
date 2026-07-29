@@ -646,6 +646,15 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
         {toast && <span className="text-[10px] font-mono tracking-[0.25em] text-emerald-300">{toast}</span>}
       </div>
       <div className="flex flex-wrap gap-2">
+        <button className={btnOk} onClick={() => setModal("accept")}>✓ ACCEPT QUOTE</button>
+        <button className={btn + " border-red-400/40 hover:border-red-400 text-red-200"} onClick={() => setModal("decline")}>✕ DECLINE QUOTE</button>
+        <button className={btnBlue} disabled={busy === "proforma"} onClick={async () => {
+          setBusy("proforma");
+          try {
+            const pf: any = await createProformaFn({ data: { order_code: code } });
+            window.open(`/admin/proforma/${encodeURIComponent(pf.number)}`, "_blank", "noopener,noreferrer");
+          } catch (e: any) { flash(e.message ?? "Failed"); } finally { setBusy(null); }
+        }}>🧾 PROFORMA INVOICE</button>
         <button className={btnPri} disabled={busy === "ai"} onClick={runAI}>{busy === "ai" ? "RUNNING…" : "▶ RUN AI AGAIN"}</button>
         <button className={btnDef} onClick={openAssign}>🖨 ASSIGN PRINTER</button>
         <button className={btnDef} onClick={() => setModal("priority")}>⚑ CHANGE PRIORITY</button>
