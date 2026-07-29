@@ -531,6 +531,9 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
   const listMachines = useServerFn(panelListMachines);
   const getJob = useServerFn(panelGetOrderJob);
   const upload = useServerFn(panelUploadFile);
+  const acceptFn = useServerFn(acceptQuote);
+  const declineFn = useServerFn(declineQuote);
+  const createProformaFn = useServerFn(createProforma);
 
   const [busy, setBusy] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
