@@ -683,12 +683,23 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
         </Modal>
       )}
 
-      {modal === "status" && null}
+      {modal === "status" && (
+        <Modal onClose={() => setModal(null)} title="Change status (notifies customer)">
+          <div className="flex flex-wrap gap-2">
+            {STATUS_FLOW.map((s) => (
+              <button key={s} onClick={() => setStatus(s)} disabled={busy === "status"}
+                className={`${btn} ${o.status === s ? "border-amber-300 text-amber-300 bg-amber-300/10" : "border-white/10 text-white/70 hover:border-white/40"}`}>
+                {STATUS_LABEL[s]}
+              </button>
+            ))}
+          </div>
+        </Modal>
+      )}
 
       {modal === "accept" && (
         <Modal onClose={() => setModal(null)} title="Accept quote & notify customer">
           <AcceptForm defaultPrice={Number(o.quote_price ?? 0)} defaultEmail={o.customer_email}
-            onSubmit={async (payload) => {
+            onSubmit={async (payload: any) => {
               setBusy("accept");
               try {
                 await acceptFn({ data: { order_code: code, ...payload } });
@@ -701,26 +712,13 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
       {modal === "decline" && (
         <Modal onClose={() => setModal(null)} title="Decline quote & notify customer">
           <DeclineForm defaultEmail={o.customer_email}
-            onSubmit={async (payload) => {
+            onSubmit={async (payload: any) => {
               setBusy("decline");
               try {
                 await declineFn({ data: { order_code: code, ...payload } });
                 flash("Quote declined ✓ (email sent)"); setModal(null); onChanged();
               } catch (e: any) { flash(e.message ?? "Failed"); } finally { setBusy(null); }
             }} busy={busy === "decline"} />
-        </Modal>
-      )}
-
-      {modal === "status_disabled" && (
-        <Modal onClose={() => setModal(null)} title="Change status (notifies customer)">
-          <div className="flex flex-wrap gap-2">
-            {STATUS_FLOW.map((s) => (
-              <button key={s} onClick={() => setStatus(s)} disabled={busy === "status"}
-                className={`${btn} ${o.status === s ? "border-amber-300 text-amber-300 bg-amber-300/10" : "border-white/10 text-white/70 hover:border-white/40"}`}>
-                {STATUS_LABEL[s]}
-              </button>
-            ))}
-          </div>
         </Modal>
       )}
 
