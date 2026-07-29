@@ -67,7 +67,7 @@ export const acceptQuote = createServerFn({ method: "POST" })
       try {
         const { sendQuoteAcceptedEmail } = await import("@/lib/email/quote-decision.server");
         const r = await sendQuoteAcceptedEmail({
-          to,
+          to: to!,
           orderCode: order.order_code,
           price: data.accepted_price,
           currency: data.currency,
@@ -142,7 +142,7 @@ export const declineQuote = createServerFn({ method: "POST" })
       try {
         const { sendQuoteDeclinedEmail } = await import("@/lib/email/quote-decision.server");
         const r = await sendQuoteDeclinedEmail({
-          to, orderCode: order.order_code,
+          to: to!, orderCode: order.order_code,
           reason: combinedReason, message: data.customer_message,
         });
         await supabaseAdmin.from("quote_decisions" as any).update({
