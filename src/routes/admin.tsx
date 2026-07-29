@@ -683,7 +683,35 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
         </Modal>
       )}
 
-      {modal === "status" && (
+      {modal === "status" && null}
+
+      {modal === "accept" && (
+        <Modal onClose={() => setModal(null)} title="Accept quote & notify customer">
+          <AcceptForm defaultPrice={Number(o.quote_price ?? 0)} defaultEmail={o.customer_email}
+            onSubmit={async (payload) => {
+              setBusy("accept");
+              try {
+                await acceptFn({ data: { order_code: code, ...payload } });
+                flash("Quote accepted ✓ (email sent)"); setModal(null); onChanged();
+              } catch (e: any) { flash(e.message ?? "Failed"); } finally { setBusy(null); }
+            }} busy={busy === "accept"} />
+        </Modal>
+      )}
+
+      {modal === "decline" && (
+        <Modal onClose={() => setModal(null)} title="Decline quote & notify customer">
+          <DeclineForm defaultEmail={o.customer_email}
+            onSubmit={async (payload) => {
+              setBusy("decline");
+              try {
+                await declineFn({ data: { order_code: code, ...payload } });
+                flash("Quote declined ✓ (email sent)"); setModal(null); onChanged();
+              } catch (e: any) { flash(e.message ?? "Failed"); } finally { setBusy(null); }
+            }} busy={busy === "decline"} />
+        </Modal>
+      )}
+
+      {modal === "status_disabled" && (
         <Modal onClose={() => setModal(null)} title="Change status (notifies customer)">
           <div className="flex flex-wrap gap-2">
             {STATUS_FLOW.map((s) => (
