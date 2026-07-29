@@ -760,6 +760,161 @@ export type Database = {
         }
         Relationships: []
       }
+      proforma_lines: {
+        Row: {
+          auto_managed: boolean
+          created_at: string
+          description: string
+          discount_pct: number
+          id: string
+          position: number
+          proforma_id: string
+          qty: number
+          unit: string
+          unit_price: number
+          vat_pct: number
+        }
+        Insert: {
+          auto_managed?: boolean
+          created_at?: string
+          description?: string
+          discount_pct?: number
+          id?: string
+          position?: number
+          proforma_id: string
+          qty?: number
+          unit?: string
+          unit_price?: number
+          vat_pct?: number
+        }
+        Update: {
+          auto_managed?: boolean
+          created_at?: string
+          description?: string
+          discount_pct?: number
+          id?: string
+          position?: number
+          proforma_id?: string
+          qty?: number
+          unit?: string
+          unit_price?: number
+          vat_pct?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proforma_lines_proforma_id_fkey"
+            columns: ["proforma_id"]
+            isOneToOne: false
+            referencedRelation: "proformas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proformas: {
+        Row: {
+          admin_user: string | null
+          auto_sync: boolean
+          body: string | null
+          cc: string | null
+          created_at: string
+          customer_snapshot: Json
+          deposit_amount: number
+          due_date: string | null
+          email_error: string | null
+          email_message_id: string | null
+          email_status: string | null
+          financial_snapshot: Json
+          id: string
+          notes: string | null
+          number: string
+          order_id: string
+          order_signature: string | null
+          paid_amount: number
+          parent_proforma_id: string | null
+          pdf_generated_at: string | null
+          pdf_path: string | null
+          recipient: string | null
+          revision: number
+          sent_at: string | null
+          status: string
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_user?: string | null
+          auto_sync?: boolean
+          body?: string | null
+          cc?: string | null
+          created_at?: string
+          customer_snapshot?: Json
+          deposit_amount?: number
+          due_date?: string | null
+          email_error?: string | null
+          email_message_id?: string | null
+          email_status?: string | null
+          financial_snapshot?: Json
+          id?: string
+          notes?: string | null
+          number: string
+          order_id: string
+          order_signature?: string | null
+          paid_amount?: number
+          parent_proforma_id?: string | null
+          pdf_generated_at?: string | null
+          pdf_path?: string | null
+          recipient?: string | null
+          revision?: number
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_user?: string | null
+          auto_sync?: boolean
+          body?: string | null
+          cc?: string | null
+          created_at?: string
+          customer_snapshot?: Json
+          deposit_amount?: number
+          due_date?: string | null
+          email_error?: string | null
+          email_message_id?: string | null
+          email_status?: string | null
+          financial_snapshot?: Json
+          id?: string
+          notes?: string | null
+          number?: string
+          order_id?: string
+          order_signature?: string | null
+          paid_amount?: number
+          parent_proforma_id?: string | null
+          pdf_generated_at?: string | null
+          pdf_path?: string | null
+          recipient?: string | null
+          revision?: number
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proformas_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proformas_parent_proforma_id_fkey"
+            columns: ["parent_proforma_id"]
+            isOneToOne: false
+            referencedRelation: "proformas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_analyses: {
         Row: {
           actual_cost_eur: number | null
@@ -1012,6 +1167,80 @@ export type Database = {
           },
         ]
       }
+      quote_decisions: {
+        Row: {
+          accepted_price: number | null
+          admin_user: string | null
+          created_at: string
+          currency: string
+          customer_message: string | null
+          decline_reason_code: string | null
+          decline_reason_text: string | null
+          delivery_time: string | null
+          email_error: string | null
+          email_message_id: string | null
+          email_sent_at: string | null
+          email_status: string
+          email_subject: string | null
+          id: string
+          new_status: string
+          order_id: string
+          payment_terms: string | null
+          previous_status: string | null
+          recipient_email: string | null
+        }
+        Insert: {
+          accepted_price?: number | null
+          admin_user?: string | null
+          created_at?: string
+          currency?: string
+          customer_message?: string | null
+          decline_reason_code?: string | null
+          decline_reason_text?: string | null
+          delivery_time?: string | null
+          email_error?: string | null
+          email_message_id?: string | null
+          email_sent_at?: string | null
+          email_status?: string
+          email_subject?: string | null
+          id?: string
+          new_status: string
+          order_id: string
+          payment_terms?: string | null
+          previous_status?: string | null
+          recipient_email?: string | null
+        }
+        Update: {
+          accepted_price?: number | null
+          admin_user?: string | null
+          created_at?: string
+          currency?: string
+          customer_message?: string | null
+          decline_reason_code?: string | null
+          decline_reason_text?: string | null
+          delivery_time?: string | null
+          email_error?: string | null
+          email_message_id?: string | null
+          email_sent_at?: string | null
+          email_status?: string
+          email_subject?: string | null
+          id?: string
+          new_status?: string
+          order_id?: string
+          payment_terms?: string | null
+          previous_status?: string | null
+          recipient_email?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_decisions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quotes: {
         Row: {
           created_at: string
@@ -1250,6 +1479,13 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -1259,6 +1495,7 @@ export type Database = {
         }
         Returns: number
       }
+      next_proforma_number: { Args: never; Returns: string }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {

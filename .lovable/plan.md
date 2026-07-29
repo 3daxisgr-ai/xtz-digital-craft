@@ -1,184 +1,89 @@
-# TOREO Customer Portal & Order Management System
+# TOREO Admin: Compact Nav + Quote Decision + Proforma
 
-A full plan to add authenticated customer portal, admin order management, public tracking, and automated email notifications on top of the existing TOREO site — without changing any current branding or UI.
+Scope is admin-only. Public site, portal, tracking, auth, factory/scheduler, order codes and existing customer data untouched. Only the quote-decision and proforma email flows are added — existing status emails continue to work.
 
-## 1. Order ID System
+Given the size, I'll ship this in 3 batches, each independently verifiable, and give the final consolidated report after batch 3.
 
-- Generate human-readable IDs `TR-YYYY-NNNN` (4-digit, zero-padded, sequence resets per year).
-- Implemented as a Postgres sequence per year + DB function `public.next_order_id()` called by a `BEFORE INSERT` trigger on `orders.order_code`.
-- ID flows everywhere: portal, admin, emails, tracking page, PDFs.
+---
 
-## 2. Database (Lovable Cloud / Postgres)
+## Batch 1 — Database + backend
 
-New tables (all with RLS + GRANTs):
+### Migrations
+- `quote_decisions` — id, order_id, previous_status, new_status (accepted|declined), admin_user, accepted_price, currency, delivery_time, payment_terms, decline_reason (enum + free text), customer_message, recipient_email, email_status (pending|sent|failed), email_message_id, email_error, created_at.
+- `proformas` — id, order_id, number (`INV-YYYY-####`), revision (int, 0 = base, 1+ = R1…), parent_proforma_id, status (draft|generated|sent|paid|cancelled), customer_snapshot (jsonb), financial_snapshot (jsonb: lines, subtotal, discount, net, vat_pct, vat_amount, total, deposit, paid, balance), pdf_path (storage), pdf_generated_at, order_signature (hash of synced fields at PDF gen time), sent_at, recipient, cc, subject, body, email_status, email_message_id, email_error, admin_user, created_at, updated_at.
+- `proforma_lines` — id, proforma_id, position, description, qty, unit, unit_price, discount_pct, vat_pct.
+- Storage bucket `proformas` (private) for PDFs.
+- Extend `orders.status` enum with `declined` if missing (currently has `rejected` — reuse `rejected` to avoid enum churn; internal decline_reason lives on `quote_decisions`).
+- All tables: GRANT to authenticated + service_role, RLS admin-only via `has_role(auth.uid(),'admin')`.
 
-- `profiles` — `{ user_id (FK auth.users), full_name, company, phone }` for portal users.
-- `user_roles` — separate roles table + `app_role` enum (`admin`, `customer`) with `has_role(_user_id, _role)` security-definer function (per project rules).
-- `orders` — central entity:
-  - `id`, `order_code` (TR-YYYY-NNNN, unique), `user_id` (nullable — guest submissions can be claimed later by email match),
-  - `customer_name`, `customer_email`, `customer_phone`, `company`,
-  - `source` (`inquiry`, `3dp-quote`, `start`),
-  - `service`, `material`, `quantity`, `dimensions`, `message`,
-  - `quote_price numeric`, `currency` default 'EUR',
-  - `status` enum: `quote_received | engineering_review | quote_sent | awaiting_approval | payment_received | production | quality_inspection | ready_for_shipping | shipped | delivered | cancelled`,
-  - `courier`, `tracking_number`, `tracking_url`, `estimated_delivery date`,
-  - `internal_notes text` (admin-only via RLS),
-  - timestamps.
-- `order_files` — `{ order_id, file_path, file_name, file_type, uploaded_by ('customer'|'admin'), visibility ('customer'|'admin'), size }`.
-- `order_events` — append-only timeline `{ order_id, type, title, payload jsonb, actor, created_at }`. Used for both customer-visible timeline and admin audit.
-- `order_messages` — `{ order_id, from_role, body, created_at }` for TOREO ↔ customer messages.
+### Server functions (`src/lib/api/quote-decision.functions.ts`, `proforma.functions.ts`)
+All `requireSupabaseAuth` + admin role check inside handler.
+- `acceptQuote({ order_id, price, delivery_time, payment_terms, recipient, subject, message, admin_note })` — updates order, writes decision row, sends acceptance email, records email status; idempotent via `pending` guard.
+- `declineQuote({ order_id, reason_code, customer_message, recipient, subject })` — sets status to `rejected`, writes decision, sends email.
+- `retryDecisionEmail({ decision_id })`.
+- `proformaCreate({ order_id })` — only if latest decision is accepted; creates draft from order snapshot + one line from quote price.
+- `proformaUpdate({ id, patch, lines })` — draft/generated only; recomputes totals.
+- `proformaSyncFromOrder(order_id)` — called from `panelUpdateOrder` after save; updates every draft/generated proforma's snapshot and lines[0] where the admin hasn't manually edited them; invalidates PDF (status→draft, pdf_path cleared) if fields differ from `order_signature`.
+- `proformaGeneratePdf({ id })` — renders HTML via headless-safe template, uses `@react-pdf/renderer` (Worker-compatible) → uploads to storage, stores `order_signature`, sets status=generated.
+- `proformaSend({ id, recipient, cc, subject, body })` — requires status=generated AND signature matches current order; attaches stored PDF via Resend; on success status=sent, sent_at=now.
+- `proformaMarkPaid({ id, amount })`, `proformaCancel({ id })`.
+- `proformaCreateRevision({ id })` — clones as R{n+1}, parent link, draft status.
 
-Triggers:
-- `orders` BEFORE INSERT → assign `order_code` via `next_order_id()`.
-- `orders` AFTER UPDATE on status/shipping fields → insert `order_events` row + enqueue email.
-- `update_updated_at_column()` trigger on `orders`.
+### Email templates
+Add EN+GR templates in `src/lib/email/quote-decision.server.ts` (acceptance/decline) and `proforma.server.ts` (send-with-attachment). Reuse `sendBrandedEmail` (adds `attachments` param passthrough to Resend).
 
-RLS:
-- `orders` SELECT: `auth.uid() = user_id OR has_role(auth.uid(),'admin')`.
-- `orders` UPDATE/INSERT: admin only (writes go through server functions).
-- `order_files` visibility-aware (`visibility='customer'` for customer SELECT; admin sees all).
-- `internal_notes` excluded from customer queries (server-side column projection).
+---
 
-Migrate existing `submissions` / `quotes` data into `orders` on first run (one-time SQL in migration).
+## Batch 2 — Compact admin navigation
 
-## 3. Auth
+### New shell
+- `src/components/admin/AdminShell.tsx` — sticky top bar: logo, global search, date, groups Overview/Sales/Production/Fulfilment/System as click-open dropdowns (radix DropdownMenu, keyboard nav, click-outside close, active highlight). Right side: admin user menu.
+- `src/components/admin/AdminMobileNav.tsx` — hamburger + slide-out Sheet listing all routes grouped.
+- `src/routes/admin.tsx` and `admin_.*.tsx` — replace existing sidebar with `<AdminShell>`. No route renames; only presentation changes.
+- Route grouping (display-only):
+  - Overview: `/admin` (Dashboard)
+  - Sales: Orders, Quotes, Customers, Reviews
+  - Production: `/admin/factory`, `/admin/scheduler`, Uploads, `/admin/live`
+  - Fulfilment: Tracking, `/admin/shipping`, Notifications
+  - System: `/admin/config`, Admin Users, Logs
+- Order/quote detail: `CompactHeader` component — back link, ref, status, priority, customer name+email, primary CTAs.
 
-- Email/password + Google OAuth (default per platform rules), via Lovable Cloud auth.
-- Auth route `/auth` (sign in / sign up / reset password).
-- New `_authenticated` layout (integration-managed) wraps portal routes.
-- New `_authenticated/_admin` layout gates admin routes via `has_role(uid,'admin')`.
-- On signup, trigger creates a `profiles` row and auto-claims any existing `orders` matching the email.
+### Quick Actions restructure (`src/routes/admin.tsx` QuickActions)
+- Primary row: Accept/Decline (when pending), Save Changes, Change Status, Send Update.
+- Dropdowns (radix): PRODUCTION (Run AI, Assign Printer, Priority, Move in Queue, Complete, MFG Report), DOCUMENTS (Upload Photos, Quote PDF, Proforma), DELIVERY (Add Tracking, Tracking Actions), MORE (Delete/Cancel/Archive — with confirm).
+- Context gating: hide/disable per rules with tooltip explaining why.
+- Sticky tabs bar + persistent "Unsaved changes" indicator + sticky Save Changes button; warn on tab switch with dirty state.
 
-## 4. Customer Portal Routes (`/portal/*`)
+---
 
-- `/portal` — order list table (Order ID, date, status pill, price, CTA).
-- `/portal/orders/$orderCode` — order detail:
-  - Animated progress bar across the 10 statuses.
-  - Order timeline (events with icons + timestamps).
-  - Quote price + Approve Quote button (transitions status to `awaiting_approval`→ admin sees).
-  - Files panel (download approved files, upload more).
-  - Messages panel (read + reply).
-  - Shipping card (courier, tracking number with link, ETA).
-  - Invoice download.
-- `/portal/profile` — edit profile.
+## Batch 3 — Accept/Decline UI + Proforma editor
 
-Uses TanStack Query + server functions; UI built with existing shadcn primitives, dark industrial theme matching site.
+### Accept/Decline modals
+`src/components/admin/AcceptQuoteModal.tsx`, `DeclineQuoteModal.tsx` — prefilled from order, two-step confirm, EN/GR body previews, `ACCEPT & SEND EMAIL` / `DECLINE & SEND EMAIL`. On email fail: keep decision saved, show Retry button, prevent double-submit.
 
-## 5. Admin Dashboard (`/admin/*`)
+### Proforma editor
+`src/routes/admin_.proforma.$orderCode.tsx` — split editor (left) + live A4 preview (right).
+- Header: number, revision, status pill, order link.
+- Customer/Billing card (editable, prefilled).
+- Line items table (add/edit/dup/delete).
+- Totals card (subtotal/discount/net/VAT/total/deposit/paid/balance, 2 dp).
+- Actions: Preview, Save Draft, Generate PDF, Download PDF, Send Proforma, Mark as Paid, Cancel Proforma.
+- Outdated banner when `order_signature` ≠ current order hash → disables Send until regenerated.
 
-(Replaces current `/admin` route.)
+### PDF generation
+`@react-pdf/renderer` (Worker-safe, no native deps). A4 template matching uploaded quotation: black header w/ TOREO white logo, white/light-grey cards, blue accents, dark type, black footer, selectable text, Greek glyphs via bundled DejaVuSans.
 
-- `/admin` — orders table with search (Order ID, name, company, email), filter by status, sort by date.
-- `/admin/orders/$orderCode` — full editor:
-  - Status dropdown (changes auto-create timeline event + email).
-  - Shipping fields (courier, tracking #, ETA).
-  - Quote price + currency.
-  - Internal notes (admin-only).
-  - File uploads (mark as customer-visible or admin-only).
-  - Customer info editor.
-  - Full timeline + audit log.
-  - "Mark Completed" action.
-- All writes through `requireSupabaseAuth` server functions that re-check `has_role('admin')` server-side.
+### Send flow
+`SendProformaModal` — recipient/cc/subject/body prefilled, attachment shown, `SEND NOW` second confirm, disabled while in-flight, guards against duplicate send by proforma status.
 
-## 6. Public Order Tracking (`/track`)
+---
 
-- Form: Order ID + email.
-- Server function validates pair, returns minimal public payload (status, progress, timeline events without internal notes, courier/tracking/ETA).
-- No login required; no PII beyond what's tied to that order.
-- Rate-limited via simple per-IP token bucket in the function.
+## Technical notes
 
-## 7. Email Notifications
+- All decision/proforma work runs server-side under `requireSupabaseAuth` + admin role check; no privileged keys in client.
+- `panelUpdateOrder` hook: after save, call `proformaSyncFromOrder(order_id)`. Skips sent/cancelled proformas. If any field changed vs `order_signature` on a generated proforma, PDF invalidated.
+- Get Quote flow (`src/routes/3d-printing-quote.tsx`, `request.tsx`) untouched — verified no proforma creation added.
+- Existing status emails (`sendStatusEmail`) unchanged; new acceptance/decline emails are additional and only sent from explicit admin actions.
+- Revisions: `proformaCreateRevision` produces `INV-YYYY-####-R1`, never mutates sent PDFs.
 
-Use Lovable Emails infrastructure (`email_domain--setup_email_infra` + `scaffold_transactional_email`).
-
-Templates under `src/lib/email-templates/`:
-- `quote-received.tsx`
-- `quote-ready.tsx`
-- `quote-approved.tsx`
-- `payment-received.tsx`
-- `production-started.tsx`
-- `quality-inspection.tsx`
-- `order-shipped.tsx`
-- `order-delivered.tsx`
-
-Branded with TOREO colors, includes Order ID, portal deep-link button, and tracking link when shipped. Idempotency key = `${order_code}-${event_type}`.
-
-A status-change trigger on `orders` inserts into `order_events`; a server function (or DB trigger calling `enqueue_email`) enqueues the right template. Existing inquiry/3dp-quote submission paths are rewired to create an `order` row and send `quote-received`.
-
-## 8. File Management
-
-- Existing `submission-files` private storage bucket reused (renamed concept to "order-files" if needed — new bucket `order-files`).
-- Customer uploads go through server function that validates extension (`.step .stp .stl .dxf .pdf .jpg .jpeg .png`) and size (≤25 MB), writes to `order-files/{order_code}/{uuid}_{filename}`.
-- Downloads return short-lived signed URLs through server function — never expose direct storage paths.
-- Admin uploads mark `visibility` (`customer` or `admin`).
-
-## 9. Existing Submission Flow Integration
-
-- `InquiryForm`, `3d-printing-quote`, and `start` forms call `createOrderFromSubmission` server function which:
-  1. Creates `orders` row (gets Order ID via trigger).
-  2. Inserts initial `order_events` "Quote Submitted".
-  3. Enqueues `quote-received` email with the Order ID.
-  4. Sends existing Discord webhook (kept).
-  5. If submitter is authenticated, links `user_id`; else stores email for later claim.
-- Confirmation screens updated to show the assigned Order ID + link to `/track` and `/portal`.
-
-## 10. Security
-
-- RLS on all new tables; admin checks via `has_role` security-definer function.
-- Internal notes never selected in customer-scope queries.
-- File path validation regex (`^[a-zA-Z0-9_\-]+/[a-zA-Z0-9_.\-]+$`).
-- Public tracking limited to status + shipping fields, no internal notes, no full file list (only customer-visible files).
-- All admin mutations re-verify role server-side, not just route gate.
-- Service-role key only used inside server functions, never in client.
-
-## 11. UI / Design
-
-- Reuse existing TOREO dark theme tokens (`src/styles.css`), typography (`Bodoni Moda`, `Inter`), button styles, card patterns from `Equipment.tsx`, `ServicePage.tsx`.
-- Progress bar: horizontal stepper, completed steps glow in TOREO accent, active step pulses, future steps muted.
-- Timeline: vertical with iconography reusing existing SVG style.
-- Status pills with brand-consistent color mapping.
-- Fully responsive; mobile-first; keeps existing nav + adds "Portal" link when authenticated, "Admin" link when admin.
-
-## 12. Scalability
-
-- Indexes: `orders(user_id)`, `orders(customer_email)`, `orders(status)`, `orders(order_code)`, `order_events(order_id, created_at)`.
-- Pagination on admin orders list (cursor-based using `created_at, id`).
-- Server functions stateless; emails via queue (already supported by Lovable Emails infra).
-- Schema leaves room for future tables: `payments`, `invoices`, `erp_sync_log` without breaking changes.
-
-## Technical Section
-
-- Stack: TanStack Start v1, React 19, Tailwind v4, shadcn, Lovable Cloud (Supabase), Lovable Emails, Lovable AI Gateway not needed.
-- New routes:
-  - `src/routes/auth.tsx`
-  - `src/routes/_authenticated/route.tsx` (integration-managed)
-  - `src/routes/_authenticated/portal.tsx`
-  - `src/routes/_authenticated/portal.orders.$orderCode.tsx`
-  - `src/routes/_authenticated/portal.profile.tsx`
-  - `src/routes/_authenticated/_admin/route.tsx`
-  - `src/routes/_authenticated/_admin/admin.tsx`
-  - `src/routes/_authenticated/_admin/admin.orders.$orderCode.tsx`
-  - `src/routes/track.tsx`
-- New server fns in `src/lib/api/orders.functions.ts`, `src/lib/api/admin-orders.functions.ts`, `src/lib/api/tracking.functions.ts`.
-- New migrations for: enums, tables, sequence + function, triggers, RLS, GRANTs, role seeding RPC.
-- Email setup via `email_domain--setup_email_infra` then `scaffold_transactional_email`, then 8 template files.
-
-## Build Order (proposed execution)
-
-1. Database migration: roles, orders, files, events, messages, RLS, GRANTs, trigger functions, Order ID sequence/function, data migration from `submissions`/`quotes`.
-2. Auth pages + `_authenticated` layout + role gate.
-3. Server functions (orders CRUD, admin updates, tracking lookup, file upload/signed URL).
-4. Rewire existing submission forms to create `orders` rows.
-5. Customer portal UI (list + detail + progress bar + timeline).
-6. Admin dashboard UI (list + detail editor).
-7. Public `/track` page.
-8. Email infrastructure + 8 branded templates + status-change → email wiring.
-9. Navigation updates (Portal/Admin links when signed in).
-10. Verification: build, lint, manual smoke through Playwright on key flows.
-
-## Open Questions Before I Start
-
-1. **Admin bootstrap**: how should the first admin be created? Options: (a) seed your account's email via migration once you tell me which email, (b) a one-time setup page protected by `ADMIN_PASSWORD` secret. Which?
-2. **Auth methods**: email/password only, or email + Google OAuth (default)?
-3. **Existing `/admin` route**: it currently uses `ADMIN_PASSWORD`. OK to replace with the new role-based admin?
-4. **Migrating historical `submissions`/`quotes`**: convert all existing rows into `orders` with status `quote_received`, or start fresh and leave the old tables read-only for archive?
+Ready to implement in the three batches above.

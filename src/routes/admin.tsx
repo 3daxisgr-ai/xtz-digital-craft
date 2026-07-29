@@ -35,6 +35,8 @@ import { STATUS_FLOW, STATUS_LABEL } from "@/lib/api/orders.functions";
 import { panelListAnalyses, panelAnalyzeFile, panelApplyOverride, panelListMachines } from "@/lib/api/factory.functions";
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { RequestSummary } from "@/components/xtz/RequestSummary";
+import { acceptQuote, declineQuote } from "@/lib/api/quote-decision.functions";
+import { createProforma } from "@/lib/api/proforma.functions";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -529,10 +531,13 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
   const listMachines = useServerFn(panelListMachines);
   const getJob = useServerFn(panelGetOrderJob);
   const upload = useServerFn(panelUploadFile);
+  const acceptFn = useServerFn(acceptQuote);
+  const declineFn = useServerFn(declineQuote);
+  const createProformaFn = useServerFn(createProforma);
 
   const [busy, setBusy] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
-  const [modal, setModal] = useState<null | "priority" | "status" | "assign" | "message" | "tracking">(null);
+  const [modal, setModal] = useState<null | "priority" | "status" | "assign" | "message" | "tracking" | "accept" | "decline">(null);
   const [machines, setMachines] = useState<any[]>([]);
   const [jobInfo, setJobInfo] = useState<any>(null);
   const photoRef = useRef<HTMLInputElement>(null);
@@ -641,6 +646,15 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
         {toast && <span className="text-[10px] font-mono tracking-[0.25em] text-emerald-300">{toast}</span>}
       </div>
       <div className="flex flex-wrap gap-2">
+        <button className={btnOk} onClick={() => setModal("accept")}>✓ ACCEPT QUOTE</button>
+        <button className={btn + " border-red-400/40 hover:border-red-400 text-red-200"} onClick={() => setModal("decline")}>✕ DECLINE QUOTE</button>
+        <button className={btnBlue} disabled={busy === "proforma"} onClick={async () => {
+          setBusy("proforma");
+          try {
+            const pf: any = await createProformaFn({ data: { order_code: code } });
+            window.open(`/admin/proforma/${encodeURIComponent(pf.number)}`, "_blank", "noopener,noreferrer");
+          } catch (e: any) { flash(e.message ?? "Failed"); } finally { setBusy(null); }
+        }}>🧾 PROFORMA INVOICE</button>
         <button className={btnPri} disabled={busy === "ai"} onClick={runAI}>{busy === "ai" ? "RUNNING…" : "▶ RUN AI AGAIN"}</button>
         <button className={btnDef} onClick={openAssign}>🖨 ASSIGN PRINTER</button>
         <button className={btnDef} onClick={() => setModal("priority")}>⚑ CHANGE PRIORITY</button>
@@ -679,6 +693,32 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
               </button>
             ))}
           </div>
+        </Modal>
+      )}
+
+      {modal === "accept" && (
+        <Modal onClose={() => setModal(null)} title="Accept quote & notify customer">
+          <AcceptForm defaultPrice={Number(o.quote_price ?? 0)} defaultEmail={o.customer_email}
+            onSubmit={async (payload: any) => {
+              setBusy("accept");
+              try {
+                await acceptFn({ data: { order_code: code, ...payload } });
+                flash("Quote accepted ✓ (email sent)"); setModal(null); onChanged();
+              } catch (e: any) { flash(e.message ?? "Failed"); } finally { setBusy(null); }
+            }} busy={busy === "accept"} />
+        </Modal>
+      )}
+
+      {modal === "decline" && (
+        <Modal onClose={() => setModal(null)} title="Decline quote & notify customer">
+          <DeclineForm defaultEmail={o.customer_email}
+            onSubmit={async (payload: any) => {
+              setBusy("decline");
+              try {
+                await declineFn({ data: { order_code: code, ...payload } });
+                flash("Quote declined ✓ (email sent)"); setModal(null); onChanged();
+              } catch (e: any) { flash(e.message ?? "Failed"); } finally { setBusy(null); }
+            }} busy={busy === "decline"} />
         </Modal>
       )}
 
@@ -1555,3 +1595,76 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
   );
 }
 function Skeleton() { return <div className="h-40 animate-pulse bg-white/[0.03] rounded-sm" />; }
+
+function AcceptForm({ defaultPrice, defaultEmail, onSubmit, busy }: { defaultPrice: number; defaultEmail: string; onSubmit: (p: any) => void; busy: boolean }) {
+  const [price, setPrice] = useState(String(defaultPrice || 0));
+  const [delivery, setDelivery] = useState("");
+  const [terms, setTerms] = useState("50% deposit / 50% before shipping");
+  const [msg, setMsg] = useState("");
+  const [email, setEmail] = useState(defaultEmail ?? "");
+  const [send, setSend] = useState(true);
+  return (
+    <div className="space-y-3 text-xs">
+      <label className="block">Accepted price (EUR)
+        <input value={price} onChange={(e) => setPrice(e.target.value)} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="block">Delivery time
+        <input value={delivery} onChange={(e) => setDelivery(e.target.value)} placeholder="e.g. 7–10 working days" className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="block">Payment terms
+        <input value={terms} onChange={(e) => setTerms(e.target.value)} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="block">Message to customer (optional)
+        <textarea value={msg} onChange={(e) => setMsg(e.target.value)} rows={3} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="block">Recipient email
+        <input value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="flex items-center gap-2"><input type="checkbox" checked={send} onChange={(e) => setSend(e.target.checked)} /> Send email now</label>
+      <button disabled={busy} onClick={() => onSubmit({ accepted_price: Number(price) || 0, currency: "EUR", delivery_time: delivery || null, payment_terms: terms || null, customer_message: msg || null, recipient_email: email || null, send_email: send })}
+        className="px-4 py-2 bg-emerald-500 text-black text-[11px] font-mono tracking-widest uppercase rounded-sm disabled:opacity-40">
+        {busy ? "Accepting…" : "✓ Confirm & Accept"}
+      </button>
+    </div>
+  );
+}
+
+const DECLINE_REASONS = [
+  { code: "not_manufacturable", label: "Not manufacturable" },
+  { code: "outside_capabilities", label: "Outside capabilities" },
+  { code: "unavailable_material", label: "Material unavailable" },
+  { code: "price_disagreement", label: "Price disagreement" },
+  { code: "customer_cancelled", label: "Customer cancelled" },
+  { code: "other", label: "Other" },
+];
+
+function DeclineForm({ defaultEmail, onSubmit, busy }: { defaultEmail: string; onSubmit: (p: any) => void; busy: boolean }) {
+  const [reason, setReason] = useState("outside_capabilities");
+  const [reasonText, setReasonText] = useState("");
+  const [msg, setMsg] = useState("");
+  const [email, setEmail] = useState(defaultEmail ?? "");
+  const [send, setSend] = useState(true);
+  return (
+    <div className="space-y-3 text-xs">
+      <label className="block">Reason
+        <select value={reason} onChange={(e) => setReason(e.target.value)} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm">
+          {DECLINE_REASONS.map((r) => <option key={r.code} value={r.code}>{r.label}</option>)}
+        </select>
+      </label>
+      <label className="block">Internal / customer-visible note (optional)
+        <textarea value={reasonText} onChange={(e) => setReasonText(e.target.value)} rows={2} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="block">Message to customer (optional)
+        <textarea value={msg} onChange={(e) => setMsg(e.target.value)} rows={3} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="block">Recipient email
+        <input value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 w-full bg-black/40 border border-white/10 px-2 py-1.5 rounded-sm" />
+      </label>
+      <label className="flex items-center gap-2"><input type="checkbox" checked={send} onChange={(e) => setSend(e.target.checked)} /> Send email now</label>
+      <button disabled={busy} onClick={() => onSubmit({ reason_code: reason, reason_text: reasonText || null, customer_message: msg || null, recipient_email: email || null, send_email: send })}
+        className="px-4 py-2 bg-red-500 text-black text-[11px] font-mono tracking-widest uppercase rounded-sm disabled:opacity-40">
+        {busy ? "Declining…" : "✕ Confirm & Decline"}
+      </button>
+    </div>
+  );
+}
