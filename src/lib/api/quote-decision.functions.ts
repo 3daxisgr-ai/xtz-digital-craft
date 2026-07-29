@@ -44,7 +44,7 @@ export const acceptQuote = createServerFn({ method: "POST" })
       .from("orders").update(patch).eq("id", order.id).select("*").single();
     if (e1) throw e1;
 
-    const to = data.recipient_email || updated.customer_email;
+    const to: string | null = (data.recipient_email ?? updated.customer_email) ?? null;
     const { data: rec, error: eRec } = await supabaseAdmin
       .from("quote_decisions" as any)
       .insert({
@@ -111,7 +111,7 @@ export const declineQuote = createServerFn({ method: "POST" })
       .from("orders").update({ status: "rejected" }).eq("id", order.id).select("*").single();
     if (e1) throw e1;
 
-    const to = data.recipient_email || updated.customer_email;
+    const to: string | null = (data.recipient_email ?? updated.customer_email) ?? null;
     const REASON_LABEL: Record<string, string> = {
       not_manufacturable: "Not manufacturable as designed",
       outside_capabilities: "Outside our current capabilities",
