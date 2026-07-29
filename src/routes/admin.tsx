@@ -532,7 +532,7 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
 
   const [busy, setBusy] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
-  const [modal, setModal] = useState<null | "priority" | "status" | "assign" | "message" | "tracking">(null);
+  const [modal, setModal] = useState<null | "priority" | "status" | "assign" | "message" | "tracking" | "accept" | "decline">(null);
   const [machines, setMachines] = useState<any[]>([]);
   const [jobInfo, setJobInfo] = useState<any>(null);
   const photoRef = useRef<HTMLInputElement>(null);
