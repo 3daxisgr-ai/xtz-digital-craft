@@ -209,11 +209,13 @@ export function brandedEmailText(p: BrandedEmailParams): string {
  */
 export async function sendBrandedEmail(opts: {
   to: string | string[];
+  cc?: string | string[] | null;
   subject: string;
   params: BrandedEmailParams;
   replyTo?: string;
   from?: string;
-}): Promise<{ ok: boolean; error?: string }> {
+  attachments?: { filename: string; content: string }[];
+}): Promise<{ ok: boolean; error?: string; messageId?: string }> {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const resendKey = process.env.RESEND_API_KEY;
   if (!lovableKey || !resendKey) {
@@ -230,10 +232,12 @@ export async function sendBrandedEmail(opts: {
       body: JSON.stringify({
         from: opts.from ?? "TOREO <onboarding@resend.dev>",
         to: Array.isArray(opts.to) ? opts.to : [opts.to],
+        ...(opts.cc ? { cc: Array.isArray(opts.cc) ? opts.cc : [opts.cc] } : {}),
         reply_to: opts.replyTo,
         subject: opts.subject,
         html: brandedEmailHtml(opts.params),
         text: brandedEmailText(opts.params),
+        ...(opts.attachments?.length ? { attachments: opts.attachments } : {}),
       }),
     });
     if (!res.ok) {
@@ -241,9 +245,17 @@ export async function sendBrandedEmail(opts: {
       console.error("branded email send failed", res.status, body);
       return { ok: false, error: `${res.status}: ${body}` };
     }
-    return { ok: true };
+    let messageId: string | undefined;
+    try {
+      const j: any = await res.json();
+      messageId = j?.id ?? j?.data?.id;
+    } catch {
+      /* provider returned no JSON body */
+    }
+    return { ok: true, messageId };
   } catch (e) {
     console.error("branded email exception", e);
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
   }
 }
+

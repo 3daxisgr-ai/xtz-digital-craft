@@ -1241,6 +1241,114 @@ export type Database = {
           },
         ]
       }
+      quote_documents: {
+        Row: {
+          admin_user: string | null
+          cc: string | null
+          created_at: string
+          customer_snapshot: Json
+          data_signature: string | null
+          email_body: string | null
+          email_error: string | null
+          email_message_id: string | null
+          email_status: string | null
+          email_subject: string | null
+          financial_snapshot: Json
+          id: string
+          image_data_url: string | null
+          image_path: string | null
+          lines: Json
+          number: string
+          order_id: string
+          order_snapshot: Json
+          pdf_generated_at: string | null
+          pdf_path: string | null
+          project: Json
+          recipient: string | null
+          replaces_quote_id: string | null
+          sent_at: string | null
+          seq: number
+          status: string
+          terms: Json
+          updated_at: string
+        }
+        Insert: {
+          admin_user?: string | null
+          cc?: string | null
+          created_at?: string
+          customer_snapshot?: Json
+          data_signature?: string | null
+          email_body?: string | null
+          email_error?: string | null
+          email_message_id?: string | null
+          email_status?: string | null
+          email_subject?: string | null
+          financial_snapshot?: Json
+          id?: string
+          image_data_url?: string | null
+          image_path?: string | null
+          lines?: Json
+          number: string
+          order_id: string
+          order_snapshot?: Json
+          pdf_generated_at?: string | null
+          pdf_path?: string | null
+          project?: Json
+          recipient?: string | null
+          replaces_quote_id?: string | null
+          sent_at?: string | null
+          seq: number
+          status?: string
+          terms?: Json
+          updated_at?: string
+        }
+        Update: {
+          admin_user?: string | null
+          cc?: string | null
+          created_at?: string
+          customer_snapshot?: Json
+          data_signature?: string | null
+          email_body?: string | null
+          email_error?: string | null
+          email_message_id?: string | null
+          email_status?: string | null
+          email_subject?: string | null
+          financial_snapshot?: Json
+          id?: string
+          image_data_url?: string | null
+          image_path?: string | null
+          lines?: Json
+          number?: string
+          order_id?: string
+          order_snapshot?: Json
+          pdf_generated_at?: string | null
+          pdf_path?: string | null
+          project?: Json
+          recipient?: string | null
+          replaces_quote_id?: string | null
+          sent_at?: string | null
+          seq?: number
+          status?: string
+          terms?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_documents_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_documents_replaces_quote_id_fkey"
+            columns: ["replaces_quote_id"]
+            isOneToOne: false
+            referencedRelation: "quote_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quotes: {
         Row: {
           created_at: string
@@ -1496,6 +1604,13 @@ export type Database = {
         Returns: number
       }
       next_proforma_number: { Args: never; Returns: string }
+      next_quote_number: {
+        Args: never
+        Returns: {
+          number: string
+          seq: number
+        }[]
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
