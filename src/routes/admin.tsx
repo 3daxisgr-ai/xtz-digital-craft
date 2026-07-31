@@ -36,7 +36,7 @@ import { panelListAnalyses, panelAnalyzeFile, panelApplyOverride, panelListMachi
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { RequestSummary } from "@/components/xtz/RequestSummary";
 import { acceptQuote, declineQuote } from "@/lib/api/quote-decision.functions";
-import { createProforma } from "@/lib/api/proforma.functions";
+import { quoteDocCreate } from "@/lib/api/quote-doc.functions";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
