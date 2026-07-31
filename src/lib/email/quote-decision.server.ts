@@ -7,7 +7,6 @@ export async function sendQuoteAcceptedEmail(opts: {
   deliveryTime?: string | null;
   paymentTerms?: string | null;
   message?: string | null;
-  proformaUrl?: string | null;
 }) {
   if (!opts.to) return { ok: false };
   const { sendBrandedEmail } = await import("@/lib/email/template.server");
@@ -32,7 +31,7 @@ export async function sendQuoteAcceptedEmail(opts: {
         },
       ],
       outro: opts.message ? `<p style="margin:0;white-space:pre-wrap">${escapeHtml(opts.message)}</p>` : undefined,
-      cta: opts.proformaUrl ? { label: "View Proforma Invoice", url: opts.proformaUrl } : { label: "Open your portal", url: `https://www.toreo.gr/track?code=${encodeURIComponent(opts.orderCode)}` },
+      cta: { label: "Open your portal", url: `https://www.toreo.gr/track?code=${encodeURIComponent(opts.orderCode)}` },
     },
   });
 }
