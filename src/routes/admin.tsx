@@ -628,9 +628,12 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
     finally { setBusy(null); }
   }
 
-  function openPrintable(kind: "quote" | "invoice") {
-    const url = `/admin/print/${kind}/${encodeURIComponent(code)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+  async function openQuoteDoc() {
+    setBusy("quotedoc");
+    try {
+      const d: any = await createQuoteDocFn({ data: { order_code: code } });
+      window.open(`/admin/quote/${encodeURIComponent(d.number)}`, "_blank", "noopener,noreferrer");
+    } catch (e: any) { flash(e.message ?? "Failed"); } finally { setBusy(null); }
   }
 
   const btn = "px-3 py-2 text-[10px] font-mono tracking-[0.25em] uppercase border rounded-sm transition-colors disabled:opacity-40";
