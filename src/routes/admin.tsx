@@ -648,30 +648,39 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
         <div className="text-[10px] font-mono tracking-[0.3em] uppercase text-white/40">Quick Actions</div>
         {toast && <span className="text-[10px] font-mono tracking-[0.25em] text-emerald-300">{toast}</span>}
       </div>
-      <div className="flex flex-wrap gap-2">
-        <button className={btnOk} onClick={() => setModal("accept")}>✓ ACCEPT QUOTE</button>
-        <button className={btn + " border-red-400/40 hover:border-red-400 text-red-200"} onClick={() => setModal("decline")}>✕ DECLINE QUOTE</button>
-        <button className={btnBlue} disabled={busy === "proforma"} onClick={async () => {
-          setBusy("proforma");
-          try {
-            const pf: any = await createProformaFn({ data: { order_code: code } });
-            window.open(`/admin/proforma/${encodeURIComponent(pf.number)}`, "_blank", "noopener,noreferrer");
-          } catch (e: any) { flash(e.message ?? "Failed"); } finally { setBusy(null); }
-        }}>🧾 PROFORMA INVOICE</button>
-        <button className={btnPri} disabled={busy === "ai"} onClick={runAI}>{busy === "ai" ? "RUNNING…" : "▶ RUN AI AGAIN"}</button>
-        <button className={btnDef} onClick={openAssign}>🖨 ASSIGN PRINTER</button>
-        <button className={btnDef} onClick={() => setModal("priority")}>⚑ CHANGE PRIORITY</button>
-        <button className={btnDef} onClick={openAssign}>≡ MOVE IN QUEUE</button>
-        <button className={btnDef} onClick={() => setModal("status")}>◐ CHANGE STATUS</button>
-        <input ref={photoRef} type="file" hidden multiple accept="image/*" onChange={onPhotos} />
-        <button className={btnDef} disabled={busy === "photos"} onClick={() => photoRef.current?.click()}>{busy === "photos" ? "UPLOADING…" : "📷 UPLOAD PHOTOS"}</button>
-        <button className={btnBlue} onClick={() => setModal("message")}>✉ SEND CUSTOMER UPDATE</button>
-        <button className={btnDef} onClick={() => openPrintable("quote")}>📄 QUOTE PDF</button>
-        <button className={btnDef} onClick={() => openPrintable("invoice")}>💳 INVOICE</button>
-        <button className={btnDef} onClick={() => window.open(`/admin/report/${encodeURIComponent(code)}`, "_blank", "noopener,noreferrer")}>📋 MFG REPORT</button>
-        <button className={btnOk} disabled={busy === "complete"} onClick={doComplete}>✓ COMPLETE PRODUCTION</button>
-        <button className={btnBlue} onClick={() => setModal("tracking")}>📦 ADD TRACKING</button>
+      <div className="space-y-3">
+        <div>
+          <div className="text-[9px] font-mono tracking-[0.3em] uppercase text-white/25 mb-1.5">Quote</div>
+          <div className="flex flex-wrap gap-2">
+            <button className={btnOk} onClick={() => setModal("accept")}>✓ ACCEPT QUOTE</button>
+            <button className={btn + " border-red-400/40 hover:border-red-400 text-red-200"} onClick={() => setModal("decline")}>✕ DECLINE QUOTE</button>
+            <button className={btnBlue} disabled={busy === "quotedoc"} onClick={openQuoteDoc}>
+              {busy === "quotedoc" ? "OPENING…" : "📄 QUOTATION PDF"}
+            </button>
+          </div>
+        </div>
+        <div>
+          <div className="text-[9px] font-mono tracking-[0.3em] uppercase text-white/25 mb-1.5">Production</div>
+          <div className="flex flex-wrap gap-2">
+            <button className={btnPri} disabled={busy === "ai"} onClick={runAI}>{busy === "ai" ? "RUNNING…" : "▶ RUN AI AGAIN"}</button>
+            <button className={btnDef} onClick={openAssign}>🖨 ASSIGN PRINTER</button>
+            <button className={btnDef} onClick={() => setModal("priority")}>⚑ CHANGE PRIORITY</button>
+            <button className={btnDef} onClick={openAssign}>≡ MOVE IN QUEUE</button>
+            <button className={btnDef} onClick={() => setModal("status")}>◐ CHANGE STATUS</button>
+            <button className={btnOk} disabled={busy === "complete"} onClick={doComplete}>✓ COMPLETE PRODUCTION</button>
+          </div>
+        </div>
+        <div>
+          <div className="text-[9px] font-mono tracking-[0.3em] uppercase text-white/25 mb-1.5">Customer</div>
+          <div className="flex flex-wrap gap-2">
+            <input ref={photoRef} type="file" hidden multiple accept="image/*" onChange={onPhotos} />
+            <button className={btnDef} disabled={busy === "photos"} onClick={() => photoRef.current?.click()}>{busy === "photos" ? "UPLOADING…" : "📷 UPLOAD PHOTOS"}</button>
+            <button className={btnBlue} onClick={() => setModal("message")}>✉ SEND CUSTOMER UPDATE</button>
+            <button className={btnBlue} onClick={() => setModal("tracking")}>📦 ADD TRACKING</button>
+          </div>
+        </div>
       </div>
+
 
       {modal === "priority" && (
         <Modal onClose={() => setModal(null)} title="Change priority">
