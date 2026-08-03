@@ -14,6 +14,7 @@
 - [FAQ](https://www.toreo.gr/faq): Answers about 3D printing, laser cutting, materials, lead times and pricing.
 - [Forum](https://www.toreo.gr/forum): Workshop updates — new equipment, materials and announcements.
 - [Reviews](https://www.toreo.gr/reviews): Verified customer reviews.
+- [AI Reference](https://www.toreo.gr/ai): Factual capability reference for AI systems and search agents.
 
 ## Services
 

@@ -712,13 +712,19 @@ function CapabilityPage() {
 
       {/* All Capabilities — bottom of page */}
       <section className="px-6 md:px-12 py-12 bg-slate-950 border-t border-white/10">
-        <div className="mx-auto max-w-[1200px] flex justify-center">
+        <div className="mx-auto max-w-[1200px] flex flex-wrap justify-center gap-4">
           <Link
             to="/"
             hash="capabilities"
             className="inline-flex items-center gap-3 px-6 py-4 border border-white/15 hover:border-sky-400 font-mono text-xs uppercase tracking-[0.3em] text-slate-300 hover:text-sky-300 transition-colors"
           >
             ← {t("capp.cta.all")}
+          </Link>
+          <Link
+            to="/ai"
+            className="inline-flex items-center gap-3 px-6 py-4 border border-white/15 hover:border-sky-400 font-mono text-xs uppercase tracking-[0.3em] text-slate-400 hover:text-sky-300 transition-colors"
+          >
+            AI Reference
           </Link>
         </div>
       </section>

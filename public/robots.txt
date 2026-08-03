@@ -2,4 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
+User-agent: OAI-SearchBot
+Allow: /
+
 Sitemap: https://www.toreo.gr/sitemap.xml
