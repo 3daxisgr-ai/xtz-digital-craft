@@ -428,12 +428,18 @@ function CompanyPage() {
           </blockquote>
           <div className="co-reveal mt-12 co-mono text-[11px] uppercase text-foreground/50">— TOREO</div>
 
-          <div className="co-reveal mt-16">
+          <div className="co-reveal mt-16 flex flex-wrap gap-4">
             <Link
               to="/start"
               className="inline-block co-mono text-[12px] uppercase tracking-[0.3em] border border-primary/50 px-8 py-4 hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               {c.cta}
+            </Link>
+            <Link
+              to="/ai"
+              className="inline-block co-mono text-[12px] uppercase tracking-[0.3em] border border-border/60 px-8 py-4 text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors"
+            >
+              AI Reference
             </Link>
           </div>
         </div>
