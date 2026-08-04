@@ -14,8 +14,8 @@ const en: Dict = {
   "nav.equipment": "Equipment",
   "nav.forum": "Forum",
   "nav.company": "Company",
-  "nav.inquiry": "Upload CAD & Request a Quote",
-  "nav.cta": "Upload CAD & Request a Quote",
+  "nav.inquiry": "UPLOAD CAD & REQUEST A QUOTE",
+  "nav.cta": "UPLOAD CAD & REQUEST A QUOTE",
 
   // Hero
   "intro.headline": "TOREO",
