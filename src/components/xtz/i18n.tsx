@@ -333,7 +333,7 @@ const gr: Dict = {
   // Capability page
   "capp.crumb.home": "Αρχική",
   "capp.crumb.caps": "Δυνατότητες",
-  "capp.cta.quote": "Ανεβάστε CAD & Ζητήστε Προσφορά",
+  "capp.cta.quote": "UPLOAD CAD & REQUEST A QUOTE",
   "capp.cta.all": "Όλες οι Δυνατότητες",
   "capp.h.what": "Τι κάνουμε",
   "capp.h.materials": "ΥΛΙΚΑ & ΤΕΧΝΟΛΟΓΙΕΣ",
