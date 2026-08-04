@@ -401,6 +401,211 @@ function OrderView({
   );
 }
 
+/* ---------- change request ---------- */
+
+const REQUEST_TYPES = [
+  { value: "quantity", label: "Change quantity" },
+  { value: "material", label: "Change material" },
+  { value: "specifications", label: "Change specifications" },
+  { value: "other", label: "Other" },
+] as const;
+
+function ChangeRequestForm({
+  orderCode,
+  email,
+  onDone,
+}: {
+  orderCode: string;
+  email: string;
+  onDone: () => void | Promise<void>;
+}) {
+  const requestChange = useServerFn(trackRequestChange);
+  const [type, setType] = useState<(typeof REQUEST_TYPES)[number]["value"]>("quantity");
+  const [message, setMessage] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(null);
+    setBusy(true);
+    try {
+      let file_base64: string | undefined;
+      if (file) {
+        if (file.size > 6 * 1024 * 1024) throw new Error("File is too large (max 6 MB).");
+        const buf = await file.arrayBuffer();
+        let bin = "";
+        const bytes = new Uint8Array(buf);
+        for (let i = 0; i < bytes.length; i += 0x8000) {
+          bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+        }
+        file_base64 = btoa(bin);
+      }
+      await requestChange({
+        data: {
+          order_code: orderCode,
+          email,
+          request_type: type,
+          message: message.trim(),
+          ...(file && file_base64
+            ? { file_name: file.name, file_base64, file_type: file.type || "application/octet-stream" }
+            : {}),
+        },
+      });
+      setDone(true);
+      setMessage("");
+      setFile(null);
+      await onDone();
+    } catch (e: any) {
+      setErr(e?.message ?? "Could not submit your request. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (done) {
+    return (
+      <div className="mt-5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+        Your change request has been sent to our team. We will review it and get back to you by email.
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className="mt-5 rounded-lg border border-white/10 bg-black/30 p-4 space-y-3">
+      <div>
+        <label className="text-[10px] font-mono uppercase tracking-wider text-white/35">Request type</label>
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value as any)}
+          className="mt-1 w-full bg-black/40 border border-white/10 rounded-md px-3 py-2.5 text-sm outline-none focus:border-white/40"
+        >
+          {REQUEST_TYPES.map((t) => (
+            <option key={t.value} value={t.value} className="bg-[#070708]">
+              {t.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="text-[10px] font-mono uppercase tracking-wider text-white/35">Message</label>
+        <textarea
+          required
+          rows={4}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Describe the change you need…"
+          className="mt-1 w-full bg-black/40 border border-white/10 rounded-md px-3 py-2.5 text-sm placeholder:text-white/30 outline-none focus:border-white/40"
+        />
+      </div>
+      <div>
+        <label className="text-[10px] font-mono uppercase tracking-wider text-white/35">Attachment (optional)</label>
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          className="mt-1 w-full text-xs text-white/60 file:mr-3 file:rounded-md file:border file:border-white/15 file:bg-transparent file:px-3 file:py-1.5 file:text-xs file:text-white"
+        />
+      </div>
+      {err && <div className="text-xs text-red-300">{err}</div>}
+      <button
+        type="submit"
+        disabled={busy}
+        className="bg-white text-black hover:bg-white/90 rounded-md px-5 py-2 text-xs font-semibold disabled:opacity-50"
+      >
+        {busy ? "Sending…" : "Submit request"}
+      </button>
+    </form>
+  );
+}
+
+/* ---------- communication ---------- */
+
+function Communication({
+  data,
+  orderCode,
+  email,
+  onRefresh,
+}: {
+  data: any;
+  orderCode: string;
+  email: string;
+  onRefresh: () => void | Promise<void>;
+}) {
+  const postMessage = useServerFn(trackPostMessage);
+  const [body, setBody] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
+  const messages: any[] = data.messages ?? [];
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(null);
+    setSent(false);
+    setBusy(true);
+    try {
+      await postMessage({ data: { order_code: orderCode, email, body: body.trim() } });
+      setBody("");
+      setSent(true);
+      await onRefresh();
+    } catch (e: any) {
+      setErr(e?.message ?? "Could not send your message. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="border border-white/10 bg-white/[0.02] rounded-xl p-5 md:p-6">
+      <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40 mb-4">Messages</div>
+      {messages.length ? (
+        <ul className="space-y-3 mb-5">
+          {messages.map((m, i) => (
+            <li
+              key={m.id ?? i}
+              className={`rounded-lg border px-3.5 py-3 ${
+                m.from_role === "admin"
+                  ? "border-sky-500/25 bg-sky-500/[0.07]"
+                  : "border-white/10 bg-black/30"
+              }`}
+            >
+              <div className="text-[10px] font-mono uppercase tracking-wider text-white/35">
+                {m.from_role === "admin" ? "TOREO" : "You"} · {new Date(m.created_at).toLocaleString()}
+              </div>
+              <p className="text-sm text-white/85 mt-1.5 whitespace-pre-wrap break-words">{m.body}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-sm text-white/45 mb-5">No messages yet. Send us a message about this order below.</p>
+      )}
+
+      <form onSubmit={submit} className="space-y-3">
+        <textarea
+          required
+          rows={3}
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+          placeholder="Write a message about this order…"
+          className="w-full bg-black/40 border border-white/10 rounded-md px-3 py-2.5 text-sm placeholder:text-white/30 outline-none focus:border-white/40"
+        />
+        {err && <div className="text-xs text-red-300">{err}</div>}
+        {sent && <div className="text-xs text-emerald-300">Message sent — our team will reply by email.</div>}
+        <button
+          type="submit"
+          disabled={busy}
+          className="bg-white text-black hover:bg-white/90 rounded-md px-5 py-2 text-xs font-semibold disabled:opacity-50"
+        >
+          {busy ? "Sending…" : "Send message"}
+        </button>
+      </form>
+    </section>
+  );
+}
+
+
 function Field({ label, value }: { label: string; value?: string | null }) {
   return (
     <div className="min-w-0">
