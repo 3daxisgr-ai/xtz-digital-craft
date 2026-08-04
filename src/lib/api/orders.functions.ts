@@ -343,22 +343,91 @@ export const trackOrder = createServerFn({ method: "POST" })
     const { data: order } = await supabaseAdmin
       .from("orders")
       .select(
-        "id, order_code, status, courier, tracking_number, tracking_url, estimated_delivery, created_at, customer_email",
+        "id, order_code, status, service, material, quantity, dimensions, courier, tracking_number, tracking_url, estimated_delivery, invoice_file_path, metadata, created_at, customer_email",
       )
       .eq("order_code", data.order_code)
       .maybeSingle();
     if (!order || String((order as any).customer_email ?? "").toLowerCase() !== data.email.trim().toLowerCase()) {
       return { found: false as const };
     }
-    
+
     const { data: events } = await supabaseAdmin
       .from("order_events")
       .select("event_type, title, description, created_at")
       .eq("order_id", order.id)
       .eq("visibility", "customer")
       .order("created_at");
-    return { found: true as const, order, events: events ?? [] };
+
+    // ---- customer-safe order options (never internal costing/production data)
+    const meta = ((order as any).metadata ?? {}) as Record<string, any>;
+    const nested = (meta.details && typeof meta.details === "object" ? meta.details : {}) as Record<string, any>;
+    const pick = (...keys: string[]) => {
+      for (const k of keys) {
+        const v = meta[k] ?? nested[k];
+        if (v !== undefined && v !== null && String(v).trim() !== "") return String(v);
+      }
+      return null;
+    };
+    const details = {
+      service: (order as any).service ?? pick("service") ?? null,
+      material: (order as any).material ?? pick("material") ?? null,
+      color: pick("color", "colour"),
+      quantity: (order as any).quantity ?? pick("quantity", "qty"),
+      finish: pick("finish", "finish_option", "surface_finish", "post_processing"),
+      dimensions: (order as any).dimensions ?? pick("dimensions"),
+      layer_height: pick("layer_height", "layer_height_mm"),
+      infill: pick("infill", "infill_pct"),
+      tolerance: pick("tolerance"),
+      lead_time: pick("lead_time", "urgency", "delivery_speed"),
+    };
+
+    // ---- customer documents (quotations + invoice)
+    const documents: { label: string; name: string; url: string }[] = [];
+    const { data: quoteDocs } = await supabaseAdmin
+      .from("quote_documents")
+      .select("number, pdf_path, status, created_at")
+      .eq("order_id", order.id)
+      .not("pdf_path", "is", null)
+      .in("status", ["sent", "accepted", "declined", "superseded"])
+      .order("created_at", { ascending: false });
+    for (const d of quoteDocs ?? []) {
+      const { data: signed } = await supabaseAdmin.storage
+        .from("quote-pdfs")
+        .createSignedUrl((d as any).pdf_path, 60 * 30);
+      if (signed?.signedUrl) {
+        documents.push({ label: "Quotation", name: `${(d as any).number}.pdf`, url: signed.signedUrl });
+      }
+    }
+    const invoicePath = (order as any).invoice_file_path as string | null;
+    if (invoicePath) {
+      const bucket = invoicePath.startsWith("proformas/") ? "proformas" : "order-files";
+      const { data: signed } = await supabaseAdmin.storage
+        .from(bucket)
+        .createSignedUrl(invoicePath, 60 * 30);
+      if (signed?.signedUrl) {
+        documents.push({ label: "Invoice", name: invoicePath.split("/").pop() ?? "invoice.pdf", url: signed.signedUrl });
+      }
+    }
+    const { data: custFiles } = await supabaseAdmin
+      .from("order_files")
+      .select("file_path, file_name, created_at")
+      .eq("order_id", order.id)
+      .eq("visibility", "customer")
+      .order("created_at", { ascending: false })
+      .limit(10);
+    for (const f of custFiles ?? []) {
+      const path = (f as any).file_path as string;
+      const bucket = path.startsWith("inquiry/") || path.startsWith("3dp/") ? "submission-files" : "order-files";
+      const { data: signed } = await supabaseAdmin.storage.from(bucket).createSignedUrl(path, 60 * 30);
+      if (signed?.signedUrl) {
+        documents.push({ label: "Document", name: (f as any).file_name ?? path.split("/").pop(), url: signed.signedUrl });
+      }
+    }
+
+    const { metadata: _m, invoice_file_path: _i, customer_email: _e, ...safeOrder } = order as any;
+    return { found: true as const, order: safeOrder, details, documents, events: events ?? [] };
   });
+
 
 // ----- admin -----------------------------------------------------------------
 
