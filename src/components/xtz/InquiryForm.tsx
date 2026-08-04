@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useI18n } from "./i18n";
@@ -132,6 +133,15 @@ export function InquiryForm() {
           },
         },
       });
+      const emailInfo = res as { confirmationEmailSent?: boolean; emailError?: string | null };
+      if (emailInfo.confirmationEmailSent === false) {
+        console.error("[email] confirmation email failed:", emailInfo.emailError);
+        toast.error("Request received, but the confirmation email could not be sent.", {
+          description: emailInfo.emailError ?? "Email provider error. Our team has been notified.",
+        });
+      } else {
+        toast.success("Request sent — a confirmation email is on its way.");
+      }
       setOrderCode((res as { order_code?: string | null })?.order_code ?? null);
       setSent(true);
     } catch (err) {

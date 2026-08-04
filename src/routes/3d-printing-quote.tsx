@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { z } from "zod";
@@ -161,6 +162,15 @@ function QuotePage() {
           },
         },
       });
+      const emailInfo = res as { confirmationEmailSent?: boolean; emailError?: string | null };
+      if (emailInfo.confirmationEmailSent === false) {
+        console.error("[email] confirmation email failed:", emailInfo.emailError);
+        toast.error("Request received, but the confirmation email could not be sent.", {
+          description: emailInfo.emailError ?? "Email provider error. Our team has been notified.",
+        });
+      } else {
+        toast.success("Request sent — a confirmation email is on its way.");
+      }
       const code = (res as { order_code?: string | null })?.order_code ?? null;
       setOrderCode(code);
       setSent(true);
