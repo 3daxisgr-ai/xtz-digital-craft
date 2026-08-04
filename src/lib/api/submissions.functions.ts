@@ -186,7 +186,7 @@ export const submitForm = createServerFn({ method: "POST" })
             dateStyle: "medium",
             timeStyle: "short",
           });
-          await sendBrandedEmail({
+          const confirmResult = await sendBrandedEmail({
             to: data.email,
             replyTo: "INFO@TOREO.GR",
             subject: `Quote Request Received – ${orderCode}`,
@@ -241,7 +241,7 @@ export const submitForm = createServerFn({ method: "POST" })
           });
         }
       } catch (e) {
-        console.error("customer confirmation send failed", e);
+        console.error("[email:ERROR] customer-confirmation:exception", e);
       }
     } catch (e) {
       console.error("orders insert failed", e);
