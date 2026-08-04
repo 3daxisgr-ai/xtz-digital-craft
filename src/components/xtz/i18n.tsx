@@ -204,8 +204,8 @@ const gr: Dict = {
   "nav.equipment": "ΕΞΟΠΛΙΣΜΟΣ",
   "nav.forum": "ΝΕΑ",
   "nav.company": "Η ΕΤΑΙΡΕΙΑ",
-  "nav.inquiry": "ΑΝΕΒΑΣΤΕ CAD & ΖΗΤΗΣΤΕ ΠΡΟΣΦΟΡΑ",
-  "nav.cta": "ΑΝΕΒΑΣΤΕ CAD & ΖΗΤΗΣΤΕ ΠΡΟΣΦΟΡΑ",
+  "nav.inquiry": "UPLOAD CAD & REQUEST A QUOTE",
+  "nav.cta": "UPLOAD CAD & REQUEST A QUOTE",
 
   "intro.headline": "ΑΠΟ ΤΗΝ ΙΔΕΑ ΣΤΗΝ ΠΡΑΓΜΑΤΙΚΟΤΗΤΑ",
   "intro.sub": "​",
