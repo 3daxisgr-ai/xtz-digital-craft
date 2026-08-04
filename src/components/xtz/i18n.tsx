@@ -151,7 +151,7 @@ const en: Dict = {
   // Capability page
   "capp.crumb.home": "Home",
   "capp.crumb.caps": "Capabilities",
-  "capp.cta.quote": "Upload CAD & Request a Quote",
+  "capp.cta.quote": "UPLOAD CAD & REQUEST A QUOTE",
   "capp.cta.all": "All Capabilities",
   "capp.h.what": "What we do",
   "capp.h.materials": "Materials & Technologies",
