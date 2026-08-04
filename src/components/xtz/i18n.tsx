@@ -358,7 +358,7 @@ const gr: Dict = {
 
   // Footer
   "foot.tag": "ΙΔΕΑ · ΣΧΕΔΙΑΣΜΟΣ · ΠΡΩΤΟΤΥΠΟ · ΚΑΤΑΣΚΕΥΗ",
-  "foot.tagline": "ΑΠΟ ΤΗΝ ΙΔΕΑ ΣΤΗΝ ΠΡΑΓΜΑΤΙΚΟΤΗΤΑ",
+  "foot.tagline": "FROM IDEA TO REALITY",
   "foot.contact": "ΕΠΙΚΟΙΝΩΝΙΑ",
   "foot.studio": "ΣΤΟΥΝΤΙΟ",
   "foot.email": "Email",
