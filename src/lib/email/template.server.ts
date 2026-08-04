@@ -204,8 +204,9 @@ export function brandedEmailText(p: BrandedEmailParams): string {
 }
 
 /**
- * Send a branded email via the Lovable Resend connector. Best-effort; logs and
- * swallows errors so callers can never crash on email failures.
+ * Send a branded email through the Resend connector (Lovable gateway).
+ * Never throws — always returns a result object with the exact provider error
+ * so callers can surface it. Every step is logged server-side.
  */
 export async function sendBrandedEmail(opts: {
   to: string | string[];
@@ -215,47 +216,78 @@ export async function sendBrandedEmail(opts: {
   replyTo?: string;
   from?: string;
   attachments?: { filename: string; content: string }[];
-}): Promise<{ ok: boolean; error?: string; messageId?: string }> {
-  const lovableKey = process.env.LOVABLE_API_KEY;
-  const resendKey = process.env.RESEND_API_KEY;
-  if (!lovableKey || !resendKey) {
-    return { ok: false, error: "Resend connector not configured" };
+}): Promise<{ ok: boolean; error?: string; messageId?: string; status?: number }> {
+  const { resolveEmailConfig, emailLog, emailError, maskEmail, EMAIL_GATEWAY_URL } = await import(
+    "@/lib/email/config.server"
+  );
+
+  const cfg = resolveEmailConfig();
+  emailLog("send:start", { to: maskEmail(opts.to), subject: opts.subject, configured: cfg.ok });
+
+  if (!cfg.ok) {
+    emailError("send:not-configured", { missing: cfg.missing, subject: opts.subject });
+    return { ok: false, error: cfg.error };
   }
+
+  if (cfg.usingSandboxSender) {
+    emailError("send:sandbox-sender", {
+      note:
+        "Sending from onboarding@resend.dev — Resend only delivers this address to the account owner. " +
+        "Set EMAIL_FROM to an address on a domain verified in Resend (e.g. TOREO <info@toreo.gr>).",
+    });
+  }
+
+  const payload = {
+    from: opts.from ?? cfg.from,
+    to: Array.isArray(opts.to) ? opts.to : [opts.to],
+    ...(opts.cc ? { cc: Array.isArray(opts.cc) ? opts.cc : [opts.cc] } : {}),
+    reply_to: opts.replyTo,
+    subject: opts.subject,
+    html: brandedEmailHtml(opts.params),
+    text: brandedEmailText(opts.params),
+    ...(opts.attachments?.length ? { attachments: opts.attachments } : {}),
+  };
+
   try {
-    const res = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
+    emailLog("send:request", { from: payload.from, to: maskEmail(payload.to), attachments: opts.attachments?.length ?? 0 });
+    const res = await fetch(EMAIL_GATEWAY_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${lovableKey}`,
-        "X-Connection-Api-Key": resendKey,
+        Authorization: `Bearer ${cfg.lovableKey}`,
+        "X-Connection-Api-Key": cfg.resendKey,
       },
-      body: JSON.stringify({
-        from: opts.from ?? "TOREO <onboarding@resend.dev>",
-        to: Array.isArray(opts.to) ? opts.to : [opts.to],
-        ...(opts.cc ? { cc: Array.isArray(opts.cc) ? opts.cc : [opts.cc] } : {}),
-        reply_to: opts.replyTo,
-        subject: opts.subject,
-        html: brandedEmailHtml(opts.params),
-        text: brandedEmailText(opts.params),
-        ...(opts.attachments?.length ? { attachments: opts.attachments } : {}),
-      }),
+      body: JSON.stringify(payload),
     });
+
+    const raw = await res.text();
     if (!res.ok) {
-      const body = await res.text();
-      console.error("branded email send failed", res.status, body);
-      return { ok: false, error: `${res.status}: ${body}` };
+      const error = `Email provider returned ${res.status}: ${raw}`;
+      emailError("send:provider-error", { status: res.status, body: raw.slice(0, 800), subject: opts.subject });
+      return { ok: false, error, status: res.status };
     }
+
     let messageId: string | undefined;
     try {
-      const j: any = await res.json();
+      const j: any = JSON.parse(raw);
       messageId = j?.id ?? j?.data?.id;
+      // Some providers report failure inside a 2xx body.
+      if (j?.error) {
+        const error = `Email provider error: ${typeof j.error === "string" ? j.error : JSON.stringify(j.error)}`;
+        emailError("send:provider-body-error", { body: raw.slice(0, 800) });
+        return { ok: false, error, status: res.status };
+      }
     } catch {
       /* provider returned no JSON body */
     }
-    return { ok: true, messageId };
+
+    emailLog("send:ok", { messageId: messageId ?? null, to: maskEmail(payload.to), subject: opts.subject });
+    return { ok: true, messageId, status: res.status };
   } catch (e) {
-    console.error("branded email exception", e);
-    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+    const error = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+    emailError("send:exception", { error, subject: opts.subject });
+    return { ok: false, error };
   }
 }
+
 
