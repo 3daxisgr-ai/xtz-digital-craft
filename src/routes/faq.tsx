@@ -23,7 +23,7 @@ const FAQ_QA: { q: string; a: string }[] = [
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ — 3D Printing, Laser Cutting & Prototyping Questions | TOREO" },
+      { title: "FAQ — 3D Printing & Laser Cutting | TOREO" },
       { name: "description", content: "Answers about 3D printing, fiber laser cutting, sheet metal bending, welding, materials, tolerances, lead times and file requirements at TOREO." },
       { property: "og:title", content: "FAQ — 3D Printing, Laser Cutting & Prototyping | TOREO" },
       { property: "og:description", content: "Everything you need to know about TOREO's 3D printing, laser cutting, sheet metal fabrication and prototyping." },
