@@ -208,7 +208,7 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
   }
 
   // Email (Resend via Lovable gateway)
-  let email: { ok: boolean; error?: string; diagnostics?: unknown } = {
+  let email: { ok: boolean; error?: string; diagnostics?: string } = {
     ok: false,
     error: "Email provider not configured",
   };
@@ -216,7 +216,7 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
     const { runEmailDiagnostics } = await import("@/lib/email/config.server");
     const diag = await runEmailDiagnostics();
     if (!diag.ok) {
-      email = { ok: false, error: diag.error, diagnostics: diag };
+      email = { ok: false, error: diag.error, diagnostics: JSON.stringify(diag) };
     } else {
       const { sendBrandedEmail } = await import("@/lib/email/template.server");
       const r = await sendBrandedEmail({
@@ -230,8 +230,8 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
         },
       });
       email = r.ok
-        ? { ok: true, diagnostics: diag }
-        : { ok: false, error: r.error ?? "Unknown email error", diagnostics: diag };
+        ? { ok: true, diagnostics: JSON.stringify(diag) }
+        : { ok: false, error: r.error ?? "Unknown email error", diagnostics: JSON.stringify(diag) };
     }
   } catch (e) {
     email = { ok: false, error: e instanceof Error ? `${e.name}: ${e.message}` : String(e) };
