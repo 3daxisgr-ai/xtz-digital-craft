@@ -27,7 +27,7 @@ const en: Dict = {
   "concept.kicker": "What we do",
   "concept.title": "We design, prototype and build real products.",
   "concept.body": "Send us your idea, sketch or CAD file. We design it, prototype it, and manufacture the final part.",
-  "concept.cta": "Upload CAD & Request a Quote",
+  "concept.cta": "UPLOAD CAD & REQUEST A QUOTE",
 
   // Capabilities
   "cap.kicker": "Capabilities",
