@@ -208,31 +208,35 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
   }
 
   // Email (Resend via Lovable gateway)
-  let email: { ok: boolean; error?: string } = { ok: false, error: "Email provider not configured" };
+  let email: { ok: boolean; error?: string; diagnostics?: unknown } = {
+    ok: false,
+    error: "Email provider not configured",
+  };
   try {
-    const lovableKey = process.env.LOVABLE_API_KEY;
-    const resendKey = process.env.RESEND_API_KEY;
-    if (lovableKey && resendKey) {
-      const res = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${lovableKey}`,
-          "X-Connection-Api-Key": resendKey,
+    const { runEmailDiagnostics } = await import("@/lib/email/config.server");
+    const diag = await runEmailDiagnostics();
+    if (!diag.ok) {
+      email = { ok: false, error: diag.error, diagnostics: diag };
+    } else {
+      const { sendBrandedEmail } = await import("@/lib/email/template.server");
+      const r = await sendBrandedEmail({
+        to: NOTIFY_EMAIL,
+        subject: "✅ Test Notification - TOREO",
+        params: {
+          kicker: "System Test",
+          headline: "Email delivery is working.",
+          intro: `<p style="margin:0">This is a test email from the Admin Dashboard.</p>`,
+          sections: [{ title: "Details", rows: [{ label: "Time", value: now }] }],
         },
-        body: JSON.stringify({
-          from: "TOREO Notifications <onboarding@resend.dev>",
-          to: [NOTIFY_EMAIL],
-          subject: "✅ Test Notification - TOREO",
-          html: `<p>This is a test email from the Admin Dashboard.</p><p>Time: ${now}</p>`,
-          text: `Test email from Admin Dashboard. Time: ${now}`,
-        }),
       });
-      email = res.ok ? { ok: true } : { ok: false, error: `Resend ${res.status}: ${await res.text()}` };
+      email = r.ok
+        ? { ok: true, diagnostics: diag }
+        : { ok: false, error: r.error ?? "Unknown email error", diagnostics: diag };
     }
   } catch (e) {
-    email = { ok: false, error: e instanceof Error ? e.message : String(e) };
+    email = { ok: false, error: e instanceof Error ? `${e.name}: ${e.message}` : String(e) };
   }
+
 
   return { authed: true as const, discord, email };
 });
