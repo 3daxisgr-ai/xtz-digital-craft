@@ -49,6 +49,7 @@ export const submitForm = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => submissionSchema.parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let customerEmailError: string | null = null;
 
     // Generate a signed URL for the uploaded file if present
     let fileUrl: string | null = null;
