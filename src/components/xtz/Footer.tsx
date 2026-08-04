@@ -40,7 +40,7 @@ export function Footer() {
             <div className="pt-4 flex flex-wrap gap-x-6 gap-y-2 font-display text-xl md:text-2xl font-light text-foreground/85">
               {lang === "GR" ? (
                 <>
-                  <span>Σχεδιασμός.</span>
+                  <span>DESIGN.</span>
                   <span className="text-primary">Πρωτότυπο.</span>
                   <span>Κατασκευή.</span>
                   <span className="text-primary">MASS PRODUCTIO.</span>
