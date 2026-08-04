@@ -107,7 +107,7 @@ const en: Dict = {
   // Finale
   "finale.kicker": "Ready to build?",
   "finale.statement": "From concept to reality.",
-  "finale.cta": "Upload CAD & Request a Quote",
+  "finale.cta": "UPLOAD CAD & REQUEST A QUOTE",
   "finale.foot1": "© TOREO",
   "finale.foot2": "​",
   "finale.foot3": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
