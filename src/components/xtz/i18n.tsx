@@ -289,7 +289,7 @@ const gr: Dict = {
 
   "finale.kicker": "Έτοιμοι να φτιάξετε κάτι;",
   "finale.statement": "Από την ιδέα στην πραγματικότητα.",
-  "finale.cta": "Ανεβάστε CAD & Ζητήστε Προσφορά",
+  "finale.cta": "UPLOAD CAD & REQUEST A QUOTE",
   "finale.foot1": "© TOREO",
   "finale.foot2": "​",
   "finale.foot3": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
