@@ -152,7 +152,21 @@ function TrackPage() {
           </div>
         )}
 
-        {result?.order && <OrderView data={result} />}
+        {result?.order && (
+          <OrderView
+            data={result}
+            orderCode={orderCode.trim()}
+            email={email.trim()}
+            onRefresh={async () => {
+              try {
+                const r = await track({ data: { order_code: orderCode.trim(), email: email.trim() } });
+                if (r.found) setResult(r);
+              } catch {
+                /* keep current view */
+              }
+            }}
+          />
+        )}
       </main>
     </div>
   );
