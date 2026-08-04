@@ -43,7 +43,7 @@ export function Footer() {
                   <span>Σχεδιασμός.</span>
                   <span className="text-primary">Πρωτότυπο.</span>
                   <span>Κατασκευή.</span>
-                  <span className="text-primary">Μαζική PRODACTION.</span>
+                  <span className="text-primary">MASS PRODUCTIO.</span>
                 </>
               ) : (
                 <>
