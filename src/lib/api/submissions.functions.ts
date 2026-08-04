@@ -191,6 +191,7 @@ export const submitForm = createServerFn({ method: "POST" })
             to: data.email,
             replyTo: "INFO@TOREO.GR",
             subject: `Quote Request Received – ${orderCode}`,
+            context: { orderId, orderCode, emailType: "quote_confirmation" },
             params: {
               preview: `Your TOREO order ${orderCode} has been received. We will respond within 24 hours.`,
               kicker: "Order Confirmation",
