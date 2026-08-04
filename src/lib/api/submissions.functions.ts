@@ -49,6 +49,7 @@ export const submitForm = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => submissionSchema.parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let customerEmailError: string | null = null;
 
     // Generate a signed URL for the uploaded file if present
     let fileUrl: string | null = null;
@@ -186,7 +187,7 @@ export const submitForm = createServerFn({ method: "POST" })
             dateStyle: "medium",
             timeStyle: "short",
           });
-          await sendBrandedEmail({
+          const confirmResult = await sendBrandedEmail({
             to: data.email,
             replyTo: "INFO@TOREO.GR",
             subject: `Quote Request Received – ${orderCode}`,
@@ -239,9 +240,14 @@ export const submitForm = createServerFn({ method: "POST" })
               footerNote: "Please keep this Order ID. You can use it to track your request or contact our team.",
             },
           });
+          if (!confirmResult.ok) {
+            customerEmailError = confirmResult.error ?? "Unknown email error";
+            console.error("[email:ERROR] customer-confirmation:failed", customerEmailError);
+          }
         }
       } catch (e) {
-        console.error("customer confirmation send failed", e);
+        customerEmailError = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+        console.error("[email:ERROR] customer-confirmation:exception", customerEmailError);
       }
     } catch (e) {
       console.error("orders insert failed", e);
@@ -321,20 +327,25 @@ export const submitForm = createServerFn({ method: "POST" })
     let emailError: string | null = null;
 
     try {
-      const lovableKey = process.env.LOVABLE_API_KEY;
-      const resendKey = process.env.RESEND_API_KEY;
+      const { resolveEmailConfig, emailLog, emailError: logEmailError, EMAIL_GATEWAY_URL } = await import(
+        "@/lib/email/config.server"
+      );
+      const cfg = resolveEmailConfig();
+      emailLog("admin-notification:start", { submissionId, configured: cfg.ok });
 
-      if (lovableKey && resendKey) {
-        // Resend connector via Lovable gateway
-        const res = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
+      if (!cfg.ok) {
+        emailError = cfg.error;
+        logEmailError("admin-notification:not-configured", { missing: cfg.missing });
+      } else {
+        const res = await fetch(EMAIL_GATEWAY_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${lovableKey}`,
-            "X-Connection-Api-Key": resendKey,
+            Authorization: `Bearer ${cfg.lovableKey}`,
+            "X-Connection-Api-Key": cfg.resendKey,
           },
           body: JSON.stringify({
-            from: "TOREO Notifications <onboarding@resend.dev>",
+            from: cfg.from,
             to: [NOTIFY_EMAIL],
             reply_to: data.email,
             subject,
@@ -342,20 +353,20 @@ export const submitForm = createServerFn({ method: "POST" })
             text: textBody,
           }),
         });
+        const raw = await res.text();
         if (!res.ok) {
-          emailError = `Resend ${res.status}: ${await res.text()}`;
-          console.error(emailError);
+          emailError = `Email provider returned ${res.status}: ${raw}`;
+          logEmailError("admin-notification:provider-error", { status: res.status, body: raw.slice(0, 800) });
         } else {
           emailSent = true;
+          emailLog("admin-notification:ok", { submissionId, body: raw.slice(0, 200) });
         }
-      } else {
-        emailError = "Email provider not configured (Resend connector missing).";
-        console.warn(emailError);
       }
     } catch (e) {
-      emailError = e instanceof Error ? e.message : String(e);
-      console.error("Email send failed", e);
+      emailError = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+      console.error("[email:ERROR] admin-notification:exception", emailError);
     }
+
 
     // 3. Discord webhook notification (best-effort)
     try {
@@ -418,9 +429,27 @@ export const submitForm = createServerFn({ method: "POST" })
     if (submissionId) {
       await supabaseAdmin
         .from("submissions")
-        .update({ email_sent: emailSent, email_error: emailError })
+        .update({ email_sent: emailSent, email_error: emailError ?? customerEmailError })
         .eq("id", submissionId);
     }
 
-    return { ok: true, id: submissionId, order_code: orderCode, emailSent };
+    console.log(
+      `[email] submission-summary ${JSON.stringify({
+        submissionId,
+        orderCode,
+        adminEmailSent: emailSent,
+        adminEmailError: emailError,
+        customerEmailError,
+      })}`,
+    );
+
+    return {
+      ok: true,
+      id: submissionId,
+      order_code: orderCode,
+      emailSent,
+      // surfaced so the UI can tell the customer the confirmation email failed
+      confirmationEmailSent: customerEmailError === null,
+      emailError: customerEmailError ?? emailError,
+    };
   });

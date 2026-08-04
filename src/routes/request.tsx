@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
@@ -278,6 +279,15 @@ function RequestPage() {
       // the admin dashboard which can list all uploaded files from metadata.files.
       // The primary file already appears in the customer portal via order_files.
 
+      const emailInfo = res as { confirmationEmailSent?: boolean; emailError?: string | null };
+      if (emailInfo.confirmationEmailSent === false) {
+        console.error("[email] confirmation email failed:", emailInfo.emailError);
+        toast.error("Request received, but the confirmation email could not be sent.", {
+          description: emailInfo.emailError ?? "Email provider error. Our team has been notified.",
+        });
+      } else {
+        toast.success("Request sent — a confirmation email is on its way.");
+      }
       setSent({ orderCode: (res as { order_code?: string | null })?.order_code ?? null });
     } catch (err) {
       console.error(err);
