@@ -157,7 +157,7 @@ export function brandedEmailHtml(p: BrandedEmailParams): string {
         </td></tr>
 
         <tr><td style="padding:16px 32px 28px 32px;background:#06080f;border-top:1px solid #1f2230">
-          <div style="font-family:'Courier News',monospace;font-size:10px;letter-spacing:0.25em;color:#5e8bff;text-transform:uppercase">TOREO Manufacturing</div>
+          <div style="font-family:'Courier New',monospace;font-size:10px;letter-spacing:0.25em;color:#5e8bff;text-transform:uppercase">TOREO Manufacturing</div>
           <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#5e6577;margin-top:6px">
             Industrial precision · Thessaloniki, Greece · <a href="https://www.toreo.gr" style="color:#7a849a;text-decoration:none">toreo.gr</a>
           </div>
