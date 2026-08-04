@@ -429,9 +429,27 @@ export const submitForm = createServerFn({ method: "POST" })
     if (submissionId) {
       await supabaseAdmin
         .from("submissions")
-        .update({ email_sent: emailSent, email_error: emailError })
+        .update({ email_sent: emailSent, email_error: emailError ?? customerEmailError })
         .eq("id", submissionId);
     }
 
-    return { ok: true, id: submissionId, order_code: orderCode, emailSent };
+    console.log(
+      `[email] submission-summary ${JSON.stringify({
+        submissionId,
+        orderCode,
+        adminEmailSent: emailSent,
+        adminEmailError: emailError,
+        customerEmailError,
+      })}`,
+    );
+
+    return {
+      ok: true,
+      id: submissionId,
+      order_code: orderCode,
+      emailSent,
+      // surfaced so the UI can tell the customer the confirmation email failed
+      confirmationEmailSent: customerEmailError === null,
+      emailError: customerEmailError ?? emailError,
+    };
   });
