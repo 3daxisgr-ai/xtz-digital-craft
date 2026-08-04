@@ -174,11 +174,25 @@ function TrackPage() {
 
 /* ---------- order view ---------- */
 
-function OrderView({ data }: { data: any }) {
+function OrderView({
+  data,
+  orderCode,
+  email,
+  onRefresh,
+}: {
+  data: any;
+  orderCode: string;
+  email: string;
+  onRefresh: () => void | Promise<void>;
+}) {
   const order = data.order;
   const idx = stageIndex(order.status);
   const current = STAGES[idx];
   const pct = (idx / (STAGES.length - 1)) * 100;
+  const [showChange, setShowChange] = useState(false);
+
+  const quoteDoc = (data.documents ?? []).find((d: any) => d.label === "Quotation");
+  const invoiceDoc = (data.documents ?? []).find((d: any) => d.label === "Invoice");
 
   return (
     <div className="mt-10 space-y-6">
