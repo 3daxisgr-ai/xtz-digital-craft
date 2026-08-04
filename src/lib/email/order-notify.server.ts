@@ -113,6 +113,7 @@ export async function sendStatusEmail(order: any, status: string) {
     to: order.customer_email,
     replyTo: "INFO@TOREO.GR",
     subject: tmpl.subject(code),
+    context: { orderId: order.id ?? null, orderCode: code, emailType: "status_update" },
     params: {
       preview: `Your TOREO order ${code} status: ${STATUS_LABEL[status] ?? status}`,
       kicker: tmpl.kicker,
@@ -131,7 +132,7 @@ export async function sendCustomerEmail(
   to: string,
   subject: string,
   bodyHtml: string,
-  opts?: { kicker?: string; headline?: string; orderCode?: string; cta?: { label: string; url: string } },
+  opts?: { kicker?: string; headline?: string; orderCode?: string; orderId?: string; cta?: { label: string; url: string } },
 ) {
   if (!to) return;
   const { sendBrandedEmail } = await import("@/lib/email/template.server");
@@ -139,6 +140,7 @@ export async function sendCustomerEmail(
     to,
     replyTo: "INFO@TOREO.GR",
     subject,
+    context: { orderId: opts?.orderId ?? null, orderCode: opts?.orderCode ?? null, emailType: "custom_message" },
     params: {
       kicker: opts?.kicker ?? "Order Update",
       headline: opts?.headline ?? subject,

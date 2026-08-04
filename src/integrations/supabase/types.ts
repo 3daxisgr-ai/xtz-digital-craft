@@ -414,6 +414,89 @@ export type Database = {
         }
         Relationships: []
       }
+      order_emails: {
+        Row: {
+          attachments_count: number
+          cc: string | null
+          created_at: string
+          email_type: string
+          error_message: string | null
+          html: string | null
+          http_status: number | null
+          id: string
+          last_attempt_at: string | null
+          order_code: string | null
+          order_id: string | null
+          payload: Json
+          provider: string
+          provider_message_id: string | null
+          recipient: string
+          reply_to: string | null
+          retry_count: number
+          sender: string | null
+          sent_at: string | null
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          attachments_count?: number
+          cc?: string | null
+          created_at?: string
+          email_type?: string
+          error_message?: string | null
+          html?: string | null
+          http_status?: number | null
+          id?: string
+          last_attempt_at?: string | null
+          order_code?: string | null
+          order_id?: string | null
+          payload?: Json
+          provider?: string
+          provider_message_id?: string | null
+          recipient: string
+          reply_to?: string | null
+          retry_count?: number
+          sender?: string | null
+          sent_at?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          attachments_count?: number
+          cc?: string | null
+          created_at?: string
+          email_type?: string
+          error_message?: string | null
+          html?: string | null
+          http_status?: number | null
+          id?: string
+          last_attempt_at?: string | null
+          order_code?: string | null
+          order_id?: string | null
+          payload?: Json
+          provider?: string
+          provider_message_id?: string | null
+          recipient?: string
+          reply_to?: string | null
+          retry_count?: number
+          sender?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_emails_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_events: {
         Row: {
           actor: Database["public"]["Enums"]["actor_role"]

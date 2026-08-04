@@ -37,6 +37,7 @@ import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { RequestSummary } from "@/components/xtz/RequestSummary";
 import { acceptQuote, declineQuote } from "@/lib/api/quote-decision.functions";
 import { quoteDocCreate } from "@/lib/api/quote-doc.functions";
+import { OrderEmailHistory, EmailDeliveryWidget } from "@/components/admin/EmailHistory";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -300,6 +301,8 @@ function Dashboard({ onOpenOrder }: { onOpenOrder: (c: string) => void }) {
           </div>
 
 
+          <EmailDeliveryWidget />
+
           <div className="grid lg:grid-cols-3 gap-6">
             <Card title="Recent Orders" className="lg:col-span-2">
               <div className="divide-y divide-white/5">
@@ -444,7 +447,7 @@ function NewOrderModal({ create, onClose, onCreated }: any) {
 }
 
 // ============= ORDER DETAIL =============
-const ORDER_TABS = ["customer", "ai", "files", "updates", "tracking", "images", "comments", "status"] as const;
+const ORDER_TABS = ["customer", "ai", "files", "updates", "emails", "tracking", "images", "comments", "status"] as const;
 type OrderTab = typeof ORDER_TABS[number];
 
 function OrderDetail({ code, onBack }: { code: string; onBack: () => void }) {
@@ -512,6 +515,7 @@ function OrderDetail({ code, onBack }: { code: string; onBack: () => void }) {
       {tab === "ai" && <TabAI code={code} orderMeta={o} />}
       {tab === "files" && <TabFiles d={d} code={code} refresh={refresh} />}
       {tab === "updates" && <TabUpdates d={d} code={code} refresh={refresh} />}
+      {tab === "emails" && <OrderEmailHistory orderId={o.id} orderCode={o.order_code} />}
       {tab === "tracking" && <TabTracking o={o} patch={patch} />}
       {tab === "images" && <TabImages d={d} code={code} refresh={refresh} />}
       {tab === "comments" && <TabComments d={d} code={code} refresh={refresh} />}

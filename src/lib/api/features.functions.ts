@@ -181,6 +181,7 @@ export const customerRespondPhotos = createServerFn({ method: "POST" })
       await sendBrandedEmail({
         to: "INFO@TOREO.GR",
         subject: `${order.order_code} – ${data.action === "approve" ? "Photos approved" : "Changes requested"}`,
+        context: { orderId: order.id ?? null, orderCode: order.order_code ?? null, emailType: "photo_approval" },
         params: {
           kicker: "Order Update",
           headline: `${order.customer_name ?? order.customer_email}`,

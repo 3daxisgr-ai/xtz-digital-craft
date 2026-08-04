@@ -7,6 +7,7 @@ export async function sendQuoteAcceptedEmail(opts: {
   deliveryTime?: string | null;
   paymentTerms?: string | null;
   message?: string | null;
+  orderId?: string | null;
 }) {
   if (!opts.to) return { ok: false };
   const { sendBrandedEmail } = await import("@/lib/email/template.server");
@@ -15,6 +16,7 @@ export async function sendQuoteAcceptedEmail(opts: {
     to: opts.to,
     replyTo: "INFO@TOREO.GR",
     subject: `Quote Accepted – ${opts.orderCode}`,
+    context: { orderId: opts.orderId ?? null, orderCode: opts.orderCode, emailType: "quote_accepted" },
     params: {
       kicker: "Quote Accepted",
       headline: "Your quotation is confirmed.",
@@ -41,6 +43,7 @@ export async function sendQuoteDeclinedEmail(opts: {
   orderCode: string;
   reason?: string | null;
   message?: string | null;
+  orderId?: string | null;
 }) {
   if (!opts.to) return { ok: false };
   const { sendBrandedEmail } = await import("@/lib/email/template.server");
@@ -48,6 +51,7 @@ export async function sendQuoteDeclinedEmail(opts: {
     to: opts.to,
     replyTo: "INFO@TOREO.GR",
     subject: `Update on your quote – ${opts.orderCode}`,
+    context: { orderId: opts.orderId ?? null, orderCode: opts.orderCode, emailType: "quote_declined" },
     params: {
       kicker: "Quote Update",
       headline: "We are unable to proceed with this quote.",

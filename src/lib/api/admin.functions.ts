@@ -222,6 +222,7 @@ export const adminSendTestNotification = createServerFn({ method: "POST" }).hand
       const r = await sendBrandedEmail({
         to: NOTIFY_EMAIL,
         subject: "✅ Test Notification - TOREO",
+        context: { emailType: "system_test" },
         params: {
           kicker: "System Test",
           headline: "Email delivery is working.",

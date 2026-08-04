@@ -74,6 +74,7 @@ export const acceptQuote = createServerFn({ method: "POST" })
           deliveryTime: data.delivery_time,
           paymentTerms: data.payment_terms,
           message: data.customer_message,
+          orderId: order.id ?? null,
         });
         await supabaseAdmin.from("quote_decisions" as any).update({
           email_status: r.ok ? "sent" : "failed",
@@ -144,6 +145,7 @@ export const declineQuote = createServerFn({ method: "POST" })
         const r = await sendQuoteDeclinedEmail({
           to: to!, orderCode: order.order_code!,
           reason: combinedReason, message: data.customer_message,
+          orderId: order.id ?? null,
         });
         await supabaseAdmin.from("quote_decisions" as any).update({
           email_status: r.ok ? "sent" : "failed",
