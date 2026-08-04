@@ -14,8 +14,8 @@ const en: Dict = {
   "nav.equipment": "Equipment",
   "nav.forum": "Forum",
   "nav.company": "Company",
-  "nav.inquiry": "Upload CAD & Request a Quote",
-  "nav.cta": "Upload CAD & Request a Quote",
+  "nav.inquiry": "UPLOAD CAD & REQUEST A QUOTE",
+  "nav.cta": "UPLOAD CAD & REQUEST A QUOTE",
 
   // Hero
   "intro.headline": "TOREO",
@@ -27,7 +27,7 @@ const en: Dict = {
   "concept.kicker": "What we do",
   "concept.title": "We design, prototype and build real products.",
   "concept.body": "Send us your idea, sketch or CAD file. We design it, prototype it, and manufacture the final part.",
-  "concept.cta": "Upload CAD & Request a Quote",
+  "concept.cta": "UPLOAD CAD & REQUEST A QUOTE",
 
   // Capabilities
   "cap.kicker": "Capabilities",
@@ -107,7 +107,7 @@ const en: Dict = {
   // Finale
   "finale.kicker": "Ready to build?",
   "finale.statement": "From concept to reality.",
-  "finale.cta": "Upload CAD & Request a Quote",
+  "finale.cta": "UPLOAD CAD & REQUEST A QUOTE",
   "finale.foot1": "© TOREO",
   "finale.foot2": "​",
   "finale.foot3": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
@@ -151,7 +151,7 @@ const en: Dict = {
   // Capability page
   "capp.crumb.home": "Home",
   "capp.crumb.caps": "Capabilities",
-  "capp.cta.quote": "Upload CAD & Request a Quote",
+  "capp.cta.quote": "UPLOAD CAD & REQUEST A QUOTE",
   "capp.cta.all": "All Capabilities",
   "capp.h.what": "What we do",
   "capp.h.materials": "Materials & Technologies",
@@ -204,8 +204,8 @@ const gr: Dict = {
   "nav.equipment": "ΕΞΟΠΛΙΣΜΟΣ",
   "nav.forum": "ΝΕΑ",
   "nav.company": "Η ΕΤΑΙΡΕΙΑ",
-  "nav.inquiry": "ΑΝΕΒΑΣΤΕ CAD & ΖΗΤΗΣΤΕ ΠΡΟΣΦΟΡΑ",
-  "nav.cta": "ΑΝΕΒΑΣΤΕ CAD & ΖΗΤΗΣΤΕ ΠΡΟΣΦΟΡΑ",
+  "nav.inquiry": "UPLOAD CAD & REQUEST A QUOTE",
+  "nav.cta": "UPLOAD CAD & REQUEST A QUOTE",
 
   "intro.headline": "ΑΠΟ ΤΗΝ ΙΔΕΑ ΣΤΗΝ ΠΡΑΓΜΑΤΙΚΟΤΗΤΑ",
   "intro.sub": "​",
@@ -215,7 +215,7 @@ const gr: Dict = {
   "concept.kicker": "Τι κάνουμε",
   "concept.title": "Σχεδιάζουμε, πρωτοτυποποιούμε και κατασκευάζουμε πραγματικά προϊόντα.",
   "concept.body": "Στείλτε μας την ιδέα, το σκίτσο ή το αρχείο CAD σας. Το μελετάμε, το πρωτοτυποποιούμε και κατασκευάζουμε το τελικό εξάρτημα.",
-  "concept.cta": "Ανεβάστε CAD & Ζητήστε Προσφορά",
+  "concept.cta": "UPLOAD CAD & REQUEST A QUOTE",
 
   "cap.kicker": "Δυνατότητες",
   "cap.title": "Έξι πράγματα που κάνουμε εξαιρετικά.",
@@ -289,7 +289,7 @@ const gr: Dict = {
 
   "finale.kicker": "Έτοιμοι να φτιάξετε κάτι;",
   "finale.statement": "Από την ιδέα στην πραγματικότητα.",
-  "finale.cta": "Ανεβάστε CAD & Ζητήστε Προσφορά",
+  "finale.cta": "UPLOAD CAD & REQUEST A QUOTE",
   "finale.foot1": "© TOREO",
   "finale.foot2": "​",
   "finale.foot3": "DESIGN· PROTOTYPE · MANUFACTURE· DELIVER",
@@ -328,12 +328,12 @@ const gr: Dict = {
   "cta.lead": "ΞΕΚΙΝΗΣΤΕ ΕΔΩ.",
   "cta.body1": "Είτε έχετε σχέδιο, υπάρχουσα μελέτη ή απλώς μια ιδέα — μπορούμε να τη μετατρέψουμε σε πραγματικό προϊόν.",
   "cta.body2": "Από τον σχεδιασμό και την πρωτοτυποποίηση έως την κατασκευή και τη μαζική παραγωγή, είμαστε στη διάθεσή σας.",
-  "cta.button": "ΑΝΕΒΑΣΤΕ CAD & ΖΗΤΗΣΤΕ ΠΡΟΣΦΟΡΑ",
+  "cta.button": "UPLOAD CAD & REQUEST A QUOTE",
 
   // Capability page
   "capp.crumb.home": "Αρχική",
   "capp.crumb.caps": "Δυνατότητες",
-  "capp.cta.quote": "Ανεβάστε CAD & Ζητήστε Προσφορά",
+  "capp.cta.quote": "UPLOAD CAD & REQUEST A QUOTE",
   "capp.cta.all": "Όλες οι Δυνατότητες",
   "capp.h.what": "Τι κάνουμε",
   "capp.h.materials": "ΥΛΙΚΑ & ΤΕΧΝΟΛΟΓΙΕΣ",
