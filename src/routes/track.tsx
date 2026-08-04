@@ -295,7 +295,10 @@ function OrderView({
               <li key={i} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 first:pt-0 last:pb-0">
                 <div className="min-w-0">
                   <div className="text-sm truncate">{d.name}</div>
-                  <div className="text-[10px] font-mono uppercase tracking-wider text-white/35 mt-0.5">{d.label}</div>
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-white/35 mt-0.5">
+                    {d.label}
+                    {d.created_at ? ` · ${fmtDate(d.created_at)}` : ""}
+                  </div>
                 </div>
                 <a
                   href={d.url}
@@ -312,6 +315,10 @@ function OrderView({
           <p className="text-sm text-white/45">No documents are available for this order yet.</p>
         )}
       </section>
+
+      {/* 6. Communication */}
+      <Communication data={data} orderCode={orderCode} email={email} onRefresh={onRefresh} />
+
 
       {/* Timeline */}
       {data.events?.length > 0 && (
