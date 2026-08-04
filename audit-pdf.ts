@@ -10,7 +10,7 @@ const bytes = await renderQuotePdf({
   lines: [{ description: "Κοπή λέιζερ", qty: 5, unit: "τεμ", unit_price: 82.5, discount_pct: 0, vat_pct: 24 } as any],
   currency: "EUR", depositPct: 50, paid: 0,
   terms: { payment_terms: "50% προκαταβολή", delivery_time: "7 εργάσιμες", notes: "Δοκιμή" },
-  fontRegular: await g(reg.url), fontBold: await g(bold.url),
+  fontRegular: await g("https://www.toreo.gr"+reg.url), fontBold: await g("https://www.toreo.gr"+bold.url),
 });
 await Bun.write("/tmp/quote.pdf", bytes);
 console.log("PDF bytes", bytes.length);
