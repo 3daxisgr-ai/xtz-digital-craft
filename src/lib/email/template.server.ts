@@ -204,9 +204,75 @@ export function brandedEmailText(p: BrandedEmailParams): string {
 }
 
 /**
+ * POST a fully-formed provider payload to the Resend connector gateway.
+ * Shared by first-time sends and retries so both take the exact same path.
+ * Never throws — returns the exact provider status/body on failure.
+ */
+export async function postEmailPayload(
+  payload: Record<string, unknown>,
+  logPrefix: "send" | "retry" = "send",
+): Promise<{ ok: boolean; error?: string; messageId?: string; status?: number; body?: string }> {
+  const { resolveEmailConfig, emailLog, emailError, maskEmail, EMAIL_GATEWAY_URL } = await import(
+    "@/lib/email/config.server"
+  );
+
+  const cfg = resolveEmailConfig();
+  if (!cfg.ok) {
+    emailError(`${logPrefix}:not-configured`, { missing: cfg.missing });
+    return { ok: false, error: cfg.error };
+  }
+
+  try {
+    emailLog(`${logPrefix}:request`, {
+      from: payload.from,
+      to: maskEmail(payload.to as any),
+      subject: payload.subject,
+    });
+    const res = await fetch(EMAIL_GATEWAY_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${cfg.lovableKey}`,
+        "X-Connection-Api-Key": cfg.resendKey,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const raw = await res.text();
+    if (!res.ok) {
+      const error = `Email provider returned ${res.status}: ${raw}`;
+      emailError(`${logPrefix}:failed`, { status: res.status, body: raw.slice(0, 800), subject: payload.subject });
+      return { ok: false, error, status: res.status, body: raw };
+    }
+
+    let messageId: string | undefined;
+    try {
+      const j: any = JSON.parse(raw);
+      messageId = j?.id ?? j?.data?.id;
+      // Some providers report failure inside a 2xx body.
+      if (j?.error) {
+        const error = `Email provider error: ${typeof j.error === "string" ? j.error : JSON.stringify(j.error)}`;
+        emailError(`${logPrefix}:failed`, { body: raw.slice(0, 800) });
+        return { ok: false, error, status: res.status, body: raw };
+      }
+    } catch {
+      /* provider returned no JSON body */
+    }
+
+    emailLog(`${logPrefix}:success`, { messageId: messageId ?? null, subject: payload.subject });
+    return { ok: true, messageId, status: res.status, body: raw };
+  } catch (e) {
+    const error = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+    emailError(`${logPrefix}:failed`, { error, subject: payload.subject });
+    return { ok: false, error };
+  }
+}
+
+/**
  * Send a branded email through the Resend connector (Lovable gateway).
  * Never throws — always returns a result object with the exact provider error
- * so callers can surface it. Every step is logged server-side.
+ * so callers can surface it. Every step is logged server-side and persisted to
+ * the `order_emails` history table.
  */
 export async function sendBrandedEmail(opts: {
   to: string | string[];
@@ -216,16 +282,30 @@ export async function sendBrandedEmail(opts: {
   replyTo?: string;
   from?: string;
   attachments?: { filename: string; content: string }[];
+  /** Optional history context: which order/email type this belongs to. */
+  context?: import("@/lib/email/log.server").EmailLogContext;
 }): Promise<{ ok: boolean; error?: string; messageId?: string; status?: number }> {
-  const { resolveEmailConfig, emailLog, emailError, maskEmail, EMAIL_GATEWAY_URL } = await import(
+  const { resolveEmailConfig, emailLog, emailError, maskEmail } = await import(
     "@/lib/email/config.server"
   );
+  const { beginEmailLog, completeEmailLog } = await import("@/lib/email/log.server");
 
   const cfg = resolveEmailConfig();
   emailLog("send:start", { to: maskEmail(opts.to), subject: opts.subject, configured: cfg.ok });
 
   if (!cfg.ok) {
     emailError("send:not-configured", { missing: cfg.missing, subject: opts.subject });
+    // Still record the attempt so the failure is visible in the admin history.
+    const id = await beginEmailLog(
+      {
+        from: opts.from ?? "(unconfigured)",
+        to: Array.isArray(opts.to) ? opts.to : [opts.to],
+        subject: opts.subject,
+        html: brandedEmailHtml(opts.params),
+      },
+      opts.context,
+    );
+    await completeEmailLog(id, { ok: false, error: cfg.error });
     return { ok: false, error: cfg.error };
   }
 
@@ -248,46 +328,12 @@ export async function sendBrandedEmail(opts: {
     ...(opts.attachments?.length ? { attachments: opts.attachments } : {}),
   };
 
-  try {
-    emailLog("send:request", { from: payload.from, to: maskEmail(payload.to), attachments: opts.attachments?.length ?? 0 });
-    const res = await fetch(EMAIL_GATEWAY_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${cfg.lovableKey}`,
-        "X-Connection-Api-Key": cfg.resendKey,
-      },
-      body: JSON.stringify(payload),
-    });
+  const logId = await beginEmailLog(payload as any, opts.context);
+  const result = await postEmailPayload(payload, "send");
+  await completeEmailLog(logId, result);
 
-    const raw = await res.text();
-    if (!res.ok) {
-      const error = `Email provider returned ${res.status}: ${raw}`;
-      emailError("send:provider-error", { status: res.status, body: raw.slice(0, 800), subject: opts.subject });
-      return { ok: false, error, status: res.status };
-    }
-
-    let messageId: string | undefined;
-    try {
-      const j: any = JSON.parse(raw);
-      messageId = j?.id ?? j?.data?.id;
-      // Some providers report failure inside a 2xx body.
-      if (j?.error) {
-        const error = `Email provider error: ${typeof j.error === "string" ? j.error : JSON.stringify(j.error)}`;
-        emailError("send:provider-body-error", { body: raw.slice(0, 800) });
-        return { ok: false, error, status: res.status };
-      }
-    } catch {
-      /* provider returned no JSON body */
-    }
-
-    emailLog("send:ok", { messageId: messageId ?? null, to: maskEmail(payload.to), subject: opts.subject });
-    return { ok: true, messageId, status: res.status };
-  } catch (e) {
-    const error = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
-    emailError("send:exception", { error, subject: opts.subject });
-    return { ok: false, error };
-  }
+  return { ok: result.ok, error: result.error, messageId: result.messageId, status: result.status };
 }
+
 
 
