@@ -240,9 +240,14 @@ export const submitForm = createServerFn({ method: "POST" })
               footerNote: "Please keep this Order ID. You can use it to track your request or contact our team.",
             },
           });
+          if (!confirmResult.ok) {
+            customerEmailError = confirmResult.error ?? "Unknown email error";
+            console.error("[email:ERROR] customer-confirmation:failed", customerEmailError);
+          }
         }
       } catch (e) {
-        console.error("[email:ERROR] customer-confirmation:exception", e);
+        customerEmailError = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+        console.error("[email:ERROR] customer-confirmation:exception", customerEmailError);
       }
     } catch (e) {
       console.error("orders insert failed", e);
