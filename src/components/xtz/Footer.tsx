@@ -41,7 +41,7 @@ export function Footer() {
               {lang === "GR" ? (
                 <>
                   <span>DESIGN.</span>
-                  <span className="text-primary">Πρωτότυπο.</span>
+                  <span className="text-primary">PROTOTYPE.</span>
                   <span>Κατασκευή.</span>
                   <span className="text-primary">MASS PRODUCTIO.</span>
                 </>
