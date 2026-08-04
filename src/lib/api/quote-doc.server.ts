@@ -582,6 +582,7 @@ export async function sendQuoteDoc(input: {
     cc: input.cc || null,
     replyTo: "INFO@TOREO.GR",
     subject: input.subject,
+    context: { orderId: order.id ?? null, orderCode: order.order_code ?? null, emailType: "quote_sent" },
     attachments: [{ filename: `${d.number}.pdf`, content: base64 }],
     params: {
       kicker: lang === "el" ? "ΠΡΟΣΦΟΡΑ" : "QUOTATION",
