@@ -157,6 +157,7 @@ export const panelSetMaterialStatus = createServerFn({ method: "POST" })
 // ---------------- FACTORY SETTINGS (profit protection) ----------------
 
 export const panelGetSettings = createServerFn({ method: "GET" }).handler(async () => {
+  await requireAdminCookie();
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data } = await supabaseAdmin.from("factory_settings" as any).select("*").limit(1).maybeSingle();
   return data ?? null;
