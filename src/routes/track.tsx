@@ -2,7 +2,12 @@ import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { trackOrder, STATUS_LABEL } from "@/lib/api/orders.functions";
+import {
+  trackOrder,
+  trackPostMessage,
+  trackRequestChange,
+  STATUS_LABEL,
+} from "@/lib/api/orders.functions";
 
 const searchSchema = z.object({ code: z.string().optional() });
 
@@ -152,7 +157,21 @@ function TrackPage() {
           </div>
         )}
 
-        {result?.order && <OrderView data={result} />}
+        {result?.order && (
+          <OrderView
+            data={result}
+            orderCode={orderCode.trim()}
+            email={email.trim()}
+            onRefresh={async () => {
+              try {
+                const r = await track({ data: { order_code: orderCode.trim(), email: email.trim() } });
+                if (r.found) setResult(r);
+              } catch {
+                /* keep current view */
+              }
+            }}
+          />
+        )}
       </main>
     </div>
   );
@@ -160,11 +179,25 @@ function TrackPage() {
 
 /* ---------- order view ---------- */
 
-function OrderView({ data }: { data: any }) {
+function OrderView({
+  data,
+  orderCode,
+  email,
+  onRefresh,
+}: {
+  data: any;
+  orderCode: string;
+  email: string;
+  onRefresh: () => void | Promise<void>;
+}) {
   const order = data.order;
   const idx = stageIndex(order.status);
   const current = STAGES[idx];
   const pct = (idx / (STAGES.length - 1)) * 100;
+  const [showChange, setShowChange] = useState(false);
+
+  const quoteDoc = (data.documents ?? []).find((d: any) => d.label === "Quotation");
+  const invoiceDoc = (data.documents ?? []).find((d: any) => d.label === "Invoice");
 
   return (
     <div className="mt-10 space-y-6">
@@ -185,6 +218,58 @@ function OrderView({ data }: { data: any }) {
           <Field label="Estimated delivery" value={fmtDate(order.estimated_delivery)} />
         </div>
       </section>
+
+      {/* Customer actions */}
+      <section className="border border-white/10 bg-white/[0.02] rounded-xl p-5 md:p-6">
+        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40 mb-4">Actions</div>
+        <div className="flex flex-wrap gap-2.5">
+          {quoteDoc && (
+            <a
+              href={quoteDoc.url}
+              target="_blank"
+              rel="noreferrer"
+              className="bg-white text-black hover:bg-white/90 rounded-md px-4 py-2 text-xs font-semibold"
+            >
+              Download Quote PDF
+            </a>
+          )}
+          {invoiceDoc && (
+            <a
+              href={invoiceDoc.url}
+              target="_blank"
+              rel="noreferrer"
+              className="border border-white/15 hover:border-white/40 rounded-md px-4 py-2 text-xs font-semibold"
+            >
+              Download Invoice
+            </a>
+          )}
+          <a
+            href={`mailto:info@toreo.gr?subject=${encodeURIComponent(`Order ${order.order_code}`)}`}
+            className="border border-white/15 hover:border-white/40 rounded-md px-4 py-2 text-xs font-semibold"
+          >
+            Contact TOREO
+          </a>
+          <button
+            type="button"
+            onClick={() => setShowChange((v) => !v)}
+            className="border border-white/15 hover:border-white/40 rounded-md px-4 py-2 text-xs font-semibold"
+          >
+            Request Change
+          </button>
+        </div>
+
+        {showChange && (
+          <ChangeRequestForm
+            orderCode={orderCode}
+            email={email}
+            onDone={async () => {
+              setShowChange(false);
+              await onRefresh();
+            }}
+          />
+        )}
+      </section>
+
 
       {/* 2. Progress */}
       <section className="border border-white/10 bg-white/[0.02] rounded-xl p-5 md:p-6">
@@ -267,7 +352,10 @@ function OrderView({ data }: { data: any }) {
               <li key={i} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 first:pt-0 last:pb-0">
                 <div className="min-w-0">
                   <div className="text-sm truncate">{d.name}</div>
-                  <div className="text-[10px] font-mono uppercase tracking-wider text-white/35 mt-0.5">{d.label}</div>
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-white/35 mt-0.5">
+                    {d.label}
+                    {d.created_at ? ` · ${fmtDate(d.created_at)}` : ""}
+                  </div>
                 </div>
                 <a
                   href={d.url}
@@ -284,6 +372,10 @@ function OrderView({ data }: { data: any }) {
           <p className="text-sm text-white/45">No documents are available for this order yet.</p>
         )}
       </section>
+
+      {/* 6. Communication */}
+      <Communication data={data} orderCode={orderCode} email={email} onRefresh={onRefresh} />
+
 
       {/* Timeline */}
       {data.events?.length > 0 && (
@@ -313,6 +405,211 @@ function OrderView({ data }: { data: any }) {
     </div>
   );
 }
+
+/* ---------- change request ---------- */
+
+const REQUEST_TYPES = [
+  { value: "quantity", label: "Change quantity" },
+  { value: "material", label: "Change material" },
+  { value: "specifications", label: "Change specifications" },
+  { value: "other", label: "Other" },
+] as const;
+
+function ChangeRequestForm({
+  orderCode,
+  email,
+  onDone,
+}: {
+  orderCode: string;
+  email: string;
+  onDone: () => void | Promise<void>;
+}) {
+  const requestChange = useServerFn(trackRequestChange);
+  const [type, setType] = useState<(typeof REQUEST_TYPES)[number]["value"]>("quantity");
+  const [message, setMessage] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(null);
+    setBusy(true);
+    try {
+      let file_base64: string | undefined;
+      if (file) {
+        if (file.size > 6 * 1024 * 1024) throw new Error("File is too large (max 6 MB).");
+        const buf = await file.arrayBuffer();
+        let bin = "";
+        const bytes = new Uint8Array(buf);
+        for (let i = 0; i < bytes.length; i += 0x8000) {
+          bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+        }
+        file_base64 = btoa(bin);
+      }
+      await requestChange({
+        data: {
+          order_code: orderCode,
+          email,
+          request_type: type,
+          message: message.trim(),
+          ...(file && file_base64
+            ? { file_name: file.name, file_base64, file_type: file.type || "application/octet-stream" }
+            : {}),
+        },
+      });
+      setDone(true);
+      setMessage("");
+      setFile(null);
+      await onDone();
+    } catch (e: any) {
+      setErr(e?.message ?? "Could not submit your request. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (done) {
+    return (
+      <div className="mt-5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+        Your change request has been sent to our team. We will review it and get back to you by email.
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className="mt-5 rounded-lg border border-white/10 bg-black/30 p-4 space-y-3">
+      <div>
+        <label className="text-[10px] font-mono uppercase tracking-wider text-white/35">Request type</label>
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value as any)}
+          className="mt-1 w-full bg-black/40 border border-white/10 rounded-md px-3 py-2.5 text-sm outline-none focus:border-white/40"
+        >
+          {REQUEST_TYPES.map((t) => (
+            <option key={t.value} value={t.value} className="bg-[#070708]">
+              {t.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="text-[10px] font-mono uppercase tracking-wider text-white/35">Message</label>
+        <textarea
+          required
+          rows={4}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Describe the change you need…"
+          className="mt-1 w-full bg-black/40 border border-white/10 rounded-md px-3 py-2.5 text-sm placeholder:text-white/30 outline-none focus:border-white/40"
+        />
+      </div>
+      <div>
+        <label className="text-[10px] font-mono uppercase tracking-wider text-white/35">Attachment (optional)</label>
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          className="mt-1 w-full text-xs text-white/60 file:mr-3 file:rounded-md file:border file:border-white/15 file:bg-transparent file:px-3 file:py-1.5 file:text-xs file:text-white"
+        />
+      </div>
+      {err && <div className="text-xs text-red-300">{err}</div>}
+      <button
+        type="submit"
+        disabled={busy}
+        className="bg-white text-black hover:bg-white/90 rounded-md px-5 py-2 text-xs font-semibold disabled:opacity-50"
+      >
+        {busy ? "Sending…" : "Submit request"}
+      </button>
+    </form>
+  );
+}
+
+/* ---------- communication ---------- */
+
+function Communication({
+  data,
+  orderCode,
+  email,
+  onRefresh,
+}: {
+  data: any;
+  orderCode: string;
+  email: string;
+  onRefresh: () => void | Promise<void>;
+}) {
+  const postMessage = useServerFn(trackPostMessage);
+  const [body, setBody] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
+  const messages: any[] = data.messages ?? [];
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(null);
+    setSent(false);
+    setBusy(true);
+    try {
+      await postMessage({ data: { order_code: orderCode, email, body: body.trim() } });
+      setBody("");
+      setSent(true);
+      await onRefresh();
+    } catch (e: any) {
+      setErr(e?.message ?? "Could not send your message. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="border border-white/10 bg-white/[0.02] rounded-xl p-5 md:p-6">
+      <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40 mb-4">Messages</div>
+      {messages.length ? (
+        <ul className="space-y-3 mb-5">
+          {messages.map((m, i) => (
+            <li
+              key={m.id ?? i}
+              className={`rounded-lg border px-3.5 py-3 ${
+                m.from_role === "admin"
+                  ? "border-sky-500/25 bg-sky-500/[0.07]"
+                  : "border-white/10 bg-black/30"
+              }`}
+            >
+              <div className="text-[10px] font-mono uppercase tracking-wider text-white/35">
+                {m.from_role === "admin" ? "TOREO" : "You"} · {new Date(m.created_at).toLocaleString()}
+              </div>
+              <p className="text-sm text-white/85 mt-1.5 whitespace-pre-wrap break-words">{m.body}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-sm text-white/45 mb-5">No messages yet. Send us a message about this order below.</p>
+      )}
+
+      <form onSubmit={submit} className="space-y-3">
+        <textarea
+          required
+          rows={3}
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+          placeholder="Write a message about this order…"
+          className="w-full bg-black/40 border border-white/10 rounded-md px-3 py-2.5 text-sm placeholder:text-white/30 outline-none focus:border-white/40"
+        />
+        {err && <div className="text-xs text-red-300">{err}</div>}
+        {sent && <div className="text-xs text-emerald-300">Message sent — our team will reply by email.</div>}
+        <button
+          type="submit"
+          disabled={busy}
+          className="bg-white text-black hover:bg-white/90 rounded-md px-5 py-2 text-xs font-semibold disabled:opacity-50"
+        >
+          {busy ? "Sending…" : "Send message"}
+        </button>
+      </form>
+    </section>
+  );
+}
+
 
 function Field({ label, value }: { label: string; value?: string | null }) {
   return (

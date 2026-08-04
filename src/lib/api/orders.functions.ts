@@ -382,7 +382,7 @@ export const trackOrder = createServerFn({ method: "POST" })
     };
 
     // ---- customer documents (quotations + invoice)
-    const documents: { label: string; name: string; url: string }[] = [];
+    const documents: { label: string; name: string; url: string; created_at: string | null }[] = [];
     const { data: quoteDocs } = await supabaseAdmin
       .from("quote_documents")
       .select("number, pdf_path, status, created_at")
@@ -395,7 +395,12 @@ export const trackOrder = createServerFn({ method: "POST" })
         .from("quote-pdfs")
         .createSignedUrl((d as any).pdf_path, 60 * 30);
       if (signed?.signedUrl) {
-        documents.push({ label: "Quotation", name: `${(d as any).number}.pdf`, url: signed.signedUrl });
+        documents.push({
+          label: "Quotation",
+          name: `${(d as any).number}.pdf`,
+          url: signed.signedUrl,
+          created_at: (d as any).created_at ?? null,
+        });
       }
     }
     const invoicePath = (order as any).invoice_file_path as string | null;
@@ -405,7 +410,12 @@ export const trackOrder = createServerFn({ method: "POST" })
         .from(bucket)
         .createSignedUrl(invoicePath, 60 * 30);
       if (signed?.signedUrl) {
-        documents.push({ label: "Invoice", name: invoicePath.split("/").pop() ?? "invoice.pdf", url: signed.signedUrl });
+        documents.push({
+          label: "Invoice",
+          name: invoicePath.split("/").pop() ?? "invoice.pdf",
+          url: signed.signedUrl,
+          created_at: null,
+        });
       }
     }
     const { data: custFiles } = await supabaseAdmin
@@ -420,13 +430,137 @@ export const trackOrder = createServerFn({ method: "POST" })
       const bucket = path.startsWith("inquiry/") || path.startsWith("3dp/") ? "submission-files" : "order-files";
       const { data: signed } = await supabaseAdmin.storage.from(bucket).createSignedUrl(path, 60 * 30);
       if (signed?.signedUrl) {
-        documents.push({ label: "Document", name: (f as any).file_name ?? path.split("/").pop(), url: signed.signedUrl });
+        const name = (f as any).file_name ?? path.split("/").pop();
+        const label = /ship|courier|waybill|label/i.test(String(name)) ? "Shipping document" : "Document";
+        documents.push({ label, name, url: signed.signedUrl, created_at: (f as any).created_at ?? null });
       }
     }
 
+    // ---- customer communication thread
+    const { data: msgs } = await supabaseAdmin
+      .from("order_messages")
+      .select("id, from_role, body, created_at")
+      .eq("order_id", order.id)
+      .order("created_at");
+
     const { metadata: _m, invoice_file_path: _i, customer_email: _e, ...safeOrder } = order as any;
-    return { found: true as const, order: safeOrder, details, documents, events: events ?? [] };
+    return {
+      found: true as const,
+      order: safeOrder,
+      details,
+      documents,
+      events: events ?? [],
+      messages: (msgs ?? []).filter((m: any) => m.from_role !== "system"),
+    };
   });
+
+// ----- public tracking: customer actions (verified by order code + email) ----
+
+async function verifyTrackedOrder(order_code: string, email: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: order } = await supabaseAdmin
+    .from("orders")
+    .select("id, order_code, customer_email, customer_name")
+    .eq("order_code", order_code)
+    .maybeSingle();
+  if (!order || String(order.customer_email ?? "").toLowerCase() !== email.trim().toLowerCase()) {
+    throw new Error("Order not found for this email address.");
+  }
+  return { supabaseAdmin, order };
+}
+
+export const trackPostMessage = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        order_code: z.string().trim().min(3).max(40),
+        email: z.string().trim().email(),
+        body: z.string().trim().min(2).max(2000),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin, order } = await verifyTrackedOrder(data.order_code, data.email);
+    await supabaseAdmin.from("order_messages").insert({
+      order_id: order.id,
+      from_role: "customer",
+      body: data.body,
+    });
+    await supabaseAdmin.from("admin_notifications").insert({
+      title: `New customer message · ${order.order_code}`,
+      body: data.body.slice(0, 400),
+    });
+    return { ok: true as const };
+  });
+
+const CHANGE_TYPES = {
+  quantity: "Change quantity",
+  material: "Change material",
+  specifications: "Change specifications",
+  other: "Other",
+} as const;
+
+export const trackRequestChange = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        order_code: z.string().trim().min(3).max(40),
+        email: z.string().trim().email(),
+        request_type: z.enum(["quantity", "material", "specifications", "other"]),
+        message: z.string().trim().min(2).max(2000),
+        file_name: z.string().max(255).optional(),
+        file_base64: z.string().max(9_000_000).optional(),
+        file_type: z.string().max(80).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin, order } = await verifyTrackedOrder(data.order_code, data.email);
+    const typeLabel = CHANGE_TYPES[data.request_type];
+
+    let attachment: string | null = null;
+    if (data.file_base64 && data.file_name) {
+      const safeName = data.file_name.replace(/[^A-Za-z0-9._-]/g, "_");
+      const path = `${order.order_code}/change-requests/${Date.now()}-${safeName}`;
+      const buf = Buffer.from(data.file_base64, "base64");
+      const { error: upErr } = await supabaseAdmin.storage
+        .from("order-files")
+        .upload(path, buf, { contentType: data.file_type || "application/octet-stream" });
+      if (!upErr) {
+        await supabaseAdmin.from("order_files").insert({
+          order_id: order.id,
+          file_path: path,
+          file_name: data.file_name,
+          file_type: data.file_type ?? null,
+          size_bytes: buf.byteLength,
+          uploaded_by: "customer",
+          visibility: "customer",
+        });
+        attachment = data.file_name;
+      }
+    }
+
+    const body = `Change request — ${typeLabel}\n\n${data.message}${attachment ? `\n\nAttached file: ${attachment}` : ""}`;
+    await supabaseAdmin.from("order_messages").insert({
+      order_id: order.id,
+      from_role: "customer",
+      body,
+    });
+    await supabaseAdmin.from("order_events").insert({
+      order_id: order.id,
+      event_type: "change_request",
+      title: `Change request: ${typeLabel}`,
+      description: data.message,
+      actor: "customer",
+      visibility: "customer",
+    });
+    await supabaseAdmin.from("admin_notifications").insert({
+      title: `Change request · ${order.order_code} · ${typeLabel}`,
+      body: data.message.slice(0, 400),
+    });
+    return { ok: true as const };
+  });
+
 
 
 // ----- admin -----------------------------------------------------------------
