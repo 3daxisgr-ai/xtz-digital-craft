@@ -29,7 +29,7 @@ async function requireAdmin() {
   return u;
 }
 
-const STATUS_FLOW = [
+export const STATUS_FLOW = [
   "quote_received",
   "engineering_review",
   "quote_sent",
@@ -43,7 +43,7 @@ const STATUS_FLOW = [
   "cancelled",
 ] as const;
 
-const STATUS_LABEL: Record<string, string> = {
+export const STATUS_LABEL: Record<string, string> = {
   quote_received: "Quote Submitted",
   engineering_review: "Engineering Review",
   quote_sent: "Quote Ready",
