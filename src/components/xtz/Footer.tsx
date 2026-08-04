@@ -43,7 +43,7 @@ export function Footer() {
                   <span>DESIGN.</span>
                   <span className="text-primary">PROTOTYPE.</span>
                   <span>CONSTRACTION.</span>
-                  <span className="text-primary">MASS PRODUCTIO.</span>
+                  <span className="text-primary">MASS PRODUCTION.</span>
                 </>
               ) : (
                 <>
