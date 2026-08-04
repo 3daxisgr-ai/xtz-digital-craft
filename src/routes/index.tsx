@@ -13,7 +13,7 @@ import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "TOREO — 3D Printing, Fiber Laser Cutting & Sheet Metal Fabrication" },
+      { title: "TOREO — 3D Printing & Laser Cutting in Greece" },
       { name: "description", content: "Engineering-led 3D printing, fiber laser cutting, sheet metal bending, MIG/TIG welding and prototyping in Thessaloniki, Greece." },
       { name: "keywords", content: "3D printing, fiber laser cutting, sheet metal bending, MIG welding, TIG welding, CAD design, prototyping, Thessaloniki, Greece" },
       { property: "og:title", content: "TOREO — Engineering-Led Manufacturing in Thessaloniki" },
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({
       { property: "og:url", content: "https://www.toreo.gr/" },
       { property: "og:image", content: `https://www.toreo.gr${heroLaser.url}` },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "TOREO — 3D Printing, Fiber Laser Cutting & Sheet Metal Fabrication" },
+      { name: "twitter:title", content: "TOREO — 3D Printing & Laser Cutting in Greece" },
       { name: "twitter:description", content: "Engineering-led 3D printing, fiber laser cutting, sheet metal fabrication and prototyping by TOREO." },
       { name: "twitter:image", content: `https://www.toreo.gr${heroLaser.url}` },
     ],
