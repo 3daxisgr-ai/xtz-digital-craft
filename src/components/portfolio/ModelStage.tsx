@@ -1,8 +1,11 @@
 // Interactive engineering model stage — procedural assemblies with exploded,
 // wireframe, section and auto-rotate modes. Client-only (lazy loaded).
-import { Suspense, useEffect, useMemo, useRef } from "react";
+// Studio-grade PBR: brushed metal, 3-point lighting, HDR env, AO, ACES tonemap.
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Environment, Grid, ContactShadows, Bounds, Center } from "@react-three/drei";
+import { OrbitControls, Environment, Grid, ContactShadows, Bounds, Center, Edges } from "@react-three/drei";
+import { EffectComposer, SSAO, SMAA, Vignette } from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
 import type { Part } from "./projects";
 
@@ -26,16 +29,46 @@ function geometryFor(part: Part) {
     case "box":
       return new THREE.BoxGeometry(a[0], a[1], a[2]);
     case "cylinder":
-      return new THREE.CylinderGeometry(a[0], a[1], a[2], a[3] ?? 32);
+      return new THREE.CylinderGeometry(a[0], a[1], a[2], a[3] ?? 64);
     case "tube":
-      return new THREE.CylinderGeometry(a[0], a[1], a[2], a[3] ?? 32, 1, true);
+      return new THREE.CylinderGeometry(a[0], a[1], a[2], a[3] ?? 64, 1, true);
     case "sphere":
-      return new THREE.SphereGeometry(a[0], a[1] ?? 32, a[2] ?? 24);
+      return new THREE.SphereGeometry(a[0], a[1] ?? 48, a[2] ?? 32);
     case "cone":
-      return new THREE.ConeGeometry(a[0], a[1], a[2] ?? 32);
+      return new THREE.ConeGeometry(a[0], a[1], a[2] ?? 48);
     case "torus":
-      return new THREE.TorusGeometry(a[0], a[1], a[2] ?? 16, a[3] ?? 48);
+      return new THREE.TorusGeometry(a[0], a[1], a[2] ?? 24, a[3] ?? 64);
   }
+}
+
+/** Fine directional streak map — gives brushed-aluminium anisotropic character. */
+function useBrushMap() {
+  return useMemo(() => {
+    if (typeof document === "undefined") return null;
+    const size = 512;
+    const c = document.createElement("canvas");
+    c.width = size;
+    c.height = size;
+    const ctx = c.getContext("2d");
+    if (!ctx) return null;
+    ctx.fillStyle = "#808080";
+    ctx.fillRect(0, 0, size, size);
+    for (let i = 0; i < 5200; i++) {
+      const y = Math.random() * size;
+      const v = 128 + (Math.random() - 0.5) * 46;
+      ctx.strokeStyle = `rgb(${v},${v},${v})`;
+      ctx.lineWidth = Math.random() * 1.2 + 0.2;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(size, y + (Math.random() - 0.5) * 2);
+      ctx.stroke();
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(3, 3);
+    tex.anisotropy = 8;
+    return tex;
+  }, []);
 }
 
 function PartMesh({
@@ -44,14 +77,17 @@ function PartMesh({
   wireframe,
   clipPlane,
   reducedMotion,
+  brushMap,
 }: {
   part: Part;
   exploded: boolean;
   wireframe: boolean;
   clipPlane: THREE.Plane | null;
   reducedMotion?: boolean;
+  brushMap: THREE.Texture | null;
 }) {
   const ref = useRef<THREE.Mesh>(null);
+  const [hovered, setHovered] = useState(false);
   const geom = useMemo(() => geometryFor(part), [part]);
   useEffect(() => () => geom.dispose(), [geom]);
 
@@ -78,18 +114,38 @@ function PartMesh({
   });
 
   return (
-    <mesh ref={ref} position={part.position} rotation={part.rotation ?? [0, 0, 0]} castShadow receiveShadow>
+    <mesh
+      ref={ref}
+      position={part.position}
+      rotation={part.rotation ?? [0, 0, 0]}
+      castShadow
+      receiveShadow
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHovered(true);
+      }}
+      onPointerOut={() => setHovered(false)}
+    >
       <primitive object={geom} attach="geometry" />
-      <meshStandardMaterial
+      <meshPhysicalMaterial
         color={part.color}
-        metalness={wireframe ? 0 : (part.metalness ?? 0.85)}
-        roughness={wireframe ? 1 : (part.roughness ?? 0.35)}
+        metalness={wireframe ? 0 : (part.metalness ?? 0.9)}
+        roughness={wireframe ? 1 : (part.roughness ?? 0.3)}
+        roughnessMap={wireframe ? null : brushMap}
+        anisotropy={wireframe ? 0 : 0.65}
+        anisotropyRotation={Math.PI / 2}
+        clearcoat={wireframe ? 0 : 0.12}
+        clearcoatRoughness={0.4}
         wireframe={wireframe}
-        envMapIntensity={1.1}
+        envMapIntensity={1.15}
         side={THREE.DoubleSide}
         clippingPlanes={clipPlane ? [clipPlane] : null}
         clipShadows
       />
+      {/* Contour lines only on hover — barely-there, never a game-style outline */}
+      {hovered && !wireframe && (
+        <Edges threshold={28} color="#c8d6e5" transparent opacity={0.18} />
+      )}
     </mesh>
   );
 }
@@ -97,14 +153,19 @@ function PartMesh({
 function Assembly({ parts, exploded, wireframe, section, autoRotate, reducedMotion }: Omit<Props, "showGrid" | "brightLighting" | "accent" | "resetSignal" | "dpr">) {
   const group = useRef<THREE.Group>(null);
   const { gl } = useThree();
+  const brushMap = useBrushMap();
   const plane = useMemo(() => new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.15), []);
 
   useEffect(() => {
     gl.localClippingEnabled = true;
+    gl.shadowMap.type = THREE.PCFSoftShadowMap;
+    gl.toneMappingExposure = 0.92;
   }, [gl]);
 
+  useEffect(() => () => brushMap?.dispose(), [brushMap]);
+
   useFrame((_, delta) => {
-    if (autoRotate && group.current && !reducedMotion) group.current.rotation.y += delta * 0.35;
+    if (autoRotate && group.current && !reducedMotion) group.current.rotation.y += delta * 0.3;
   });
 
   return (
@@ -117,18 +178,38 @@ function Assembly({ parts, exploded, wireframe, section, autoRotate, reducedMoti
           wireframe={wireframe}
           clipPlane={section ? plane : null}
           reducedMotion={reducedMotion}
+          brushMap={brushMap}
         />
       ))}
     </group>
   );
 }
 
-function CameraReset({ signal }: { signal: number }) {
-  const { camera } = useThree();
+/** Smoothly eases the camera back to the framing pose instead of snapping. */
+function CameraRig({ signal, reducedMotion }: { signal: number; reducedMotion?: boolean }) {
+  const { camera, controls } = useThree();
+  const goal = useRef<THREE.Vector3 | null>(null);
+  const home = useMemo(() => new THREE.Vector3(6.2, 3.9, 7.8), []);
+
   useEffect(() => {
-    camera.position.set(6.5, 4.2, 7.5);
-    camera.lookAt(0, 0, 0);
-  }, [signal, camera]);
+    if (reducedMotion) {
+      camera.position.copy(home);
+      camera.lookAt(0, 0, 0);
+      return;
+    }
+    goal.current = home.clone().setLength(camera.position.length() || home.length());
+  }, [signal, camera, home, reducedMotion]);
+
+  useFrame((_, delta) => {
+    if (!goal.current) return;
+    camera.position.lerp(goal.current, 1 - Math.pow(0.0015, delta));
+    const c = controls as { target?: THREE.Vector3; update?: () => void } | null;
+    if (c?.target) {
+      c.target.lerp(new THREE.Vector3(0, 0, 0), 1 - Math.pow(0.0015, delta));
+      c.update?.();
+    }
+    if (camera.position.distanceTo(goal.current) < 0.02) goal.current = null;
+  });
   return null;
 }
 
@@ -143,65 +224,123 @@ export function ModelStage({
   accent,
   resetSignal,
   reducedMotion,
-  dpr = [1, 1.75],
+  dpr = [1, 2],
 }: Props) {
   return (
-    <Canvas
-      shadows
-      dpr={dpr}
-      camera={{ position: [6.5, 4.2, 7.5], fov: 42 }}
-      gl={{ antialias: true, powerPreference: "high-performance" }}
-    >
-      <color attach="background" args={["#0B0F14"]} />
-      <fog attach="fog" args={["#0B0F14", 16, 42]} />
-      <ambientLight intensity={brightLighting ? 0.9 : 0.35} />
-      <directionalLight
-        position={[8, 12, 6]}
-        intensity={brightLighting ? 2.4 : 1.4}
-        castShadow
-        shadow-mapSize={[1024, 1024]}
-      />
-      <directionalLight position={[-9, -3, -6]} intensity={0.5} color={accent} />
-      <Suspense fallback={null}>
-        <Bounds fit clip observe margin={1.5}>
-          <Center>
-            <Assembly
-              parts={parts}
-              exploded={exploded}
-              wireframe={wireframe}
-              section={section}
-              autoRotate={autoRotate}
-              reducedMotion={reducedMotion}
-            />
-          </Center>
-        </Bounds>
-        <Environment preset="warehouse" />
-      </Suspense>
-      <ContactShadows position={[0, -2.6, 0]} opacity={0.5} scale={26} blur={2.6} far={9} />
-      {showGrid && (
-        <Grid
-          args={[60, 60]}
-          cellSize={0.5}
-          cellThickness={0.5}
-          cellColor="#16202b"
-          sectionSize={2.5}
-          sectionThickness={1}
-          sectionColor="#22354a"
-          fadeDistance={40}
-          fadeStrength={1.3}
-          infiniteGrid
-          position={[0, -2.6, 0]}
+    <div className="relative h-full w-full">
+      <Canvas
+        shadows="soft"
+        dpr={dpr}
+        camera={{ position: [6.2, 3.9, 7.8], fov: 46, near: 0.1, far: 200 }}
+        gl={{
+          antialias: true,
+          powerPreference: "high-performance",
+          toneMapping: THREE.ACESFilmicToneMapping,
+          outputColorSpace: THREE.SRGBColorSpace,
+        }}
+      >
+        <color attach="background" args={["#0B0F14"]} />
+        <fog attach="fog" args={["#0B0F14", 20, 52]} />
+
+        {/* 3-point studio setup: key / fill / rim */}
+        <ambientLight intensity={brightLighting ? 0.45 : 0.18} />
+        <directionalLight
+          position={[7, 10, 6]}
+          intensity={brightLighting ? 2.6 : 1.7}
+          color="#fff6ea"
+          castShadow
+          shadow-mapSize={[2048, 2048]}
+          shadow-bias={-0.0004}
+          shadow-normalBias={0.02}
         />
-      )}
-      <CameraReset signal={resetSignal} />
-      <OrbitControls
-        makeDefault
-        enableDamping
-        dampingFactor={0.07}
-        minDistance={3}
-        maxDistance={30}
+        <directionalLight position={[-8, 3.5, 5]} intensity={brightLighting ? 1.1 : 0.7} color="#dbe7f5" />
+        <spotLight
+          position={[-4, 7, -9]}
+          angle={0.6}
+          penumbra={1}
+          intensity={brightLighting ? 42 : 26}
+          color="#eaf2ff"
+        />
+
+        <Suspense fallback={null}>
+          <Bounds fit clip observe margin={1.45}>
+            <Center>
+              <Assembly
+                parts={parts}
+                exploded={exploded}
+                wireframe={wireframe}
+                section={section}
+                autoRotate={autoRotate}
+                reducedMotion={reducedMotion}
+              />
+            </Center>
+          </Bounds>
+          <Environment preset="studio" environmentIntensity={brightLighting ? 1.15 : 0.85} />
+        </Suspense>
+
+        <ContactShadows position={[0, -2.6, 0]} opacity={0.42} scale={26} blur={3.4} far={9} resolution={1024} />
+        {showGrid && (
+          <Grid
+            args={[60, 60]}
+            cellSize={0.5}
+            cellThickness={0.5}
+            cellColor="#0f151c"
+            sectionSize={2.5}
+            sectionThickness={0.8}
+            sectionColor="#141d27"
+            fadeDistance={34}
+            fadeStrength={1.6}
+            infiniteGrid
+            position={[0, -2.6, 0]}
+          />
+        )}
+
+        <CameraRig signal={resetSignal} reducedMotion={reducedMotion} />
+        <OrbitControls
+          makeDefault
+          enableDamping
+          dampingFactor={0.06}
+          rotateSpeed={0.75}
+          zoomSpeed={0.8}
+          minDistance={3}
+          maxDistance={30}
+        />
+
+        <EffectComposer enableNormalPass multisampling={4}>
+          <SSAO
+            samples={16}
+            radius={0.12}
+            intensity={22}
+            luminanceInfluence={0.55}
+            worldDistanceThreshold={12}
+            worldDistanceFalloff={2}
+            worldProximityThreshold={2}
+            worldProximityFalloff={1}
+            color={new THREE.Color("#04070b")}
+            blendFunction={BlendFunction.MULTIPLY}
+          />
+          <Vignette offset={0.28} darkness={0.62} eskil={false} blendFunction={BlendFunction.NORMAL} />
+          <SMAA />
+        </EffectComposer>
+      </Canvas>
+
+      {/* Soft radial key-glow behind the model + edge falloff, purely atmospheric */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: `radial-gradient(58% 48% at 50% 44%, ${accent}14, transparent 70%)`,
+        }}
       />
-    </Canvas>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(120% 100% at 50% 50%, transparent 42%, rgba(3,6,10,0.55) 100%)",
+        }}
+      />
+    </div>
   );
 }
 
