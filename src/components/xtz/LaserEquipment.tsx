@@ -92,30 +92,42 @@ function LaserCard({ card, index }: { card: Card; index: number }) {
         />
       </svg>
 
-      {/* Glowing laser tip travelling the perimeter */}
+      {/* Glowing laser tip travelling the perimeter + sparks */}
       {inView && !cut && (
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{ offsetPath: "none" }}
-        >
-          <motion.span
-            className="absolute h-2 w-2 rounded-full will-change-transform"
-            style={{
-              top: 0,
-              left: 0,
-              background: "#ffffff",
-              boxShadow:
-                "0 0 6px 2px #ffffff, 0 0 18px 6px #ff3300, 0 0 40px 14px rgba(255,51,0,0.5)",
-              offsetPath:
-                "path('M 0 0 L 100 0 L 100 100 L 0 100 Z')",
-              offsetRotate: "0deg",
+        <div className="pointer-events-none absolute inset-0">
+          <motion.div
+            className="absolute h-0 w-0"
+            initial={{ left: "0%", top: "0%" }}
+            animate={{
+              left: ["0%", "100%", "100%", "0%", "0%"],
+              top: ["0%", "0%", "100%", "100%", "0%"],
             }}
-            initial={{ offsetDistance: "0%" }}
-            animate={{ offsetDistance: "100%" }}
-            transition={{ duration: CUT_DURATION, delay, ease: "linear" }}
-          />
+            transition={{
+              duration: CUT_DURATION,
+              delay,
+              ease: "linear",
+              times: [0, 0.25, 0.5, 0.75, 1],
+            }}
+          >
+            <span
+              className="absolute h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+              style={{
+                background: "#ffffff",
+                boxShadow:
+                  "0 0 6px 2px #ffffff, 0 0 18px 6px #ff3300, 0 0 40px 14px rgba(255,51,0,0.45)",
+              }}
+            />
+            <span
+              className="laser-spark absolute h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full"
+              style={{
+                background:
+                  "radial-gradient(circle, rgba(255,120,40,0.8) 0%, rgba(255,51,0,0.25) 40%, transparent 70%)",
+              }}
+            />
+          </motion.div>
         </div>
       )}
+
 
       {/* Content */}
       <motion.div
