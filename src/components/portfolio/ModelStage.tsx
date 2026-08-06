@@ -22,6 +22,7 @@ type Props = {
   resetSignal: number;
   reducedMotion?: boolean;
   dpr?: [number, number];
+  transparent?: boolean;
 };
 
 function geometryFor(part: Part) {
@@ -200,6 +201,7 @@ export function ModelStage({
   resetSignal,
   reducedMotion,
   dpr = [1, 1.75],
+  transparent = false,
 }: Props) {
   return (
     <div className="relative h-full w-full">
@@ -209,13 +211,18 @@ export function ModelStage({
         camera={{ position: [6.2, 3.9, 7.8], fov: 46, near: 0.1, far: 200 }}
         gl={{
           antialias: true,
+          alpha: transparent,
           powerPreference: "high-performance",
           toneMapping: THREE.ACESFilmicToneMapping,
           outputColorSpace: THREE.SRGBColorSpace,
         }}
+        onCreated={({ gl }) => {
+          if (transparent) gl.setClearColor(0x000000, 0);
+        }}
+        style={transparent ? { background: "transparent" } : undefined}
       >
-        <color attach="background" args={["#0B0F14"]} />
-        <fog attach="fog" args={["#0B0F14", 20, 52]} />
+        {!transparent && <color attach="background" args={["#0B0F14"]} />}
+        {!transparent && <fog attach="fog" args={["#0B0F14", 20, 52]} />}
 
         {/* 3-point studio setup: key / fill / rim */}
         <ambientLight intensity={brightLighting ? 0.45 : 0.18} />
@@ -260,7 +267,7 @@ export function ModelStage({
           </Environment>
         </Suspense>
 
-        <ContactShadows position={[0, -2.6, 0]} opacity={0.42} scale={26} blur={3.4} far={9} resolution={512} frames={1} />
+        <ContactShadows position={[0, -2.6, 0]} opacity={transparent ? 0.3 : 0.42} scale={transparent ? 12 : 26} blur={3.4} far={9} resolution={512} frames={1} />
         {showGrid && (
           <Grid
             args={[60, 60]}
@@ -288,6 +295,7 @@ export function ModelStage({
           maxDistance={30}
         />
 
+        {!transparent && (
         <EffectComposer enableNormalPass multisampling={0}>
           <SSAO
             samples={12}
@@ -304,6 +312,7 @@ export function ModelStage({
           <Vignette offset={0.28} darkness={0.62} eskil={false} blendFunction={BlendFunction.NORMAL} />
           <SMAA />
         </EffectComposer>
+        )}
       </Canvas>
 
       {/* Soft radial key-glow behind the model + edge falloff, purely atmospheric */}
@@ -314,14 +323,16 @@ export function ModelStage({
           background: `radial-gradient(58% 48% at 50% 44%, ${accent}14, transparent 70%)`,
         }}
       />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(120% 100% at 50% 50%, transparent 42%, rgba(3,6,10,0.55) 100%)",
-        }}
-      />
+      {!transparent && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(120% 100% at 50% 50%, transparent 42%, rgba(3,6,10,0.55) 100%)",
+          }}
+        />
+      )}
     </div>
   );
 }
