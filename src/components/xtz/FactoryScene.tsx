@@ -167,7 +167,7 @@ export function FactoryScene() {
           className="relative w-full aspect-[16/9] min-h-[60vh] md:min-h-[80vh] overflow-hidden"
           onMouseLeave={() => setHovered(null)}
         >
-          {/* base layer — stays almost fully visible, only a hint of dimming on hover */}
+          {/* base layer — stays fully visible; only a whisper of dimming on hover */}
           <img
             src={factoryScene}
             alt={alt}
@@ -177,60 +177,80 @@ export function FactoryScene() {
             fetchPriority="high"
             className="absolute inset-0 h-full w-full object-cover"
             style={{
-              filter: hovered ? "brightness(0.78) saturate(0.92)" : "brightness(0.92)",
+              filter: focusId ? "brightness(0.86)" : "brightness(0.95)",
               transition: "filter 260ms ease-out",
             }}
           />
 
-          {/* focused machine — same pixels lifted forward with scale + rim light */}
+          {/* focused machine — feathered cut-out, no box: glow behind + rim light on the edges */}
           {spots.map((s) =>
             areasOf(s).map((a, i) => {
-              const on = hovered === s.id;
+              const on = focusId === s.id;
+              const feather =
+                "radial-gradient(ellipse 62% 62% at 50% 52%, #000 42%, rgba(0,0,0,0.75) 66%, transparent 88%)";
               return (
                 <div
                   key={`${s.id}-${i}`}
                   aria-hidden
-                  className="pointer-events-none absolute overflow-hidden"
+                  className="pointer-events-none absolute"
                   style={{
                     left: `${a.x}%`,
                     top: `${a.y}%`,
                     width: `${a.w}%`,
                     height: `${a.h}%`,
                     opacity: on ? 1 : 0,
-                    transform: on ? "scale3d(1.045,1.045,1)" : "scale3d(1,1,1)",
-                    transition: "opacity 240ms ease-out, transform 260ms cubic-bezier(0.22,1,0.36,1)",
+                    transform: on ? "scale3d(1.04,1.04,1)" : "scale3d(1,1,1)",
+                    transition:
+                      "opacity 240ms ease-out, transform 260ms cubic-bezier(0.22,1,0.36,1)",
                     willChange: "opacity, transform",
-                    boxShadow: on
-                      ? "0 0 0 1px oklch(0.7 0.16 245 / 0.35), 0 0 34px oklch(0.65 0.22 245 / 0.22)"
-                      : "none",
                   }}
                 >
-                  <img
-                    src={factoryScene}
-                    alt=""
-                    aria-hidden
-                    decoding="async"
-                    className="absolute max-w-none object-cover"
-                    style={{
-                      left: `${(-a.x / a.w) * 100}%`,
-                      top: `${(-a.y / a.h) * 100}%`,
-                      width: `${(100 / a.w) * 100}%`,
-                      height: `${(100 / a.h) * 100}%`,
-                      filter: "brightness(1.1) saturate(1.04)",
-                    }}
-                  />
-                  {/* soft blue rim light */}
+                  {/* very subtle glow behind the machine */}
                   <span
-                    className="absolute inset-0"
+                    className="absolute"
                     style={{
+                      inset: "-14%",
                       background:
-                        "radial-gradient(120% 120% at 50% 50%, transparent 55%, oklch(0.65 0.22 245 / 0.18) 100%)",
+                        "radial-gradient(ellipse 50% 50% at 50% 52%, oklch(0.65 0.22 245 / 0.22) 0%, oklch(0.65 0.22 245 / 0.10) 45%, transparent 72%)",
                     }}
                   />
+                  {/* the machine pixels, feather-masked so no rectangle is visible */}
+                  <span
+                    className="absolute inset-0 block overflow-hidden"
+                    style={{
+                      WebkitMaskImage: feather,
+                      maskImage: feather,
+                    }}
+                  >
+                    <img
+                      src={factoryScene}
+                      alt=""
+                      aria-hidden
+                      decoding="async"
+                      className="absolute max-w-none object-cover"
+                      style={{
+                        left: `${(-a.x / a.w) * 100}%`,
+                        top: `${(-a.y / a.h) * 100}%`,
+                        width: `${(100 / a.w) * 100}%`,
+                        height: `${(100 / a.h) * 100}%`,
+                        filter: "brightness(1.12) saturate(1.05) contrast(1.03)",
+                      }}
+                    />
+                    {/* soft blue rim light hugging the silhouette edges */}
+                    <span
+                      className="absolute inset-0"
+                      style={{
+                        background:
+                          "radial-gradient(ellipse 60% 60% at 50% 52%, transparent 58%, oklch(0.7 0.2 245 / 0.28) 82%, transparent 100%)",
+                        mixBlendMode: "screen",
+                      }}
+                    />
+                  </span>
                 </div>
               );
             }),
           )}
+
 
           <div
             aria-hidden
