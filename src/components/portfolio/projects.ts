@@ -45,6 +45,8 @@ export type Project = {
   accent: string;
   /** index of the last completed manufacturing stage (0-based) */
   stage: number;
+  /** optional uploaded GLB that replaces the procedural preview model */
+  modelUrl?: string;
   parts: Part[];
 };
 
@@ -64,6 +66,9 @@ const STEEL = "#b9c4d1";
 const DARK_STEEL = "#7d8895";
 const BRASS = "#c9a23f";
 const POLYMER = "#3f4a5a";
+
+import basiKolonas from "@/assets/basi-kolonas.glb.asset.json";
+import lekanaki from "@/assets/lekanaki.glb.asset.json";
 
 export const PROJECTS: Project[] = [
   {
@@ -92,6 +97,7 @@ export const PROJECTS: Project[] = [
     tags: ["weldment", "structural", "FEA"],
     accent: "#5aa9ff",
     stage: 8,
+    modelUrl: basiKolonas.url,
     parts: [
       { name: "Base plate", kind: "box", args: [3.6, 0.22, 2.4], position: [0, -0.6, 0], explode: [0, -1.6, 0], color: STEEL, metalness: 0.85, roughness: 0.32 },
       { name: "Vertical web", kind: "box", args: [0.22, 2.2, 2.4], position: [-1.5, 0.5, 0], explode: [-1.8, 0.4, 0], color: DARK_STEEL, metalness: 0.85, roughness: 0.34 },
@@ -127,6 +133,7 @@ export const PROJECTS: Project[] = [
     tags: ["pressure", "sealed", "stainless"],
     accent: "#67e8f9",
     stage: 6,
+    modelUrl: lekanaki.url,
     parts: [
       { name: "Manifold body", kind: "box", args: [2.6, 1.6, 1.8], position: [0, 0, 0], explode: [0, 0, 0], color: DARK_STEEL, metalness: 0.9, roughness: 0.3 },
       { name: "Cover plate", kind: "box", args: [2.6, 0.2, 1.8], position: [0, 0.9, 0], explode: [0, 2.2, 0], color: STEEL, metalness: 0.88, roughness: 0.28 },

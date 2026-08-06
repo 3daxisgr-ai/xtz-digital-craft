@@ -107,6 +107,7 @@ export function ProjectViewer({
                   <Suspense fallback={<div className="flex h-full items-center justify-center font-mono text-[10px] tracking-[0.3em] text-white/30">LOADING MODEL…</div>}>
                     <ModelStage
                       parts={project.parts}
+                      modelUrl={project.modelUrl}
                       exploded={exploded}
                       wireframe={wireframe}
                       section={section}

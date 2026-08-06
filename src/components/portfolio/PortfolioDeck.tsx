@@ -179,6 +179,7 @@ export function PortfolioDeck({
               <Suspense fallback={null}>
                 <ModelStage
                   parts={project.parts}
+                      modelUrl={project.modelUrl}
                   exploded={exploded || assembling}
                   wireframe={wireframe}
                   section={false}
