@@ -150,7 +150,7 @@ export function FactoryScene() {
   const [hovered, setHovered] = useState<string | null>(null);
   const [active, setActive] = useState<Spot | null>(null);
 
-  const focusId = hovered ?? active?.id ?? null;
+  
   const areasOf = (s: Spot) => s.areas ?? [{ x: s.x, y: s.y, w: s.w, h: s.h }];
   const alt =
     lang === "GR"
