@@ -145,7 +145,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "bent-sheet-shelf-bracket",
-    title: "Bent Sheet Shelf Panel",
+    title: "Display shelf",
     fileKind: "DXF",
     fileName: "rafi_1_temaxio.dxf",
     summary: "500 mm folded sheet panel with a single 90° flange.",
@@ -153,7 +153,7 @@ export const PROJECTS: Project[] = [
       "A flat pattern 500 × 178.6 mm cut in 3 mm sheet, with one bend line at 129.3 mm producing a 49.3 mm stiffening flange. Nested and cut on the fiber laser, then formed in a single press-brake setup — one part, one setup, no welding.",
     industry: "Sheet Metal",
     process: "Fiber laser cutting · Press-brake bending",
-    material: "DC01 mild steel",
+    material: "AISI 304",
     thickness: "3 mm",
     weight: "2.10 kg",
     technology: "Sheet metal fabrication",
