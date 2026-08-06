@@ -6,7 +6,7 @@ import laserImg from "@/assets/akj-fiber-laser.jpg.asset.json";
 import bambuImg from "@/assets/bambu-3d-printing.png.asset.json";
 import pressBrakeImg from "@/assets/durmapress-stratza.webp.asset.json";
 import weldingImg from "@/assets/laser-welding.jpg.asset.json";
-import shearMachine from "@/assets/sheet-metal-shear-machine.jpg";
+import shearMachine from "@/assets/sheet-metal-shear-machine.jpg.asset.json";
 
 type Spot = {
   id: string;
@@ -123,7 +123,7 @@ function getSpots(lang: "EN" | "GR"): Spot[] {
       h: 28,
       name: gr ? "Ψαλίδι Λαμαρίνας" : "Sheet Metal Shear",
       kicker: gr ? "Ευθεία Κοπή Λαμαρίνας" : "Straight Sheet Cutting",
-      image: shearMachine,
+      image: shearMachine.url,
       description: gr
         ? "Ευθεία κοπή λαμαρίνας σε λωρίδες και πλάκες, για την προετοιμασία υλικού πριν από τις επόμενες εργασίες κατεργασίας και διαμόρφωσης."
         : "Straight cutting of sheet metal into strips and blanks, preparing material before the following forming and fabrication steps.",
