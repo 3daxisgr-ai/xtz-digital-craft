@@ -6,7 +6,12 @@ import type { Project } from "./projects";
 export function BlueprintBackground({ project }: { project: Project }) {
   const accent = project.accent;
 
+  // Projects backed by a real CAD file have no procedural parts to project,
+  // so they get a neutral drafting frame instead of a stale part silhouette.
+  const generic = Boolean(project.modelUrl);
+
   const shapes = useMemo(() => {
+    if (generic) return [];
     return project.parts.slice(0, 10).map((p, i) => {
       const x = p.position[0] * 26 + (i % 3) * 14;
       const y = -p.position[1] * 26 + ((i * 37) % 40) - 20;
@@ -14,7 +19,8 @@ export function BlueprintBackground({ project }: { project: Project }) {
       const h = Math.max(14, (p.args[1] ?? p.args[0] ?? 1) * 30);
       return { key: p.name, kind: p.kind, x, y, w, h };
     });
-  }, [project]);
+  }, [project, generic]);
+
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
@@ -64,6 +70,23 @@ export function BlueprintBackground({ project }: { project: Project }) {
             ),
           )}
         </g>
+
+        {generic && (
+          <g stroke={accent} fill="none" strokeWidth="0.5" opacity="0.26">
+            {/* drafting frame + centre datum for CAD-file projects */}
+            <rect x="-190" y="-104" width="380" height="208" rx="2" strokeDasharray="6 4" />
+            <line x1="-190" y1="0" x2="190" y2="0" strokeDasharray="14 4 3 4" opacity="0.7" />
+            <line x1="0" y1="-104" x2="0" y2="104" strokeDasharray="14 4 3 4" opacity="0.7" />
+            <circle cx="0" cy="0" r="86" strokeDasharray="3 5" opacity="0.5" />
+            <circle cx="0" cy="0" r="52" opacity="0.4" />
+            <line x1="-190" y1="-72" x2="190" y2="-72" opacity="0.25" />
+            <line x1="-190" y1="72" x2="190" y2="72" opacity="0.25" />
+            <line x1="-124" y1="-104" x2="-124" y2="104" opacity="0.25" />
+            <line x1="124" y1="-104" x2="124" y2="104" opacity="0.25" />
+          </g>
+        )}
+
+
 
       </svg>
 

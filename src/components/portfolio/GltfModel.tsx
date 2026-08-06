@@ -23,7 +23,15 @@ export function GltfModel({
   const { scene } = useGLTF(url);
   const group = useRef<THREE.Group>(null);
 
-  const cloned = useMemo(() => scene.clone(true), [scene]);
+  // Recentre on its own bounding-box centre so auto-rotation spins about the
+  // part, not about the exporter's arbitrary origin.
+  const cloned = useMemo(() => {
+    const c = scene.clone(true);
+    const box = new THREE.Box3().setFromObject(c);
+    const centre = box.getCenter(new THREE.Vector3());
+    c.position.sub(centre);
+    return c;
+  }, [scene]);
 
   const material = useMemo(() => {
     const rough = roughnessMap();
