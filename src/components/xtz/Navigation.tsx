@@ -9,6 +9,7 @@ const links: { to: string; hash?: string; k: string }[] = [
   { to: "/", k: "nav.intro" },
   { to: "/", hash: "capabilities", k: "nav.capabilities" },
   { to: "/equipment", k: "nav.equipment" },
+  { to: "/portfolio", k: "nav.portfolio" },
   { to: "/forum", k: "nav.forum" },
   { to: "/faq", k: "nav.faq" },
   { to: "/company", k: "nav.company" },
