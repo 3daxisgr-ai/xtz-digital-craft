@@ -196,6 +196,42 @@ export function FactoryScene() {
             className="absolute inset-0 h-full w-full object-cover"
             style={{ filter: "brightness(0.95)" }}
           />
+          {/*
+            FUTURE PREMIUM LAYER SLOT — renders only for areas that already have a
+            real isolated cut-out (Area.layer). No cut-outs exist yet, so this maps
+            to nothing and the scene stays a plain static photo.
+          */}
+          {spots.flatMap((s) =>
+            areasOf(s)
+              .filter((a) => Boolean(a.layer))
+              .map((a, i) => {
+                const on = (hovered ?? active?.id) === s.id;
+                return (
+                  <img
+                    key={`${s.id}-layer-${i}`}
+                    src={a.layer}
+                    alt=""
+                    aria-hidden
+                    loading="lazy"
+                    decoding="async"
+                    className="pointer-events-none absolute object-contain"
+                    style={{
+                      left: `${a.x}%`,
+                      top: `${a.y}%`,
+                      width: `${a.w}%`,
+                      height: `${a.h}%`,
+                      transformOrigin: "50% 85%",
+                      transform: on ? "scale3d(1.04,1.04,1)" : "scale3d(1,1,1)",
+                      filter: on ? "brightness(1.12)" : "brightness(0.95)",
+                      transition:
+                        "transform 260ms cubic-bezier(0.22,1,0.36,1), filter 240ms ease-out",
+                      willChange: "transform",
+                    }}
+                  />
+                );
+              }),
+          )}
+
 
 
 
