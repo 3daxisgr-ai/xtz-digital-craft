@@ -235,20 +235,20 @@ function easeInOut(x: number) {
 function CameraRig({ clock }: { clock: { t: number } }) {
   const { camera } = useThree();
   const look = useMemo(() => new THREE.Vector3(0, 0.1, 0), []);
-  const smoothed = useMemo(() => new THREE.Vector3(11.9, 4.0, 7.5), []);
+  const smoothed = useMemo(() => new THREE.Vector3(8.5, 2.9, 5.4), []);
   const desired = useMemo(() => new THREE.Vector3(), []);
 
   useFrame((_, delta) => {
     const t = clock.t / 1000;
     // keyframed spherical path — radius, azimuth, elevation
     const keys = [
-      { t: 0.0, r: 14.7, a: 0.55, e: 0.2 },
-      { t: 1.0, r: 16.1, a: 0.78, e: 0.28 },
-      { t: 2.2, r: 25.4, a: 1.35, e: 0.52 },
-      { t: 3.2, r: 26.6, a: 1.85, e: 0.58 },
-      { t: 4.2, r: 25.2, a: 2.4, e: 0.48 },
-      { t: 5.3, r: 19.6, a: 2.9, e: 0.4 },
-      { t: 6.4, r: 18.2, a: 3.3, e: 0.34 },
+      { t: 0.0, r: 10.5, a: 0.55, e: 0.2 },
+      { t: 1.0, r: 11.5, a: 0.78, e: 0.28 },
+      { t: 2.2, r: 18.1, a: 1.35, e: 0.52 },
+      { t: 3.2, r: 19.0, a: 1.85, e: 0.58 },
+      { t: 4.2, r: 18.0, a: 2.4, e: 0.48 },
+      { t: 5.3, r: 14.0, a: 2.9, e: 0.4 },
+      { t: 6.4, r: 13.0, a: 3.3, e: 0.34 },
     ];
     let k0 = keys[0];
     let k1 = keys[keys.length - 1];
@@ -414,7 +414,7 @@ export function PortfolioIntro({ onDone }: { onDone: () => void }) {
         shadows="soft"
         dpr={[1, 2]}
         frameloop="always"
-        camera={{ position: [11.9, 4.0, 7.5], fov: 40, near: 0.2, far: 350.0 }}
+        camera={{ position: [8.5, 2.9, 5.4], fov: 40, near: 0.1, far: 200 }}
         gl={{
           antialias: true,
           powerPreference: "high-performance",
