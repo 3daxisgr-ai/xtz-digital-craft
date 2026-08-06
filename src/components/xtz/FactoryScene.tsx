@@ -116,26 +116,26 @@ function getSpots(lang: "EN" | "GR"): Spot[] {
         : ["Metal fabrications", "Frames", "Tanks & enclosures", "Repairs"],
     },
     {
-      id: "work-areas",
+      id: "shear",
       x: 44,
       y: 72,
       w: 40,
       h: 28,
-      name: gr ? "Χώροι Κατεργασίας & Συναρμολόγησης" : "Fabrication & Assembly Areas",
-      kicker: gr ? "Προετοιμασία & Ποιοτικός Έλεγχος" : "Preparation & Quality Control",
-      image: shearImg.url,
+      name: gr ? "Ψαλίδι Λαμαρίνας" : "Sheet Metal Shear",
+      kicker: gr ? "Ευθεία Κοπή Λαμαρίνας" : "Straight Sheet Cutting",
+      image: shearMachine,
       description: gr
-        ? "Προετοιμασία υλικού, ευθεία κοπή λαμαρίνας, συναρμολόγηση, φινίρισμα και τελικός έλεγχος πριν τη συσκευασία και αποστολή."
-        : "Material preparation, straight sheet cutting, assembly, finishing and final inspection before packing and dispatch.",
+        ? "Ευθεία κοπή λαμαρίνας σε λωρίδες και πλάκες, για την προετοιμασία υλικού πριν από τις επόμενες εργασίες κατεργασίας και διαμόρφωσης."
+        : "Straight cutting of sheet metal into strips and blanks, preparing material before the following forming and fabrication steps.",
       capabilities: gr
-        ? ["Ευθεία κοπή λαμαρίνας", "Συναρμολόγηση", "Φινίρισμα", "Τελικός έλεγχος"]
-        : ["Straight sheet cutting", "Assembly", "Finishing", "Final inspection"],
+        ? ["Ευθεία κοπή λαμαρίνας", "Κοπή σε λωρίδες", "Κοπή σε πλάκες", "Προετοιμασία υλικού"]
+        : ["Straight sheet cutting", "Strip cutting", "Blank cutting", "Material preparation"],
       specs: gr
-        ? ["Υδραυλικό ψαλίδι λαμαρίνας", "Πάγκοι εργασίας & εργαλεία", "Έλεγχος διαστάσεων"]
-        : ["Hydraulic sheet shear", "Workbenches & tooling", "Dimensional inspection"],
+        ? ["Υδραυλικό ψαλίδι λαμαρίνας", "Ρυθμιζόμενος οπίσθιος οδηγός", "Καθαρή, ευθεία ακμή κοπής"]
+        : ["Hydraulic guillotine shear", "Adjustable back gauge", "Clean straight cut edge"],
       applications: gr
-        ? ["Προετοιμασία υλικού", "Υποσυγκροτήματα", "Συσκευασία", "Ποιοτικός έλεγχος"]
-        : ["Material preparation", "Sub-assemblies", "Packing", "Quality control"],
+        ? ["Λωρίδες λαμαρίνας", "Πλάκες για στράντζα", "Προετοιμασία υλικού", "Κοπή στις διαστάσεις"]
+        : ["Sheet strips", "Blanks for bending", "Material preparation", "Cut to size"],
     },
   ];
 }
