@@ -29,7 +29,7 @@ function getSpots(lang: "EN" | "GR"): Spot[] {
   return [
     {
       id: "laser",
-      x: 0,
+      x: 2,
       y: 33,
       w: 21,
       h: 26,
