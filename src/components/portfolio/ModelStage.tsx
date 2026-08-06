@@ -9,6 +9,7 @@ import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
 import { roughnessMap, microNormalMap } from "./materials";
 import type { Part } from "./projects";
+import { GltfModel } from "./GltfModel";
 
 type Props = {
   parts: Part[];
@@ -23,6 +24,8 @@ type Props = {
   reducedMotion?: boolean;
   dpr?: [number, number];
   transparent?: boolean;
+  /** when set, an uploaded GLB replaces the procedural assembly */
+  modelUrl?: string;
 };
 
 function geometryFor(part: Part) {
@@ -202,6 +205,7 @@ export function ModelStage({
   reducedMotion,
   dpr = [1, 1.75],
   transparent = false,
+  modelUrl,
 }: Props) {
   return (
     <div className="relative h-full w-full">
@@ -247,14 +251,23 @@ export function ModelStage({
         <Suspense fallback={null}>
           <Bounds fit clip observe margin={1.45}>
             <Center>
-              <Assembly
-                parts={parts}
-                exploded={exploded}
-                wireframe={wireframe}
-                section={section}
-                autoRotate={autoRotate}
-                reducedMotion={reducedMotion}
-              />
+              {modelUrl ? (
+                <GltfModel
+                  url={modelUrl}
+                  wireframe={wireframe}
+                  autoRotate={autoRotate}
+                  reducedMotion={reducedMotion}
+                />
+              ) : (
+                <Assembly
+                  parts={parts}
+                  exploded={exploded}
+                  wireframe={wireframe}
+                  section={section}
+                  autoRotate={autoRotate}
+                  reducedMotion={reducedMotion}
+                />
+              )}
             </Center>
           </Bounds>
           <Environment resolution={512} frames={1} environmentIntensity={brightLighting ? 1.25 : 0.95}>
