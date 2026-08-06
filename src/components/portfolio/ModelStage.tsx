@@ -267,7 +267,7 @@ export function ModelStage({
           </Environment>
         </Suspense>
 
-        <ContactShadows position={[0, -2.6, 0]} opacity={0.42} scale={26} blur={3.4} far={9} resolution={512} frames={1} />
+        <ContactShadows position={[0, -2.6, 0]} opacity={transparent ? 0.3 : 0.42} scale={transparent ? 12 : 26} blur={3.4} far={9} resolution={512} frames={1} />
         {showGrid && (
           <Grid
             args={[60, 60]}
