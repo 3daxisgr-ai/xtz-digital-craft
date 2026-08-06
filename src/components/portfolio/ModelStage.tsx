@@ -3,10 +3,11 @@
 // Studio-grade PBR: brushed metal, 3-point lighting, HDR env, AO, ACES tonemap.
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Environment, Grid, ContactShadows, Bounds, Center, Edges } from "@react-three/drei";
+import { OrbitControls, Environment, Lightformer, Grid, ContactShadows, Bounds, Center, Edges } from "@react-three/drei";
 import { EffectComposer, SSAO, SMAA, Vignette } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
+import { roughnessMap, microNormalMap } from "./materials";
 import type { Part } from "./projects";
 
 type Props = {
@@ -41,35 +42,7 @@ function geometryFor(part: Part) {
   }
 }
 
-/** Fine directional streak map — gives brushed-aluminium anisotropic character. */
-function useBrushMap() {
-  return useMemo(() => {
-    if (typeof document === "undefined") return null;
-    const size = 512;
-    const c = document.createElement("canvas");
-    c.width = size;
-    c.height = size;
-    const ctx = c.getContext("2d");
-    if (!ctx) return null;
-    ctx.fillStyle = "#808080";
-    ctx.fillRect(0, 0, size, size);
-    for (let i = 0; i < 5200; i++) {
-      const y = Math.random() * size;
-      const v = 128 + (Math.random() - 0.5) * 46;
-      ctx.strokeStyle = `rgb(${v},${v},${v})`;
-      ctx.lineWidth = Math.random() * 1.2 + 0.2;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(size, y + (Math.random() - 0.5) * 2);
-      ctx.stroke();
-    }
-    const tex = new THREE.CanvasTexture(c);
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(3, 3);
-    tex.anisotropy = 8;
-    return tex;
-  }, []);
-}
+const NORMAL_SCALE = new THREE.Vector2(0.28, 0.28);
 
 function PartMesh({
   part,
@@ -132,7 +105,9 @@ function PartMesh({
         metalness={wireframe ? 0 : (part.metalness ?? 0.9)}
         roughness={wireframe ? 1 : (part.roughness ?? 0.3)}
         roughnessMap={wireframe ? null : brushMap}
-        anisotropy={wireframe ? 0 : 0.65}
+        normalMap={wireframe ? null : microNormalMap()}
+        normalScale={NORMAL_SCALE}
+        anisotropy={wireframe ? 0 : 0.85}
         anisotropyRotation={Math.PI / 2}
         clearcoat={wireframe ? 0 : 0.12}
         clearcoatRoughness={0.4}
@@ -153,16 +128,16 @@ function PartMesh({
 function Assembly({ parts, exploded, wireframe, section, autoRotate, reducedMotion }: Omit<Props, "showGrid" | "brightLighting" | "accent" | "resetSignal" | "dpr">) {
   const group = useRef<THREE.Group>(null);
   const { gl } = useThree();
-  const brushMap = useBrushMap();
+  const brushMap = useMemo(() => roughnessMap(), []);
   const plane = useMemo(() => new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.15), []);
 
   useEffect(() => {
     gl.localClippingEnabled = true;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    gl.toneMappingExposure = 0.92;
+    gl.toneMappingExposure = 1.0;
   }, [gl]);
 
-  useEffect(() => () => brushMap?.dispose(), [brushMap]);
+
 
   useFrame((_, delta) => {
     if (autoRotate && group.current && !reducedMotion) group.current.rotation.y += delta * 0.3;
@@ -275,7 +250,14 @@ export function ModelStage({
               />
             </Center>
           </Bounds>
-          <Environment preset="studio" environmentIntensity={brightLighting ? 1.15 : 0.85} />
+          <Environment resolution={512} frames={1} environmentIntensity={brightLighting ? 1.25 : 0.95}>
+            <color attach="background" args={["#10151b"]} />
+            <Lightformer form="rect" intensity={5} color="#ffffff" scale={[12, 7, 1]} position={[0, 7, 2]} rotation={[-Math.PI / 2, 0, 0]} />
+            <Lightformer form="rect" intensity={2.2} color="#dfeaf7" scale={[9, 6, 1]} position={[-9, 2.5, 4]} rotation={[0, Math.PI / 2, 0]} />
+            <Lightformer form="rect" intensity={1.3} color="#cddcec" scale={[8, 5, 1]} position={[9, 1.5, -2]} rotation={[0, -Math.PI / 2, 0]} />
+            <Lightformer form="rect" intensity={3.4} color="#f4f8ff" scale={[10, 1.6, 1]} position={[0, 3.5, -9]} />
+            <Lightformer form="circle" intensity={1.6} color="#ffe7c9" scale={[5, 5, 1]} position={[5, 5, 6]} rotation={[-0.6, 0.5, 0]} />
+          </Environment>
         </Suspense>
 
         <ContactShadows position={[0, -2.6, 0]} opacity={0.42} scale={26} blur={3.4} far={9} resolution={1024} />
