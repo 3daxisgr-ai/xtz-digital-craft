@@ -154,7 +154,7 @@ export const PROJECTS: Project[] = [
     industry: "Sheet Metal",
     process: "Fiber laser cutting · Press-brake bending",
     material: "AISI 304",
-    thickness: "3 mm",
+    thickness: "0.7 mm",
     weight: "2.10 kg",
     technology: "Sheet metal fabrication",
     software: "SolidWorks",
