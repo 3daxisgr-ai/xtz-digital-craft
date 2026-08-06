@@ -1,31 +1,17 @@
 // Live engineering drafting sequence, drawn on a 2D canvas (not SVG strokes).
 //
-// The drawing is a real orthographic set: front view + right side view, with
-// construction lines, centre lines, hidden lines, dimension chains with arrow
-// heads, radius and hole callouts, a section cut with hatching, a detail
-// circle and a title block. Entities are drafted in layers over time, with a
-// drafting head (crosshair) tracking the pen, exactly like watching a drawing
-// being produced in SolidWorks or Inventor.
+// The drawing is a TRUE orthographic projection of the same parametric solids
+// that are rendered in 3D straight afterwards (see ./intro-model.ts): front
+// view + right side view, with construction lines, centre lines, hidden lines,
+// dimension chains generated from the real model numbers, hole callouts, a
+// section cut with hatching, a detail circle and a title block.
 //
 // Runs entirely off a shared clock object + rAF: zero React re-renders.
 import { useEffect, useRef } from "react";
+import { buildBlueprintEntities, SHEET_H, SHEET_W, type Ent, type Layer, type Pt } from "./intro-model";
 
-type Pt = [number, number];
-
-type Ent =
-  | { k: "line"; a: Pt; b: Pt; layer: Layer; t0: number; t1: number }
-  | { k: "circle"; c: Pt; r: number; layer: Layer; t0: number; t1: number }
-  | { k: "arc"; c: Pt; r: number; s: number; e: number; layer: Layer; t0: number; t1: number }
-  | { k: "dim"; a: Pt; b: Pt; off: number; axis: "h" | "v"; text: string; t0: number; t1: number }
-  | { k: "leader"; a: Pt; b: Pt; text: string; t0: number; t1: number }
-  | { k: "text"; a: Pt; text: string; size: number; dim?: boolean; t0: number; t1: number }
-  | { k: "hatch"; x0: number; y0: number; x1: number; y1: number; t0: number; t1: number }
-  | { k: "detail"; c: Pt; r: number; label: string; t0: number; t1: number };
-
-type Layer = "construction" | "outline" | "hidden" | "center" | "section";
-
-const W = 1080; // drawing-space width
-const H = 660; // drawing-space height
+const W = SHEET_W; // drawing-space width
+const H = SHEET_H; // drawing-space height
 
 const INK = {
   construction: "rgba(126,176,230,0.22)",
@@ -37,142 +23,6 @@ const INK = {
   note: "rgba(214,233,252,0.8)",
 };
 
-// ---------------------------------------------------------------- geometry
-// front view origin (bottom-left of the L bracket)
-const FX = 190;
-const FY = 470;
-// side view origin
-const SX = 620;
-const SY = 470;
-
-const p = (x: number, y: number): Pt => [x, y];
-
-function buildEntities(): Ent[] {
-  const e: Ent[] = [];
-  const push = (x: Ent) => e.push(x);
-
-  // ---- layer 1: construction lines (0.15 – 1.05)
-  const cons: Array<[Pt, Pt]> = [
-    [p(FX - 70, FY), p(SX + 200, FY)],
-    [p(FX - 70, FY - 260), p(SX + 200, FY - 260)],
-    [p(FX - 70, FY - 52), p(SX + 200, FY - 52)],
-    [p(FX, FY + 70), p(FX, FY - 320)],
-    [p(FX + 338, FY + 70), p(FX + 338, FY - 320)],
-    [p(FX + 78, FY + 40), p(FX + 78, FY - 320)],
-    [p(SX, SY + 60), p(SX, SY - 320)],
-    [p(SX + 118, SY + 60), p(SX + 118, SY - 320)],
-  ];
-  cons.forEach(([a, b], i) =>
-    push({ k: "line", a, b, layer: "construction", t0: 0.15 + i * 0.075, t1: 0.45 + i * 0.075 }),
-  );
-
-  // ---- layer 2: main outline of the front view (0.95 – 1.95)
-  const outline: Pt[] = [
-    p(FX, FY),
-    p(FX + 338, FY),
-    p(FX + 338, FY - 52),
-    p(FX + 78, FY - 52),
-    p(FX + 78, FY - 260),
-    p(FX, FY - 260),
-    p(FX, FY),
-  ];
-  for (let i = 0; i < outline.length - 1; i++) {
-    // the inner corner is replaced by a fillet, drawn separately
-    if (i === 2) continue;
-    push({
-      k: "line",
-      a: outline[i],
-      b: outline[i + 1],
-      layer: "outline",
-      t0: 0.95 + i * 0.11,
-      t1: 1.2 + i * 0.11,
-    });
-  }
-  // fillet at the inner corner + its little tangent trims
-  push({ k: "line", a: p(FX + 338, FY - 52), b: p(FX + 120, FY - 52), layer: "outline", t0: 1.28, t1: 1.46 });
-  push({ k: "arc", c: p(FX + 120, FY - 94), r: 42, s: Math.PI / 2, e: Math.PI, layer: "outline", t0: 1.46, t1: 1.62 });
-  push({ k: "line", a: p(FX + 78, FY - 94), b: p(FX + 78, FY - 260), layer: "outline", t0: 1.62, t1: 1.76 });
-
-  // holes in the front view
-  push({ k: "circle", c: p(FX + 39, FY - 214), r: 21, layer: "outline", t0: 1.7, t1: 1.94 });
-  push({ k: "circle", c: p(FX + 39, FY - 214), r: 30, layer: "hidden", t0: 1.86, t1: 2.06 });
-  push({ k: "circle", c: p(FX + 200, FY - 26), r: 15, layer: "outline", t0: 1.82, t1: 2.02 });
-  push({ k: "circle", c: p(FX + 288, FY - 26), r: 15, layer: "outline", t0: 1.9, t1: 2.1 });
-
-  // ---- side view outline
-  push({ k: "line", a: p(SX, SY), b: p(SX + 118, SY), layer: "outline", t0: 1.5, t1: 1.66 });
-  push({ k: "line", a: p(SX + 118, SY), b: p(SX + 118, SY - 260), layer: "outline", t0: 1.62, t1: 1.8 });
-  push({ k: "line", a: p(SX + 118, SY - 260), b: p(SX, SY - 260), layer: "outline", t0: 1.74, t1: 1.9 });
-  push({ k: "line", a: p(SX, SY - 260), b: p(SX, SY), layer: "outline", t0: 1.84, t1: 2.0 });
-
-  // ---- layer 3: hidden lines (2.0 – 2.35)
-  const hid: Array<[Pt, Pt]> = [
-    [p(SX + 30, SY - 260), p(SX + 30, SY)],
-    [p(SX + 88, SY - 260), p(SX + 88, SY)],
-    [p(SX, SY - 52), p(SX + 118, SY - 52)],
-    [p(FX + 78, FY - 26), p(FX + 338, FY - 26)],
-  ];
-  hid.forEach(([a, b], i) =>
-    push({ k: "line", a, b, layer: "hidden", t0: 2.0 + i * 0.07, t1: 2.2 + i * 0.07 }),
-  );
-
-  // ---- layer 4: centre lines (2.15 – 2.5)
-  const cl: Array<[Pt, Pt]> = [
-    [p(FX + 39, FY - 258), p(FX + 39, FY - 170)],
-    [p(FX - 5, FY - 214), p(FX + 83, FY - 214)],
-    [p(FX + 200, FY - 62), p(FX + 200, FY + 10)],
-    [p(FX + 288, FY - 62), p(FX + 288, FY + 10)],
-    [p(SX - 18, SY - 214), p(SX + 136, SY - 214)],
-  ];
-  cl.forEach(([a, b], i) =>
-    push({ k: "line", a, b, layer: "center", t0: 2.15 + i * 0.05, t1: 2.32 + i * 0.05 }),
-  );
-
-  // ---- layer 5: dimensions (2.35 – 3.0)
-  push({ k: "dim", a: p(FX, FY), b: p(FX + 338, FY), off: 62, axis: "h", text: "338,00", t0: 2.34, t1: 2.56 });
-  push({ k: "dim", a: p(FX, FY - 260), b: p(FX, FY), off: -66, axis: "v", text: "260,00", t0: 2.42, t1: 2.64 });
-  push({ k: "dim", a: p(FX, FY - 52), b: p(FX, FY), off: -22, axis: "v", text: "52", t0: 2.5, t1: 2.68 });
-  push({ k: "dim", a: p(FX + 200, FY), b: p(FX + 288, FY), off: 26, axis: "h", text: "88,00", t0: 2.56, t1: 2.74 });
-  push({ k: "dim", a: p(SX, SY), b: p(SX + 118, SY), off: 40, axis: "h", text: "118,00", t0: 2.62, t1: 2.8 });
-
-  // ---- radius + hole callouts (2.6 – 3.05)
-  push({ k: "leader", a: p(FX + 96, FY - 118), b: p(FX + 8, FY - 152), text: "R25", t0: 2.62, t1: 2.82 });
-  push({ k: "leader", a: p(FX + 54, FY - 200), b: p(FX + 152, FY - 236), text: "⌀21 THRU", t0: 2.7, t1: 2.9 });
-  push({ k: "leader", a: p(FX + 288, FY - 16), b: p(FX + 368, FY + 26), text: "2× ⌀15 ⌵ ⌀24×90°", t0: 2.78, t1: 2.98 });
-  push({ k: "leader", a: p(SX + 118, SY - 150), b: p(SX + 206, SY - 186), text: "TOL ±0,10", t0: 2.86, t1: 3.04 });
-
-  // ---- section cut B-B through the side view, with hatching
-  push({ k: "line", a: p(SX - 34, SY - 150), b: p(SX + 152, SY - 150), layer: "section", t0: 2.9, t1: 3.06 });
-  push({ k: "text", a: p(SX - 48, SY - 154), text: "B", size: 15, t0: 3.0, t1: 3.1 });
-  push({ k: "text", a: p(SX + 158, SY - 154), text: "B", size: 15, t0: 3.0, t1: 3.1 });
-  push({ k: "hatch", x0: SX + 2, y0: SY - 258, x1: SX + 116, y1: SY - 152, t0: 2.98, t1: 3.24 });
-
-  // ---- detail circle A on the fillet + annotations
-  push({ k: "detail", c: p(FX + 104, FY - 76), r: 62, label: "A", t0: 3.0, t1: 3.2 });
-  push({ k: "text", a: p(FX - 12, FY + 118), text: "FRONT VIEW  (1:2)", size: 13, dim: true, t0: 3.02, t1: 3.12 });
-  push({ k: "text", a: p(SX - 12, SY + 118), text: "RIGHT VIEW  (1:2)", size: 13, dim: true, t0: 3.06, t1: 3.16 });
-  push({ k: "text", a: p(FX - 12, 118), text: "MOUNTING BRACKET — WELDED ASSEMBLY", size: 17, t0: 3.06, t1: 3.18 });
-  push({
-    k: "text",
-    a: p(FX - 12, 142),
-    text: "MATERIAL: EN AW-6082 T6   ·   THICKNESS 6 mm   ·   FINISH: BRUSHED + ANODISED CLEAR",
-    size: 12,
-    dim: true,
-    t0: 3.1,
-    t1: 3.22,
-  });
-  push({
-    k: "text",
-    a: p(FX - 12, 162),
-    text: "GENERAL TOL. ISO 2768-mK   ·   DEBURR AND BREAK SHARP EDGES   ·   THIRD ANGLE PROJECTION",
-    size: 12,
-    dim: true,
-    t0: 3.14,
-    t1: 3.26,
-  });
-
-  return e;
-}
 
 // ---------------------------------------------------------------- painting
 function ramp(t: number, t0: number, t1: number) {
@@ -486,7 +336,7 @@ export function BlueprintDraft({ clock, offset = 0 }: { clock: { t: number }; of
     if (!cv) return;
     const x = cv.getContext("2d");
     if (!x) return;
-    const ents = buildEntities();
+    const ents: Ent[] = buildBlueprintEntities();
 
     let raf = 0;
     let vw = 0;
