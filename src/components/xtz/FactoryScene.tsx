@@ -166,8 +166,9 @@ export function FactoryScene() {
   const [hovered, setHovered] = useState<string | null>(null);
   const [active, setActive] = useState<Spot | null>(null);
 
-  
-  const areasOf = (s: Spot) => s.areas ?? [{ x: s.x, y: s.y, w: s.w, h: s.h }];
+  const areasOf = (s: Spot): Area[] =>
+    s.areas ?? [{ x: s.x, y: s.y, w: s.w, h: s.h, layer: s.layer }];
+
   const alt =
     lang === "GR"
       ? "Το εργοστάσιο της TOREO με fiber laser, 3D εκτυπωτές, πρέσα στραντζαρίσματος και σταθμό συγκόλλησης"
