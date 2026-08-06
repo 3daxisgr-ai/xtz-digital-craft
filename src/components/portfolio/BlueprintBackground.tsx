@@ -36,7 +36,7 @@ export function BlueprintBackground({ project }: { project: Project }) {
       />
 
       {/* project-specific orthographic sketch */}
-      <svg viewBox="-260 -150 520 300" className="absolute inset-0 h-full w-full opacity-[0.5]" preserveAspectRatio="xMidYMid slice">
+      <svg viewBox="-260 -150 520 300" className="absolute inset-0 h-full w-full opacity-[0.5]" preserveAspectRatio="xMidYMid meet">
         <g stroke={accent} fill="none" strokeWidth="0.5" opacity="0.32">
           {shapes.map((s, i) =>
             s.kind === "cylinder" || s.kind === "sphere" || s.kind === "torus" || s.kind === "tube" ? (

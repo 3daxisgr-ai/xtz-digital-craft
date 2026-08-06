@@ -169,7 +169,7 @@ export function PortfolioDeck({
         <AnimatePresence mode="sync" initial={false}>
           <motion.div
             key={`model-${project.slug}`}
-            className="absolute h-[62vh] w-full max-w-[900px] sm:h-[68vh]"
+            className="absolute h-[54vh] w-full max-w-[820px] sm:h-[66vh] lg:translate-x-[9%]"
             initial={enter}
             animate={{ opacity: 1, x: 0, rotateY: 0, scale: 1, filter: "blur(0px)" }}
             exit={exit}
