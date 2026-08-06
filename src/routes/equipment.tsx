@@ -57,6 +57,7 @@ function EquipmentPage() {
           </p>
         </div>
       </section>
+      <LaserEquipment />
       <Equipment />
       <Footer />
     </main>
