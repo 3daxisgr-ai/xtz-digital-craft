@@ -3,7 +3,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import { RotateCcw, Grid3x3, Boxes, Maximize2, ChevronLeft, ChevronRight } from "lucide-react";
+import { RotateCcw, Grid3x3, Boxes, Maximize2, ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
 import { BlueprintBackground } from "./BlueprintBackground";
 import type { Project } from "./projects";
 
@@ -55,6 +55,7 @@ export function PortfolioDeck({
   const [assembling, setAssembling] = useState(false);
   const [resetSignal, setResetSignal] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [spinning, setSpinning] = useState(true);
   const shellRef = useRef<HTMLDivElement>(null);
   const lock = useRef(0);
   const wheelAcc = useRef(0);
@@ -183,7 +184,7 @@ export function PortfolioDeck({
                   exploded={exploded || assembling}
                   wireframe={wireframe}
                   section={false}
-                  autoRotate
+                  autoRotate={spinning}
                   showGrid={false}
                   brightLighting={false}
                   accent={project.accent}
@@ -291,6 +292,7 @@ export function PortfolioDeck({
 
       {/* model controls */}
       <div className="absolute bottom-24 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+        <Ctrl icon={spinning ? Pause : Play} label={spinning ? "Pause spin" : "Play spin"} active={spinning} onClick={() => setSpinning((v) => !v)} />
         <Ctrl icon={RotateCcw} label="Reset" onClick={() => setResetSignal((s) => s + 1)} />
         <Ctrl icon={Grid3x3} label="Wireframe" active={wireframe} onClick={() => setWireframe((v) => !v)} />
         <Ctrl icon={Boxes} label="Exploded" active={exploded} onClick={() => setExploded((v) => !v)} />
