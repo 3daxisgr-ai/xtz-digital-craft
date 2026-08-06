@@ -199,7 +199,7 @@ export function ModelStage({
   accent,
   resetSignal,
   reducedMotion,
-  dpr = [1, 2],
+  dpr = [1, 1.75],
 }: Props) {
   return (
     <div className="relative h-full w-full">
@@ -224,7 +224,7 @@ export function ModelStage({
           intensity={brightLighting ? 2.6 : 1.7}
           color="#fff6ea"
           castShadow
-          shadow-mapSize={[2048, 2048]}
+          shadow-mapSize={[1024, 1024]}
           shadow-bias={-0.0004}
           shadow-normalBias={0.02}
         />
@@ -260,7 +260,7 @@ export function ModelStage({
           </Environment>
         </Suspense>
 
-        <ContactShadows position={[0, -2.6, 0]} opacity={0.42} scale={26} blur={3.4} far={9} resolution={1024} />
+        <ContactShadows position={[0, -2.6, 0]} opacity={0.42} scale={26} blur={3.4} far={9} resolution={512} frames={1} />
         {showGrid && (
           <Grid
             args={[60, 60]}
@@ -288,9 +288,9 @@ export function ModelStage({
           maxDistance={30}
         />
 
-        <EffectComposer enableNormalPass multisampling={4}>
+        <EffectComposer enableNormalPass multisampling={0}>
           <SSAO
-            samples={16}
+            samples={12}
             radius={0.12}
             intensity={22}
             luminanceInfluence={0.55}

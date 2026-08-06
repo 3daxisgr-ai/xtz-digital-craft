@@ -15,11 +15,12 @@
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, ContactShadows } from "@react-three/drei";
-import { EffectComposer, SSAO, SMAA, Vignette, Bloom } from "@react-three/postprocessing";
+import { EffectComposer, SMAA, Vignette } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
 import { BlueprintDraft } from "./BlueprintDraft";
 import { createFinishMaterial, type FinishKey } from "./materials";
+import { MM, MODEL, homeOf, rotationOf } from "./intro-model";
 
 const SCENE_T0 = 2950; // ms — when the 3D part starts extruding out of the sheet
 const DURATION = 8850;
@@ -40,87 +41,26 @@ type IntroPart = {
   delay: number;
 };
 
-/** The bracket from the drawing — plate, ribs, gusset, boss, collar, bolts. */
+/**
+ * The 3D assembly IS the drawing: every solid comes from the same parametric
+ * model that the blueprint is projected from (./intro-model.ts), converted
+ * from millimetres into scene units. Nothing here is authored twice.
+ */
 function buildParts(): IntroPart[] {
-  const bolts: IntroPart[] = [-1, 1].flatMap((sx) =>
-    [-1, 1].map((sz, i) => ({
-      geom: () => new THREE.CylinderGeometry(0.16, 0.16, 0.38, 40),
-      home: [sx * 1.55, -0.72, sz * 0.78] as [number, number, number],
-      blow: [sx * 2.8, -2.0, sz * 2.4] as [number, number, number],
-      bow: [0, 1.7, sx * 0.9] as [number, number, number],
-      spin: [Math.PI * 1.4 * sx, Math.PI * 2.2, 0] as [number, number, number],
-      finish: "steel" as FinishKey,
-      mass: 0.55,
-      delay: 0.02 * i + (sx > 0 ? 0.05 : 0),
-    })),
-  );
-
-  return [
-    {
-      geom: () => new THREE.BoxGeometry(4.2, 0.34, 2.4),
-      home: [0, -0.9, 0],
-      blow: [0, -2.6, 0],
-      bow: [0.9, 0, 0.6],
-      spin: [0.18, 0.5, -0.12],
-      finish: "aluminum",
-      mass: 2.4,
-      delay: 0,
-    },
-    {
-      geom: () => new THREE.BoxGeometry(0.34, 2.6, 2.2),
-      home: [-1.6, 0.6, 0],
-      blow: [-3.6, 1.2, -0.5],
-      bow: [0, 1.6, 1.5],
-      spin: [0.3, -0.9, 0.4],
-      finish: "black",
-      mass: 1.5,
-      delay: 0.08,
-    },
-    {
-      geom: () => new THREE.BoxGeometry(0.3, 2.2, 1.6),
-      home: [1.55, 0.4, 0],
-      blow: [3.5, 0.9, 0.7],
-      bow: [0, 1.9, -1.4],
-      spin: [-0.25, 1.1, -0.35],
-      finish: "black",
-      mass: 1.35,
-      delay: 0.12,
-    },
-    {
-      geom: () => new THREE.CylinderGeometry(0.78, 0.78, 0.26, 3),
-      home: [-1.05, 0.32, 0],
-      rot: [Math.PI / 2, 0, Math.PI / 6],
-      blow: [-1.1, 2.9, -2.0],
-      bow: [1.8, 0, 1.2],
-      spin: [1.1, 0.6, 0.8],
-      finish: "aluminum",
-      mass: 1.0,
-      delay: 0.18,
-    },
-    {
-      geom: () => new THREE.CylinderGeometry(0.62, 0.62, 1.25, 72),
-      home: [0.9, 0.35, 0],
-      rot: [Math.PI / 2, 0, 0],
-      blow: [1.4, 2.1, 2.8],
-      bow: [-1.6, 0.6, 0],
-      spin: [0.9, 1.8, 0.2],
-      finish: "brass",
-      mass: 0.9,
-      delay: 0.24,
-    },
-    {
-      geom: () => new THREE.TorusGeometry(0.86, 0.12, 32, 128),
-      home: [0.9, 0.35, 0],
-      rot: [Math.PI / 2, 0, 0],
-      blow: [1.8, -1.4, 3.0],
-      bow: [-1.2, -1.4, 0],
-      spin: [1.6, 0.4, 1.2],
-      finish: "steel",
-      mass: 0.5,
-      delay: 0.3,
-    },
-    ...bolts,
-  ];
+  return MODEL.map((sd) => ({
+    geom: () =>
+      sd.kind === "box"
+        ? new THREE.BoxGeometry(sd.size[0] * MM, sd.size[1] * MM, sd.size[2] * MM)
+        : new THREE.CylinderGeometry(sd.r * MM, sd.r * MM, sd.length * MM, 48, 1),
+    home: homeOf(sd),
+    rot: rotationOf(sd),
+    blow: sd.blow,
+    bow: sd.bow,
+    spin: sd.spin,
+    finish: sd.finish,
+    mass: sd.mass,
+    delay: sd.delay,
+  }));
 }
 
 /** Spring integrator — mass, stiffness and damping per part (weight/inertia). */
@@ -160,12 +100,27 @@ function PartMesh({ part, index, clock }: { part: IntroPart; index: number; cloc
     () => createFinishMaterial(part.finish, { transparent: true, opacity: 0 }),
     [part],
   );
+  // The wireframe pass: the extruded body is first shown as edges only, then
+  // the shaded material takes over — drawing → depth → wireframe → solid.
+  const edges = useMemo(() => new THREE.EdgesGeometry(geom, 24), [geom]);
+  const wireMat = useMemo(
+    () =>
+      new THREE.LineBasicMaterial({
+        color: new THREE.Color("#9ccfff"),
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+      }),
+    [],
+  );
   useEffect(
     () => () => {
       geom.dispose();
+      edges.dispose();
       material.dispose();
+      wireMat.dispose();
     },
-    [geom, material],
+    [geom, edges, material, wireMat],
   );
 
   const home = useMemo(() => new THREE.Vector3(...part.home), [part]);
@@ -178,6 +133,10 @@ function PartMesh({ part, index, clock }: { part: IntroPart; index: number; cloc
     const mid = home.clone().lerp(away, 0.5).add(new THREE.Vector3(...part.bow));
     return new THREE.QuadraticBezierCurve3(home.clone(), mid, away.clone());
   }, [home, away, part]);
+  const overshoot = useMemo(
+    () => away.clone().add(away.clone().sub(home).setLength(0.6)),
+    [away, home],
+  );
 
   const spring = useMemo(
     () => new Spring(120 + 40 / part.mass, 17 + 6 * part.mass, part.mass),
@@ -197,8 +156,14 @@ function PartMesh({ part, index, clock }: { part: IntroPart; index: number; cloc
     const bt = clamp01((s - index * 0.055) / 0.9);
     birth.target = bt > 0 ? 1 : 0;
     const b = clamp01(birth.step(dt));
-    material.opacity = clamp01(b * 1.25);
+
+    // wireframe first, then the material resolves onto it
+    const solid = clamp01((s - 0.55 - index * 0.05) / 0.85);
+    material.opacity = clamp01(b * (0.06 + 0.94 * solid));
     material.transparent = material.opacity < 0.995;
+    wireMat.opacity = clamp01(b * 1.4) * (1 - solid) * 0.85;
+    m.children[0].visible = wireMat.opacity > 0.01;
+
     // the sheet is flat: parts grow their real thickness out of it
     m.scale.set(0.965 + 0.035 * b, 0.04 + 0.96 * b, 0.965 + 0.035 * b);
 
@@ -208,9 +173,9 @@ function PartMesh({ part, index, clock }: { part: IntroPart; index: number; cloc
     const p = THREE.MathUtils.clamp(spring.step(dt), -0.05, 1.12);
 
     curve.getPoint(THREE.MathUtils.clamp(p, 0, 1), tmp);
-    if (p > 1) tmp.lerp(away.clone().add(away.clone().sub(home).setLength(0.6)), p - 1);
+    if (p > 1) tmp.lerp(overshoot, p - 1);
     // during birth the part still lies in the drawing plane
-    tmp.y = THREE.MathUtils.lerp(tmp.y * 0.15 - 0.9, tmp.y, easeInOut(b));
+    tmp.y = THREE.MathUtils.lerp(home.y * 0.12, tmp.y, easeInOut(b));
     m.position.copy(tmp);
 
     m.rotation.set(
@@ -224,9 +189,14 @@ function PartMesh({ part, index, clock }: { part: IntroPart; index: number; cloc
     <mesh ref={ref} position={part.home} rotation={part.rot ?? [0, 0, 0]} castShadow receiveShadow>
       <primitive object={geom} attach="geometry" />
       <primitive object={material} attach="material" />
+      <lineSegments>
+        <primitive object={edges} attach="geometry" />
+        <primitive object={wireMat} attach="material" />
+      </lineSegments>
     </mesh>
   );
 }
+
 
 /** Product-video camera: front elevation → slow reveal → hero three-quarter. */
 function CameraRig({ clock }: { clock: { t: number } }) {
@@ -319,9 +289,15 @@ function Scene({ clock, onReady }: { clock: { t: number }; onReady: () => void }
         intensity={1.5}
         color="#fff5e9"
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.0004}
         shadow-normalBias={0.02}
+        shadow-camera-near={2}
+        shadow-camera-far={26}
+        shadow-camera-left={-8}
+        shadow-camera-right={8}
+        shadow-camera-top={8}
+        shadow-camera-bottom={-8}
       />
       <directionalLight position={[-8, 3.5, 5]} intensity={0.55} color="#dce9f8" />
       <directionalLight position={[-2, 4.5, -9]} intensity={0.9} color="#eaf2ff" />
@@ -334,24 +310,13 @@ function Scene({ clock, onReady }: { clock: { t: number }; onReady: () => void }
         <StudioEnvironment />
       </Suspense>
 
-      <ContactShadows position={[0, -2.35, 0]} opacity={0.5} scale={30} blur={3.4} far={12} resolution={1024} />
+      {/* one baked shadow pass instead of a per-frame render */}
+      <ContactShadows position={[0, -2.6, 0]} opacity={0.5} scale={30} blur={3.4} far={12} resolution={512} frames={1} />
       <CameraRig clock={clock} />
       <FirstFrame onReady={onReady} />
 
-      <EffectComposer enableNormalPass multisampling={4}>
-        <SSAO
-          samples={20}
-          radius={0.1}
-          intensity={16}
-          luminanceInfluence={0.6}
-          worldDistanceThreshold={16}
-          worldDistanceFalloff={2}
-          worldProximityThreshold={2}
-          worldProximityFalloff={1}
-          color={new THREE.Color("#05080c")}
-          blendFunction={BlendFunction.MULTIPLY}
-        />
-        <Bloom intensity={0.18} luminanceThreshold={0.85} luminanceSmoothing={0.3} mipmapBlur />
+      {/* deliberately light: AA + vignette only, so the intro holds 60 fps */}
+      <EffectComposer multisampling={0}>
         <Vignette offset={0.3} darkness={0.58} blendFunction={BlendFunction.NORMAL} />
         <SMAA />
       </EffectComposer>
@@ -363,8 +328,10 @@ const PHASES: Array<{ at: number; label: string }> = [
   { at: 0, label: "DRAFTING · CONSTRUCTION GEOMETRY" },
   { at: 950, label: "PROFILE · OUTLINE" },
   { at: 2000, label: "HIDDEN LINES · CENTRE LINES" },
+
   { at: 2340, label: "DIMENSIONING · GD&T" },
-  { at: 2950, label: "SOLID BODY · EXTRUDE" },
+  { at: 2950, label: "DEPTH · WIREFRAME" },
+  { at: 3700, label: "SOLID BODY · MATERIAL" },
   { at: 4400, label: "EXPLODED VIEW" },
   { at: 6100, label: "ASSEMBLY" },
   { at: 7600, label: "PRODUCTION READY" },
@@ -467,7 +434,7 @@ export function PortfolioIntro({ onDone }: { onDone: () => void }) {
       <div ref={stageRef} className="absolute inset-0" style={{ opacity: 0, willChange: "opacity" }}>
         <Canvas
           shadows="soft"
-          dpr={[1, 2]}
+          dpr={[1, 1.6]}
           frameloop="always"
           camera={{ position: [0.4, 0.9, 10.6], fov: 34, near: 0.1, far: 200 }}
           gl={{
