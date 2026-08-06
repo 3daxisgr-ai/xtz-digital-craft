@@ -65,19 +65,14 @@ export function BlueprintBackground({ project }: { project: Project }) {
           )}
         </g>
 
-        {/* drawing frame + title block */}
-        <g stroke={accent} fill="none" strokeWidth="0.6" opacity="0.22">
-          <rect x="-248" y="-140" width="496" height="280" />
-          <rect x="128" y="96" width="120" height="44" />
-          <line x1="128" y1="110" x2="248" y2="110" />
-          <line x1="128" y1="124" x2="248" y2="124" />
-        </g>
-        <g fill={accent} opacity="0.42" fontSize="6" fontFamily="ui-monospace, monospace" letterSpacing="1.4">
-          <text x="133" y="106">{project.fileName}</text>
-          <text x="133" y="120">{project.material}</text>
-          <text x="133" y="134">SCALE 1:2 · {project.year}</text>
-        </g>
       </svg>
+
+      {/* corner title block */}
+      <div className="absolute bottom-24 right-6 hidden w-[220px] rounded-md border p-3 sm:block" style={{ borderColor: `${accent}33` }}>
+        <div className="font-mono text-[9px] uppercase tracking-[0.2em]" style={{ color: `${accent}99` }}>{project.fileName}</div>
+        <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.2em] text-white/25">{project.material}</div>
+        <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.2em] text-white/20">Scale 1:2 · {project.year}</div>
+      </div>
 
       {/* atmospheric grading */}
       <div className="absolute inset-0" style={{ background: `radial-gradient(60% 50% at 50% 45%, ${accent}12, transparent 70%)` }} />
