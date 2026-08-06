@@ -57,6 +57,7 @@ function EquipmentPage() {
           </p>
         </div>
       </section>
+      <FactoryScene />
       <Equipment />
       <Footer />
     </main>
