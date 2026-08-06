@@ -1,7 +1,7 @@
 // One-shot cinematic intro: blueprint → drawing → STEP → wireframe → solid →
 // explode → assemble → material → UI. ~4.6s, respects prefers-reduced-motion.
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const PHASES = [
   { at: 0, label: "BLUEPRINT" },
@@ -18,10 +18,12 @@ const PHASES = [
 export function PortfolioIntro({ onDone }: { onDone: () => void }) {
   const reduced = useReducedMotion();
   const [t, setT] = useState(0);
+  const doneRef = useRef(onDone);
+  doneRef.current = onDone;
 
   useEffect(() => {
     if (reduced) {
-      onDone();
+      doneRef.current();
       return;
     }
     const start = performance.now();
@@ -30,11 +32,11 @@ export function PortfolioIntro({ onDone }: { onDone: () => void }) {
       const elapsed = performance.now() - start;
       setT(elapsed);
       if (elapsed < 4900) raf = requestAnimationFrame(tick);
-      else onDone();
+      else doneRef.current();
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [onDone, reduced]);
+  }, [reduced]);
 
   if (reduced) return null;
 
