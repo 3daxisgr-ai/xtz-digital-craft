@@ -8,7 +8,20 @@ import pressBrakeImg from "@/assets/durmapress-stratza.webp.asset.json";
 import weldingImg from "@/assets/laser-welding.jpg.asset.json";
 import shearMachine from "@/assets/sheet-metal-shear-machine.jpg.asset.json";
 
-type Area = { x: number; y: number; w: number; h: number };
+type Area = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /**
+   * FUTURE: URL of an isolated, pre-cut transparent PNG/WebP of this machine,
+   * exported at exactly this box's crop of the factory photo. When present the
+   * layer is rendered on top of the static scene and gets the premium hover
+   * treatment (scale + brightness). Leave undefined until real cut-outs exist —
+   * we never fake segmentation with rectangles, gradients or blur.
+   */
+  layer?: string;
+};
 
 type Spot = {
   id: string;
@@ -19,6 +32,8 @@ type Spot = {
   h: number;
   /* additional boxes when the same machine appears multiple times */
   areas?: Area[];
+  /* optional cut-out for the primary box (same contract as Area.layer) */
+  layer?: string;
   name: string;
   kicker: string;
   image: string;
@@ -27,6 +42,7 @@ type Spot = {
   specs: string[];
   applications: string[];
 };
+
 
 function getSpots(lang: "EN" | "GR"): Spot[] {
   const gr = lang === "GR";
@@ -150,8 +166,9 @@ export function FactoryScene() {
   const [hovered, setHovered] = useState<string | null>(null);
   const [active, setActive] = useState<Spot | null>(null);
 
-  
-  const areasOf = (s: Spot) => s.areas ?? [{ x: s.x, y: s.y, w: s.w, h: s.h }];
+  const areasOf = (s: Spot): Area[] =>
+    s.areas ?? [{ x: s.x, y: s.y, w: s.w, h: s.h, layer: s.layer }];
+
   const alt =
     lang === "GR"
       ? "Το εργοστάσιο της TOREO με fiber laser, 3D εκτυπωτές, πρέσα στραντζαρίσματος και σταθμό συγκόλλησης"
@@ -179,6 +196,42 @@ export function FactoryScene() {
             className="absolute inset-0 h-full w-full object-cover"
             style={{ filter: "brightness(0.95)" }}
           />
+          {/*
+            FUTURE PREMIUM LAYER SLOT — renders only for areas that already have a
+            real isolated cut-out (Area.layer). No cut-outs exist yet, so this maps
+            to nothing and the scene stays a plain static photo.
+          */}
+          {spots.flatMap((s) =>
+            areasOf(s)
+              .filter((a) => Boolean(a.layer))
+              .map((a, i) => {
+                const on = (hovered ?? active?.id) === s.id;
+                return (
+                  <img
+                    key={`${s.id}-layer-${i}`}
+                    src={a.layer}
+                    alt=""
+                    aria-hidden
+                    loading="lazy"
+                    decoding="async"
+                    className="pointer-events-none absolute object-contain"
+                    style={{
+                      left: `${a.x}%`,
+                      top: `${a.y}%`,
+                      width: `${a.w}%`,
+                      height: `${a.h}%`,
+                      transformOrigin: "50% 85%",
+                      transform: on ? "scale3d(1.04,1.04,1)" : "scale3d(1,1,1)",
+                      filter: on ? "brightness(1.12)" : "brightness(0.95)",
+                      transition:
+                        "transform 260ms cubic-bezier(0.22,1,0.36,1), filter 240ms ease-out",
+                      willChange: "transform",
+                    }}
+                  />
+                );
+              }),
+          )}
+
 
 
 
