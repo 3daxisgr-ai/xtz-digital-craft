@@ -16,6 +16,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as RequestRouteImport } from './routes/request'
 import { Route as RapidPrototypingRouteImport } from './routes/rapid-prototyping'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ForumRouteImport } from './routes/forum'
@@ -80,6 +81,11 @@ const RequestRoute = RequestRouteImport.update({
 const RapidPrototypingRoute = RapidPrototypingRouteImport.update({
   id: '/rapid-prototyping',
   path: '/rapid-prototyping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalRoute = PortalRouteImport.update({
@@ -251,6 +257,7 @@ export interface FileRoutesByFullPath {
   '/forum': typeof ForumRoute
   '/mcp': typeof McpRoute
   '/portal': typeof PortalRouteWithChildren
+  '/portfolio': typeof PortfolioRoute
   '/rapid-prototyping': typeof RapidPrototypingRoute
   '/request': typeof RequestRoute
   '/reviews': typeof ReviewsRoute
@@ -290,6 +297,7 @@ export interface FileRoutesByTo {
   '/forum': typeof ForumRoute
   '/mcp': typeof McpRoute
   '/portal': typeof PortalRouteWithChildren
+  '/portfolio': typeof PortfolioRoute
   '/rapid-prototyping': typeof RapidPrototypingRoute
   '/request': typeof RequestRoute
   '/reviews': typeof ReviewsRoute
@@ -330,6 +338,7 @@ export interface FileRoutesById {
   '/forum': typeof ForumRoute
   '/mcp': typeof McpRoute
   '/portal': typeof PortalRouteWithChildren
+  '/portfolio': typeof PortfolioRoute
   '/rapid-prototyping': typeof RapidPrototypingRoute
   '/request': typeof RequestRoute
   '/reviews': typeof ReviewsRoute
@@ -371,6 +380,7 @@ export interface FileRouteTypes {
     | '/forum'
     | '/mcp'
     | '/portal'
+    | '/portfolio'
     | '/rapid-prototyping'
     | '/request'
     | '/reviews'
@@ -410,6 +420,7 @@ export interface FileRouteTypes {
     | '/forum'
     | '/mcp'
     | '/portal'
+    | '/portfolio'
     | '/rapid-prototyping'
     | '/request'
     | '/reviews'
@@ -449,6 +460,7 @@ export interface FileRouteTypes {
     | '/forum'
     | '/mcp'
     | '/portal'
+    | '/portfolio'
     | '/rapid-prototyping'
     | '/request'
     | '/reviews'
@@ -489,6 +501,7 @@ export interface RootRouteChildren {
   ForumRoute: typeof ForumRoute
   McpRoute: typeof McpRoute
   PortalRoute: typeof PortalRouteWithChildren
+  PortfolioRoute: typeof PortfolioRoute
   RapidPrototypingRoute: typeof RapidPrototypingRoute
   RequestRoute: typeof RequestRoute
   ReviewsRoute: typeof ReviewsRoute
@@ -563,6 +576,13 @@ declare module '@tanstack/react-router' {
       path: '/rapid-prototyping'
       fullPath: '/rapid-prototyping'
       preLoaderRoute: typeof RapidPrototypingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal': {
@@ -803,6 +823,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForumRoute: ForumRoute,
   McpRoute: McpRoute,
   PortalRoute: PortalRouteWithChildren,
+  PortfolioRoute: PortfolioRoute,
   RapidPrototypingRoute: RapidPrototypingRoute,
   RequestRoute: RequestRoute,
   ReviewsRoute: ReviewsRoute,
