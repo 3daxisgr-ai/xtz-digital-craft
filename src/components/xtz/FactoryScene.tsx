@@ -8,6 +8,8 @@ import pressBrakeImg from "@/assets/durmapress-stratza.webp.asset.json";
 import weldingImg from "@/assets/laser-welding.jpg.asset.json";
 import shearMachine from "@/assets/sheet-metal-shear-machine.jpg.asset.json";
 
+type Area = { x: number; y: number; w: number; h: number };
+
 type Spot = {
   id: string;
   /* hotspot box in % of image */
@@ -15,6 +17,8 @@ type Spot = {
   y: number;
   w: number;
   h: number;
+  /* additional boxes when the same machine appears multiple times */
+  areas?: Area[];
   name: string;
   kicker: string;
   image: string;
