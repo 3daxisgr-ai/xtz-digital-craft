@@ -6,7 +6,12 @@ import type { Project } from "./projects";
 export function BlueprintBackground({ project }: { project: Project }) {
   const accent = project.accent;
 
+  // Projects backed by a real CAD file have no procedural parts to project,
+  // so they get a neutral drafting frame instead of a stale part silhouette.
+  const generic = Boolean(project.modelUrl);
+
   const shapes = useMemo(() => {
+    if (generic) return [];
     return project.parts.slice(0, 10).map((p, i) => {
       const x = p.position[0] * 26 + (i % 3) * 14;
       const y = -p.position[1] * 26 + ((i * 37) % 40) - 20;
@@ -14,7 +19,8 @@ export function BlueprintBackground({ project }: { project: Project }) {
       const h = Math.max(14, (p.args[1] ?? p.args[0] ?? 1) * 30);
       return { key: p.name, kind: p.kind, x, y, w, h };
     });
-  }, [project]);
+  }, [project, generic]);
+
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
