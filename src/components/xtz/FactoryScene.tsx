@@ -6,7 +6,7 @@ import laserImg from "@/assets/akj-fiber-laser.jpg.asset.json";
 import bambuImg from "@/assets/bambu-3d-printing.png.asset.json";
 import pressBrakeImg from "@/assets/durmapress-stratza.webp.asset.json";
 import weldingImg from "@/assets/laser-welding.jpg.asset.json";
-import shearImg from "@/assets/sheet-shear.jpg.asset.json";
+import shearMachine from "@/assets/sheet-metal-shear-machine.jpg";
 
 type Spot = {
   id: string;
