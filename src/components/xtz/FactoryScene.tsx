@@ -8,7 +8,20 @@ import pressBrakeImg from "@/assets/durmapress-stratza.webp.asset.json";
 import weldingImg from "@/assets/laser-welding.jpg.asset.json";
 import shearMachine from "@/assets/sheet-metal-shear-machine.jpg.asset.json";
 
-type Area = { x: number; y: number; w: number; h: number };
+type Area = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /**
+   * FUTURE: URL of an isolated, pre-cut transparent PNG/WebP of this machine,
+   * exported at exactly this box's crop of the factory photo. When present the
+   * layer is rendered on top of the static scene and gets the premium hover
+   * treatment (scale + brightness). Leave undefined until real cut-outs exist —
+   * we never fake segmentation with rectangles, gradients or blur.
+   */
+  layer?: string;
+};
 
 type Spot = {
   id: string;
@@ -19,6 +32,8 @@ type Spot = {
   h: number;
   /* additional boxes when the same machine appears multiple times */
   areas?: Area[];
+  /* optional cut-out for the primary box (same contract as Area.layer) */
+  layer?: string;
   name: string;
   kicker: string;
   image: string;
@@ -27,6 +42,7 @@ type Spot = {
   specs: string[];
   applications: string[];
 };
+
 
 function getSpots(lang: "EN" | "GR"): Spot[] {
   const gr = lang === "GR";
