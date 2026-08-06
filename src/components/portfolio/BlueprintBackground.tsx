@@ -71,6 +71,23 @@ export function BlueprintBackground({ project }: { project: Project }) {
           )}
         </g>
 
+        {generic && (
+          <g stroke={accent} fill="none" strokeWidth="0.5" opacity="0.26">
+            {/* drafting frame + centre datum for CAD-file projects */}
+            <rect x="-190" y="-104" width="380" height="208" rx="2" strokeDasharray="6 4" />
+            <line x1="-190" y1="0" x2="190" y2="0" strokeDasharray="14 4 3 4" opacity="0.7" />
+            <line x1="0" y1="-104" x2="0" y2="104" strokeDasharray="14 4 3 4" opacity="0.7" />
+            <circle cx="0" cy="0" r="86" strokeDasharray="3 5" opacity="0.5" />
+            <circle cx="0" cy="0" r="52" opacity="0.4" />
+            <line x1="-190" y1="-72" x2="190" y2="-72" opacity="0.25" />
+            <line x1="-190" y1="72" x2="190" y2="72" opacity="0.25" />
+            <line x1="-124" y1="-104" x2="-124" y2="104" opacity="0.25" />
+            <line x1="124" y1="-104" x2="124" y2="104" opacity="0.25" />
+          </g>
+        )}
+
+
+
       </svg>
 
       {/* corner title block */}
