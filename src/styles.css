@@ -239,3 +239,10 @@
   h1, h2, h3, h4, p, span, a, li { overflow-wrap: anywhere; word-break: normal; }
 }
 
+
+/* Laser cutting spark at the tracing tip */
+@keyframes laserSpark {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.7); opacity: 0.55; }
+  50% { transform: translate(-50%, -50%) scale(1.35); opacity: 1; }
+}
+.laser-spark { animation: laserSpark 0.18s ease-in-out infinite; will-change: transform, opacity; }
