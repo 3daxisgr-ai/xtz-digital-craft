@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
 import { Equipment } from "@/components/xtz/Equipment";
+import { FactoryScene } from "@/components/xtz/FactoryScene";
 import { useI18n } from "@/components/xtz/i18n";
 
 export const Route = createFileRoute("/equipment")({
