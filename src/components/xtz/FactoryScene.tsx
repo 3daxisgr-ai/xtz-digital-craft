@@ -167,7 +167,7 @@ export function FactoryScene() {
           className="relative w-full aspect-[16/9] min-h-[60vh] md:min-h-[80vh] overflow-hidden"
           onMouseLeave={() => setHovered(null)}
         >
-          {/* base layer — sharp when idle, dimmed + blurred while a machine is focused */}
+          {/* base layer — stays almost fully visible, only a hint of dimming on hover */}
           <img
             src={factoryScene}
             alt={alt}
@@ -177,69 +177,59 @@ export function FactoryScene() {
             fetchPriority="high"
             className="absolute inset-0 h-full w-full object-cover"
             style={{
-              filter: "brightness(0.9)",
-              opacity: hovered ? 0 : 1,
-              transition: "opacity 500ms ease-out",
-              willChange: "opacity",
-            }}
-          />
-          <img
-            src={factoryScene}
-            alt=""
-            aria-hidden
-            width={1920}
-            height={1088}
-            decoding="async"
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{
-              filter: "brightness(0.38) saturate(0.7) blur(7px)",
-              transform: "scale(1.04)",
-              opacity: hovered ? 1 : 0,
-              transition: "opacity 500ms ease-out",
-              willChange: "opacity",
+              filter: hovered ? "brightness(0.78) saturate(0.92)" : "brightness(0.92)",
+              transition: "filter 260ms ease-out",
             }}
           />
 
-          {/* sharp cut-outs — one per machine group, revealed on hover (GPU opacity only) */}
+          {/* focused machine — same pixels lifted forward with scale + rim light */}
           {spots.map((s) =>
-            areasOf(s).map((a, i) => (
-              <div
-                key={`${s.id}-${i}`}
-                aria-hidden
-                className="pointer-events-none absolute overflow-hidden"
-                style={{
-                  left: `${a.x}%`,
-                  top: `${a.y}%`,
-                  width: `${a.w}%`,
-                  height: `${a.h}%`,
-                  opacity: hovered === s.id ? 1 : 0,
-                  transition: "opacity 450ms ease-out",
-                  willChange: "opacity",
-                  boxShadow:
-                    "0 0 60px oklch(0.65 0.22 245 / 0.35), inset 0 0 50px oklch(0.65 0.22 245 / 0.18)",
-                  outline: "1px solid oklch(0.65 0.22 245 / 0.45)",
-                }}
-              >
-                <img
-                  src={factoryScene}
-                  alt=""
+            areasOf(s).map((a, i) => {
+              const on = hovered === s.id;
+              return (
+                <div
+                  key={`${s.id}-${i}`}
                   aria-hidden
-                  decoding="async"
-                  className="absolute max-w-none object-cover"
+                  className="pointer-events-none absolute overflow-hidden"
                   style={{
-                    left: `${(-a.x / a.w) * 100}%`,
-                    top: `${(-a.y / a.h) * 100}%`,
-                    width: `${(100 / a.w) * 100}%`,
-                    height: `${(100 / a.h) * 100}%`,
-                    filter: "brightness(1.06) saturate(1.05)",
+                    left: `${a.x}%`,
+                    top: `${a.y}%`,
+                    width: `${a.w}%`,
+                    height: `${a.h}%`,
+                    opacity: on ? 1 : 0,
+                    transform: on ? "scale3d(1.045,1.045,1)" : "scale3d(1,1,1)",
+                    transition: "opacity 240ms ease-out, transform 260ms cubic-bezier(0.22,1,0.36,1)",
+                    willChange: "opacity, transform",
+                    boxShadow: on
+                      ? "0 0 0 1px oklch(0.7 0.16 245 / 0.35), 0 0 34px oklch(0.65 0.22 245 / 0.22)"
+                      : "none",
                   }}
-                />
-                <span
-                  className="absolute inset-0"
-                  style={{ background: "oklch(0.65 0.22 245 / 0.10)" }}
-                />
-              </div>
-            )),
+                >
+                  <img
+                    src={factoryScene}
+                    alt=""
+                    aria-hidden
+                    decoding="async"
+                    className="absolute max-w-none object-cover"
+                    style={{
+                      left: `${(-a.x / a.w) * 100}%`,
+                      top: `${(-a.y / a.h) * 100}%`,
+                      width: `${(100 / a.w) * 100}%`,
+                      height: `${(100 / a.h) * 100}%`,
+                      filter: "brightness(1.1) saturate(1.04)",
+                    }}
+                  />
+                  {/* soft blue rim light */}
+                  <span
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        "radial-gradient(120% 120% at 50% 50%, transparent 55%, oklch(0.65 0.22 245 / 0.18) 100%)",
+                    }}
+                  />
+                </div>
+              );
+            }),
           )}
 
           <div
@@ -264,7 +254,7 @@ export function FactoryScene() {
                 onBlur={() => setHovered((h) => (h === s.id ? null : h))}
                 onClick={() => setActive(s)}
                 aria-label={s.name}
-                className="absolute outline-none"
+                className="absolute cursor-pointer outline-none"
                 style={{
                   left: `${a.x}%`,
                   top: `${a.y}%`,
@@ -272,36 +262,23 @@ export function FactoryScene() {
                   height: `${a.h}%`,
                 }}
               >
-                {/* idle marker */}
-                <span
-                  aria-hidden
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
-                  style={{ opacity: isOn ? 0 : 0.9, transition: "opacity 350ms ease-out" }}
-                >
-                  <span className="block h-2 w-2 rounded-full bg-primary" />
-                  <span className="absolute h-8 w-8 rounded-full border border-primary/40 pulse" />
-                </span>
-
-                {/* label (only on the first area of a group) */}
+                {/* minimal label, only on the primary area of a machine group */}
                 {i === 0 && (
                   <span
-                    className="pointer-events-none absolute left-1/2 top-1/2 whitespace-nowrap"
+                    className="pointer-events-none absolute left-1/2 bottom-0 whitespace-nowrap"
                     style={{
                       opacity: isOn ? 1 : 0,
-                      transform: `translate3d(-50%, ${isOn ? "-50%" : "-38%"}, 0)`,
-                      transition: "opacity 400ms ease-out, transform 400ms ease-out",
+                      transform: `translate3d(-50%, ${isOn ? "115%" : "125%"}, 0)`,
+                      transition: "opacity 220ms ease-out, transform 260ms cubic-bezier(0.22,1,0.36,1)",
                       willChange: "opacity, transform",
                     }}
                   >
-                    <span className="block border border-primary/40 bg-black/70 backdrop-blur-md px-4 py-2.5 text-left">
-                      <span className="block font-mono text-[9px] md:text-[10px] uppercase tracking-[0.35em] text-primary/80">
-                        {s.kicker}
-                      </span>
-                      <span className="block font-display font-bold tracking-tight text-sm md:text-lg text-foreground">
+                    <span className="block border-l border-primary/60 pl-3 text-left">
+                      <span className="block font-display font-medium tracking-tight text-[13px] md:text-[15px] text-foreground">
                         {s.name}
                       </span>
-                      <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.3em] text-foreground/50">
-                        {lang === "GR" ? "Κλικ για λεπτομέρειες" : "Click for details"}
+                      <span className="block font-mono text-[8px] md:text-[9px] uppercase tracking-[0.32em] text-primary/75">
+                        {lang === "GR" ? "Κλικ για εξερεύνηση" : "Click to explore"}
                       </span>
                     </span>
                   </span>
@@ -309,6 +286,7 @@ export function FactoryScene() {
               </button>
             ));
           })}
+
 
           {/* hint */}
           <div
