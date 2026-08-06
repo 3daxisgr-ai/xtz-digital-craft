@@ -159,7 +159,7 @@ function Assembly({ parts, exploded, wireframe, section, autoRotate, reducedMoti
   useEffect(() => {
     gl.localClippingEnabled = true;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    gl.toneMappingExposure = 1.05;
+    gl.toneMappingExposure = 0.92;
   }, [gl]);
 
   useEffect(() => () => brushMap?.dispose(), [brushMap]);
@@ -246,7 +246,7 @@ export function ModelStage({
         <ambientLight intensity={brightLighting ? 0.45 : 0.18} />
         <directionalLight
           position={[7, 10, 6]}
-          intensity={brightLighting ? 3.1 : 2.1}
+          intensity={brightLighting ? 2.6 : 1.7}
           color="#fff6ea"
           castShadow
           shadow-mapSize={[2048, 2048]}
