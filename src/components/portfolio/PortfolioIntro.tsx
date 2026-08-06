@@ -1,144 +1,449 @@
-// One-shot cinematic intro: blueprint → drawing → STEP → wireframe → solid →
-// explode → assemble → material → UI. ~4.6s, respects prefers-reduced-motion.
-import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+// Cinematic CAD intro — rebuilt from scratch as a pure Three.js timeline.
+// No Framer Motion transforms, no React state during playback: every frame is
+// driven by spring integrators inside useFrame, so React never re-renders.
+//
+// Beat sheet (~6.4s):
+//   0.0–1.0  close hero push-in on the assembled part
+//   1.0–3.0  parts break apart along curved 3D paths, camera dollies back
+//   3.0–4.2  slow orbit around the exploded assembly
+//   4.2–6.0  parts spring home with weight + inertia, camera settles hero angle
+import { Suspense, useEffect, useMemo, useRef } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Environment, ContactShadows } from "@react-three/drei";
+import { EffectComposer, SSAO, SMAA, Vignette } from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
+import * as THREE from "three";
 
-const PHASES = [
-  { at: 0, label: "BLUEPRINT" },
-  { at: 600, label: "TECHNICAL DRAWING" },
-  { at: 1200, label: "STEP FILE" },
-  { at: 1800, label: "WIREFRAME" },
-  { at: 2400, label: "SOLID MODEL" },
-  { at: 3000, label: "EXPLODED" },
-  { at: 3500, label: "ASSEMBLY" },
-  { at: 4000, label: "MATERIAL" },
-  { at: 4500, label: "READY" },
+const DURATION = 6400; // ms of scene playback
+const FADE_AT = 5950;
+
+type IntroPart = {
+  geom: () => THREE.BufferGeometry;
+  home: [number, number, number];
+  rot?: [number, number, number];
+  /** direction + distance the part travels when the assembly breaks apart */
+  blow: [number, number, number];
+  /** perpendicular bow of the flight path (arc, never a straight translate) */
+  bow: [number, number, number];
+  spin: [number, number, number];
+  color: string;
+  metalness: number;
+  roughness: number;
+  /** heavier parts accelerate slower and settle later */
+  mass: number;
+  delay: number;
+};
+
+/** A small welded bracket assembly — plate, ribs, gusset, boss, collar, bolts. */
+function buildParts(): IntroPart[] {
+  const steel = "#b9c4d2";
+  const dark = "#8d99a8";
+  const bolts: IntroPart[] = [-1, 1].flatMap((sx) =>
+    [-1, 1].map((sz, i) => ({
+      geom: () => new THREE.CylinderGeometry(0.16, 0.16, 0.38, 32),
+      home: [sx * 1.55, -0.72, sz * 0.78] as [number, number, number],
+      blow: [sx * 2.8, -2.0, sz * 2.4] as [number, number, number],
+      bow: [0, 1.7, sx * 0.9] as [number, number, number],
+      spin: [Math.PI * 1.4 * sx, Math.PI * 2.2, 0] as [number, number, number],
+      color: "#d7dde6",
+      metalness: 0.95,
+      roughness: 0.22,
+      mass: 0.55,
+      delay: 0.02 * i + (sx > 0 ? 0.05 : 0),
+    })),
+  );
+
+  return [
+    {
+      geom: () => new THREE.BoxGeometry(4.2, 0.34, 2.4),
+      home: [0, -0.9, 0],
+      blow: [0, -2.6, 0],
+      bow: [0.9, 0, 0.6],
+      spin: [0.18, 0.5, -0.12],
+      color: steel,
+      metalness: 0.92,
+      roughness: 0.3,
+      mass: 2.4,
+      delay: 0,
+    },
+    {
+      geom: () => new THREE.BoxGeometry(0.34, 2.6, 2.2),
+      home: [-1.6, 0.6, 0],
+      blow: [-3.6, 1.2, -0.5],
+      bow: [0, 1.6, 1.5],
+      spin: [0.3, -0.9, 0.4],
+      color: dark,
+      metalness: 0.9,
+      roughness: 0.32,
+      mass: 1.5,
+      delay: 0.08,
+    },
+    {
+      geom: () => new THREE.BoxGeometry(0.3, 2.2, 1.6),
+      home: [1.55, 0.4, 0],
+      blow: [3.5, 0.9, 0.7],
+      bow: [0, 1.9, -1.4],
+      spin: [-0.25, 1.1, -0.35],
+      color: dark,
+      metalness: 0.9,
+      roughness: 0.32,
+      mass: 1.35,
+      delay: 0.12,
+    },
+    {
+      geom: () => new THREE.CylinderGeometry(0.78, 0.78, 0.26, 3),
+      home: [-1.05, 0.32, 0],
+      rot: [Math.PI / 2, 0, Math.PI / 6],
+      blow: [-1.1, 2.9, -2.0],
+      bow: [1.8, 0, 1.2],
+      spin: [1.1, 0.6, 0.8],
+      color: "#a7b3c2",
+      metalness: 0.88,
+      roughness: 0.35,
+      mass: 1.0,
+      delay: 0.18,
+    },
+    {
+      geom: () => new THREE.CylinderGeometry(0.62, 0.62, 1.25, 64),
+      home: [0.9, 0.35, 0],
+      rot: [Math.PI / 2, 0, 0],
+      blow: [1.4, 2.1, 2.8],
+      bow: [-1.6, 0.6, 0],
+      spin: [0.9, 1.8, 0.2],
+      color: "#b4913f",
+      metalness: 1,
+      roughness: 0.28,
+      mass: 0.9,
+      delay: 0.24,
+    },
+    {
+      geom: () => new THREE.TorusGeometry(0.86, 0.12, 24, 96),
+      home: [0.9, 0.35, 0],
+      rot: [Math.PI / 2, 0, 0],
+      blow: [1.8, -1.4, 3.0],
+      bow: [-1.2, -1.4, 0],
+      spin: [1.6, 0.4, 1.2],
+      color: "#dde4ec",
+      metalness: 0.96,
+      roughness: 0.2,
+      mass: 0.5,
+      delay: 0.3,
+    },
+    ...bolts,
+  ];
+}
+
+/** Critically-tuned spring integrator — mass, stiffness and damping per part. */
+class Spring {
+  value = 0;
+  velocity = 0;
+  target = 0;
+  constructor(
+    private stiffness: number,
+    private damping: number,
+    private mass: number,
+  ) {}
+  step(dt: number) {
+    // fixed sub-stepping keeps the spring stable at any framerate (no jitter)
+    const steps = Math.min(6, Math.max(1, Math.ceil(dt / 0.008)));
+    const h = dt / steps;
+    for (let i = 0; i < steps; i++) {
+      const a = (this.stiffness * (this.target - this.value) - this.damping * this.velocity) / this.mass;
+      this.velocity += a * h;
+      this.value += this.velocity * h;
+    }
+    return this.value;
+  }
+}
+
+function PartMesh({
+  part,
+  clock,
+}: {
+  part: IntroPart;
+  clock: { t: number };
+}) {
+  const ref = useRef<THREE.Mesh>(null);
+  const geom = useMemo(() => part.geom(), [part]);
+  useEffect(() => () => geom.dispose(), [geom]);
+
+  const home = useMemo(() => new THREE.Vector3(...part.home), [part]);
+  const away = useMemo(
+    () => new THREE.Vector3(...part.home).add(new THREE.Vector3(...part.blow)),
+    [part],
+  );
+  // Curved flight path: quadratic bezier bowed off the straight line so no two
+  // parts ever travel through each other.
+  const curve = useMemo(() => {
+    const mid = home.clone().lerp(away, 0.5).add(new THREE.Vector3(...part.bow));
+    return new THREE.QuadraticBezierCurve3(home.clone(), mid, away.clone());
+  }, [home, away, part]);
+
+  const spring = useMemo(
+    () => new Spring(120 + 40 / part.mass, 17 + 6 * part.mass, part.mass),
+    [part],
+  );
+  const baseRot = useMemo(
+    () => new THREE.Euler(...(part.rot ?? [0, 0, 0])),
+    [part],
+  );
+  const tmp = useMemo(() => new THREE.Vector3(), []);
+
+  useFrame((_, delta) => {
+    const m = ref.current;
+    if (!m) return;
+    const dt = Math.min(delta, 1 / 30);
+    const t = clock.t / 1000;
+    // target: 0 = assembled, 1 = exploded
+    const open = t > 1.0 + part.delay && t < 4.2 + part.delay;
+    spring.target = open ? 1 : 0;
+    const p = THREE.MathUtils.clamp(spring.step(dt), -0.05, 1.12);
+
+    curve.getPoint(THREE.MathUtils.clamp(p, 0, 1), tmp);
+    if (p > 1) tmp.lerp(away.clone().add(away.clone().sub(home).setLength(0.6)), p - 1);
+    m.position.copy(tmp);
+
+    m.rotation.set(
+      baseRot.x + part.spin[0] * p,
+      baseRot.y + part.spin[1] * p,
+      baseRot.z + part.spin[2] * p,
+    );
+  });
+
+  return (
+    <mesh ref={ref} position={part.home} rotation={part.rot ?? [0, 0, 0]} castShadow receiveShadow>
+      <primitive object={geom} attach="geometry" />
+      <meshPhysicalMaterial
+        color={part.color}
+        metalness={part.metalness}
+        roughness={part.roughness}
+        anisotropy={0.6}
+        anisotropyRotation={Math.PI / 2}
+        clearcoat={0.1}
+        clearcoatRoughness={0.4}
+        envMapIntensity={1.2}
+      />
+    </mesh>
+  );
+}
+
+function easeInOut(x: number) {
+  return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+}
+
+/** Camera dolly: close push-in → pull back on explode → orbit → hero settle. */
+function CameraRig({ clock }: { clock: { t: number } }) {
+  const { camera } = useThree();
+  const look = useMemo(() => new THREE.Vector3(0, 0.1, 0), []);
+  const smoothed = useMemo(() => new THREE.Vector3(11.9, 4.0, 7.5), []);
+  const desired = useMemo(() => new THREE.Vector3(), []);
+
+  useFrame((_, delta) => {
+    const t = clock.t / 1000;
+    // keyframed spherical path — radius, azimuth, elevation
+    const keys = [
+      { t: 0.0, r: 14.7, a: 0.55, e: 0.2 },
+      { t: 1.0, r: 16.1, a: 0.78, e: 0.28 },
+      { t: 2.2, r: 25.4, a: 1.35, e: 0.52 },
+      { t: 3.2, r: 26.6, a: 1.85, e: 0.58 },
+      { t: 4.2, r: 25.2, a: 2.4, e: 0.48 },
+      { t: 5.3, r: 19.6, a: 2.9, e: 0.4 },
+      { t: 6.4, r: 18.2, a: 3.3, e: 0.34 },
+    ];
+    let k0 = keys[0];
+    let k1 = keys[keys.length - 1];
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (t >= keys[i].t && t <= keys[i + 1].t) {
+        k0 = keys[i];
+        k1 = keys[i + 1];
+        break;
+      }
+    }
+    const span = Math.max(0.0001, k1.t - k0.t);
+    const f = easeInOut(THREE.MathUtils.clamp((t - k0.t) / span, 0, 1));
+    const r = THREE.MathUtils.lerp(k0.r, k1.r, f);
+    const a = THREE.MathUtils.lerp(k0.a, k1.a, f);
+    const e = THREE.MathUtils.lerp(k0.e, k1.e, f);
+
+    desired.set(
+      r * Math.cos(e) * Math.cos(a),
+      r * Math.sin(e) + 0.6,
+      r * Math.cos(e) * Math.sin(a),
+    );
+    // critically damped follow removes any keyframe popping
+    smoothed.lerp(desired, 1 - Math.pow(0.000002, Math.min(delta, 0.25)));
+    camera.position.copy(smoothed);
+    camera.lookAt(look); // model stays centred for the whole shot
+  });
+  return null;
+}
+
+function FirstFrame({ onReady }: { onReady: () => void }) {
+  const fired = useRef(false);
+  useFrame(() => {
+    if (fired.current) return;
+    fired.current = true;
+    onReady();
+  });
+  return null;
+}
+
+function Scene({ clock, onReady }: { clock: { t: number }; onReady: () => void }) {
+  const parts = useMemo(buildParts, []);
+  const { gl } = useThree();
+  useEffect(() => {
+    gl.shadowMap.type = THREE.PCFSoftShadowMap;
+    gl.toneMappingExposure = 0.95;
+  }, [gl]);
+
+  return (
+    <>
+      <color attach="background" args={["#0B0F14"]} />
+      <fog attach="fog" args={["#0B0F14", 18, 46]} />
+
+      <ambientLight intensity={0.2} />
+      <directionalLight
+        position={[7, 10, 6]}
+        intensity={2.3}
+        color="#fff6ea"
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-bias={-0.0004}
+        shadow-normalBias={0.02}
+      />
+      <directionalLight position={[-8, 3.5, 5]} intensity={0.8} color="#dbe7f5" />
+      <spotLight position={[-4, 7, -9]} angle={0.6} penumbra={1} intensity={30} color="#eaf2ff" />
+
+      {parts.map((p, i) => (
+        <PartMesh key={i} part={p} clock={clock} />
+      ))}
+      <Suspense fallback={null}>
+        <Environment preset="studio" environmentIntensity={0.95} />
+      </Suspense>
+
+      <ContactShadows position={[0, -2.4, 0]} opacity={0.45} scale={30} blur={3.2} far={11} resolution={1024} />
+      <CameraRig clock={clock} />
+      <FirstFrame onReady={onReady} />
+
+      <EffectComposer enableNormalPass multisampling={4}>
+        <SSAO
+          samples={16}
+          radius={0.12}
+          intensity={20}
+          luminanceInfluence={0.5}
+          worldDistanceThreshold={14}
+          worldDistanceFalloff={2}
+          worldProximityThreshold={2}
+          worldProximityFalloff={1}
+          color={new THREE.Color("#04070b")}
+          blendFunction={BlendFunction.MULTIPLY}
+        />
+        <Vignette offset={0.26} darkness={0.66} blendFunction={BlendFunction.NORMAL} />
+        <SMAA />
+      </EffectComposer>
+    </>
+  );
+}
+
+const PHASES: Array<{ at: number; label: string }> = [
+  { at: 0, label: "ASSEMBLY" },
+  { at: 1000, label: "RELEASING CONSTRAINTS" },
+  { at: 2000, label: "EXPLODED VIEW" },
+  { at: 3000, label: "INSPECTION ORBIT" },
+  { at: 4200, label: "REASSEMBLY" },
+  { at: 5400, label: "PRODUCTION READY" },
 ];
 
 export function PortfolioIntro({ onDone }: { onDone: () => void }) {
-  const reduced = useReducedMotion();
-  const [t, setT] = useState(0);
   const doneRef = useRef(onDone);
   doneRef.current = onDone;
+
+  const clock = useMemo(() => ({ t: 0 }), []);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+  const startRef = useRef<(() => void) | null>(null);
+
+  const reduced =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
   useEffect(() => {
     if (reduced) {
       doneRef.current();
       return;
     }
-    const start = performance.now();
+    let start = performance.now();
     let raf = 0;
+    let phase = -1;
+    let began = false;
+    // Hold on frame zero until the GPU has actually presented the first frame,
+    // so the timeline never starts mid-shot behind a shader compile.
+    startRef.current = () => {
+      if (began) return;
+      began = true;
+      start = performance.now();
+    };
     const tick = () => {
-      const elapsed = performance.now() - start;
-      setT(elapsed);
-      if (elapsed < 4900) raf = requestAnimationFrame(tick);
+      const t = began ? performance.now() - start : 0;
+      clock.t = t; // drives Three.js only — no React state, no re-render
+      const next = PHASES.reduce((acc, p, i) => (t >= p.at ? i : acc), 0);
+      if (next !== phase) {
+        phase = next;
+        if (labelRef.current) labelRef.current.textContent = PHASES[next].label;
+      }
+      if (barRef.current)
+        barRef.current.style.transform = `scaleX(${Math.min(1, t / DURATION)})`;
+      if (t > FADE_AT && rootRef.current) rootRef.current.style.opacity = "0";
+      if (t < DURATION) raf = requestAnimationFrame(tick);
       else doneRef.current();
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [reduced]);
+  }, [reduced, clock]);
 
   if (reduced) return null;
 
-  const phase = PHASES.reduce((acc, p, i) => (t >= p.at ? i : acc), 0);
-  const draw = Math.min(1, Math.max(0, (t - 400) / 1100));
-  const explode = phase === 5 ? 1 : phase > 5 ? Math.max(0, 1 - (t - 3500) / 500) : 0;
-  const solid = t > 2400 ? Math.min(1, (t - 2400) / 500) : 0;
-  const wire = t > 1800 && t < 2900 ? 1 : t <= 1800 ? Math.min(1, Math.max(0, (t - 1750) / 200)) : 0.15;
-  const material = Math.min(1, Math.max(0, (t - 4000) / 500));
-  const rot = Math.min(38, (t / 4600) * 38);
-
   return (
-    <motion.div
-      className="fixed inset-0 z-[70] flex items-center justify-center overflow-hidden"
-      style={{ background: "#0B0F14" }}
-      initial={{ opacity: 1 }}
-      animate={{ opacity: t > 4600 ? 0 : 1 }}
-      transition={{ duration: 0.35 }}
+    <div
+      ref={rootRef}
+      className="fixed inset-0 z-[70] overflow-hidden bg-[#0B0F14] transition-opacity duration-500"
+      style={{ willChange: "opacity" }}
     >
-      {/* blueprint grid */}
-      <motion.div
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(90,169,255,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(90,169,255,0.10) 1px, transparent 1px)",
-          backgroundSize: "36px 36px",
+      <Canvas
+        shadows="soft"
+        dpr={[1, 2]}
+        frameloop="always"
+        camera={{ position: [11.9, 4.0, 7.5], fov: 40, near: 0.2, far: 350.0 }}
+        gl={{
+          antialias: true,
+          powerPreference: "high-performance",
+          toneMapping: THREE.ACESFilmicToneMapping,
+          outputColorSpace: THREE.SRGBColorSpace,
         }}
-        initial={{ opacity: 0, scale: 1.06 }}
-        animate={{ opacity: t > 2600 ? 0.18 : 0.6, scale: 1 }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-      />
+      >
+        <Scene clock={clock} onReady={() => startRef.current?.()} />
+      </Canvas>
+
       <div
-        className="absolute inset-0"
-        style={{ background: "radial-gradient(ellipse at 50% 45%, rgba(90,169,255,0.14), transparent 62%)" }}
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(120% 100% at 50% 50%, transparent 40%, rgba(3,6,10,0.6) 100%)",
+        }}
       />
 
-      <svg viewBox="-160 -120 320 240" className="relative w-[min(78vw,640px)]" style={{ transform: `rotateX(14deg) rotateY(${rot}deg)` }}>
-        <defs>
-          <linearGradient id="introSteel" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#dbe4ef" />
-            <stop offset="45%" stopColor="#93a2b4" />
-            <stop offset="55%" stopColor="#6f7d8e" />
-            <stop offset="100%" stopColor="#b7c3d1" />
-          </linearGradient>
-        </defs>
-
-        {/* dimension lines — technical drawing phase */}
-        <motion.g
-          stroke="#5aa9ff"
-          strokeWidth="0.6"
-          opacity={t > 600 && t < 2400 ? 0.85 : 0}
-          style={{ transition: "opacity .4s" }}
-        >
-          <line x1="-120" y1="-86" x2="120" y2="-86" />
-          <line x1="-120" y1="-92" x2="-120" y2="-80" />
-          <line x1="120" y1="-92" x2="120" y2="-80" />
-          <text x="0" y="-92" fill="#5aa9ff" fontSize="8" textAnchor="middle" fontFamily="monospace">
-            240.00
-          </text>
-          <line x1="-134" y1="-70" x2="-134" y2="70" />
-          <text x="-140" y="0" fill="#5aa9ff" fontSize="8" textAnchor="middle" fontFamily="monospace" transform="rotate(-90,-140,0)">
-            140.00
-          </text>
-        </motion.g>
-
-        {/* assembly parts */}
-        {[
-          { d: "M-110,40 L110,40 L110,64 L-110,64 Z", dx: 0, dy: 46 },
-          { d: "M-110,-58 L-84,-58 L-84,40 L-110,40 Z", dx: -52, dy: 0 },
-          { d: "M-84,-6 L-20,40 L-84,40 Z", dx: -18, dy: 30 },
-          { d: "M30,-30 L86,-30 L86,20 L30,20 Z", dx: 42, dy: -40 },
-        ].map((p, i) => (
-          <g key={i} transform={`translate(${p.dx * explode} ${p.dy * explode})`}>
-            <path
-              d={p.d}
-              fill={material > 0 ? "url(#introSteel)" : `rgba(148,170,200,${0.55 * solid})`}
-              fillOpacity={solid}
-              stroke="#7fc0ff"
-              strokeWidth="1.1"
-              strokeOpacity={Math.max(wire, draw)}
-              strokeDasharray="600"
-              strokeDashoffset={600 * (1 - draw)}
-            />
-          </g>
-        ))}
-        <circle
-          cx="58"
-          cy="-5"
-          r="14"
-          fill={material > 0 ? "#c9a23f" : "none"}
-          fillOpacity={solid * material}
-          stroke="#7fc0ff"
-          strokeWidth="1.1"
-          strokeOpacity={Math.max(wire, draw)}
-          transform={`translate(${42 * explode} ${-40 * explode})`}
-        />
-      </svg>
-
-      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center">
-        <div className="font-mono text-[10px] tracking-[0.5em] text-[#5aa9ff]">{PHASES[phase].label}</div>
+      <div className="pointer-events-none absolute bottom-16 left-1/2 -translate-x-1/2 text-center">
+        <div ref={labelRef} className="font-mono text-[10px] tracking-[0.5em] text-white/55">
+          ASSEMBLY
+        </div>
         <div className="mt-3 h-px w-56 overflow-hidden bg-white/10">
-          <motion.div className="h-full bg-[#5aa9ff]" style={{ width: `${Math.min(100, (t / 4600) * 100)}%` }} />
+          <div
+            ref={barRef}
+            className="h-full w-full origin-left bg-white/50"
+            style={{ transform: "scaleX(0)", willChange: "transform" }}
+          />
         </div>
       </div>
 
@@ -149,7 +454,7 @@ export function PortfolioIntro({ onDone }: { onDone: () => void }) {
       >
         SKIP
       </button>
-    </motion.div>
+    </div>
   );
 }
 
