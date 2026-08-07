@@ -54,10 +54,11 @@ function getSpots(lang: "EN" | "GR"): Spot[] {
   return [
     {
       id: "laser",
-      x: 1,
+      x: 2,
       y: 32,
       w: 33,
       h: 34,
+      layer: laserLayer.url,
       name: gr ? "AKJ1530F Fiber Laser" : "AKJ1530F Fiber Laser",
       kicker: gr ? "Κοπή Λαμαρίνας" : "Sheet Metal Cutting",
       image: laserImg.url,
@@ -76,10 +77,11 @@ function getSpots(lang: "EN" | "GR"): Spot[] {
     },
     {
       id: "printing",
-      x: 34,
-      y: 37,
-      w: 18,
-      h: 20,
+      x: 36,
+      y: 42,
+      w: 17,
+      h: 15,
+      layer: printersLayer.url,
       name: "Bambu Lab H2S",
       kicker: gr ? "3D Εκτύπωση · 3 Μονάδες" : "3D Printing · 3 Units",
       image: bambuImg.url,
@@ -98,10 +100,11 @@ function getSpots(lang: "EN" | "GR"): Spot[] {
     },
     {
       id: "press-brake",
-      x: 54,
-      y: 24,
-      w: 23,
-      h: 40,
+      x: 55,
+      y: 26,
+      w: 24,
+      h: 38,
+      layer: pressBrakeLayer.url,
       name: gr ? "DURMAPRESS Πρέσα Στραντζαρίσματος" : "DURMAPRESS Press Brake",
       kicker: gr ? "Κάμψη · 2 Μονάδες" : "Bending · 2 Units",
       image: pressBrakeImg.url,
@@ -120,10 +123,11 @@ function getSpots(lang: "EN" | "GR"): Spot[] {
     },
     {
       id: "welding",
-      x: 64,
-      y: 54,
-      w: 33,
-      h: 36,
+      x: 60,
+      y: 55,
+      w: 34,
+      h: 33,
+      layer: weldingLayer.url,
       name: gr ? "Σταθμοί Συγκόλλησης" : "Welding Stations",
       kicker: gr ? "MIG · TIG · Laser · RSW" : "MIG · TIG · Laser · RSW",
       image: weldingImg.url,
@@ -142,10 +146,11 @@ function getSpots(lang: "EN" | "GR"): Spot[] {
     },
     {
       id: "shear",
-      x: 78,
-      y: 34,
-      w: 16,
-      h: 16,
+      x: 76,
+      y: 26,
+      w: 22,
+      h: 32,
+      layer: shearLayer.url,
       name: gr ? "Ψαλίδι Λαμαρίνας" : "Sheet Metal Shear",
       kicker: gr ? "Ευθεία Κοπή Λαμαρίνας" : "Straight Sheet Cutting",
       image: shearMachine.url,
@@ -190,9 +195,9 @@ export function FactoryScene() {
           className="relative w-full aspect-[16/9] min-h-[60vh] md:min-h-[80vh] overflow-hidden"
           onMouseLeave={() => setHovered(null)}
         >
-          {/* static factory image — no fake silhouette highlighting */}
+          {/* empty factory background — machines are independent layers on top */}
           <img
-            src={factoryScene}
+            src={factoryBackground.url}
             alt={alt}
             width={1920}
             height={1088}
@@ -201,11 +206,7 @@ export function FactoryScene() {
             className="absolute inset-0 h-full w-full object-cover"
             style={{ filter: "brightness(0.95)" }}
           />
-          {/*
-            FUTURE PREMIUM LAYER SLOT — renders only for areas that already have a
-            real isolated cut-out (Area.layer). No cut-outs exist yet, so this maps
-            to nothing and the scene stays a plain static photo.
-          */}
+          {/* independent machine layers (transparent PNG cut-outs) */}
           {spots.flatMap((s) =>
             areasOf(s)
               .filter((a) => Boolean(a.layer))
@@ -219,15 +220,17 @@ export function FactoryScene() {
                     aria-hidden
                     loading="lazy"
                     decoding="async"
-                    className="pointer-events-none absolute object-contain"
+                    className="pointer-events-none absolute object-contain object-bottom"
                     style={{
                       left: `${a.x}%`,
                       top: `${a.y}%`,
                       width: `${a.w}%`,
                       height: `${a.h}%`,
-                      transformOrigin: "50% 85%",
+                      transformOrigin: "50% 100%",
                       transform: on ? "scale3d(1.04,1.04,1)" : "scale3d(1,1,1)",
-                      filter: on ? "brightness(1.12)" : "brightness(0.95)",
+                      filter: on
+                        ? "brightness(1.14) drop-shadow(0 0 18px oklch(0.65 0.22 245 / 0.45))"
+                        : "brightness(0.95)",
                       transition:
                         "transform 260ms cubic-bezier(0.22,1,0.36,1), filter 240ms ease-out",
                       willChange: "transform",
