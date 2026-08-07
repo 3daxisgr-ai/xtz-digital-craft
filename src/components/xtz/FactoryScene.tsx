@@ -1,7 +1,12 @@
 import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { useI18n } from "./i18n";
-import factoryScene from "@/assets/factory-scene.jpg";
+import factoryBackground from "@/assets/factory-background.webp.asset.json";
+import laserLayer from "@/assets/fiber-laser.png.asset.json";
+import printersLayer from "@/assets/bambu-printers.png.asset.json";
+import pressBrakeLayer from "@/assets/press-brake.png.asset.json";
+import weldingLayer from "@/assets/welding-station.png.asset.json";
+import shearLayer from "@/assets/shear.png.asset.json";
 import laserImg from "@/assets/akj-fiber-laser.jpg.asset.json";
 import bambuImg from "@/assets/bambu-3d-printing.png.asset.json";
 import pressBrakeImg from "@/assets/durmapress-stratza.webp.asset.json";
