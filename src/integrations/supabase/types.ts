@@ -492,6 +492,13 @@ export type Database = {
             foreignKeyName: "order_emails_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_emails_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
             referencedRelation: "orders"
             referencedColumns: ["id"]
           },
@@ -541,6 +548,13 @@ export type Database = {
           visibility?: Database["public"]["Enums"]["file_visibility"]
         }
         Relationships: [
+          {
+            foreignKeyName: "order_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "order_events_order_id_fkey"
             columns: ["order_id"]
@@ -595,6 +609,13 @@ export type Database = {
             foreignKeyName: "order_files_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_files_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
             referencedRelation: "orders"
             referencedColumns: ["id"]
           },
@@ -626,6 +647,13 @@ export type Database = {
           order_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "order_messages_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "order_messages_order_id_fkey"
             columns: ["order_id"]
@@ -791,6 +819,13 @@ export type Database = {
             foreignKeyName: "production_jobs_analysis_id_fkey"
             columns: ["analysis_id"]
             isOneToOne: false
+            referencedRelation: "customer_order_estimates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_jobs_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
             referencedRelation: "project_analyses"
             referencedColumns: ["id"]
           },
@@ -799,6 +834,13 @@ export type Database = {
             columns: ["machine_id"]
             isOneToOne: false
             referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_jobs_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
             referencedColumns: ["id"]
           },
           {
@@ -982,6 +1024,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "proformas_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "proformas_order_id_fkey"
             columns: ["order_id"]
@@ -1176,6 +1225,13 @@ export type Database = {
             foreignKeyName: "project_analyses_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_analyses_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
             referencedRelation: "orders"
             referencedColumns: ["id"]
           },
@@ -1241,6 +1297,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "projects_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "projects_order_id_fkey"
             columns: ["order_id"]
@@ -1315,6 +1378,13 @@ export type Database = {
           recipient_email?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "quote_decisions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "quote_decisions_order_id_fkey"
             columns: ["order_id"]
@@ -1416,6 +1486,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "quote_documents_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "quote_documents_order_id_fkey"
             columns: ["order_id"]
@@ -1524,6 +1601,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "reviews_order_id_fkey"
             columns: ["order_id"]
@@ -1658,7 +1742,113 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      customer_order_estimates: {
+        Row: {
+          created_at: string | null
+          estimated_print_hours: number | null
+          file_name: string | null
+          id: string | null
+          locked_until: string | null
+          order_id: string | null
+          quote_price_eur: number | null
+          recommended_material: string | null
+          service: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_analyses_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_analyses_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_orders: {
+        Row: {
+          company: string | null
+          courier: string | null
+          created_at: string | null
+          currency: string | null
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          dimensions: string | null
+          due_date: string | null
+          estimated_delivery: string | null
+          id: string | null
+          material: string | null
+          message: string | null
+          metadata: Json | null
+          order_code: string | null
+          quantity: string | null
+          quote_price: number | null
+          service: string | null
+          status: Database["public"]["Enums"]["order_status"] | null
+          tracking_number: string | null
+          tracking_url: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          company?: string | null
+          courier?: string | null
+          created_at?: string | null
+          currency?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          dimensions?: string | null
+          due_date?: string | null
+          estimated_delivery?: string | null
+          id?: string | null
+          material?: string | null
+          message?: string | null
+          metadata?: Json | null
+          order_code?: string | null
+          quantity?: string | null
+          quote_price?: number | null
+          service?: string | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          tracking_number?: string | null
+          tracking_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          company?: string | null
+          courier?: string | null
+          created_at?: string | null
+          currency?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          dimensions?: string | null
+          due_date?: string | null
+          estimated_delivery?: string | null
+          id?: string | null
+          material?: string | null
+          message?: string | null
+          metadata?: Json | null
+          order_code?: string | null
+          quantity?: string | null
+          quote_price?: number | null
+          service?: string | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          tracking_number?: string | null
+          tracking_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       delete_email: {
