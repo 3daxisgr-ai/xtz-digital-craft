@@ -85,6 +85,96 @@ export type Database = {
           },
         ]
       }
+      ai_settings: {
+        Row: {
+          created_at: string
+          daily_call_limit: number
+          enabled: boolean
+          fallback_model: string | null
+          id: number
+          max_output_tokens: number
+          model: string
+          monthly_call_limit: number
+          provider: string
+          singleton: boolean
+          temperature: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          daily_call_limit?: number
+          enabled?: boolean
+          fallback_model?: string | null
+          id?: number
+          max_output_tokens?: number
+          model?: string
+          monthly_call_limit?: number
+          provider?: string
+          singleton?: boolean
+          temperature?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          daily_call_limit?: number
+          enabled?: boolean
+          fallback_model?: string | null
+          id?: number
+          max_output_tokens?: number
+          model?: string
+          monthly_call_limit?: number
+          provider?: string
+          singleton?: boolean
+          temperature?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_usage_log: {
+        Row: {
+          completion_tokens: number | null
+          context: Json
+          created_at: string
+          error_message: string | null
+          feature: string
+          id: string
+          latency_ms: number | null
+          model: string
+          ok: boolean
+          prompt_tokens: number | null
+          provider: string
+          total_tokens: number | null
+        }
+        Insert: {
+          completion_tokens?: number | null
+          context?: Json
+          created_at?: string
+          error_message?: string | null
+          feature: string
+          id?: string
+          latency_ms?: number | null
+          model: string
+          ok?: boolean
+          prompt_tokens?: number | null
+          provider: string
+          total_tokens?: number | null
+        }
+        Update: {
+          completion_tokens?: number | null
+          context?: Json
+          created_at?: string
+          error_message?: string | null
+          feature?: string
+          id?: string
+          latency_ms?: number | null
+          model?: string
+          ok?: boolean
+          prompt_tokens?: number | null
+          provider?: string
+          total_tokens?: number | null
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -416,14 +506,20 @@ export type Database = {
       }
       order_emails: {
         Row: {
+          ai_generated: boolean
+          ai_instruction: string | null
+          ai_regenerations: number
           attachments_count: number
+          body_text: string | null
           cc: string | null
           created_at: string
+          direction: string
           email_type: string
           error_message: string | null
           html: string | null
           http_status: number | null
           id: string
+          idempotency_key: string | null
           last_attempt_at: string | null
           order_code: string | null
           order_id: string | null
@@ -437,17 +533,24 @@ export type Database = {
           sent_at: string | null
           status: string
           subject: string
+          thread_id: string | null
           updated_at: string
         }
         Insert: {
+          ai_generated?: boolean
+          ai_instruction?: string | null
+          ai_regenerations?: number
           attachments_count?: number
+          body_text?: string | null
           cc?: string | null
           created_at?: string
+          direction?: string
           email_type?: string
           error_message?: string | null
           html?: string | null
           http_status?: number | null
           id?: string
+          idempotency_key?: string | null
           last_attempt_at?: string | null
           order_code?: string | null
           order_id?: string | null
@@ -461,17 +564,24 @@ export type Database = {
           sent_at?: string | null
           status?: string
           subject: string
+          thread_id?: string | null
           updated_at?: string
         }
         Update: {
+          ai_generated?: boolean
+          ai_instruction?: string | null
+          ai_regenerations?: number
           attachments_count?: number
+          body_text?: string | null
           cc?: string | null
           created_at?: string
+          direction?: string
           email_type?: string
           error_message?: string | null
           html?: string | null
           http_status?: number | null
           id?: string
+          idempotency_key?: string | null
           last_attempt_at?: string | null
           order_code?: string | null
           order_id?: string | null
@@ -485,6 +595,7 @@ export type Database = {
           sent_at?: string | null
           status?: string
           subject?: string
+          thread_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1562,6 +1673,153 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      request_intake: {
+        Row: {
+          ai_confidence: number | null
+          ai_extraction: Json | null
+          ai_missing: Json
+          ai_next_action: string | null
+          ai_summary: string | null
+          ai_summary_edited: boolean
+          ai_urgency: string | null
+          attachments_hash: string | null
+          body_hash: string | null
+          channel: string
+          created_at: string
+          duplicate_class: string
+          duplicate_confidence: number
+          duplicate_of_intake_id: string | null
+          duplicate_of_order_id: string | null
+          duplicate_reasons: Json
+          fingerprint: string
+          id: string
+          message_id_header: string | null
+          order_id: string | null
+          process_result: string
+          provider_message_id: string | null
+          raw: Json
+          received_at: string
+          review_state: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sender_email: string
+          sender_name: string | null
+          subject_normalized: string | null
+          subject_raw: string | null
+          submission_id: string | null
+          thread_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_confidence?: number | null
+          ai_extraction?: Json | null
+          ai_missing?: Json
+          ai_next_action?: string | null
+          ai_summary?: string | null
+          ai_summary_edited?: boolean
+          ai_urgency?: string | null
+          attachments_hash?: string | null
+          body_hash?: string | null
+          channel?: string
+          created_at?: string
+          duplicate_class?: string
+          duplicate_confidence?: number
+          duplicate_of_intake_id?: string | null
+          duplicate_of_order_id?: string | null
+          duplicate_reasons?: Json
+          fingerprint: string
+          id?: string
+          message_id_header?: string | null
+          order_id?: string | null
+          process_result?: string
+          provider_message_id?: string | null
+          raw?: Json
+          received_at?: string
+          review_state?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sender_email: string
+          sender_name?: string | null
+          subject_normalized?: string | null
+          subject_raw?: string | null
+          submission_id?: string | null
+          thread_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_confidence?: number | null
+          ai_extraction?: Json | null
+          ai_missing?: Json
+          ai_next_action?: string | null
+          ai_summary?: string | null
+          ai_summary_edited?: boolean
+          ai_urgency?: string | null
+          attachments_hash?: string | null
+          body_hash?: string | null
+          channel?: string
+          created_at?: string
+          duplicate_class?: string
+          duplicate_confidence?: number
+          duplicate_of_intake_id?: string | null
+          duplicate_of_order_id?: string | null
+          duplicate_reasons?: Json
+          fingerprint?: string
+          id?: string
+          message_id_header?: string | null
+          order_id?: string | null
+          process_result?: string
+          provider_message_id?: string | null
+          raw?: Json
+          received_at?: string
+          review_state?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sender_email?: string
+          sender_name?: string | null
+          subject_normalized?: string | null
+          subject_raw?: string | null
+          submission_id?: string | null
+          thread_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_intake_duplicate_of_intake_id_fkey"
+            columns: ["duplicate_of_intake_id"]
+            isOneToOne: false
+            referencedRelation: "request_intake"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_intake_duplicate_of_order_id_fkey"
+            columns: ["duplicate_of_order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_intake_duplicate_of_order_id_fkey"
+            columns: ["duplicate_of_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_intake_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_intake_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
