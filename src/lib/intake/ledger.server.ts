@@ -132,7 +132,7 @@ export async function recordIntake(
         duplicate_of_order_id: verdict.match?.orderId ?? null,
         duplicate_reasons: verdict.reasons as never,
         process_result: refs.processResult,
-        review_state: verdict.review ? "needs_review" : "none",
+        review_state: verdict.review ? "pending" : "none",
       },
       { onConflict: "fingerprint", ignoreDuplicates: true },
     );
