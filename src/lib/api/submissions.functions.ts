@@ -51,6 +51,50 @@ export const submitForm = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let customerEmailError: string | null = null;
 
+    // 0. Duplicate screening — identity from content, never from filename.
+    const { screenIntake, recordIntake } = await import("@/lib/intake/ledger.server");
+    const intakeInput = {
+      senderEmail: data.email,
+      senderName: `${data.name}${data.surname ? " " + data.surname : ""}`.trim(),
+      subject: `${data.source === "3d-printing-quote" ? "3D Printing Quote" : "Project Inquiry"}${data.service ? " – " + data.service : ""}`,
+      body: data.message ?? "",
+      facts: {
+        service: data.service ?? "",
+        material: data.material ?? "",
+        quantity: data.quantity ?? "",
+        dimensions: data.dimensions ?? "",
+        production_mode: data.production_mode ?? "",
+        source: data.source,
+      },
+      attachments: data.file_name ? [{ name: data.file_name, hash: data.file_path ?? null }] : null,
+      channel: "web_form",
+      raw: { source: data.source },
+    };
+    const screen = await screenIntake(intakeInput);
+    if (screen.verdict.block && screen.existingOrder?.code) {
+      console.log(
+        `[intake] duplicate blocked ${JSON.stringify({
+          email: data.email,
+          orderCode: screen.existingOrder.code,
+          confidence: screen.verdict.confidence,
+          reasons: screen.verdict.reasons,
+        })}`,
+      );
+      await recordIntake(intakeInput, screen, {
+        orderId: screen.existingOrder.id,
+        processResult: "skipped_duplicate",
+      });
+      return {
+        ok: true,
+        id: null,
+        order_code: screen.existingOrder.code,
+        emailSent: false,
+        confirmationEmailSent: true,
+        emailError: null,
+        duplicate: true,
+      };
+    }
+
     // Generate a signed URL for the uploaded file if present
     let fileUrl: string | null = null;
     if (data.file_path) {
