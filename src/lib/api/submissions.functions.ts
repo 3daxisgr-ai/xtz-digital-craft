@@ -167,6 +167,7 @@ export const submitForm = createServerFn({ method: "POST" })
 
     // 1b2. Create order row (Customer Portal / Admin Dashboard)
     let orderCode: string | null = null;
+    let createdOrderId: string | null = null;
     try {
       const fullName = `${data.name}${data.surname ? " " + data.surname : ""}`.trim();
       const { data: existingUser } = await (supabaseAdmin as any)
@@ -208,6 +209,7 @@ export const submitForm = createServerFn({ method: "POST" })
       if (orderErr) throw orderErr;
       orderCode = (orderRow as { order_code: string | null }).order_code;
       const orderId = (orderRow as { id: string }).id;
+      createdOrderId = orderId;
 
       // attach uploaded file as customer-visible order file
       if (data.file_path && data.file_name) {
@@ -487,6 +489,12 @@ export const submitForm = createServerFn({ method: "POST" })
         customerEmailError,
       })}`,
     );
+
+    await recordIntake(intakeInput, screen, {
+      orderId: createdOrderId,
+      submissionId: submissionId ?? null,
+      processResult: screen.verdict.review ? "needs_review" : "created",
+    });
 
     return {
       ok: true,
