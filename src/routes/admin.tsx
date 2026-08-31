@@ -1076,7 +1076,7 @@ function TabUpdates({ d, code, refresh }: any) {
     <Card title="Production Updates" right={<span className="text-[10px] font-mono text-white/40">CUSTOMER PORTAL SYNCS IN REAL-TIME</span>}>
       <div className="border border-white/10 rounded-sm p-4 mb-5 bg-white/[0.02] space-y-3">
         <div className="grid md:grid-cols-2 gap-3">
-          <Labeled label="Title *"><input className={inp} value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} placeholder="e.g. CNC milling complete" /></Labeled>
+          <Labeled label="Title *"><input className={inp} value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} placeholder="e.g. Laser cutting complete" /></Labeled>
           <Labeled label="Type">
             <select className={inp} value={f.event_type} onChange={(e) => setF({ ...f, event_type: e.target.value })}>
               {["update", "milestone", "production", "quality", "shipping", "note"].map((t) => <option key={t}>{t}</option>)}

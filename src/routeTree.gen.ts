@@ -24,7 +24,6 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EquipmentRouteImport } from './routes/equipment'
 import { Route as CustomMetalPartsRouteImport } from './routes/custom-metal-parts'
 import { Route as CompanyRouteImport } from './routes/company'
-import { Route as CncMachiningRouteImport } from './routes/cnc-machining'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiRouteImport } from './routes/ai'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -34,7 +33,6 @@ import { Route as PortalProjectsRouteImport } from './routes/portal_.projects'
 import { Route as PortalOrderCodeRouteImport } from './routes/portal.$orderCode'
 import { Route as GrRapidPrototypingRouteImport } from './routes/gr.rapid-prototyping'
 import { Route as GrCustomMetalPartsRouteImport } from './routes/gr.custom-metal-parts'
-import { Route as GrCncMachiningRouteImport } from './routes/gr.cnc-machining'
 import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
 import { Route as AdminShippingRouteImport } from './routes/admin_.shipping'
 import { Route as AdminSchedulerRouteImport } from './routes/admin_.scheduler'
@@ -123,11 +121,6 @@ const CompanyRoute = CompanyRouteImport.update({
   path: '/company',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CncMachiningRoute = CncMachiningRouteImport.update({
-  id: '/cnc-machining',
-  path: '/cnc-machining',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -171,11 +164,6 @@ const GrRapidPrototypingRoute = GrRapidPrototypingRouteImport.update({
 const GrCustomMetalPartsRoute = GrCustomMetalPartsRouteImport.update({
   id: '/gr/custom-metal-parts',
   path: '/gr/custom-metal-parts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GrCncMachiningRoute = GrCncMachiningRouteImport.update({
-  id: '/gr/cnc-machining',
-  path: '/gr/cnc-machining',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CapabilitiesSlugRoute = CapabilitiesSlugRouteImport.update({
@@ -249,7 +237,6 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/ai': typeof AiRoute
   '/auth': typeof AuthRoute
-  '/cnc-machining': typeof CncMachiningRoute
   '/company': typeof CompanyRoute
   '/custom-metal-parts': typeof CustomMetalPartsRoute
   '/equipment': typeof EquipmentRoute
@@ -274,7 +261,6 @@ export interface FileRoutesByFullPath {
   '/admin/scheduler': typeof AdminSchedulerRoute
   '/admin/shipping': typeof AdminShippingRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
-  '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
@@ -289,7 +275,6 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/ai': typeof AiRoute
   '/auth': typeof AuthRoute
-  '/cnc-machining': typeof CncMachiningRoute
   '/company': typeof CompanyRoute
   '/custom-metal-parts': typeof CustomMetalPartsRoute
   '/equipment': typeof EquipmentRoute
@@ -314,7 +299,6 @@ export interface FileRoutesByTo {
   '/admin/scheduler': typeof AdminSchedulerRoute
   '/admin/shipping': typeof AdminShippingRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
-  '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
@@ -330,7 +314,6 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/ai': typeof AiRoute
   '/auth': typeof AuthRoute
-  '/cnc-machining': typeof CncMachiningRoute
   '/company': typeof CompanyRoute
   '/custom-metal-parts': typeof CustomMetalPartsRoute
   '/equipment': typeof EquipmentRoute
@@ -355,7 +338,6 @@ export interface FileRoutesById {
   '/admin_/scheduler': typeof AdminSchedulerRoute
   '/admin_/shipping': typeof AdminShippingRoute
   '/capabilities/$slug': typeof CapabilitiesSlugRoute
-  '/gr/cnc-machining': typeof GrCncMachiningRoute
   '/gr/custom-metal-parts': typeof GrCustomMetalPartsRoute
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
@@ -372,7 +354,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/ai'
     | '/auth'
-    | '/cnc-machining'
     | '/company'
     | '/custom-metal-parts'
     | '/equipment'
@@ -397,7 +378,6 @@ export interface FileRouteTypes {
     | '/admin/scheduler'
     | '/admin/shipping'
     | '/capabilities/$slug'
-    | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
@@ -412,7 +392,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/ai'
     | '/auth'
-    | '/cnc-machining'
     | '/company'
     | '/custom-metal-parts'
     | '/equipment'
@@ -437,7 +416,6 @@ export interface FileRouteTypes {
     | '/admin/scheduler'
     | '/admin/shipping'
     | '/capabilities/$slug'
-    | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
@@ -452,7 +430,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/ai'
     | '/auth'
-    | '/cnc-machining'
     | '/company'
     | '/custom-metal-parts'
     | '/equipment'
@@ -477,7 +454,6 @@ export interface FileRouteTypes {
     | '/admin_/scheduler'
     | '/admin_/shipping'
     | '/capabilities/$slug'
-    | '/gr/cnc-machining'
     | '/gr/custom-metal-parts'
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
@@ -493,7 +469,6 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AiRoute: typeof AiRoute
   AuthRoute: typeof AuthRoute
-  CncMachiningRoute: typeof CncMachiningRoute
   CompanyRoute: typeof CompanyRoute
   CustomMetalPartsRoute: typeof CustomMetalPartsRoute
   EquipmentRoute: typeof EquipmentRoute
@@ -518,7 +493,6 @@ export interface RootRouteChildren {
   AdminSchedulerRoute: typeof AdminSchedulerRoute
   AdminShippingRoute: typeof AdminShippingRoute
   CapabilitiesSlugRoute: typeof CapabilitiesSlugRoute
-  GrCncMachiningRoute: typeof GrCncMachiningRoute
   GrCustomMetalPartsRoute: typeof GrCustomMetalPartsRoute
   GrRapidPrototypingRoute: typeof GrRapidPrototypingRoute
   PortalProjectsRoute: typeof PortalProjectsRoute
@@ -634,13 +608,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/cnc-machining': {
-      id: '/cnc-machining'
-      path: '/cnc-machining'
-      fullPath: '/cnc-machining'
-      preLoaderRoute: typeof CncMachiningRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -702,13 +669,6 @@ declare module '@tanstack/react-router' {
       path: '/gr/custom-metal-parts'
       fullPath: '/gr/custom-metal-parts'
       preLoaderRoute: typeof GrCustomMetalPartsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gr/cnc-machining': {
-      id: '/gr/cnc-machining'
-      path: '/gr/cnc-machining'
-      fullPath: '/gr/cnc-machining'
-      preLoaderRoute: typeof GrCncMachiningRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/capabilities/$slug': {
@@ -815,7 +775,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AiRoute: AiRoute,
   AuthRoute: AuthRoute,
-  CncMachiningRoute: CncMachiningRoute,
   CompanyRoute: CompanyRoute,
   CustomMetalPartsRoute: CustomMetalPartsRoute,
   EquipmentRoute: EquipmentRoute,
@@ -841,7 +800,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminSchedulerRoute: AdminSchedulerRoute,
   AdminShippingRoute: AdminShippingRoute,
   CapabilitiesSlugRoute: CapabilitiesSlugRoute,
-  GrCncMachiningRoute: GrCncMachiningRoute,
   GrCustomMetalPartsRoute: GrCustomMetalPartsRoute,
   GrRapidPrototypingRoute: GrRapidPrototypingRoute,
   PortalProjectsRoute: PortalProjectsRoute,

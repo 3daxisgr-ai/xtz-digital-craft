@@ -11,7 +11,7 @@ export interface ServiceHeadInput {
   title: string;
   /** SERP / OG description */
   description: string;
-  /** Path of THIS page, e.g. "/cnc-machining" or "/gr/cnc-machining" */
+  /** Path of THIS page, e.g. "/rapid-prototyping" or "/gr/rapid-prototyping" */
   path: string;
   /** Path of the OTHER locale of the same content */
   altPath: string;
