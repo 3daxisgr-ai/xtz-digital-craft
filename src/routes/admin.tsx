@@ -303,6 +303,8 @@ function Dashboard({ onOpenOrder }: { onOpenOrder: (c: string) => void }) {
           </div>
 
 
+          <AiInboxWidget />
+
           <EmailDeliveryWidget />
 
           <div className="grid lg:grid-cols-3 gap-6">
