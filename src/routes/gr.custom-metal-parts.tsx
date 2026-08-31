@@ -28,9 +28,9 @@ const FAQ = [
 export const Route = createFileRoute("/gr/custom-metal-parts")({
   head: () =>
     buildServiceHead({
-      title: "Custom Μεταλλικά Εξαρτήματα — Κοπή Laser, Στράντζα & Συγκόλληση | TOREO",
+      title: "Custom Μεταλλικά Εξαρτήματα | TOREO",
       description:
-        "Κατασκευή custom μεταλλικών εξαρτημάτων στη Θεσσαλονίκη: κοπή fiber laser, στράντζα και συγκόλληση MIG/TIG. Χάλυβας, ανοξείδωτος, αλουμίνιο — αξιολόγηση από την ομάδα παραγωγής πριν την προσφορά.",
+        "Custom μεταλλικά εξαρτήματα στη Θεσσαλονίκη: κοπή fiber laser, στράντζα και συγκόλληση MIG/TIG σε χάλυβα, ανοξείδωτο και αλουμίνιο.",
       path: "/gr/custom-metal-parts",
       altPath: "/custom-metal-parts",
       locale: "gr",

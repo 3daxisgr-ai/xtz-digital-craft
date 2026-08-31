@@ -51,7 +51,7 @@ export const Route = createFileRoute("/company")({
 });
 
 const en = {
-  heroTitle: "Company",
+  heroTitle: "About TOREO — Engineering and Manufacturing in Greece",
   heroSub: "Engineering ideas into reality through modern manufacturing.",
   s1Tag: "01 — Who We Are",
   s1Title: "A modern manufacturing company.",
@@ -99,7 +99,7 @@ const en = {
 };
 
 const gr: typeof en = {
-  heroTitle: "Η Εταιρεία",
+  heroTitle: "Η TOREO — Μηχανική & Κατασκευή στην Ελλάδα",
   heroSub: "Μετατρέπουμε τις ιδέες σε πραγματικότητα μέσα από τη σύγχρονη κατασκευή.",
   s1Tag: "01 — ΠΟΙΟΙ ΕΙΜΑΣΤΕ",
   s1Title: "Μια σύγχρονη εταιρεία κατασκευής.",
