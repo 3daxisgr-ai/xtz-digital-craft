@@ -38,6 +38,8 @@ import { RequestSummary } from "@/components/xtz/RequestSummary";
 import { acceptQuote, declineQuote } from "@/lib/api/quote-decision.functions";
 import { quoteDocCreate } from "@/lib/api/quote-doc.functions";
 import { OrderEmailHistory, EmailDeliveryWidget } from "@/components/admin/EmailHistory";
+import { AiRequestSummary, AiEmailAssistant } from "@/components/admin/AiEmailAssistant";
+import { AiInboxWidget } from "@/components/admin/AiInboxWidget";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
