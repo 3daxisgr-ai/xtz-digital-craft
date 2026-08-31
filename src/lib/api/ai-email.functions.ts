@@ -260,7 +260,7 @@ export type IntakeReviewRow = {
   subject_raw: string | null;
   duplicate_class: string;
   duplicate_confidence: number;
-  duplicate_reasons: unknown;
+  duplicate_reasons: string[];
   duplicate_of_order_id: string | null;
   process_result: string;
   review_state: string;
@@ -287,7 +287,7 @@ export const aiListDuplicates = createServerFn({ method: "GET" }).handler(async 
   const ids = [...new Set(rows.map((r) => r.duplicate_of_order_id).filter(Boolean))] as string[];
   if (ids.length) {
     const { data: orders } = await sb.from("orders").select("id, order_code").in("id", ids);
-    const map = new Map((orders ?? []).map((o: any) => [o.id, o.order_code]));
+    const map = new Map<string, string>((orders ?? []).map((o: any) => [o.id as string, o.order_code as string]));
     for (const r of rows) r.matched_order_code = r.duplicate_of_order_id ? map.get(r.duplicate_of_order_id) ?? null : null;
   }
   return { rows };
