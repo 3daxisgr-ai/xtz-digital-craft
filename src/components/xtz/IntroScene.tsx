@@ -101,7 +101,6 @@ export function IntroScene() {
     return () => ctx.revert();
   }, []);
 
-
   return (
     <section id="intro" ref={root} className="relative h-screen w-full overflow-hidden bg-black">
       {/* Ambient blue */}
@@ -116,14 +115,13 @@ export function IntroScene() {
       <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
         <video
           ref={videoRef}
-          src="https://res.cloudinary.com/dozthoxxp/video/upload/copy_D88C4D5F-6765-4B35-B108-A8698361C726_rzq8il.mp4"
+          src="https://files.catbox.moe/5tiqal.mp4"
           autoPlay
           muted
           loop
           playsInline
           {...({ "webkit-playsinline": "true" } as Record<string, string>)}
           disablePictureInPicture
-
           disableRemotePlayback
           preload="auto"
           controls={false}
