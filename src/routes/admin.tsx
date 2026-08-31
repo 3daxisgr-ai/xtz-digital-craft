@@ -509,13 +509,20 @@ function OrderDetail({ code, onBack }: { code: string; onBack: () => void }) {
       {tab === "customer" && (
         <div className="space-y-4">
           <RequestSummary metadata={(o as any).metadata} />
+          <AiRequestSummary orderCode={code} />
           <TabCustomer o={o} patch={patch} />
         </div>
       )}
       {tab === "ai" && <TabAI code={code} orderMeta={o} />}
       {tab === "files" && <TabFiles d={d} code={code} refresh={refresh} />}
       {tab === "updates" && <TabUpdates d={d} code={code} refresh={refresh} />}
-      {tab === "emails" && <OrderEmailHistory orderId={o.id} orderCode={o.order_code} />}
+      {tab === "emails" && (
+        <div className="space-y-4">
+          <AiEmailAssistant orderCode={code} customerEmail={o.customer_email} onSent={refresh} />
+          <OrderEmailHistory orderId={o.id} orderCode={o.order_code} />
+        </div>
+      )}
+
       {tab === "tracking" && <TabTracking o={o} patch={patch} />}
       {tab === "images" && <TabImages d={d} code={code} refresh={refresh} />}
       {tab === "comments" && <TabComments d={d} code={code} refresh={refresh} />}
