@@ -115,7 +115,7 @@ function ForumPage() {
             className="font-display font-bold leading-[0.95] text-[clamp(2.4rem,6.5vw,5rem)] tracking-tighter mb-6"
             style={{ textShadow: "0 0 24px oklch(0.65 0.22 245 / 0.35)" }}
           >
-            {lang === "GR" ? "ΝΕΑ ΑΠΟ ΤΟ ΕΡΓΑΣΤΗΡΙΟ" : "Workshop Updates"}
+            {lang === "GR" ? "TOREO — Νέα από το Εργαστήριο" : "TOREO Workshop Updates"}
           </h1>
           <p className="text-foreground/65 max-w-xl mx-auto">
             {lang === "GR"

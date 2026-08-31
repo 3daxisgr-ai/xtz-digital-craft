@@ -141,7 +141,7 @@ export function IntroScene() {
           <span className="sr-only">TOREO — Precision Fabrication & Manufacturing. </span>
           <img
             src={toreoLogo.url}
-            alt="TOREO logo"
+            alt="TOREO — Precision Fabrication and Manufacturing"
             aria-hidden="true"
             width={1024}
             height={256}

@@ -47,7 +47,9 @@ function EquipmentPage() {
             className="font-display font-bold leading-[0.95] text-[clamp(2.4rem,6.5vw,5rem)] tracking-tighter mb-6"
             style={{ textShadow: "0 0 24px oklch(0.65 0.22 245 / 0.35)" }}
           >
-            {lang === "GR" ? "ΕΞΟΠΛΙΣΜΟΣ & ΤΕΧΝΟΛΟΓΙΑ" : "Equipment & Technology"}
+            {lang === "GR"
+              ? "Εξοπλισμός & Τεχνολογία Κατασκευής στην TOREO"
+              : "Manufacturing Equipment and Technology at TOREO"}
           </h1>
           <p className="text-foreground/65 max-w-2xl mx-auto leading-relaxed">
             {lang === "GR"

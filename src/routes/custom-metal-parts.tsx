@@ -30,7 +30,7 @@ export const Route = createFileRoute("/custom-metal-parts")({
     buildServiceHead({
       title: "Custom Metal Parts — Cut, Bend & Weld | TOREO",
       description:
-        "Custom metal parts in Thessaloniki: fiber laser cutting, press-brake bending and MIG/TIG welding. Steel, stainless, aluminium — project requirements reviewed before quotation.",
+        "Custom metal parts in Thessaloniki: fiber laser cutting, press-brake bending and MIG/TIG welding in steel, stainless and aluminium.",
       path: "/custom-metal-parts",
       altPath: "/gr/custom-metal-parts",
       locale: "en",
