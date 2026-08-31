@@ -38,6 +38,8 @@ import { RequestSummary } from "@/components/xtz/RequestSummary";
 import { acceptQuote, declineQuote } from "@/lib/api/quote-decision.functions";
 import { quoteDocCreate } from "@/lib/api/quote-doc.functions";
 import { OrderEmailHistory, EmailDeliveryWidget } from "@/components/admin/EmailHistory";
+import { AiRequestSummary, AiEmailAssistant } from "@/components/admin/AiEmailAssistant";
+import { AiInboxWidget } from "@/components/admin/AiInboxWidget";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -301,6 +303,8 @@ function Dashboard({ onOpenOrder }: { onOpenOrder: (c: string) => void }) {
           </div>
 
 
+          <AiInboxWidget />
+
           <EmailDeliveryWidget />
 
           <div className="grid lg:grid-cols-3 gap-6">
@@ -509,13 +513,20 @@ function OrderDetail({ code, onBack }: { code: string; onBack: () => void }) {
       {tab === "customer" && (
         <div className="space-y-4">
           <RequestSummary metadata={(o as any).metadata} />
+          <AiRequestSummary orderCode={code} />
           <TabCustomer o={o} patch={patch} />
         </div>
       )}
       {tab === "ai" && <TabAI code={code} orderMeta={o} />}
       {tab === "files" && <TabFiles d={d} code={code} refresh={refresh} />}
       {tab === "updates" && <TabUpdates d={d} code={code} refresh={refresh} />}
-      {tab === "emails" && <OrderEmailHistory orderId={o.id} orderCode={o.order_code} />}
+      {tab === "emails" && (
+        <div className="space-y-4">
+          <AiEmailAssistant orderCode={code} customerEmail={o.customer_email} onSent={refresh} />
+          <OrderEmailHistory orderId={o.id} orderCode={o.order_code} />
+        </div>
+      )}
+
       {tab === "tracking" && <TabTracking o={o} patch={patch} />}
       {tab === "images" && <TabImages d={d} code={code} refresh={refresh} />}
       {tab === "comments" && <TabComments d={d} code={code} refresh={refresh} />}
