@@ -112,7 +112,7 @@ export function IntroScene() {
       />
 
       {/* Hero video background */}
-      <div className="scene-img-wrap absolute inset-0 opacity-0 will-change-transform origin-center">
+      <div className="scene-img-wrap absolute inset-0 opacity-100 will-change-transform origin-center">
         <video
           ref={videoRef}
           src="https://files.catbox.moe/5tiqal.mp4"
