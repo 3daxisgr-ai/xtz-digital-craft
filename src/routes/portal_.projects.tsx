@@ -25,7 +25,7 @@ function ProjectLibraryPage() {
   useEffect(() => {
     (async () => {
       const { data: s } = await supabase.auth.getSession();
-      if (!s.session) { navigate({ to: "/auth", search: {} }); return; }
+      if (!s.session) { navigate({ to: "/auth", search: { next: undefined } }); return; }
       const rows = await listOrders({} as any);
       setOrders(rows as any[]);
     })();
