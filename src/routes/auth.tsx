@@ -55,7 +55,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/portal`,
+            emailRedirectTo: `${window.location.origin}${dest ?? "/portal"}`,
             data: { full_name: fullName },
           },
         });
@@ -64,7 +64,8 @@ function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-      navigate({ to: "/portal" });
+      if (dest) window.location.replace(dest);
+      else navigate({ to: "/portal" });
     } catch (e: any) {
       setError(e.message ?? "Authentication failed");
     } finally {
@@ -76,10 +77,11 @@ function AuthPage() {
     setError(null);
     try {
       await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: `${window.location.origin}/portal`,
+        redirect_uri: `${window.location.origin}${dest ?? "/portal"}`,
       });
     } catch (e: any) {
       setError(e.message ?? "Google sign-in failed");
+
     }
   }
 
