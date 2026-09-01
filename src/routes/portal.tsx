@@ -32,7 +32,7 @@ function PortalPage() {
     (async () => {
       const { data } = await supabase.auth.getSession();
       if (!data.session) {
-        navigate({ to: "/auth" });
+        navigate({ to: "/auth", search: { next: undefined } });
         return;
       }
       setEmail(data.session.user.email ?? "");
@@ -51,7 +51,7 @@ function PortalPage() {
 
   async function signOut() {
     await supabase.auth.signOut();
-    navigate({ to: "/auth" });
+    navigate({ to: "/auth", search: { next: undefined } });
   }
 
   return (
