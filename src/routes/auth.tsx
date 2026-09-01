@@ -5,6 +5,9 @@ import { lovable } from "@/integrations/lovable";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Sign In — TOREO Customer Portal" },
@@ -14,8 +17,17 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+/** Only same-origin relative paths are accepted as a post-login destination. */
+function safeNext(next?: string): string | null {
+  if (!next) return null;
+  if (!next.startsWith("/") || next.startsWith("//")) return null;
+  return next;
+}
+
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
+  const dest = safeNext(next);
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,9 +37,13 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/portal" });
+      if (data.session) {
+        if (dest) window.location.replace(dest);
+        else navigate({ to: "/portal" });
+      }
     });
-  }, [navigate]);
+  }, [navigate, dest]);
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
