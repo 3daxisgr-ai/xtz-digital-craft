@@ -44,6 +44,7 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AdminQuoteNumberRouteImport } from './routes/admin_.quote.$number'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const TrackRoute = TrackRouteImport.update({
@@ -224,6 +225,11 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -265,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
   '/portal/projects': typeof PortalProjectsRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/quote/$number': typeof AdminQuoteNumberRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -303,6 +310,7 @@ export interface FileRoutesByTo {
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
   '/portal/projects': typeof PortalProjectsRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/quote/$number': typeof AdminQuoteNumberRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -342,6 +350,7 @@ export interface FileRoutesById {
   '/gr/rapid-prototyping': typeof GrRapidPrototypingRoute
   '/portal/$orderCode': typeof PortalOrderCodeRoute
   '/portal_/projects': typeof PortalProjectsRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin_/quote/$number': typeof AdminQuoteNumberRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -382,6 +391,7 @@ export interface FileRouteTypes {
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
     | '/portal/projects'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin/quote/$number'
     | '/lovable/email/queue/process'
@@ -420,6 +430,7 @@ export interface FileRouteTypes {
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
     | '/portal/projects'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin/quote/$number'
     | '/lovable/email/queue/process'
@@ -458,6 +469,7 @@ export interface FileRouteTypes {
     | '/gr/rapid-prototyping'
     | '/portal/$orderCode'
     | '/portal_/projects'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin_/quote/$number'
     | '/lovable/email/queue/process'
@@ -496,6 +508,7 @@ export interface RootRouteChildren {
   GrCustomMetalPartsRoute: typeof GrCustomMetalPartsRoute
   GrRapidPrototypingRoute: typeof GrRapidPrototypingRoute
   PortalProjectsRoute: typeof PortalProjectsRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   AdminQuoteNumberRoute: typeof AdminQuoteNumberRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -748,6 +761,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -803,6 +823,7 @@ const rootRouteChildren: RootRouteChildren = {
   GrCustomMetalPartsRoute: GrCustomMetalPartsRoute,
   GrRapidPrototypingRoute: GrRapidPrototypingRoute,
   PortalProjectsRoute: PortalProjectsRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   AdminQuoteNumberRoute: AdminQuoteNumberRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
