@@ -80,7 +80,7 @@ function PortalOrderPage() {
     (async () => {
       const { data: s } = await supabase.auth.getSession();
       if (!s.session) {
-        navigate({ to: "/auth" });
+        navigate({ to: "/auth", search: {} });
         return;
       }
       reload();
