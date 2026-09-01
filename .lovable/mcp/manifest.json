@@ -3,12 +3,16 @@
   "sdk_version": "0.20.0",
   "path": "/mcp",
   "auth": {
-    "type": "none"
+    "type": "oauth",
+    "issuer": "https://ykgjvmlunfyoalhbulxt.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
   },
   "mcp": {
     "server": {
-      "name": "toreo-mcp",
-      "version": "0.1.0",
+      "name": "toreo",
+      "version": "0.2.0",
       "title": "TOREO AI Factory"
     },
     "tools": [
