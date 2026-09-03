@@ -175,6 +175,84 @@ export type Database = {
         }
         Relationships: []
       }
+      email_order_intake: {
+        Row: {
+          ai_data: Json
+          attachments: Json
+          body_text: string | null
+          confidence: number
+          created_at: string
+          error_message: string | null
+          from_email: string
+          from_name: string | null
+          id: string
+          message_id: string
+          missing_fields: Json
+          order_id: string | null
+          received_at: string
+          status: string
+          subject: string | null
+          thread_id: string | null
+          to_email: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_data?: Json
+          attachments?: Json
+          body_text?: string | null
+          confidence?: number
+          created_at?: string
+          error_message?: string | null
+          from_email: string
+          from_name?: string | null
+          id?: string
+          message_id: string
+          missing_fields?: Json
+          order_id?: string | null
+          received_at?: string
+          status?: string
+          subject?: string | null
+          thread_id?: string | null
+          to_email?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_data?: Json
+          attachments?: Json
+          body_text?: string | null
+          confidence?: number
+          created_at?: string
+          error_message?: string | null
+          from_email?: string
+          from_name?: string | null
+          id?: string
+          message_id?: string
+          missing_fields?: Json
+          order_id?: string | null
+          received_at?: string
+          status?: string
+          subject?: string | null
+          thread_id?: string | null
+          to_email?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_order_intake_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_order_intake_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_send_log: {
         Row: {
           created_at: string
