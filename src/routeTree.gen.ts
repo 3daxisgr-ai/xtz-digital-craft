@@ -42,6 +42,7 @@ import { Route as AdminFactoryRouteImport } from './routes/admin_.factory'
 import { Route as AdminConfigRouteImport } from './routes/admin_.config'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as ApiPublicIngestEmailOrderRouteImport } from './routes/api/public/ingest-email-order'
 import { Route as AdminQuoteNumberRouteImport } from './routes/admin_.quote.$number'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -214,6 +215,12 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicIngestEmailOrderRoute =
+  ApiPublicIngestEmailOrderRouteImport.update({
+    id: '/api/public/ingest-email-order',
+    path: '/api/public/ingest-email-order',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminQuoteNumberRoute = AdminQuoteNumberRouteImport.update({
   id: '/admin_/quote/$number',
   path: '/admin/quote/$number',
@@ -274,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/quote/$number': typeof AdminQuoteNumberRoute
+  '/api/public/ingest-email-order': typeof ApiPublicIngestEmailOrderRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
@@ -313,6 +321,7 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/quote/$number': typeof AdminQuoteNumberRoute
+  '/api/public/ingest-email-order': typeof ApiPublicIngestEmailOrderRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -353,6 +362,7 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin_/quote/$number': typeof AdminQuoteNumberRoute
+  '/api/public/ingest-email-order': typeof ApiPublicIngestEmailOrderRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -394,6 +404,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin/quote/$number'
+    | '/api/public/ingest-email-order'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -433,6 +444,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin/quote/$number'
+    | '/api/public/ingest-email-order'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -472,6 +484,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin_/quote/$number'
+    | '/api/public/ingest-email-order'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -511,6 +524,7 @@ export interface RootRouteChildren {
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   AdminQuoteNumberRoute: typeof AdminQuoteNumberRoute
+  ApiPublicIngestEmailOrderRoute: typeof ApiPublicIngestEmailOrderRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -747,6 +761,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/ingest-email-order': {
+      id: '/api/public/ingest-email-order'
+      path: '/api/public/ingest-email-order'
+      fullPath: '/api/public/ingest-email-order'
+      preLoaderRoute: typeof ApiPublicIngestEmailOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/quote/$number': {
       id: '/admin_/quote/$number'
       path: '/admin/quote/$number'
@@ -826,6 +847,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   AdminQuoteNumberRoute: AdminQuoteNumberRoute,
+  ApiPublicIngestEmailOrderRoute: ApiPublicIngestEmailOrderRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
