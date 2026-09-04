@@ -19,8 +19,12 @@ const attachmentSchema = z.object({
 
 const aiDataSchema = z
   .object({
+    is_order: z.boolean().optional().nullable(),
+    needs_confirmation: z.boolean().optional().nullable(),
     customer_name: z.string().trim().max(200).optional().nullable(),
     customer_email: z.string().trim().max(255).optional().nullable(),
+    customer_phone: z.string().trim().max(60).optional().nullable(),
+    company: z.string().trim().max(200).optional().nullable(),
     service: z.string().trim().max(160).optional().nullable(),
     quantity: z.union([z.number(), z.string()]).optional().nullable(),
     material: z.string().trim().max(160).optional().nullable(),
@@ -42,12 +46,17 @@ const payloadSchema = z.object({
   subject: z.string().trim().max(998).optional().nullable(),
   body_text: z.string().max(200_000).optional().nullable(),
   received_at: z.string().trim().max(60).optional().nullable(),
+  is_order: z.boolean().optional().nullable(),
+  needs_confirmation: z.boolean().optional().nullable(),
   ai_data: aiDataSchema.optional().default({}),
   attachments: z.array(attachmentSchema).max(50).optional().default([]),
 });
 
 const CONFIDENCE_THRESHOLD = 0.7;
-const REQUIRED_FIELDS = ["customer_email", "service"] as const;
+const REQUIRED_FIELDS = ["customer_email", "customer_name", "service", "quantity"] as const;
+// Services where a material must be specified before an order can be auto-created.
+const MATERIAL_REQUIRED = /3d|print|laser|cut|bend|sheet|weld|metal/i;
+
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -113,7 +122,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           return json({
             success: true,
             duplicate: true,
-            status: existing.status,
+            status: existing.order_id ? "created" : existing.status,
             intake_id: existing.id,
             order_id: existing.order_id ?? null,
             missing_fields: existing.missing_fields ?? [],
@@ -123,6 +132,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
         // 2. Completeness check — never trust AI output blindly.
         const missing = new Set<string>((ai.missing_fields ?? []).filter(Boolean) as string[]);
         for (const field of REQUIRED_FIELDS) {
+          if (field === "customer_name") continue; // fall back to sender name below
           const value = (ai as Record<string, unknown>)[field];
           if (value === null || value === undefined || String(value).trim() === "") missing.add(field);
         }
@@ -130,9 +140,20 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
         const emailValid = z.string().email().safeParse(emailCandidate).success;
         if (!emailValid) missing.add("customer_email");
 
+        const nameCandidate = (ai.customer_name ?? data.from_name ?? "").toString().trim();
+        if (!nameCandidate) missing.add("customer_name");
+
+        const serviceText = (ai.service ?? "").toString();
+        const materialText = (ai.material ?? "").toString().trim();
+        if (MATERIAL_REQUIRED.test(serviceText) && !materialText) missing.add("material");
+
         const confidence = typeof ai.confidence === "number" ? ai.confidence : 0;
-        const needsConfirmation = missing.size > 0 || confidence < CONFIDENCE_THRESHOLD;
+        const isOrder = data.is_order ?? ai.is_order ?? true;
+        const flaggedForReview = data.needs_confirmation ?? ai.needs_confirmation ?? false;
+        const needsConfirmation =
+          !isOrder || flaggedForReview === true || missing.size > 0 || confidence < CONFIDENCE_THRESHOLD;
         const missingFields = [...missing];
+
 
         const receivedAt = (() => {
           const d = data.received_at ? new Date(data.received_at) : new Date();
@@ -173,7 +194,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
               return json({
                 success: true,
                 duplicate: true,
-                status: raced.status,
+                status: raced.order_id ? "created" : raced.status,
                 intake_id: raced.id,
                 order_id: raced.order_id ?? null,
                 missing_fields: raced.missing_fields ?? [],
@@ -211,9 +232,13 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
             .from("orders")
             .insert({
               user_id: profile?.user_id ?? null,
-              customer_name: (ai.customer_name ?? data.from_name ?? customerEmail).toString().slice(0, 200),
+              customer_name: (nameCandidate || customerEmail).toString().slice(0, 200),
               customer_email: customerEmail,
+              customer_phone: ai.customer_phone ?? null,
+              company: ai.company ?? null,
               source: "inquiry",
+              status: "quote_received",
+              priority: "normal",
               service: ai.service ?? null,
               material: ai.material ?? null,
               quantity: ai.quantity != null ? String(ai.quantity) : null,
@@ -233,6 +258,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
             .select("id, order_code")
             .single();
           if (orderError) throw orderError;
+
 
           // 5. Attachment metadata stays private (admin visibility only).
           const files = (data.attachments ?? []).filter((a) => a.storage_path);
@@ -256,11 +282,11 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
             .update({ status: "processed", order_id: order.id, error_message: null })
             .eq("id", intake.id);
 
-          console.log(`[ingest-email-order] intake ${intake.id} processed into order ${order.order_code}`);
+          console.log(`[ingest-email-order] intake ${intake.id} created order ${order.order_code}`);
           return json({
             success: true,
             duplicate: false,
-            status: "processed",
+            status: "created",
             intake_id: intake.id,
             order_id: order.id,
             order_code: order.order_code ?? null,
