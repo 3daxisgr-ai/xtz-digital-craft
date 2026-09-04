@@ -232,9 +232,13 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
             .from("orders")
             .insert({
               user_id: profile?.user_id ?? null,
-              customer_name: (ai.customer_name ?? data.from_name ?? customerEmail).toString().slice(0, 200),
+              customer_name: (nameCandidate || customerEmail).toString().slice(0, 200),
               customer_email: customerEmail,
+              customer_phone: ai.customer_phone ?? null,
+              company: ai.company ?? null,
               source: "inquiry",
+              status: "quote_received",
+              priority: "normal",
               service: ai.service ?? null,
               material: ai.material ?? null,
               quantity: ai.quantity != null ? String(ai.quantity) : null,
@@ -254,6 +258,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
             .select("id, order_code")
             .single();
           if (orderError) throw orderError;
+
 
           // 5. Attachment metadata stays private (admin visibility only).
           const files = (data.attachments ?? []).filter((a) => a.storage_path);
