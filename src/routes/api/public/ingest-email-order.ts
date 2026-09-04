@@ -334,10 +334,10 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
 
 
           // 5. Attachment metadata stays private (admin visibility only).
-          const files = (data.attachments ?? []).filter((a) => a.storage_path);
+          const files = ((data.attachments ?? []) as any[]).filter((a: any) => a.storage_path);
           if (files.length) {
             await db.from("order_files").insert(
-              files.map((a) => ({
+              files.map((a: any) => ({
                 order_id: order.id,
                 file_path: a.storage_path,
                 file_name: a.filename,
