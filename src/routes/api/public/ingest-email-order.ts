@@ -37,20 +37,77 @@ const aiDataSchema = z
   })
   .passthrough();
 
-const payloadSchema = z.object({
-  message_id: z.string().trim().min(3).max(998),
-  thread_id: z.string().trim().max(998).optional().nullable(),
-  from_email: z.string().trim().email().max(255),
-  from_name: z.string().trim().max(200).optional().nullable(),
-  to_email: z.string().trim().max(255).optional().nullable(),
-  subject: z.string().trim().max(998).optional().nullable(),
-  body_text: z.string().max(200_000).optional().nullable(),
-  received_at: z.string().trim().max(60).optional().nullable(),
-  is_order: z.boolean().optional().nullable(),
-  needs_confirmation: z.boolean().optional().nullable(),
-  ai_data: aiDataSchema.optional().default({}),
-  attachments: z.array(attachmentSchema).max(50).optional().default([]),
-});
+const payloadSchema = z
+  .object({
+    message_id: z.string().trim().min(3).max(998),
+    thread_id: z.string().trim().max(998).optional().nullable(),
+    from_email: z.string().trim().email().max(255),
+    from_name: z.string().trim().max(200).optional().nullable(),
+    to_email: z.string().trim().max(255).optional().nullable(),
+    subject: z.string().trim().max(998).optional().nullable(),
+    body_text: z.string().max(200_000).optional().nullable(),
+    received_at: z.string().trim().max(60).optional().nullable(),
+    is_order: z.boolean().optional().nullable(),
+    needs_confirmation: z.boolean().optional().nullable(),
+    ai_data: z
+      .union([aiDataSchema, z.string()])
+      .optional()
+      .default({})
+      .transform((v) => {
+        if (typeof v !== "string") return v;
+        try {
+          const parsed = JSON.parse(v);
+          return aiDataSchema.parse(parsed);
+        } catch {
+          return {};
+        }
+      }),
+    attachments: z.array(attachmentSchema).max(50).optional().default([]),
+  })
+  .passthrough();
+
+/**
+ * Make/Gemini may send the extracted fields either nested inside `ai_data`
+ * or flattened at the top level of the payload. Merge both, preferring
+ * whichever actually carries a value.
+ */
+function mergeExtraction(payload: Record<string, any>) {
+  const nested = (payload.ai_data ?? {}) as Record<string, any>;
+  const keys = [
+    "is_order",
+    "needs_confirmation",
+    "customer_name",
+    "customer_email",
+    "customer_phone",
+    "company",
+    "service",
+    "quantity",
+    "material",
+    "color",
+    "dimensions",
+    "deadline",
+    "notes",
+    "confidence",
+    "missing_fields",
+  ];
+  const out: Record<string, any> = { ...nested };
+  const has = (v: unknown) => v !== null && v !== undefined && String(v).trim() !== "";
+  for (const k of keys) {
+    if (!has(out[k]) && has(payload[k])) out[k] = payload[k];
+  }
+  // aliases
+  if (!has(out.customer_phone) && (has(payload.phone) || has(nested.phone))) {
+    out.customer_phone = payload.phone ?? nested.phone;
+  }
+  if (!has(out.customer_name) && (has(payload.name) || has(nested.name))) {
+    out.customer_name = payload.name ?? nested.name;
+  }
+  if (!has(out.customer_email) && (has(payload.email) || has(nested.email))) {
+    out.customer_email = payload.email ?? nested.email;
+  }
+  return out;
+}
+
 
 const CONFIDENCE_THRESHOLD = 0.7;
 const REQUIRED_FIELDS = ["customer_email", "customer_name", "service", "quantity"] as const;
@@ -104,8 +161,8 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
             400,
           );
         }
-        const data = parsed.data;
-        const ai = data.ai_data ?? {};
+        const data = parsed.data as any;
+        const ai = mergeExtraction(data);
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const db = supabaseAdmin as any;
@@ -130,24 +187,40 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
         }
 
         // 2. Completeness check — never trust AI output blindly.
+        const has = (v: unknown) => v !== null && v !== undefined && String(v).trim() !== "";
         const missing = new Set<string>((ai.missing_fields ?? []).filter(Boolean) as string[]);
-        for (const field of REQUIRED_FIELDS) {
-          if (field === "customer_name") continue; // fall back to sender name below
-          const value = (ai as Record<string, unknown>)[field];
-          if (value === null || value === undefined || String(value).trim() === "") missing.add(field);
-        }
-        const emailCandidate = (ai.customer_email ?? data.from_email ?? "").trim();
-        const emailValid = z.string().email().safeParse(emailCandidate).success;
-        if (!emailValid) missing.add("customer_email");
 
-        const nameCandidate = (ai.customer_name ?? data.from_name ?? "").toString().trim();
-        if (!nameCandidate) missing.add("customer_name");
+        const emailCandidate = (has(ai.customer_email) ? ai.customer_email : data.from_email ?? "")
+          .toString()
+          .trim();
+        const emailValid = z.string().email().safeParse(emailCandidate).success;
+        if (emailValid) missing.delete("customer_email");
+        else missing.add("customer_email");
+
+        const nameCandidate = (has(ai.customer_name) ? ai.customer_name : data.from_name ?? "")
+          .toString()
+          .trim();
+        if (nameCandidate) missing.delete("customer_name");
+        else missing.add("customer_name");
+
+        for (const field of REQUIRED_FIELDS) {
+          if (field === "customer_name" || field === "customer_email") continue;
+          if (has((ai as Record<string, unknown>)[field])) missing.delete(field);
+          else missing.add(field);
+        }
 
         const serviceText = (ai.service ?? "").toString();
         const materialText = (ai.material ?? "").toString().trim();
         if (MATERIAL_REQUIRED.test(serviceText) && !materialText) missing.add("material");
+        else missing.delete("material");
 
-        const confidence = typeof ai.confidence === "number" ? ai.confidence : 0;
+        const confidenceRaw = ai.confidence;
+        const confidence =
+          typeof confidenceRaw === "number"
+            ? confidenceRaw
+            : Number.isFinite(Number(confidenceRaw))
+              ? Number(confidenceRaw)
+              : 0;
         const isOrder = data.is_order ?? ai.is_order ?? true;
         const flaggedForReview = data.needs_confirmation ?? ai.needs_confirmation ?? false;
         const needsConfirmation =
@@ -261,10 +334,10 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
 
 
           // 5. Attachment metadata stays private (admin visibility only).
-          const files = (data.attachments ?? []).filter((a) => a.storage_path);
+          const files = ((data.attachments ?? []) as any[]).filter((a: any) => a.storage_path);
           if (files.length) {
             await db.from("order_files").insert(
-              files.map((a) => ({
+              files.map((a: any) => ({
                 order_id: order.id,
                 file_path: a.storage_path,
                 file_name: a.filename,
