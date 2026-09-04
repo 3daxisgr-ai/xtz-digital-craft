@@ -202,7 +202,9 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           );
         }
         const data = parsed.data as any;
-        const ai = mergeExtraction(data);
+        // Scan the raw body (not just the validated shape) so no unknown-key
+        // stripping can hide the extracted fields.
+        const ai = mergeExtraction({ ...(raw as Record<string, any>), ...data });
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const db = supabaseAdmin as any;
