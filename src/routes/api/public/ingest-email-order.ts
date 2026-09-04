@@ -122,7 +122,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           return json({
             success: true,
             duplicate: true,
-            status: existing.status,
+            status: existing.order_id ? "created" : existing.status,
             intake_id: existing.id,
             order_id: existing.order_id ?? null,
             missing_fields: existing.missing_fields ?? [],
@@ -194,7 +194,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
               return json({
                 success: true,
                 duplicate: true,
-                status: raced.status,
+                status: raced.order_id ? "created" : raced.status,
                 intake_id: raced.id,
                 order_id: raced.order_id ?? null,
                 missing_fields: raced.missing_fields ?? [],
