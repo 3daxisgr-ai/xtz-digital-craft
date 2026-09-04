@@ -37,20 +37,77 @@ const aiDataSchema = z
   })
   .passthrough();
 
-const payloadSchema = z.object({
-  message_id: z.string().trim().min(3).max(998),
-  thread_id: z.string().trim().max(998).optional().nullable(),
-  from_email: z.string().trim().email().max(255),
-  from_name: z.string().trim().max(200).optional().nullable(),
-  to_email: z.string().trim().max(255).optional().nullable(),
-  subject: z.string().trim().max(998).optional().nullable(),
-  body_text: z.string().max(200_000).optional().nullable(),
-  received_at: z.string().trim().max(60).optional().nullable(),
-  is_order: z.boolean().optional().nullable(),
-  needs_confirmation: z.boolean().optional().nullable(),
-  ai_data: aiDataSchema.optional().default({}),
-  attachments: z.array(attachmentSchema).max(50).optional().default([]),
-});
+const payloadSchema = z
+  .object({
+    message_id: z.string().trim().min(3).max(998),
+    thread_id: z.string().trim().max(998).optional().nullable(),
+    from_email: z.string().trim().email().max(255),
+    from_name: z.string().trim().max(200).optional().nullable(),
+    to_email: z.string().trim().max(255).optional().nullable(),
+    subject: z.string().trim().max(998).optional().nullable(),
+    body_text: z.string().max(200_000).optional().nullable(),
+    received_at: z.string().trim().max(60).optional().nullable(),
+    is_order: z.boolean().optional().nullable(),
+    needs_confirmation: z.boolean().optional().nullable(),
+    ai_data: z
+      .union([aiDataSchema, z.string()])
+      .optional()
+      .default({})
+      .transform((v) => {
+        if (typeof v !== "string") return v;
+        try {
+          const parsed = JSON.parse(v);
+          return aiDataSchema.parse(parsed);
+        } catch {
+          return {};
+        }
+      }),
+    attachments: z.array(attachmentSchema).max(50).optional().default([]),
+  })
+  .passthrough();
+
+/**
+ * Make/Gemini may send the extracted fields either nested inside `ai_data`
+ * or flattened at the top level of the payload. Merge both, preferring
+ * whichever actually carries a value.
+ */
+function mergeExtraction(payload: Record<string, any>) {
+  const nested = (payload.ai_data ?? {}) as Record<string, any>;
+  const keys = [
+    "is_order",
+    "needs_confirmation",
+    "customer_name",
+    "customer_email",
+    "customer_phone",
+    "company",
+    "service",
+    "quantity",
+    "material",
+    "color",
+    "dimensions",
+    "deadline",
+    "notes",
+    "confidence",
+    "missing_fields",
+  ];
+  const out: Record<string, any> = { ...nested };
+  const has = (v: unknown) => v !== null && v !== undefined && String(v).trim() !== "";
+  for (const k of keys) {
+    if (!has(out[k]) && has(payload[k])) out[k] = payload[k];
+  }
+  // aliases
+  if (!has(out.customer_phone) && (has(payload.phone) || has(nested.phone))) {
+    out.customer_phone = payload.phone ?? nested.phone;
+  }
+  if (!has(out.customer_name) && (has(payload.name) || has(nested.name))) {
+    out.customer_name = payload.name ?? nested.name;
+  }
+  if (!has(out.customer_email) && (has(payload.email) || has(nested.email))) {
+    out.customer_email = payload.email ?? nested.email;
+  }
+  return out;
+}
+
 
 const CONFIDENCE_THRESHOLD = 0.7;
 const REQUIRED_FIELDS = ["customer_email", "customer_name", "service", "quantity"] as const;
