@@ -132,6 +132,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
         // 2. Completeness check — never trust AI output blindly.
         const missing = new Set<string>((ai.missing_fields ?? []).filter(Boolean) as string[]);
         for (const field of REQUIRED_FIELDS) {
+          if (field === "customer_name") continue; // fall back to sender name below
           const value = (ai as Record<string, unknown>)[field];
           if (value === null || value === undefined || String(value).trim() === "") missing.add(field);
         }
@@ -139,9 +140,20 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
         const emailValid = z.string().email().safeParse(emailCandidate).success;
         if (!emailValid) missing.add("customer_email");
 
+        const nameCandidate = (ai.customer_name ?? data.from_name ?? "").toString().trim();
+        if (!nameCandidate) missing.add("customer_name");
+
+        const serviceText = (ai.service ?? "").toString();
+        const materialText = (ai.material ?? "").toString().trim();
+        if (MATERIAL_REQUIRED.test(serviceText) && !materialText) missing.add("material");
+
         const confidence = typeof ai.confidence === "number" ? ai.confidence : 0;
-        const needsConfirmation = missing.size > 0 || confidence < CONFIDENCE_THRESHOLD;
+        const isOrder = data.is_order ?? ai.is_order ?? true;
+        const flaggedForReview = data.needs_confirmation ?? ai.needs_confirmation ?? false;
+        const needsConfirmation =
+          !isOrder || flaggedForReview === true || missing.size > 0 || confidence < CONFIDENCE_THRESHOLD;
         const missingFields = [...missing];
+
 
         const receivedAt = (() => {
           const d = data.received_at ? new Date(data.received_at) : new Date();
