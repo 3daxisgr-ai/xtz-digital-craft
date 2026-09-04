@@ -19,8 +19,12 @@ const attachmentSchema = z.object({
 
 const aiDataSchema = z
   .object({
+    is_order: z.boolean().optional().nullable(),
+    needs_confirmation: z.boolean().optional().nullable(),
     customer_name: z.string().trim().max(200).optional().nullable(),
     customer_email: z.string().trim().max(255).optional().nullable(),
+    customer_phone: z.string().trim().max(60).optional().nullable(),
+    company: z.string().trim().max(200).optional().nullable(),
     service: z.string().trim().max(160).optional().nullable(),
     quantity: z.union([z.number(), z.string()]).optional().nullable(),
     material: z.string().trim().max(160).optional().nullable(),
@@ -42,12 +46,17 @@ const payloadSchema = z.object({
   subject: z.string().trim().max(998).optional().nullable(),
   body_text: z.string().max(200_000).optional().nullable(),
   received_at: z.string().trim().max(60).optional().nullable(),
+  is_order: z.boolean().optional().nullable(),
+  needs_confirmation: z.boolean().optional().nullable(),
   ai_data: aiDataSchema.optional().default({}),
   attachments: z.array(attachmentSchema).max(50).optional().default([]),
 });
 
 const CONFIDENCE_THRESHOLD = 0.7;
-const REQUIRED_FIELDS = ["customer_email", "service"] as const;
+const REQUIRED_FIELDS = ["customer_email", "customer_name", "service", "quantity"] as const;
+// Services where a material must be specified before an order can be auto-created.
+const MATERIAL_REQUIRED = /3d|print|laser|cut|bend|sheet|weld|metal/i;
+
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
