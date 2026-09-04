@@ -66,45 +66,85 @@ const payloadSchema = z
   })
   .passthrough();
 
+const FIELD_ALIASES: Record<string, string[]> = {
+  is_order: ["is_order", "isorder"],
+  needs_confirmation: ["needs_confirmation", "needsconfirmation", "confirmation_needed"],
+  customer_name: ["customer_name", "customername", "name", "fullname", "full_name", "client_name"],
+  customer_email: ["customer_email", "customeremail", "email", "client_email"],
+  customer_phone: ["customer_phone", "customerphone", "phone", "telephone", "tel", "mobile"],
+  company: ["company", "company_name", "companyname"],
+  service: ["service", "service_type", "servicetype", "job_type"],
+  quantity: ["quantity", "qty", "pieces", "pcs", "amount"],
+  material: ["material", "materials"],
+  color: ["color", "colour"],
+  dimensions: ["dimensions", "dimension", "size", "sizes"],
+  deadline: ["deadline", "due_date", "duedate", "delivery_date"],
+  notes: ["notes", "note", "comments"],
+  confidence: ["confidence", "confidence_score"],
+  missing_fields: ["missing_fields", "missingfields"],
+};
+
+const has = (v: unknown) => v !== null && v !== undefined && String(v).trim() !== "";
+
+function maybeParseJson(value: unknown): unknown {
+  if (typeof value !== "string") return value;
+  const s = value.trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+  if (!s.startsWith("{") && !s.startsWith("[")) return value;
+  try {
+    return JSON.parse(s);
+  } catch {
+    return value;
+  }
+}
+
 /**
- * Make/Gemini may send the extracted fields either nested inside `ai_data`
- * or flattened at the top level of the payload. Merge both, preferring
- * whichever actually carries a value.
+ * Make/Gemini may nest the extracted fields inside `ai_data`, send them flat,
+ * wrap them in another envelope, or deliver them as a JSON string. Walk the
+ * whole payload and collect the first meaningful value per canonical field.
  */
 function mergeExtraction(payload: Record<string, any>) {
+  const out: Record<string, any> = {};
+  const lookup = new Map<string, string>();
+  for (const [canonical, aliases] of Object.entries(FIELD_ALIASES)) {
+    for (const alias of aliases) lookup.set(alias, canonical);
+  }
+
+  const visit = (node: unknown, depth: number) => {
+    if (depth > 6) return;
+    const value = maybeParseJson(node);
+    if (Array.isArray(value)) {
+      for (const item of value) visit(item, depth + 1);
+      return;
+    }
+    if (!value || typeof value !== "object") return;
+    for (const [rawKey, rawValue] of Object.entries(value as Record<string, unknown>)) {
+      const key = rawKey.trim().toLowerCase().replace(/[\s-]+/g, "_");
+      const canonical = lookup.get(key);
+      const parsedValue = maybeParseJson(rawValue);
+      if (canonical === "missing_fields" && Array.isArray(parsedValue)) {
+        if (!out.missing_fields) out.missing_fields = parsedValue;
+      } else if (canonical && (typeof parsedValue !== "object" || parsedValue === null)) {
+        if (!has(out[canonical]) && has(parsedValue)) out[canonical] = parsedValue;
+      } else {
+        visit(parsedValue, depth + 1);
+      }
+    }
+  };
+
+  // Raw email text is unstructured — don't mine it for field names.
+  const scanTarget: Record<string, any> = { ...payload };
+  delete scanTarget.body_text;
+  delete scanTarget.subject;
+  visit(scanTarget, 0);
+
+  // Booleans may legitimately be `false`, so read them explicitly.
+  const boolFrom = (v: unknown) =>
+    typeof v === "boolean" ? v : typeof v === "string" ? v.trim().toLowerCase() === "true" : undefined;
   const nested = (payload.ai_data ?? {}) as Record<string, any>;
-  const keys = [
-    "is_order",
-    "needs_confirmation",
-    "customer_name",
-    "customer_email",
-    "customer_phone",
-    "company",
-    "service",
-    "quantity",
-    "material",
-    "color",
-    "dimensions",
-    "deadline",
-    "notes",
-    "confidence",
-    "missing_fields",
-  ];
-  const out: Record<string, any> = { ...nested };
-  const has = (v: unknown) => v !== null && v !== undefined && String(v).trim() !== "";
-  for (const k of keys) {
-    if (!has(out[k]) && has(payload[k])) out[k] = payload[k];
-  }
-  // aliases
-  if (!has(out.customer_phone) && (has(payload.phone) || has(nested.phone))) {
-    out.customer_phone = payload.phone ?? nested.phone;
-  }
-  if (!has(out.customer_name) && (has(payload.name) || has(nested.name))) {
-    out.customer_name = payload.name ?? nested.name;
-  }
-  if (!has(out.customer_email) && (has(payload.email) || has(nested.email))) {
-    out.customer_email = payload.email ?? nested.email;
-  }
+  const isOrderRaw = payload.is_order ?? nested.is_order ?? out.is_order;
+  const needsRaw = payload.needs_confirmation ?? nested.needs_confirmation ?? out.needs_confirmation;
+  if (isOrderRaw !== undefined) out.is_order = boolFrom(isOrderRaw) ?? isOrderRaw;
+  if (needsRaw !== undefined) out.needs_confirmation = boolFrom(needsRaw) ?? needsRaw;
   return out;
 }
 
