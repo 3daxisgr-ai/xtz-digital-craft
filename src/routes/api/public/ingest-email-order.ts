@@ -226,46 +226,48 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           });
         }
 
-        // 2. Completeness check — never trust AI output blindly.
-        const has = (v: unknown) => v !== null && v !== undefined && String(v).trim() !== "";
-        const missing = new Set<string>((ai.missing_fields ?? []).filter(Boolean) as string[]);
+        // 2. Completeness check — computed from the extracted values only.
+        // Stale AI-reported missing_fields never override what we actually found.
+        const missing = new Set<string>();
 
         const emailCandidate = (has(ai.customer_email) ? ai.customer_email : data.from_email ?? "")
           .toString()
           .trim();
         const emailValid = z.string().email().safeParse(emailCandidate).success;
-        if (emailValid) missing.delete("customer_email");
-        else missing.add("customer_email");
+        if (!emailValid) missing.add("customer_email");
 
         const nameCandidate = (has(ai.customer_name) ? ai.customer_name : data.from_name ?? "")
           .toString()
           .trim();
-        if (nameCandidate) missing.delete("customer_name");
-        else missing.add("customer_name");
+        if (!nameCandidate) missing.add("customer_name");
 
         for (const field of REQUIRED_FIELDS) {
           if (field === "customer_name" || field === "customer_email") continue;
-          if (has((ai as Record<string, unknown>)[field])) missing.delete(field);
-          else missing.add(field);
+          if (!has((ai as Record<string, unknown>)[field])) missing.add(field);
         }
 
         const serviceText = (ai.service ?? "").toString();
         const materialText = (ai.material ?? "").toString().trim();
         if (MATERIAL_REQUIRED.test(serviceText) && !materialText) missing.add("material");
-        else missing.delete("material");
 
         const confidenceRaw = ai.confidence;
-        const confidence =
-          typeof confidenceRaw === "number"
-            ? confidenceRaw
-            : Number.isFinite(Number(confidenceRaw))
-              ? Number(confidenceRaw)
-              : 0;
-        const isOrder = data.is_order ?? ai.is_order ?? true;
-        const flaggedForReview = data.needs_confirmation ?? ai.needs_confirmation ?? false;
+        const confidenceProvided = has(confidenceRaw) && Number.isFinite(Number(confidenceRaw));
+        const confidence = confidenceProvided ? Number(confidenceRaw) : 1;
+        const isOrder = ai.is_order ?? true;
+        const flaggedForReview = ai.needs_confirmation === true;
+        const lowConfidence = confidenceProvided && confidence < CONFIDENCE_THRESHOLD;
         const needsConfirmation =
-          !isOrder || flaggedForReview === true || missing.size > 0 || confidence < CONFIDENCE_THRESHOLD;
+          isOrder === false || flaggedForReview || missing.size > 0 || lowConfidence;
         const missingFields = [...missing];
+        console.log(
+          `[ingest-email-order] extracted=${JSON.stringify({
+            name: nameCandidate,
+            email: emailCandidate,
+            service: ai.service ?? null,
+            quantity: ai.quantity ?? null,
+            material: ai.material ?? null,
+          })} missing=${missingFields.join(",") || "none"} needsConfirmation=${needsConfirmation}`,
+        );
 
 
         const receivedAt = (() => {
