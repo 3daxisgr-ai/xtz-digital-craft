@@ -161,8 +161,8 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
             400,
           );
         }
-        const data = parsed.data;
-        const ai = data.ai_data ?? {};
+        const data = parsed.data as any;
+        const ai = mergeExtraction(data);
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const db = supabaseAdmin as any;
