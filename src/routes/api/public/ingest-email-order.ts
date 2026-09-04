@@ -282,11 +282,11 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
             .update({ status: "processed", order_id: order.id, error_message: null })
             .eq("id", intake.id);
 
-          console.log(`[ingest-email-order] intake ${intake.id} processed into order ${order.order_code}`);
+          console.log(`[ingest-email-order] intake ${intake.id} created order ${order.order_code}`);
           return json({
             success: true,
             duplicate: false,
-            status: "processed",
+            status: "created",
             intake_id: intake.id,
             order_id: order.id,
             order_code: order.order_code ?? null,
