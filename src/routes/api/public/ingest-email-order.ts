@@ -444,8 +444,8 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
         const screen = needsConfirmation ? null : await screenIntake(intakeInput);
 
         // 2c. Deterministic duplicate / reply resolution (backend has the final say).
-        const dup = needsConfirmation
-          ? { decision: "new" as DuplicateDecision, orderId: null, orderCode: null, reason: "skipped (incomplete)" }
+        const dup: { decision: DuplicateDecision; orderId: string | null; orderCode: string | null; reason: string } = needsConfirmation
+          ? { decision: "new", orderId: null, orderCode: null, reason: "skipped (incomplete)" }
           : await resolveDuplicate(db, {
               threadId: data.thread_id ?? null,
               customerEmail: emailCandidate,
