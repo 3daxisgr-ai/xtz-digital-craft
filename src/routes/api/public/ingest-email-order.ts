@@ -34,6 +34,9 @@ const aiDataSchema = z
     notes: z.string().trim().max(8000).optional().nullable(),
     confidence: z.number().min(0).max(1).optional().nullable(),
     missing_fields: z.array(z.string().max(80)).optional().nullable(),
+    is_new_order: z.boolean().optional().nullable(),
+    is_reply_to_existing_order: z.boolean().optional().nullable(),
+    existing_order_id: z.string().trim().max(120).optional().nullable(),
   })
   .passthrough();
 
@@ -82,6 +85,14 @@ const FIELD_ALIASES: Record<string, string[]> = {
   notes: ["notes", "note", "comments"],
   confidence: ["confidence", "confidence_score"],
   missing_fields: ["missing_fields", "missingfields"],
+  is_new_order: ["is_new_order", "isneworder", "new_order"],
+  is_reply_to_existing_order: [
+    "is_reply_to_existing_order",
+    "isreplytoexistingorder",
+    "is_reply",
+    "reply_to_existing_order",
+  ],
+  existing_order_id: ["existing_order_id", "existingorderid", "order_id", "order_code", "ordercode"],
 };
 
 const has = (v: unknown) => v !== null && v !== undefined && String(v).trim() !== "";
@@ -145,6 +156,15 @@ function mergeExtraction(payload: Record<string, any>) {
   const needsRaw = payload.needs_confirmation ?? nested.needs_confirmation ?? out.needs_confirmation;
   if (isOrderRaw !== undefined) out.is_order = boolFrom(isOrderRaw) ?? isOrderRaw;
   if (needsRaw !== undefined) out.needs_confirmation = boolFrom(needsRaw) ?? needsRaw;
+  for (const key of ["is_new_order", "is_reply_to_existing_order"] as const) {
+    const rawValue = payload[key] ?? nested[key] ?? out[key];
+    if (rawValue !== undefined && rawValue !== null) {
+      const b = boolFrom(rawValue);
+      if (b !== undefined) out[key] = b;
+    } else {
+      delete out[key];
+    }
+  }
   return out;
 }
 
@@ -153,6 +173,128 @@ const CONFIDENCE_THRESHOLD = 0.7;
 const REQUIRED_FIELDS = ["customer_email", "customer_name", "service", "quantity"] as const;
 // Services where a material must be specified before an order can be auto-created.
 const MATERIAL_REQUIRED = /3d|print|laser|cut|bend|sheet|weld|metal/i;
+
+/** Window in which a repeat of the same request is treated as the same project. */
+const SIGNATURE_WINDOW_MS = 1000 * 60 * 60 * 24 * 21;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+const norm = (v: unknown) => (v == null ? "" : String(v).trim().toLowerCase().replace(/\s+/g, " "));
+
+/** Deterministic signature of what was actually requested. */
+function orderSignature(o: {
+  service?: unknown;
+  quantity?: unknown;
+  material?: unknown;
+  dimensions?: unknown;
+}) {
+  return [norm(o.service), norm(o.quantity), norm(o.material), norm(o.dimensions)].join("|");
+}
+
+export type DuplicateDecision = "new" | "duplicate" | "needs_confirmation";
+
+/**
+ * Backend-owned duplicate resolution. Gemini's flags are hints only — every
+ * decision that blocks an order is verified against the database first.
+ */
+async function resolveDuplicate(
+  db: any,
+  input: {
+    threadId: string | null;
+    customerEmail: string;
+    ai: Record<string, any>;
+  },
+): Promise<{ decision: DuplicateDecision; orderId: string | null; orderCode: string | null; reason: string }> {
+  const geminiReply = input.ai.is_reply_to_existing_order === true;
+  const geminiNew = input.ai.is_new_order === true;
+
+  // Check C — Gemini's existing_order_id, only after verifying it in the DB.
+  const claimed = has(input.ai.existing_order_id) ? String(input.ai.existing_order_id).trim() : "";
+  if (claimed) {
+    const query = db.from("orders").select("id, order_code, customer_email").limit(1);
+    const { data } = UUID_RE.test(claimed)
+      ? await query.eq("id", claimed)
+      : await query.eq("order_code", claimed.toUpperCase());
+    const found = Array.isArray(data) ? data[0] : data;
+    if (found && norm(found.customer_email) === norm(input.customerEmail)) {
+      if (geminiReply || !geminiNew) {
+        return {
+          decision: "duplicate",
+          orderId: found.id,
+          orderCode: found.order_code ?? null,
+          reason: `reply to verified existing order ${found.order_code ?? found.id}`,
+        };
+      }
+    }
+  }
+
+  // Check B — same email thread already produced an order.
+  let threadOrder: { id: string; order_code: string | null } | null = null;
+  if (input.threadId) {
+    const { data: prior } = await db
+      .from("email_order_intake")
+      .select("order_id, received_at")
+      .eq("thread_id", input.threadId)
+      .not("order_id", "is", null)
+      .order("received_at", { ascending: false })
+      .limit(1);
+    const priorRow = Array.isArray(prior) ? prior[0] : prior;
+    if (priorRow?.order_id) {
+      const { data: order } = await db
+        .from("orders")
+        .select("id, order_code")
+        .eq("id", priorRow.order_id)
+        .maybeSingle();
+      if (order) threadOrder = order;
+    }
+  }
+
+  if (threadOrder) {
+    // A thread match alone never blocks: only a reply that is not a new order.
+    if (geminiNew && !geminiReply) {
+      return { decision: "new", orderId: null, orderCode: null, reason: "thread continuation flagged as a new order" };
+    }
+    if (geminiReply || input.ai.is_new_order === false) {
+      return {
+        decision: "duplicate",
+        orderId: threadOrder.id,
+        orderCode: threadOrder.order_code,
+        reason: `reply in thread of existing order ${threadOrder.order_code ?? threadOrder.id}`,
+      };
+    }
+    return {
+      decision: "needs_confirmation",
+      orderId: threadOrder.id,
+      orderCode: threadOrder.order_code,
+      reason: `same thread as order ${threadOrder.order_code ?? threadOrder.id}, intent unclear`,
+    };
+  }
+
+  // Check D — same customer + identical request details in the recent window.
+  const signature = orderSignature(input.ai);
+  if (signature.replace(/\|/g, "").length >= 4) {
+    const since = new Date(Date.now() - SIGNATURE_WINDOW_MS).toISOString();
+    const { data: recent } = await db
+      .from("orders")
+      .select("id, order_code, service, quantity, material, dimensions, created_at")
+      .ilike("customer_email", input.customerEmail)
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(20);
+    for (const o of (recent ?? []) as any[]) {
+      if (orderSignature(o) === signature) {
+        return {
+          decision: "needs_confirmation",
+          orderId: o.id,
+          orderCode: o.order_code ?? null,
+          reason: `identical request details as order ${o.order_code ?? o.id}`,
+        };
+      }
+    }
+  }
+
+  return { decision: "new", orderId: null, orderCode: null, reason: "no matching prior order" };
+}
+
 
 
 function json(body: unknown, status = 200) {
@@ -224,6 +366,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           return json({
             success: true,
             duplicate: true,
+            action: "duplicate",
             status: existing.order_id ? "created" : existing.status,
             intake_id: existing.id,
             order_id: existing.order_id ?? null,
@@ -274,6 +417,31 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           })} missing=${missingFields.join(",") || "none"} needsConfirmation=${needsConfirmation}`,
         );
 
+        // 2b. Deterministic duplicate / reply resolution (backend has the final say).
+        const dup = needsConfirmation
+          ? { decision: "new" as DuplicateDecision, orderId: null, orderCode: null, reason: "skipped (incomplete)" }
+          : await resolveDuplicate(db, {
+              threadId: data.thread_id ?? null,
+              customerEmail: emailCandidate,
+              ai,
+            });
+
+        const finalAction =
+          needsConfirmation || dup.decision === "needs_confirmation"
+            ? "needs_confirmation"
+            : dup.decision === "duplicate"
+              ? "duplicate"
+              : "created";
+
+        console.log(
+          `[email-ingestion] message_id=${data.message_id} thread_id=${data.thread_id ?? "null"} ` +
+            `detected_existing_order=${dup.orderId ?? "null"} is_new_order=${ai.is_new_order ?? "null"} ` +
+            `is_reply_to_existing_order=${ai.is_reply_to_existing_order ?? "null"} ` +
+            `duplicate_decision=${dup.decision} reason="${dup.reason}" final_action=${finalAction}`,
+        );
+
+
+
 
         const receivedAt = (() => {
           const d = data.received_at ? new Date(data.received_at) : new Date();
@@ -298,7 +466,17 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
         // 3. Store the intake first, so nothing is lost if order creation fails.
         const { data: intake, error: intakeError } = await db
           .from("email_order_intake")
-          .insert({ ...baseRow, status: needsConfirmation ? "needs_confirmation" : "new" })
+          .insert({
+            ...baseRow,
+            status:
+              finalAction === "needs_confirmation"
+                ? "needs_confirmation"
+                : finalAction === "duplicate"
+                  ? "processed"
+                  : "new",
+            order_id: finalAction === "duplicate" ? dup.orderId : null,
+            error_message: dup.decision === "new" ? null : dup.reason.slice(0, 1000),
+          })
           .select("id, status, order_id, missing_fields")
           .single();
 
@@ -314,6 +492,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
               return json({
                 success: true,
                 duplicate: true,
+                action: "duplicate",
                 status: raced.order_id ? "created" : raced.status,
                 intake_id: raced.id,
                 order_id: raced.order_id ?? null,
@@ -325,16 +504,33 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           return json({ success: false, error: "Could not store intake" }, 500);
         }
 
-        if (needsConfirmation) {
+        if (finalAction === "duplicate") {
+          return json({
+            success: true,
+            duplicate: true,
+            action: "duplicate",
+            status: "duplicate",
+            reason: dup.reason,
+            intake_id: intake.id,
+            order_id: dup.orderId,
+            order_code: dup.orderCode,
+            missing_fields: [],
+          });
+        }
+
+        if (finalAction === "needs_confirmation") {
           console.log(
             `[ingest-email-order] intake ${intake.id} needs confirmation (confidence=${confidence}, missing=${missingFields.join(",") || "none"})`,
           );
           return json({
             success: true,
             duplicate: false,
+            action: "needs_confirmation",
             status: "needs_confirmation",
+            reason: dup.decision === "needs_confirmation" ? dup.reason : undefined,
             intake_id: intake.id,
             order_id: null,
+            related_order_id: dup.orderId,
             missing_fields: missingFields,
           });
         }
@@ -406,6 +602,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           return json({
             success: true,
             duplicate: false,
+            action: "created",
             status: "created",
             intake_id: intake.id,
             order_id: order.id,
