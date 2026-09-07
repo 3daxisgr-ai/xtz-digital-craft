@@ -85,6 +85,14 @@ const FIELD_ALIASES: Record<string, string[]> = {
   notes: ["notes", "note", "comments"],
   confidence: ["confidence", "confidence_score"],
   missing_fields: ["missing_fields", "missingfields"],
+  is_new_order: ["is_new_order", "isneworder", "new_order"],
+  is_reply_to_existing_order: [
+    "is_reply_to_existing_order",
+    "isreplytoexistingorder",
+    "is_reply",
+    "reply_to_existing_order",
+  ],
+  existing_order_id: ["existing_order_id", "existingorderid", "order_id", "order_code", "ordercode"],
 };
 
 const has = (v: unknown) => v !== null && v !== undefined && String(v).trim() !== "";
