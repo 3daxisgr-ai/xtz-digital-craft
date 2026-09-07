@@ -168,6 +168,9 @@ const NOT_DUPLICATE: DuplicateVerdict = {
   review: false,
 };
 
+/** Hash of an empty body — carries no identifying signal. */
+const EMPTY_BODY_HASH = sha256("");
+
 /** Window (ms) within which a repeated request is considered the same project. */
 const SAME_PROJECT_WINDOW_MS = 1000 * 60 * 60 * 24 * 21; // 21 days
 
@@ -214,9 +217,17 @@ export function classifyDuplicate(
     const reasons: string[] = ["Same customer email"];
     let score = 30;
 
-    if (c.bodyHash === incoming.bodyHash) {
+    let differentFiles = false;
+    if (incoming.attachmentsHash && c.attachmentsHash && incoming.attachmentsHash !== c.attachmentsHash) {
+      differentFiles = true;
+      reasons.push("Different attached files");
+    }
+
+    if (c.bodyHash === incoming.bodyHash && incoming.bodyHash !== EMPTY_BODY_HASH) {
       score += 45;
       reasons.push("Identical message body");
+    } else if (c.bodyHash === incoming.bodyHash) {
+      reasons.push("No message text on either request");
     } else if (incoming.bodyNormalized && c.bodyNormalized) {
       const sim = textSimilarity(incoming.bodyNormalized, c.bodyNormalized);
       if (sim >= 0.85) { score += 40; reasons.push(`Message body ${Math.round(sim * 100)}% identical`); }
@@ -238,6 +249,12 @@ export function classifyDuplicate(
     }
 
     if (age < 1000 * 60 * 10) { score += 8; reasons.push("Received within 10 minutes of the previous request"); }
+
+    // Different files (or different requested specs) mean a different part:
+    // never auto-block, at most flag for a human.
+    if (differentFiles) score = Math.min(score, 69);
+    else if (incoming.fingerprint !== c.fingerprint && c.bodyHash === incoming.bodyHash && incoming.bodyHash === EMPTY_BODY_HASH)
+      score = Math.min(score, 69);
 
     score = Math.min(score, 99);
     if (!best || score > best.score) best = { c, score, reasons };
