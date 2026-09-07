@@ -34,6 +34,9 @@ const aiDataSchema = z
     notes: z.string().trim().max(8000).optional().nullable(),
     confidence: z.number().min(0).max(1).optional().nullable(),
     missing_fields: z.array(z.string().max(80)).optional().nullable(),
+    is_new_order: z.boolean().optional().nullable(),
+    is_reply_to_existing_order: z.boolean().optional().nullable(),
+    existing_order_id: z.string().trim().max(120).optional().nullable(),
   })
   .passthrough();
 
