@@ -465,7 +465,17 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
         // 3. Store the intake first, so nothing is lost if order creation fails.
         const { data: intake, error: intakeError } = await db
           .from("email_order_intake")
-          .insert({ ...baseRow, status: needsConfirmation ? "needs_confirmation" : "new" })
+          .insert({
+            ...baseRow,
+            status:
+              finalAction === "needs_confirmation"
+                ? "needs_confirmation"
+                : finalAction === "duplicate"
+                  ? "processed"
+                  : "new",
+            order_id: finalAction === "duplicate" ? dup.orderId : null,
+            error_message: dup.decision === "new" ? null : dup.reason.slice(0, 1000),
+          })
           .select("id, status, order_id, missing_fields")
           .single();
 
