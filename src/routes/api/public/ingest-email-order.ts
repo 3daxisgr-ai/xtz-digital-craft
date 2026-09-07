@@ -174,6 +174,128 @@ const REQUIRED_FIELDS = ["customer_email", "customer_name", "service", "quantity
 // Services where a material must be specified before an order can be auto-created.
 const MATERIAL_REQUIRED = /3d|print|laser|cut|bend|sheet|weld|metal/i;
 
+/** Window in which a repeat of the same request is treated as the same project. */
+const SIGNATURE_WINDOW_MS = 1000 * 60 * 60 * 24 * 21;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+const norm = (v: unknown) => (v == null ? "" : String(v).trim().toLowerCase().replace(/\s+/g, " "));
+
+/** Deterministic signature of what was actually requested. */
+function orderSignature(o: {
+  service?: unknown;
+  quantity?: unknown;
+  material?: unknown;
+  dimensions?: unknown;
+}) {
+  return [norm(o.service), norm(o.quantity), norm(o.material), norm(o.dimensions)].join("|");
+}
+
+export type DuplicateDecision = "new" | "duplicate" | "needs_confirmation";
+
+/**
+ * Backend-owned duplicate resolution. Gemini's flags are hints only — every
+ * decision that blocks an order is verified against the database first.
+ */
+async function resolveDuplicate(
+  db: any,
+  input: {
+    threadId: string | null;
+    customerEmail: string;
+    ai: Record<string, any>;
+  },
+): Promise<{ decision: DuplicateDecision; orderId: string | null; orderCode: string | null; reason: string }> {
+  const geminiReply = input.ai.is_reply_to_existing_order === true;
+  const geminiNew = input.ai.is_new_order === true;
+
+  // Check C — Gemini's existing_order_id, only after verifying it in the DB.
+  const claimed = has(input.ai.existing_order_id) ? String(input.ai.existing_order_id).trim() : "";
+  if (claimed) {
+    const query = db.from("orders").select("id, order_code, customer_email").limit(1);
+    const { data } = UUID_RE.test(claimed)
+      ? await query.eq("id", claimed)
+      : await query.eq("order_code", claimed.toUpperCase());
+    const found = Array.isArray(data) ? data[0] : data;
+    if (found && norm(found.customer_email) === norm(input.customerEmail)) {
+      if (geminiReply || !geminiNew) {
+        return {
+          decision: "duplicate",
+          orderId: found.id,
+          orderCode: found.order_code ?? null,
+          reason: `reply to verified existing order ${found.order_code ?? found.id}`,
+        };
+      }
+    }
+  }
+
+  // Check B — same email thread already produced an order.
+  let threadOrder: { id: string; order_code: string | null } | null = null;
+  if (input.threadId) {
+    const { data: prior } = await db
+      .from("email_order_intake")
+      .select("order_id, received_at")
+      .eq("thread_id", input.threadId)
+      .not("order_id", "is", null)
+      .order("received_at", { ascending: false })
+      .limit(1);
+    const priorRow = Array.isArray(prior) ? prior[0] : prior;
+    if (priorRow?.order_id) {
+      const { data: order } = await db
+        .from("orders")
+        .select("id, order_code")
+        .eq("id", priorRow.order_id)
+        .maybeSingle();
+      if (order) threadOrder = order;
+    }
+  }
+
+  if (threadOrder) {
+    // A thread match alone never blocks: only a reply that is not a new order.
+    if (geminiNew && !geminiReply) {
+      return { decision: "new", orderId: null, orderCode: null, reason: "thread continuation flagged as a new order" };
+    }
+    if (geminiReply || input.ai.is_new_order === false) {
+      return {
+        decision: "duplicate",
+        orderId: threadOrder.id,
+        orderCode: threadOrder.order_code,
+        reason: `reply in thread of existing order ${threadOrder.order_code ?? threadOrder.id}`,
+      };
+    }
+    return {
+      decision: "needs_confirmation",
+      orderId: threadOrder.id,
+      orderCode: threadOrder.order_code,
+      reason: `same thread as order ${threadOrder.order_code ?? threadOrder.id}, intent unclear`,
+    };
+  }
+
+  // Check D — same customer + identical request details in the recent window.
+  const signature = orderSignature(input.ai);
+  if (signature.replace(/\|/g, "").length >= 4) {
+    const since = new Date(Date.now() - SIGNATURE_WINDOW_MS).toISOString();
+    const { data: recent } = await db
+      .from("orders")
+      .select("id, order_code, service, quantity, material, dimensions, created_at")
+      .ilike("customer_email", input.customerEmail)
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(20);
+    for (const o of (recent ?? []) as any[]) {
+      if (orderSignature(o) === signature) {
+        return {
+          decision: "needs_confirmation",
+          orderId: o.id,
+          orderCode: o.order_code ?? null,
+          reason: `identical request details as order ${o.order_code ?? o.id}`,
+        };
+      }
+    }
+  }
+
+  return { decision: "new", orderId: null, orderCode: null, reason: "no matching prior order" };
+}
+
+
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
