@@ -146,6 +146,10 @@ function mergeExtraction(payload: Record<string, any>) {
   const scanTarget: Record<string, any> = { ...payload };
   delete scanTarget.body_text;
   delete scanTarget.subject;
+  // Attachment records carry a numeric `size` (bytes) that must never be read
+  // as a part dimension, and file names are not request identity.
+  delete scanTarget.attachments;
+  delete scanTarget.files;
   visit(scanTarget, 0);
 
   // Booleans may legitimately be `false`, so read them explicitly.
@@ -417,7 +421,29 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           })} missing=${missingFields.join(",") || "none"} needsConfirmation=${needsConfirmation}`,
         );
 
-        // 2b. Deterministic duplicate / reply resolution (backend has the final say).
+        // 2b. Shared content-fingerprint ledger (same screening the web form uses).
+        const { screenIntake, recordIntake } = await import("@/lib/intake/ledger.server");
+        const intakeInput = {
+          senderEmail: emailCandidate || data.from_email,
+          senderName: nameCandidate ? String(nameCandidate) : (data.from_name ?? null),
+          subject: data.subject ?? null,
+          body: data.body_text ?? null,
+          facts: {
+            service: ai.service ?? "",
+            material: ai.material ?? "",
+            quantity: ai.quantity ?? "",
+            dimensions: ai.dimensions ?? "",
+          },
+          attachments: (data.attachments ?? []).map((a: any) => ({ name: a.filename, size: a.size ?? null })),
+          channel: "email",
+          providerMessageId: data.message_id,
+          messageIdHeader: data.message_id,
+          threadId: data.thread_id ?? null,
+          raw: { subject: data.subject ?? null },
+        };
+        const screen = needsConfirmation ? null : await screenIntake(intakeInput);
+
+        // 2c. Deterministic duplicate / reply resolution (backend has the final say).
         const dup = needsConfirmation
           ? { decision: "new" as DuplicateDecision, orderId: null, orderCode: null, reason: "skipped (incomplete)" }
           : await resolveDuplicate(db, {
@@ -425,6 +451,17 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
               customerEmail: emailCandidate,
               ai,
             });
+
+        if (
+          dup.decision === "new" &&
+          screen?.verdict.block &&
+          screen.existingOrder?.id
+        ) {
+          dup.decision = "duplicate";
+          dup.orderId = screen.existingOrder.id;
+          dup.orderCode = screen.existingOrder.code;
+          dup.reason = `content fingerprint matches order ${screen.existingOrder.code ?? screen.existingOrder.id}`;
+        }
 
         const finalAction =
           needsConfirmation || dup.decision === "needs_confirmation"
@@ -597,6 +634,10 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
             .from("email_order_intake")
             .update({ status: "processed", order_id: order.id, error_message: null })
             .eq("id", intake.id);
+
+          if (screen) {
+            await recordIntake(intakeInput, screen, { orderId: order.id, processResult: "created_order" });
+          }
 
           console.log(`[ingest-email-order] intake ${intake.id} created order ${order.order_code}`);
           return json({
