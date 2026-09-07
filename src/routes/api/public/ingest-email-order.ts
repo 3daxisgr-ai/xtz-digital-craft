@@ -416,6 +416,31 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           })} missing=${missingFields.join(",") || "none"} needsConfirmation=${needsConfirmation}`,
         );
 
+        // 2b. Deterministic duplicate / reply resolution (backend has the final say).
+        const dup = needsConfirmation
+          ? { decision: "new" as DuplicateDecision, orderId: null, orderCode: null, reason: "skipped (incomplete)" }
+          : await resolveDuplicate(db, {
+              threadId: data.thread_id ?? null,
+              customerEmail: emailCandidate,
+              ai,
+            });
+
+        const finalAction =
+          needsConfirmation || dup.decision === "needs_confirmation"
+            ? "needs_confirmation"
+            : dup.decision === "duplicate"
+              ? "duplicate"
+              : "created";
+
+        console.log(
+          `[email-ingestion] message_id=${data.message_id} thread_id=${data.thread_id ?? "null"} ` +
+            `detected_existing_order=${dup.orderId ?? "null"} is_new_order=${ai.is_new_order ?? "null"} ` +
+            `is_reply_to_existing_order=${ai.is_reply_to_existing_order ?? "null"} ` +
+            `duplicate_decision=${dup.decision} reason="${dup.reason}" final_action=${finalAction}`,
+        );
+
+
+
 
         const receivedAt = (() => {
           const d = data.received_at ? new Date(data.received_at) : new Date();
