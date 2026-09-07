@@ -366,6 +366,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           return json({
             success: true,
             duplicate: true,
+            action: "duplicate",
             status: existing.order_id ? "created" : existing.status,
             intake_id: existing.id,
             order_id: existing.order_id ?? null,
@@ -491,6 +492,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
               return json({
                 success: true,
                 duplicate: true,
+                action: "duplicate",
                 status: raced.order_id ? "created" : raced.status,
                 intake_id: raced.id,
                 order_id: raced.order_id ?? null,
@@ -600,6 +602,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           return json({
             success: true,
             duplicate: false,
+            action: "created",
             status: "created",
             intake_id: intake.id,
             order_id: order.id,
