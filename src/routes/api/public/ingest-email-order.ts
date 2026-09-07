@@ -156,6 +156,15 @@ function mergeExtraction(payload: Record<string, any>) {
   const needsRaw = payload.needs_confirmation ?? nested.needs_confirmation ?? out.needs_confirmation;
   if (isOrderRaw !== undefined) out.is_order = boolFrom(isOrderRaw) ?? isOrderRaw;
   if (needsRaw !== undefined) out.needs_confirmation = boolFrom(needsRaw) ?? needsRaw;
+  for (const key of ["is_new_order", "is_reply_to_existing_order"] as const) {
+    const rawValue = payload[key] ?? nested[key] ?? out[key];
+    if (rawValue !== undefined && rawValue !== null) {
+      const b = boolFrom(rawValue);
+      if (b !== undefined) out[key] = b;
+    } else {
+      delete out[key];
+    }
+  }
   return out;
 }
 
