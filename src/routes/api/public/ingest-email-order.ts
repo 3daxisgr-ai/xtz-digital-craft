@@ -502,16 +502,33 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
           return json({ success: false, error: "Could not store intake" }, 500);
         }
 
-        if (needsConfirmation) {
+        if (finalAction === "duplicate") {
+          return json({
+            success: true,
+            duplicate: true,
+            action: "duplicate",
+            status: "duplicate",
+            reason: dup.reason,
+            intake_id: intake.id,
+            order_id: dup.orderId,
+            order_code: dup.orderCode,
+            missing_fields: [],
+          });
+        }
+
+        if (finalAction === "needs_confirmation") {
           console.log(
             `[ingest-email-order] intake ${intake.id} needs confirmation (confidence=${confidence}, missing=${missingFields.join(",") || "none"})`,
           );
           return json({
             success: true,
             duplicate: false,
+            action: "needs_confirmation",
             status: "needs_confirmation",
+            reason: dup.decision === "needs_confirmation" ? dup.reason : undefined,
             intake_id: intake.id,
             order_id: null,
+            related_order_id: dup.orderId,
             missing_fields: missingFields,
           });
         }
