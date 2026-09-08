@@ -196,9 +196,30 @@ function QuoteEditor() {
           {!locked && doc.status === "generated" && (
             <button className="px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase bg-sky-500 text-black rounded-sm" onClick={openSend}>✉ Send to customer</button>
           )}
+          {["accepted", "accepted_by_customer"].includes(doc.status) && (
+            <button
+              className={btn + " border-emerald-400/40 text-emerald-200"}
+              disabled={busy === "convert"}
+              onClick={doConvert}
+            >
+              ➜ Convert to order
+            </button>
+          )}
           {locked && <button className={btn + " border-amber-300/40 text-amber-200"} disabled={busy === "new"} onClick={doCorrected}>↻ New corrected quotation</button>}
         </div>
       </div>
+
+      <div className="px-4 lg:px-8 pt-4 flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-white/60">
+        <span>Customer: <b className="text-white/90">{doc.customer_snapshot?.company || doc.customer_snapshot?.name || "—"}</b></span>
+        <span>Service: <b className="text-white/90">{project.service || order?.service || "—"}</b></span>
+        <span>Quantity: <b className="text-white/90">{order?.quantity || "—"}</b></span>
+        <span>Material: <b className="text-white/90">{project.material || order?.material || "—"}</b></span>
+        <span>Dimensions: <b className="text-white/90">{project.dimensions || order?.dimensions || "—"}</b></span>
+        <span>Net: <b className="text-white/90">{money(totals.net)}</b></span>
+        <span>VAT: <b className="text-white/90">{money(totals.vat)}</b></span>
+        <span>Total: <b className="text-emerald-300">{money(totals.total)}</b></span>
+      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6 p-4 lg:p-8">
         <div className="space-y-4">
