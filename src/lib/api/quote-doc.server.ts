@@ -653,16 +653,226 @@ export async function sendQuoteDoc(input: {
   return { ok: true, messageId: r.messageId ?? null };
 }
 
+const STATUS_STAMP: Record<string, string> = {
+  viewed: "viewed_at",
+  accepted: "accepted_at",
+  accepted_by_customer: "accepted_at",
+  rejected: "rejected_at",
+  rejected_by_customer: "rejected_at",
+};
+
 export async function setQuoteDocStatus(number: string, status: string) {
   const sb = await admin();
-  const allowed = ["accepted_by_customer", "rejected_by_customer", "cancelled"];
+  const allowed = [
+    "viewed",
+    "accepted",
+    "rejected",
+    "accepted_by_customer",
+    "rejected_by_customer",
+    "expired",
+    "cancelled",
+  ];
   if (!allowed.includes(status)) throw new Error("Invalid status");
+  const patch: Record<string, any> = { status };
+  const stamp = STATUS_STAMP[status];
+  if (stamp) patch[stamp] = new Date().toISOString();
   const { data, error } = await sb
     .from("quote_documents" as any)
-    .update({ status })
+    .update(patch)
     .eq("number", number)
     .select("*")
     .single();
   if (error) throw error;
   return data;
 }
+
+// ---------------------------------------------------------------- dashboard
+
+const OPEN_STATUSES = ["draft", "generated", "sent", "viewed"];
+
+/** Validity ("15 ημέρες" / "15 days" / a date) resolved into an expiry timestamp. */
+function expiryOf(doc: any): number | null {
+  const v = String((doc.terms ?? {}).validity ?? "").trim();
+  if (!v) return null;
+  const days = /(\d+)\s*(ημ|day)/i.exec(v);
+  const base = new Date(doc.sent_at ?? doc.created_at).getTime();
+  if (days) return base + Number(days[1]) * 86400000;
+  const d = new Date(v);
+  return Number.isNaN(d.getTime()) ? null : d.getTime();
+}
+
+export function isExpired(doc: any): boolean {
+  if (!["sent", "viewed"].includes(doc.status)) return false;
+  const e = expiryOf(doc);
+  return e !== null && e < Date.now();
+}
+
+export async function listAllQuoteDocs(filters: {
+  status?: string | null;
+  search?: string | null;
+  from?: string | null;
+  to?: string | null;
+  limit?: number;
+}) {
+  const sb = await admin();
+  let q = sb
+    .from("quote_documents" as any)
+    .select(
+      "id,number,status,customer_snapshot,order_snapshot,financial_snapshot,terms,sent_at,created_at,order_id,converted_order_id,accepted_at",
+    )
+    .order("seq", { ascending: false })
+    .limit(Math.min(filters.limit ?? 300, 500));
+  if (filters.from) q = q.gte("created_at", filters.from);
+  if (filters.to) q = q.lte("created_at", filters.to);
+  const { data, error } = await q;
+  if (error) throw error;
+
+  let rows = ((data ?? []) as any[]).map((d) => ({
+    ...d,
+    status: isExpired(d) ? "expired" : d.status,
+    customer: d.customer_snapshot?.company || d.customer_snapshot?.name || "",
+    email: d.customer_snapshot?.email || "",
+    order_code: d.order_snapshot?.order_code || "",
+    total: Number(d.financial_snapshot?.total ?? 0),
+  }));
+
+  if (filters.status && filters.status !== "all") {
+    const s = filters.status;
+    rows = rows.filter((r) =>
+      s === "accepted"
+        ? ["accepted", "accepted_by_customer"].includes(r.status)
+        : s === "rejected"
+          ? ["rejected", "rejected_by_customer"].includes(r.status)
+          : s === "open"
+            ? OPEN_STATUSES.includes(r.status)
+            : r.status === s,
+    );
+  }
+  if (filters.search) {
+    const needle = filters.search.toLowerCase();
+    rows = rows.filter((r) =>
+      [r.number, r.customer, r.email, r.order_code].some((v) => String(v ?? "").toLowerCase().includes(needle)),
+    );
+  }
+  return rows;
+}
+
+export async function quoteDocStats() {
+  const rows = await listAllQuoteDocs({ limit: 500 });
+  const count = (p: (r: any) => boolean) => rows.filter(p).length;
+  return {
+    total: rows.length,
+    draft: count((r) => r.status === "draft" || r.status === "generated"),
+    sent: count((r) => r.status === "sent" || r.status === "viewed"),
+    accepted: count((r) => ["accepted", "accepted_by_customer"].includes(r.status)),
+    rejected: count((r) => ["rejected", "rejected_by_customer"].includes(r.status)),
+    expired: count((r) => r.status === "expired"),
+    converted: count((r) => r.status === "converted"),
+    value_open: rows
+      .filter((r) => OPEN_STATUSES.includes(r.status))
+      .reduce((s, r) => s + r.total, 0),
+    value_accepted: rows
+      .filter((r) => ["accepted", "accepted_by_customer"].includes(r.status))
+      .reduce((s, r) => s + r.total, 0),
+  };
+}
+
+/**
+ * Move the quotation's existing order into production.
+ * Never creates a second order or a second customer.
+ */
+export async function convertQuoteToOrder(number: string) {
+  const sb = await admin();
+  const { data: doc } = await sb.from("quote_documents" as any).select("*").eq("number", number).single();
+  if (!doc) throw new Error("Quotation not found");
+  const d = doc as any;
+  if (d.status === "converted") return { ok: true, order_id: d.converted_order_id, already: true };
+  if (!["accepted", "accepted_by_customer", "sent", "viewed"].includes(d.status)) {
+    throw new Error("Only an accepted quotation can be converted to an order.");
+  }
+  const fin = (d.financial_snapshot ?? {}) as any;
+  const { error: upErr } = await sb
+    .from("orders")
+    .update({ status: "payment_received", quote_price: Number(fin.total ?? 0) || null })
+    .eq("id", d.order_id);
+  if (upErr) throw upErr;
+
+  const { data: updated, error } = await sb
+    .from("quote_documents" as any)
+    .update({
+      status: "converted",
+      converted_at: new Date().toISOString(),
+      converted_order_id: d.order_id,
+      accepted_at: d.accepted_at ?? new Date().toISOString(),
+    })
+    .eq("id", d.id)
+    .select("*")
+    .single();
+  if (error) throw error;
+  return { ok: true, order_id: d.order_id, doc: updated };
+}
+
+// ------------------------------------------------- automatic draft + replies
+
+const ACCEPT_PHRASES = [
+  "ok, proceed",
+  "ok proceed",
+  "go ahead",
+  "we accept",
+  "accepted",
+  "confirm the order",
+  "εντάξει, προχωρήστε",
+  "εντάξει προχωρήστε",
+  "προχωρήστε",
+  "προχωράμε",
+  "συμφωνούμε",
+  "αποδεκτή",
+  "η προσφορά είναι αποδεκτή",
+  "εγκρίνεται",
+];
+
+export function looksLikeAcceptance(text: string): boolean {
+  const s = String(text ?? "").toLowerCase();
+  return ACCEPT_PHRASES.some((p) => s.includes(p));
+}
+
+/** Called by the email endpoint after an order is created from a customer email. */
+export async function createDraftQuoteForOrder(
+  orderCode: string,
+  source: { thread_id?: string | null; message_id?: string | null },
+) {
+  return await createQuoteDoc(orderCode, null, { skipAcceptanceCheck: true, source });
+}
+
+/**
+ * A customer email that belongs to an existing order: attach it to that order's
+ * latest sent quotation and, when it clearly accepts, mark the quotation accepted.
+ */
+export async function handleQuoteReply(input: {
+  orderId: string;
+  threadId?: string | null;
+  messageId?: string | null;
+  text?: string | null;
+}) {
+  const sb = await admin();
+  const { data } = await sb
+    .from("quote_documents" as any)
+    .select("id, number, status")
+    .eq("order_id", input.orderId)
+    .in("status", ["sent", "viewed"])
+    .order("seq", { ascending: false })
+    .limit(1);
+  const doc = Array.isArray(data) ? data[0] : data;
+  if (!doc) return { matched: false as const };
+  const accepted = looksLikeAcceptance(input.text ?? "");
+  await sb
+    .from("quote_documents" as any)
+    .update(
+      accepted
+        ? { status: "accepted", accepted_at: new Date().toISOString(), viewed_at: new Date().toISOString() }
+        : { status: "viewed", viewed_at: new Date().toISOString() },
+    )
+    .eq("id", (doc as any).id);
+  return { matched: true as const, number: (doc as any).number, accepted };
+}
+
