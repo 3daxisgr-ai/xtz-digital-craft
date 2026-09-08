@@ -8,6 +8,8 @@ import { computeTotals, lineNet, lineVat, lineTotal, round2, type QuoteLine } fr
 
 export type QuotePdfInput = {
   lang: "el" | "en";
+  /** Which document this is: a quotation or an order form (ΔΕΛΤΙΟ ΠΑΡΑΓΓΕΛΙΑΣ). */
+  docKind?: "quote" | "order";
   number: string;
   issueDate: string;
   orderReference: string;
