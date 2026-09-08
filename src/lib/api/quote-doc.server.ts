@@ -459,7 +459,11 @@ export async function buildQuotePdfBytes(number: string): Promise<{ bytes: Uint8
     terms: {
       payment_terms: terms.payment_terms ?? "",
       delivery_time: terms.delivery_time ?? "",
+      transport: terms.transport ?? "",
+      warranty: terms.warranty ?? "",
+      technical: terms.technical ?? "",
       notes: terms.notes ?? "",
+
     },
     image: (doc as any).image_data_url ? decodeDataUrl((doc as any).image_data_url) : null,
     logo,
@@ -583,7 +587,7 @@ export async function sendQuoteDoc(input: {
 
   const { data: order } = await sb.from("orders").select("*").eq("id", d.order_id).single();
   if (!order) throw new Error("Order not found");
-  if (!(await isInternallyAccepted(order))) throw new Error("The request has not been accepted internally.");
+  // Sending is an explicit admin action; no separate internal-acceptance gate.
   if (fullSignature(order, d) !== d.data_signature) {
     throw new Error(
       "The order has changed since this Quote PDF was generated. Generate the updated PDF before sending.",
