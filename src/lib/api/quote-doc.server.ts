@@ -171,12 +171,17 @@ function seedLine(order: any): QuoteLine {
   };
 }
 
-export async function createQuoteDoc(orderCode: string, replacesNumber?: string | null) {
+export async function createQuoteDoc(
+  orderCode: string,
+  replacesNumber?: string | null,
+  opts?: { skipAcceptanceCheck?: boolean; source?: { thread_id?: string | null; message_id?: string | null } },
+) {
   const sb = await admin();
   const order = await getOrderByCode(orderCode);
-  if (!(await isInternallyAccepted(order))) {
+  if (!opts?.skipAcceptanceCheck && !(await isInternallyAccepted(order))) {
     throw new Error("Quote PDF is available only after the request has been accepted internally.");
   }
+
 
   if (!replacesNumber) {
     const { data: open } = await sb
@@ -201,14 +206,18 @@ export async function createQuoteDoc(orderCode: string, replacesNumber?: string 
   const row = Array.isArray(num) ? (num as any[])[0] : (num as any);
 
   const terms = replaces?.terms ?? {
-    payment_terms: "50% προκαταβολή / 50% πριν την αποστολή",
+    payment_terms: "Τραπεζική μεταφορά. 70% προκαταβολή και 30% πριν την παράδοση.",
     delivery_time: "",
     validity: "15 ημέρες",
+    transport: "",
+    warranty: "",
+    technical: "",
     notes: "",
-    deposit_pct: 50,
+    deposit_pct: 70,
     paid: 0,
     lang: "el",
   };
+
 
   const { data: doc, error } = await sb
     .from("quote_documents" as any)
