@@ -11,6 +11,7 @@ import {
   quoteDocEmailDefaults,
   quoteDocSend,
   quoteDocCreate,
+  quoteDocConvert,
 } from "@/lib/api/quote-doc.functions";
 import { computeTotals, emptyLine, money, type QuoteLine } from "@/lib/quote-calc";
 
@@ -36,6 +37,7 @@ function QuoteEditor() {
   const defaults = useServerFn(quoteDocEmailDefaults);
   const send = useServerFn(quoteDocSend);
   const create = useServerFn(quoteDocCreate);
+  const convertFn = useServerFn(quoteDocConvert);
 
   const [doc, setDoc] = useState<any>(null);
   const [order, setOrder] = useState<any>(null);
@@ -150,6 +152,20 @@ function QuoteEditor() {
       await reload();
     } catch (e: any) {
       flash(e.message ?? "Send failed");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function doConvert() {
+    if (!confirm("Convert this accepted quotation into a production order?")) return;
+    setBusy("convert");
+    try {
+      await convertFn({ data: { number } });
+      flash("Converted to order ✓");
+      await reload();
+    } catch (e: any) {
+      flash(e.message ?? "Conversion failed");
     } finally {
       setBusy(null);
     }
