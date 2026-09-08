@@ -13,6 +13,12 @@ export type QuotePdfInput = {
   orderReference: string;
   validity: string;
   company: {
+    name?: string | null;
+    doy?: string | null;
+    bank_name?: string | null;
+    bank_bic?: string | null;
+    bank_iban?: string | null;
+    bank_holder?: string | null;
     address?: string | null;
     phone?: string | null;
     email?: string | null;
@@ -26,7 +32,10 @@ export type QuotePdfInput = {
     email?: string | null;
     phone?: string | null;
     vat?: string | null;
+    doy?: string | null;
     address?: string | null;
+    area?: string | null;
+    attention?: string | null;
   };
   project: {
     title?: string | null;
@@ -46,6 +55,9 @@ export type QuotePdfInput = {
   terms: {
     payment_terms?: string | null;
     delivery_time?: string | null;
+    transport?: string | null;
+    warranty?: string | null;
+    technical?: string | null;
     notes?: string | null;
   };
   image?: { bytes: Uint8Array; kind: "png" | "jpg" } | null;
@@ -68,6 +80,20 @@ const WHITE = rgb(1, 1, 1);
 const L = {
   el: {
     title: "ΠΡΟΣΦΟΡΑ",
+    tagline: "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
+    from: "ΑΠΟ",
+    to: "ΠΡΟΣ",
+    doy: "Δ.Ο.Υ.",
+    attention: "Υπόψη",
+    area: "Περιοχή",
+    transport: "Μεταφορικά",
+    warranty: "Εγγύηση",
+    technical: "Τεχνικές λεπτομέρειες",
+    bankTitle: "ΣΤΟΙΧΕΙΑ ΠΛΗΡΩΜΗΣ / ΤΡΑΠΕΖΑΣ",
+    bankBic: "BIC",
+    bankName: "Τράπεζα",
+    bankIban: "IBAN",
+    bankHolder: "Δικαιούχος",
     sub1: "Επαγγελματική προσφορά",
     sub2: "Μηχανική και Κατασκευή",
     address: "Διεύθυνση",
@@ -124,6 +150,20 @@ const L = {
   },
   en: {
     title: "QUOTATION",
+    tagline: "DESIGN · PROTOTYPE · MANUFACTURE · DELIVER",
+    from: "FROM",
+    to: "TO",
+    doy: "Tax office",
+    attention: "Attention",
+    area: "Area",
+    transport: "Transport",
+    warranty: "Warranty",
+    technical: "Technical details",
+    bankTitle: "PAYMENT / BANK DETAILS",
+    bankBic: "BIC",
+    bankName: "Bank",
+    bankIban: "IBAN",
+    bankHolder: "Account holder",
     sub1: "Professional quotation",
     sub2: "Engineering and Manufacturing",
     address: "Address",
@@ -312,28 +352,32 @@ export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> 
   text(t.sub1, rx, A4[1] - 60, { size: 7.5, color: rgb(0.72, 0.76, 0.82), align: "right" });
   page.drawRectangle({ x: A4[0] - M - 240, y: A4[1] - 70, width: 240, height: 0.7, color: rgb(0.35, 0.5, 0.75) });
   text(t.sub2, rx, A4[1] - 84, { size: 7.5, color: rgb(0.72, 0.76, 0.82), align: "right" });
+  text(t.tagline, M, A4[1] - 92, { size: 7, f: bold, color: rgb(0.62, 0.68, 0.78) });
 
   y = A4[1] - HEADER_H - 14;
 
-  // ---------- company card ----------
-  const compH = 56;
+  // ---------- company (ΑΠΟ) card ----------
+  const compH = 72;
   card(M, y, W, compH);
-  text(t.address, M + 10, y - 12, { size: 6.5, f: bold, color: MUTED });
-  text(input.company.address ?? "", M + 10, y - 22, { size: 8.5, maxW: W - 20 });
-  const col = (W - 20) / 3;
-  const rowY = y - 34;
-  text(t.phone, M + 10, rowY, { size: 6.5, f: bold, color: MUTED });
-  text(input.company.phone ?? "", M + 10, rowY - 10, { size: 8.5, maxW: col - 6 });
-  text(t.email, M + 10 + col, rowY, { size: 6.5, f: bold, color: MUTED });
-  text(input.company.email ?? "", M + 10 + col, rowY - 10, { size: 8.5, maxW: col - 6 });
-  text(t.website, M + 10 + col * 2, rowY, { size: 6.5, f: bold, color: MUTED });
-  text(input.company.website ?? "", M + 10 + col * 2, rowY - 10, { size: 8.5, maxW: col - 6 });
+  text(t.from, M + 10, y - 11, { size: 7, f: bold, color: ACCENT });
+  text(input.company.name ?? "TOREO", M + 10, y - 24, { size: 10, f: bold, maxW: W - 20 });
+  text(input.company.address ?? "", M + 10, y - 36, { size: 8, maxW: W - 20 });
+  const col = (W - 20) / 4;
+  const rowY = y - 50;
+  const cell = (label: string, value: string, i: number) => {
+    text(label, M + 10 + col * i, rowY, { size: 6.5, f: bold, color: MUTED });
+    text(value, M + 10 + col * i, rowY - 10, { size: 8.5, maxW: col - 6 });
+  };
+  cell(t.phone, input.company.phone ?? "", 0);
+  cell(t.email, input.company.email ?? "", 1);
+  cell(t.doy, input.company.doy ?? "", 2);
+  cell(t.vat, input.company.vat ?? "", 3);
   y -= compH + 12;
 
   // ---------- quote + customer cards ----------
   const gap = 12;
   const halfW = (W - gap) / 2;
-  const infoH = 132;
+  const infoH = 200;
   card(M, y, halfW, infoH);
   card(M + halfW + gap, y, halfW, infoH, ACCENT_SOFT);
 
@@ -341,10 +385,15 @@ export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> 
   ly = field(t.quoteNo, input.number, M + 10, ly, halfW - 20);
   ly = field(t.date, input.issueDate, M + 10, ly, halfW - 20);
   ly = field(t.validity, input.validity, M + 10, ly, halfW - 20);
+  ly = field(t.orderRef, input.orderReference, M + 10, ly, halfW - 20);
 
   const cx0 = M + halfW + gap + 10;
-  let cy0 = sectionTitle(t.customerInfo, cx0, y);
-  cy0 = field(t.name, input.customer.name ?? input.customer.company ?? "", cx0, cy0, halfW - 20);
+  let cy0 = sectionTitle(`${t.to} — ${t.customerInfo}`, cx0, y);
+  cy0 = field(t.name, input.customer.company ?? input.customer.name ?? "", cx0, cy0, halfW - 20);
+  cy0 = field(t.attention, input.customer.attention ?? input.customer.name ?? "", cx0, cy0, halfW - 20);
+  cy0 = field(t.custAddress, input.customer.address ?? "", cx0, cy0, halfW - 20);
+  cy0 = field(t.doy, input.customer.doy ?? "", cx0, cy0, halfW - 20);
+  cy0 = field(t.vat, input.customer.vat ?? "", cx0, cy0, halfW - 20);
   cy0 = field(t.phone, input.customer.phone ?? "", cx0, cy0, halfW - 20);
   cy0 = field(t.email, input.customer.email ?? "", cx0, cy0, halfW - 20);
   y -= infoH + 12;
@@ -542,21 +591,56 @@ export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> 
   text(input.orderReference, M + 10, dy - 12, { size: 9, f: bold, maxW: dW - 20 });
   y -= totH + 16;
 
-  // ---------- terms ----------
-  const notesH = input.terms.notes ? heightOf(input.terms.notes, font, 8.5, W - 20) : 0;
-  const termsH = 74 + notesH;
+  // ---------- commercial & technical terms ----------
+  const termPairs: [string, string][] = [
+    [t.delivery, input.terms.delivery_time ?? ""],
+    [t.payTerms, input.terms.payment_terms ?? ""],
+    [t.transport, input.terms.transport ?? ""],
+    [t.warranty, input.terms.warranty ?? ""],
+    [t.technical, input.terms.technical ?? ""],
+    [t.notes, input.terms.notes ?? ""],
+  ];
+  const halfT = (W - 26) / 2;
+  const rowHeights: number[] = [];
+  for (let i = 0; i < termPairs.length; i += 2) {
+    const a = heightOf(termPairs[i][1] || "-", font, 8.5, halfT - 8);
+    const b = termPairs[i + 1] ? heightOf(termPairs[i + 1][1] || "-", font, 8.5, halfT - 8) : 0;
+    rowHeights.push(Math.max(28, Math.max(a, b) + 16));
+  }
+  const termsH = 26 + rowHeights.reduce((s2, h) => s2 + h, 0);
   ensure(termsH + 10);
   card(M, y, W, termsH);
   let yy = sectionTitle(t.termsTitle, M + 10, y);
-  const halfT = (W - 26) / 2;
-  field(t.payTerms, input.terms.payment_terms ?? "", M + 10, yy, halfT);
-  field(t.validity, input.validity, M + 16 + halfT, yy, halfT);
-  yy -= 40;
-  if (input.terms.notes) {
-    text(t.notes, M + 10, yy, { size: 6.5, f: bold, color: MUTED });
-    text(input.terms.notes, M + 10, yy - 12, { size: 8.5, maxW: W - 20 });
+  for (let i = 0, r = 0; i < termPairs.length; i += 2, r++) {
+    const top = yy;
+    text(termPairs[i][0], M + 10, top - 2, { size: 6.5, f: bold, color: MUTED });
+    text(termPairs[i][1] || "-", M + 10, top - 13, { size: 8.5, maxW: halfT - 8 });
+    if (termPairs[i + 1]) {
+      text(termPairs[i + 1][0], M + 16 + halfT, top - 2, { size: 6.5, f: bold, color: MUTED });
+      text(termPairs[i + 1][1] || "-", M + 16 + halfT, top - 13, { size: 8.5, maxW: halfT - 8 });
+    }
+    yy = top - rowHeights[r];
   }
   y -= termsH + 12;
+
+  // ---------- bank details ----------
+  if (input.company.bank_iban || input.company.bank_name || input.company.bank_bic) {
+    const bankH = 56;
+    ensure(bankH + 10);
+    card(M, y, W, bankH, ACCENT_SOFT);
+    text(t.bankTitle, M + 10, y - 12, { size: 8, f: bold, color: INK });
+    const bcol = (W - 20) / 4;
+    const by = y - 30;
+    const bcell = (label: string, value: string, i: number) => {
+      text(label, M + 10 + bcol * i, by, { size: 6.5, f: bold, color: MUTED });
+      text(value, M + 10 + bcol * i, by - 11, { size: 8.5, maxW: bcol - 6 });
+    };
+    bcell(t.bankBic, input.company.bank_bic ?? "", 0);
+    bcell(t.bankName, input.company.bank_name ?? "", 1);
+    bcell(t.bankIban, input.company.bank_iban ?? "", 2);
+    bcell(t.bankHolder, input.company.bank_holder ?? "", 3);
+    y -= bankH + 12;
+  }
 
   // ---------- approval ----------
   const apprH = 56;
