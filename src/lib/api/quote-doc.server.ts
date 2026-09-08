@@ -30,18 +30,18 @@ async function admin() {
 }
 
 export const COMPANY_DEFAULTS = {
-  name: "ΙΩΑΝΝΗΣ ΣΑΡΙΔΗΣ — TOREO",
-  address: "ΕΟ2, 19ο χλμ Π.Ε.Ο. Θεσσαλονίκης - Καβάλας, Λαγκαδάς 572 00",
+  name: "Ιωάννης Σαρίδης",
+  address: "19ο χλμ Π.Ε.Ο. Θεσσαλονίκης - Καβάλας, Καβαλάρι",
   phone: "6947925155",
   email: "info@toreo.gr",
   website: "toreo.gr",
-  vat: "",
-  doy: "",
-  legal: "",
-  bank_name: "",
-  bank_bic: "",
-  bank_iban: "",
-  bank_holder: "",
+  vat: "140286462",
+  doy: "Λαγκαδάς",
+  legal: "Ιωάννης Σαρίδης",
+  bank_name: "Τράπεζα Πειραιώς",
+  bank_bic: "PIRBGRAA",
+  bank_iban: "GR0601722600005260060318701",
+  bank_holder: "Ιωάννης Σαρίδης",
 };
 
 export async function getCompanyInfo() {
