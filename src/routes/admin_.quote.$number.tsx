@@ -247,6 +247,12 @@ function QuoteEditor() {
 
           <section className="border border-white/10 rounded-sm p-4 bg-white/[0.02] space-y-2">
             <div className="text-[10px] font-mono tracking-[0.3em] uppercase text-white/40">Document</div>
+            <label className="block text-xs">Document type
+              <select value={terms.doc_kind ?? "quote"} onChange={(e) => setT("doc_kind", e.target.value)} disabled={locked} className={inputCls}>
+                <option value="quote">ΠΡΟΣΦΟΡΑ / Quotation</option>
+                <option value="order">ΔΕΛΤΙΟ ΠΑΡΑΓΓΕΛΙΑΣ / Order form</option>
+              </select>
+            </label>
             <label className="block text-xs">Language
               <select value={terms.lang ?? "el"} onChange={(e) => setT("lang", e.target.value)} disabled={locked} className={inputCls}>
                 <option value="el">Ελληνικά</option>

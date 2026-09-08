@@ -8,6 +8,8 @@ import { computeTotals, lineNet, lineVat, lineTotal, round2, type QuoteLine } fr
 
 export type QuotePdfInput = {
   lang: "el" | "en";
+  /** Which document this is: a quotation or an order form (ΔΕΛΤΙΟ ΠΑΡΑΓΓΕΛΙΑΣ). */
+  docKind?: "quote" | "order";
   number: string;
   issueDate: string;
   orderReference: string;
@@ -226,7 +228,18 @@ function fmt(n: number, currency: string): string {
 }
 
 export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> {
-  const t = L[input.lang];
+  const base = L[input.lang];
+  const isOrder = input.docKind === "order";
+  const t = {
+    ...base,
+    title: isOrder ? (input.lang === "el" ? "ΔΕΛΤΙΟ ΠΑΡΑΓΓΕΛΙΑΣ" : "ORDER FORM") : base.title,
+    sub1: isOrder ? (input.lang === "el" ? "Δελτίο παραγγελίας" : "Order form") : base.sub1,
+    footerNote: isOrder
+      ? input.lang === "el"
+        ? "Το παρόν έγγραφο αποτελεί δελτίο παραγγελίας και δεν αποτελεί φορολογικό παραστατικό."
+        : "This document is an order form and is not a tax invoice."
+      : base.footerNote,
+  };
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
 
@@ -348,7 +361,7 @@ export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> 
     text("TOREO", M, A4[1] - 58, { size: 22, f: bold, color: WHITE });
   }
   const rx = A4[0] - M;
-  text(t.title, rx, A4[1] - 44, { size: 22, f: bold, color: WHITE, align: "right" });
+  text(t.title, rx, A4[1] - 44, { size: isOrder ? 16 : 22, f: bold, color: WHITE, align: "right" });
   text(t.sub1, rx, A4[1] - 60, { size: 7.5, color: rgb(0.72, 0.76, 0.82), align: "right" });
   page.drawRectangle({ x: A4[0] - M - 240, y: A4[1] - 70, width: 240, height: 0.7, color: rgb(0.35, 0.5, 0.75) });
   text(t.sub2, rx, A4[1] - 84, { size: 7.5, color: rgb(0.72, 0.76, 0.82), align: "right" });

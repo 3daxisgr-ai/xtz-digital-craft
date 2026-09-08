@@ -445,6 +445,7 @@ export async function buildQuotePdfBytes(number: string): Promise<{ bytes: Uint8
 
   const bytes = await renderQuotePdf({
     lang: terms.lang === "en" ? "en" : "el",
+    docKind: terms.doc_kind === "order" ? "order" : "quote",
     number: (doc as any).number,
     issueDate: new Date((doc as any).created_at).toLocaleDateString("el-GR"),
     orderReference: order.order_code ?? "",
