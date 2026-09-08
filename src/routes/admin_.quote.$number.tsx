@@ -233,6 +233,16 @@ function QuoteEditor() {
                 <input type="number" step="0.01" value={terms.paid ?? 0} onChange={(e) => setT("paid", Number(e.target.value))} disabled={locked} className={inputCls} />
               </label>
             </div>
+            <label className="block text-xs">Transport
+              <input value={terms.transport ?? ""} onChange={(e) => setT("transport", e.target.value)} disabled={locked} className={inputCls} />
+            </label>
+            <label className="block text-xs">Warranty
+              <input value={terms.warranty ?? ""} onChange={(e) => setT("warranty", e.target.value)} disabled={locked} className={inputCls} />
+            </label>
+            <label className="block text-xs">Technical details
+              <textarea rows={2} value={terms.technical ?? ""} onChange={(e) => setT("technical", e.target.value)} disabled={locked} className={inputCls} />
+            </label>
+
             <label className="block text-xs">Notes to customer
               <textarea rows={3} value={terms.notes ?? ""} onChange={(e) => setT("notes", e.target.value)} disabled={locked} className={inputCls} />
             </label>
