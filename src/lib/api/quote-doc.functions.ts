@@ -119,3 +119,34 @@ export const quoteDocSetStatus = createServerFn({ method: "POST" })
     await m.requireAdmin();
     return await m.setQuoteDocStatus(data.number, data.status);
   });
+
+export const quoteDocAll = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        status: z.string().nullish(),
+        search: z.string().nullish(),
+        from: z.string().nullish(),
+        to: z.string().nullish(),
+      })
+      .parse(d ?? {}),
+  )
+  .handler(async ({ data }) => {
+    const m = await import("@/lib/api/quote-doc.server");
+    await m.requireAdmin();
+    return await m.listAllQuoteDocs(data);
+  });
+
+export const quoteDocStatsFn = createServerFn({ method: "POST" }).handler(async () => {
+  const m = await import("@/lib/api/quote-doc.server");
+  await m.requireAdmin();
+  return await m.quoteDocStats();
+});
+
+export const quoteDocConvert = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ number: z.string() }).parse(d))
+  .handler(async ({ data }) => {
+    const m = await import("@/lib/api/quote-doc.server");
+    await m.requireAdmin();
+    return await m.convertQuoteToOrder(data.number);
+  });

@@ -1585,8 +1585,11 @@ export type Database = {
       }
       quote_documents: {
         Row: {
+          accepted_at: string | null
           admin_user: string | null
           cc: string | null
+          converted_at: string | null
+          converted_order_id: string | null
           created_at: string
           customer_snapshot: Json
           data_signature: string | null
@@ -1607,16 +1610,23 @@ export type Database = {
           pdf_path: string | null
           project: Json
           recipient: string | null
+          rejected_at: string | null
           replaces_quote_id: string | null
           sent_at: string | null
           seq: number
+          source_message_id: string | null
+          source_thread_id: string | null
           status: string
           terms: Json
           updated_at: string
+          viewed_at: string | null
         }
         Insert: {
+          accepted_at?: string | null
           admin_user?: string | null
           cc?: string | null
+          converted_at?: string | null
+          converted_order_id?: string | null
           created_at?: string
           customer_snapshot?: Json
           data_signature?: string | null
@@ -1637,16 +1647,23 @@ export type Database = {
           pdf_path?: string | null
           project?: Json
           recipient?: string | null
+          rejected_at?: string | null
           replaces_quote_id?: string | null
           sent_at?: string | null
           seq: number
+          source_message_id?: string | null
+          source_thread_id?: string | null
           status?: string
           terms?: Json
           updated_at?: string
+          viewed_at?: string | null
         }
         Update: {
+          accepted_at?: string | null
           admin_user?: string | null
           cc?: string | null
+          converted_at?: string | null
+          converted_order_id?: string | null
           created_at?: string
           customer_snapshot?: Json
           data_signature?: string | null
@@ -1667,14 +1684,32 @@ export type Database = {
           pdf_path?: string | null
           project?: Json
           recipient?: string | null
+          rejected_at?: string | null
           replaces_quote_id?: string | null
           sent_at?: string | null
           seq?: number
+          source_message_id?: string | null
+          source_thread_id?: string | null
           status?: string
           terms?: Json
           updated_at?: string
+          viewed_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "quote_documents_converted_order_id_fkey"
+            columns: ["converted_order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_documents_converted_order_id_fkey"
+            columns: ["converted_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "quote_documents_order_id_fkey"
             columns: ["order_id"]

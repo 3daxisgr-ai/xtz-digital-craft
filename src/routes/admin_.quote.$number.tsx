@@ -11,6 +11,7 @@ import {
   quoteDocEmailDefaults,
   quoteDocSend,
   quoteDocCreate,
+  quoteDocConvert,
 } from "@/lib/api/quote-doc.functions";
 import { computeTotals, emptyLine, money, type QuoteLine } from "@/lib/quote-calc";
 
@@ -36,6 +37,7 @@ function QuoteEditor() {
   const defaults = useServerFn(quoteDocEmailDefaults);
   const send = useServerFn(quoteDocSend);
   const create = useServerFn(quoteDocCreate);
+  const convertFn = useServerFn(quoteDocConvert);
 
   const [doc, setDoc] = useState<any>(null);
   const [order, setOrder] = useState<any>(null);
@@ -155,6 +157,20 @@ function QuoteEditor() {
     }
   }
 
+  async function doConvert() {
+    if (!confirm("Convert this accepted quotation into a production order?")) return;
+    setBusy("convert");
+    try {
+      await convertFn({ data: { number } });
+      flash("Converted to order ✓");
+      await reload();
+    } catch (e: any) {
+      flash(e.message ?? "Conversion failed");
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function doCorrected() {
     if (!confirm("Create a new quotation number that replaces this one?")) return;
     setBusy("new");
@@ -196,9 +212,30 @@ function QuoteEditor() {
           {!locked && doc.status === "generated" && (
             <button className="px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase bg-sky-500 text-black rounded-sm" onClick={openSend}>✉ Send to customer</button>
           )}
+          {["accepted", "accepted_by_customer"].includes(doc.status) && (
+            <button
+              className={btn + " border-emerald-400/40 text-emerald-200"}
+              disabled={busy === "convert"}
+              onClick={doConvert}
+            >
+              ➜ Convert to order
+            </button>
+          )}
           {locked && <button className={btn + " border-amber-300/40 text-amber-200"} disabled={busy === "new"} onClick={doCorrected}>↻ New corrected quotation</button>}
         </div>
       </div>
+
+      <div className="px-4 lg:px-8 pt-4 flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-white/60">
+        <span>Customer: <b className="text-white/90">{doc.customer_snapshot?.company || doc.customer_snapshot?.name || "—"}</b></span>
+        <span>Service: <b className="text-white/90">{project.service || order?.service || "—"}</b></span>
+        <span>Quantity: <b className="text-white/90">{order?.quantity || "—"}</b></span>
+        <span>Material: <b className="text-white/90">{project.material || order?.material || "—"}</b></span>
+        <span>Dimensions: <b className="text-white/90">{project.dimensions || order?.dimensions || "—"}</b></span>
+        <span>Net: <b className="text-white/90">{money(totals.net)}</b></span>
+        <span>VAT: <b className="text-white/90">{money(totals.vat)}</b></span>
+        <span>Total: <b className="text-emerald-300">{money(totals.total)}</b></span>
+      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6 p-4 lg:p-8">
         <div className="space-y-4">
@@ -233,6 +270,16 @@ function QuoteEditor() {
                 <input type="number" step="0.01" value={terms.paid ?? 0} onChange={(e) => setT("paid", Number(e.target.value))} disabled={locked} className={inputCls} />
               </label>
             </div>
+            <label className="block text-xs">Transport
+              <input value={terms.transport ?? ""} onChange={(e) => setT("transport", e.target.value)} disabled={locked} className={inputCls} />
+            </label>
+            <label className="block text-xs">Warranty
+              <input value={terms.warranty ?? ""} onChange={(e) => setT("warranty", e.target.value)} disabled={locked} className={inputCls} />
+            </label>
+            <label className="block text-xs">Technical details
+              <textarea rows={2} value={terms.technical ?? ""} onChange={(e) => setT("technical", e.target.value)} disabled={locked} className={inputCls} />
+            </label>
+
             <label className="block text-xs">Notes to customer
               <textarea rows={3} value={terms.notes ?? ""} onChange={(e) => setT("notes", e.target.value)} disabled={locked} className={inputCls} />
             </label>
