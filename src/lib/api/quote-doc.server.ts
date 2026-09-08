@@ -30,27 +30,41 @@ async function admin() {
 }
 
 export const COMPANY_DEFAULTS = {
+  name: "ΙΩΑΝΝΗΣ ΣΑΡΙΔΗΣ — TOREO",
   address: "ΕΟ2, 19ο χλμ Π.Ε.Ο. Θεσσαλονίκης - Καβάλας, Λαγκαδάς 572 00",
   phone: "6947925155",
   email: "info@toreo.gr",
   website: "toreo.gr",
   vat: "",
+  doy: "",
   legal: "",
+  bank_name: "",
+  bank_bic: "",
+  bank_iban: "",
+  bank_holder: "",
 };
 
 export async function getCompanyInfo() {
   const sb = await admin();
   const { data } = await sb.from("factory_settings").select("company_info").limit(1).maybeSingle();
   const ci = ((data as any)?.company_info ?? {}) as Record<string, string>;
+  const pick = (k: keyof typeof COMPANY_DEFAULTS) => ci[k] || COMPANY_DEFAULTS[k];
   return {
-    address: ci.address || COMPANY_DEFAULTS.address,
-    phone: ci.phone || COMPANY_DEFAULTS.phone,
-    email: ci.email || COMPANY_DEFAULTS.email,
-    website: ci.website || COMPANY_DEFAULTS.website,
-    vat: ci.vat || COMPANY_DEFAULTS.vat,
-    legal: ci.legal || COMPANY_DEFAULTS.legal,
+    name: pick("name"),
+    address: pick("address"),
+    phone: pick("phone"),
+    email: pick("email"),
+    website: pick("website"),
+    vat: pick("vat"),
+    doy: pick("doy"),
+    legal: pick("legal"),
+    bank_name: pick("bank_name"),
+    bank_bic: pick("bank_bic"),
+    bank_iban: pick("bank_iban"),
+    bank_holder: pick("bank_holder"),
   };
 }
+
 
 function hash(s: string): string {
   let h1 = 0x811c9dc5;
