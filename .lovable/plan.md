@@ -1,89 +1,58 @@
-# TOREO Admin: Compact Nav + Quote Decision + Proforma
+# Faster quotations from incoming emails
 
-Scope is admin-only. Public site, portal, tracking, auth, factory/scheduler, order codes and existing customer data untouched. Only the quote-decision and proforma email flows are added — existing status emails continue to work.
+Your app already has a full quotation document system (TR numbers, editable lines, deterministic totals, PDF, email sending, statuses, revisions). This plan does **not** rebuild it. It closes the gaps in your brief by extending what exists, and redraws the PDF to match the ΠΡΟΣΦΟΡΕΣ template you uploaded.
 
-Given the size, I'll ship this in 3 batches, each independently verifiable, and give the final consolidated report after batch 3.
+## 1. Draft quotation created automatically from an email
 
----
+Today a quotation can only be started after a request is accepted internally, and only by hand.
 
-## Batch 1 — Database + backend
+- When the email endpoint creates an order from a customer email, it also creates a **Draft** quotation for it, pre-filled with customer, service, quantity, material, colour, dimensions, deadline and notes taken from the email.
+- Prices are left at 0 — nothing invents a price, exactly as you asked. You type the unit price.
+- Nothing is ever sent automatically.
+- The existing email ingestion, duplicate protection and order creation stay untouched apart from this one extra step.
 
-### Migrations
-- `quote_decisions` — id, order_id, previous_status, new_status (accepted|declined), admin_user, accepted_price, currency, delivery_time, payment_terms, decline_reason (enum + free text), customer_message, recipient_email, email_status (pending|sent|failed), email_message_id, email_error, created_at.
-- `proformas` — id, order_id, number (`INV-YYYY-####`), revision (int, 0 = base, 1+ = R1…), parent_proforma_id, status (draft|generated|sent|paid|cancelled), customer_snapshot (jsonb), financial_snapshot (jsonb: lines, subtotal, discount, net, vat_pct, vat_amount, total, deposit, paid, balance), pdf_path (storage), pdf_generated_at, order_signature (hash of synced fields at PDF gen time), sent_at, recipient, cc, subject, body, email_status, email_message_id, email_error, admin_user, created_at, updated_at.
-- `proforma_lines` — id, proforma_id, position, description, qty, unit, unit_price, discount_pct, vat_pct.
-- Storage bucket `proformas` (private) for PDFs.
-- Extend `orders.status` enum with `declined` if missing (currently has `rejected` — reuse `rejected` to avoid enum churn; internal decline_reason lives on `quote_decisions`).
-- All tables: GRANT to authenticated + service_role, RLS admin-only via `has_role(auth.uid(),'admin')`.
+## 2. Quotations dashboard
 
-### Server functions (`src/lib/api/quote-decision.functions.ts`, `proforma.functions.ts`)
-All `requireSupabaseAuth` + admin role check inside handler.
-- `acceptQuote({ order_id, price, delivery_time, payment_terms, recipient, subject, message, admin_note })` — updates order, writes decision row, sends acceptance email, records email status; idempotent via `pending` guard.
-- `declineQuote({ order_id, reason_code, customer_message, recipient, subject })` — sets status to `rejected`, writes decision, sends email.
-- `retryDecisionEmail({ decision_id })`.
-- `proformaCreate({ order_id })` — only if latest decision is accepted; creates draft from order snapshot + one line from quote price.
-- `proformaUpdate({ id, patch, lines })` — draft/generated only; recomputes totals.
-- `proformaSyncFromOrder(order_id)` — called from `panelUpdateOrder` after save; updates every draft/generated proforma's snapshot and lines[0] where the admin hasn't manually edited them; invalidates PDF (status→draft, pdf_path cleared) if fields differ from `order_signature`.
-- `proformaGeneratePdf({ id })` — renders HTML via headless-safe template, uses `@react-pdf/renderer` (Worker-compatible) → uploads to storage, stores `order_signature`, sets status=generated.
-- `proformaSend({ id, recipient, cc, subject, body })` — requires status=generated AND signature matches current order; attaches stored PDF via Resend; on success status=sent, sent_at=now.
-- `proformaMarkPaid({ id, amount })`, `proformaCancel({ id })`.
-- `proformaCreateRevision({ id })` — clones as R{n+1}, parent link, draft status.
+A new admin page listing every quotation across all customers:
 
-### Email templates
-Add EN+GR templates in `src/lib/email/quote-decision.server.ts` (acceptance/decline) and `proforma.server.ts` (send-with-attachment). Reuse `sendBrandedEmail` (adds `attachments` param passthrough to Resend).
+- Counters: total, draft, sent, accepted, rejected/declined, expired, converted.
+- Table: number, customer, total, status, date — with filters by status, customer, date range and number, plus search.
+- Click through to the existing quotation editor.
 
----
+## 3. Review, edit, preview, send
 
-## Batch 2 — Compact admin navigation
+The existing editor already does this. Additions:
 
-### New shell
-- `src/components/admin/AdminShell.tsx` — sticky top bar: logo, global search, date, groups Overview/Sales/Production/Fulfilment/System as click-open dropdowns (radix DropdownMenu, keyboard nav, click-outside close, active highlight). Right side: admin user menu.
-- `src/components/admin/AdminMobileNav.tsx` — hamburger + slide-out Sheet listing all routes grouped.
-- `src/routes/admin.tsx` and `admin_.*.tsx` — replace existing sidebar with `<AdminShell>`. No route renames; only presentation changes.
-- Route grouping (display-only):
-  - Overview: `/admin` (Dashboard)
-  - Sales: Orders, Quotes, Customers, Reviews
-  - Production: `/admin/factory`, `/admin/scheduler`, Uploads, `/admin/live`
-  - Fulfilment: Tracking, `/admin/shipping`, Notifications
-  - System: `/admin/config`, Admin Users, Logs
-- Order/quote detail: `CompactHeader` component — back link, ref, status, priority, customer name+email, primary CTAs.
+- A clear summary header (customer / service / quantity / material / dimensions / price / VAT / total) with **Edit · Preview PDF · Download · Send**.
+- Editable payment terms per quotation, defaulting to "Τραπεζική μεταφορά. 70% προκαταβολή και 30% πριν την παράδοση." (currently 50/50).
+- Editable email subject and body in Greek or English before sending; on send the PDF is attached, stored privately, status becomes Sent with timestamp and message ID (already implemented — kept).
 
-### Quick Actions restructure (`src/routes/admin.tsx` QuickActions)
-- Primary row: Accept/Decline (when pending), Save Changes, Change Status, Send Update.
-- Dropdowns (radix): PRODUCTION (Run AI, Assign Printer, Priority, Move in Queue, Complete, MFG Report), DOCUMENTS (Upload Photos, Quote PDF, Proforma), DELIVERY (Add Tracking, Tracking Actions), MORE (Delete/Cancel/Archive — with confirm).
-- Context gating: hide/disable per rules with tooltip explaining why.
-- Sticky tabs bar + persistent "Unsaved changes" indicator + sticky Save Changes button; warn on tab switch with dirty state.
+## 4. Statuses and reply handling
 
----
+- Add the missing statuses: **viewed, accepted, rejected, expired, converted, cancelled** (draft / generated / sent / replaced already exist). Expiry is derived from the validity date.
+- When a customer email arrives that is a reply in the thread of an order that has a sent quotation, it is attached to that quotation instead of starting anything new. If the reply clearly accepts ("ok, proceed", "προχωράμε", "συμφωνούμε", "αποδεκτή"), the quotation is marked **Accepted** for your confirmation. No order is created from a reply.
+- **Convert to Order** button on an accepted quotation: moves the existing linked order into production and marks the quotation Converted. It never creates a second order or a second customer.
 
-## Batch 3 — Accept/Decline UI + Proforma editor
+## 5. PDF redrawn to your template
 
-### Accept/Decline modals
-`src/components/admin/AcceptQuoteModal.tsx`, `DeclineQuoteModal.tsx` — prefilled from order, two-step confirm, EN/GR body previews, `ACCEPT & SEND EMAIL` / `DECLINE & SEND EMAIL`. On email fail: keep decision saved, show Retry button, prevent double-submit.
+Rebuild the page layout of the generated PDF to follow ΠΡΟΣΦΟΡΕΣ.docx:
 
-### Proforma editor
-`src/routes/admin_.proforma.$orderCode.tsx` — split editor (left) + live A4 preview (right).
-- Header: number, revision, status pill, order link.
-- Customer/Billing card (editable, prefilled).
-- Line items table (add/edit/dup/delete).
-- Totals card (subtotal/discount/net/VAT/total/deposit/paid/balance, 2 dp).
-- Actions: Preview, Save Draft, Generate PDF, Download PDF, Send Proforma, Mark as Paid, Cancel Proforma.
-- Outdated banner when `order_signature` ≠ current order hash → disables Send until regenerated.
+- Header: logo, DESIGN · PROTOTYPE · MANUFACTURE · DELIVER, and the ΠΡΟΣΦΟΡΑ block with Αριθμός / Ημερομηνία / Ισχύς.
+- Two facing blocks **ΑΠΟ** (Ιωάννης Σαρίδης, address, Δ.Ο.Υ., Α.Φ.Μ., phone, email) and **ΠΡΟΣ** (customer: Επωνυμία, Υπόψη, Διεύθυνση, Περιοχή, Δ.Ο.Υ., Α.Φ.Μ., Τηλέφωνο, Email).
+- Items table with columns Α/Α · ΠΕΡΙΓΡΑΦΗ · ΠΟΣ. · Μ.Μ. · ΤΙΜΗ ΜΟΝ. · ΣΥΝΟΛΟ.
+- Totals block: Καθαρή αξία / Φ.Π.Α. 24% / ΣΥΝΟΛΟ.
+- **ΕΜΠΟΡΙΚΟΙ & ΤΕΧΝΙΚΟΙ ΟΡΟΙ** grid: χρόνος παράδοσης, τρόπος πληρωμής, μεταφορικά, εγγύηση, τεχνικές λεπτομέρειες, παρατηρήσεις.
+- **ΣΤΟΙΧΕΙΑ ΠΛΗΡΩΜΗΣ / ΤΡΑΠΕΖΑΣ**: BIC, τράπεζα, IBAN, κάτοχος — stored in company settings, editable, not hard-coded.
 
-### PDF generation
-`@react-pdf/renderer` (Worker-safe, no native deps). A4 template matching uploaded quotation: black header w/ TOREO white logo, white/light-grey cards, blue accents, dark type, black footer, selectable text, Greek glyphs via bundled DejaVuSans.
+Text stays real selectable text with full Greek support; A4; existing font and generator are reused.
 
-### Send flow
-`SendProformaModal` — recipient/cc/subject/body prefilled, attachment shown, `SEND NOW` second confirm, disabled while in-flight, guards against duplicate send by proforma status.
+## 6. Endpoint for Make
 
----
+`POST /api/public/create-quotation`, protected by the same shared-secret header style as the existing email endpoint. Accepts the structured fields from Gemini and creates a **Draft** quotation (never sends). Your current Make scenario and its endpoint/secret are not changed.
 
 ## Technical notes
 
-- All decision/proforma work runs server-side under `requireSupabaseAuth` + admin role check; no privileged keys in client.
-- `panelUpdateOrder` hook: after save, call `proformaSyncFromOrder(order_id)`. Skips sent/cancelled proformas. If any field changed vs `order_signature` on a generated proforma, PDF invalidated.
-- Get Quote flow (`src/routes/3d-printing-quote.tsx`, `request.tsx`) untouched — verified no proforma creation added.
-- Existing status emails (`sendStatusEmail`) unchanged; new acceptance/decline emails are additional and only sent from explicit admin actions.
-- Revisions: `proformaCreateRevision` produces `INV-YYYY-####-R1`, never mutates sent PDFs.
-
-Ready to implement in the three batches above.
+- Reuses `quote_documents`, `orders`, `quote-calc.ts`, `quote-doc.server.ts`, `quote-pdf.server.ts`, existing storage bucket and email sender. No new customer or order tables.
+- One migration: widen the quotation status check, add `accepted_at` / `converted_order_id` / `viewed_at` columns, and add bank/company fields to factory settings.
+- All money maths stays in `quote-calc.ts` (deterministic, server and UI agree). AI never computes totals or VAT.
+- All quotation reads/writes remain admin-authenticated; PDFs stay in the private bucket behind signed URLs.
