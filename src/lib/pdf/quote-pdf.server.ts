@@ -402,7 +402,7 @@ export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> 
   const projW = W * 0.56;
   const imgW = W - projW - gap;
   const descLines = Math.max(3, wrap(input.project.description ?? "", font, 8.5, projW - 20).length);
-  const projH = Math.max(210, 150 + descLines * 11);
+  const projH = Math.max(250, 200 + Math.max(40, descLines * 11 + 8));
   ensure(projH + 20);
   card(M, y, projW, projH);
   card(M + projW + gap, y, imgW, projH);
