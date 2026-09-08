@@ -377,7 +377,7 @@ export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> 
   // ---------- quote + customer cards ----------
   const gap = 12;
   const halfW = (W - gap) / 2;
-  const infoH = 200;
+  const infoH = 292;
   card(M, y, halfW, infoH);
   card(M + halfW + gap, y, halfW, infoH, ACCENT_SOFT);
 
@@ -481,15 +481,15 @@ export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> 
   y = sectionTitle(t.financial, M, y) - 2;
 
   const cols = [
-    { key: "desc", label: t.thDesc, w: W * 0.3, align: "left" as const },
-    { key: "qty", label: t.thQty, w: W * 0.07, align: "right" as const },
-    { key: "unit", label: t.thUnit, w: W * 0.07, align: "left" as const },
-    { key: "price", label: t.thPrice, w: W * 0.12, align: "right" as const },
-    { key: "disc", label: t.thDisc, w: W * 0.07, align: "right" as const },
+    { key: "desc", label: t.thDesc, w: W * 0.28, align: "left" as const },
+    { key: "qty", label: t.thQty, w: W * 0.06, align: "right" as const },
+    { key: "unit", label: t.thUnit, w: W * 0.06, align: "left" as const },
+    { key: "price", label: t.thPrice, w: W * 0.13, align: "right" as const },
+    { key: "disc", label: t.thDisc, w: W * 0.08, align: "right" as const },
     { key: "net", label: t.thNet, w: W * 0.12, align: "right" as const },
-    { key: "vatp", label: t.thVatPct, w: W * 0.08, align: "right" as const },
-    { key: "vat", label: t.thVat, w: W * 0.08, align: "right" as const },
-    { key: "total", label: t.thTotal, w: W * 0.09, align: "right" as const },
+    { key: "vatp", label: t.thVatPct, w: W * 0.07, align: "right" as const },
+    { key: "vat", label: t.thVat, w: W * 0.1, align: "right" as const },
+    { key: "total", label: t.thTotal, w: W * 0.1, align: "right" as const },
   ];
 
   const drawHeadRow = () => {
@@ -497,7 +497,7 @@ export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> 
     let cx = M + 4;
     for (const c of cols) {
       const tx = c.align === "right" ? cx + c.w - 8 : cx;
-      text(c.label, tx, y - 11.5, { size: 6.8, f: bold, color: WHITE, align: c.align === "right" ? "right" : "left" });
+      text(c.label, tx, y - 11.5, { size: 6, f: bold, color: WHITE, align: c.align === "right" ? "right" : "left" });
       cx += c.w;
     }
     y -= 16;
