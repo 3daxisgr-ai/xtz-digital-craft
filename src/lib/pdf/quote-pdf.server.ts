@@ -377,7 +377,7 @@ export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> 
   // ---------- quote + customer cards ----------
   const gap = 12;
   const halfW = (W - gap) / 2;
-  const infoH = 292;
+  const infoH = 278;
   card(M, y, halfW, infoH);
   card(M + halfW + gap, y, halfW, infoH, ACCENT_SOFT);
 
@@ -402,7 +402,7 @@ export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> 
   const projW = W * 0.56;
   const imgW = W - projW - gap;
   const descLines = Math.max(3, wrap(input.project.description ?? "", font, 8.5, projW - 20).length);
-  const projH = Math.max(250, 200 + Math.max(40, descLines * 11 + 8));
+  const projH = Math.max(226, 186 + Math.max(40, descLines * 11 + 8));
   ensure(projH + 20);
   card(M, y, projW, projH);
   card(M + projW + gap, y, imgW, projH);
