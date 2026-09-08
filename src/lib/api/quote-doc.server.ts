@@ -243,6 +243,9 @@ export async function createQuoteDoc(
       project: replaces?.project ?? seedProject(order),
       terms,
       status: "draft",
+      source_thread_id: opts?.source?.thread_id ?? null,
+      source_message_id: opts?.source?.message_id ?? null,
+
     })
     .select("*")
     .single();
