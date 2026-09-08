@@ -228,7 +228,18 @@ function fmt(n: number, currency: string): string {
 }
 
 export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> {
-  const t = L[input.lang];
+  const base = L[input.lang];
+  const isOrder = input.docKind === "order";
+  const t = {
+    ...base,
+    title: isOrder ? (input.lang === "el" ? "ΔΕΛΤΙΟ ΠΑΡΑΓΓΕΛΙΑΣ" : "ORDER FORM") : base.title,
+    sub1: isOrder ? (input.lang === "el" ? "Δελτίο παραγγελίας" : "Order form") : base.sub1,
+    footerNote: isOrder
+      ? input.lang === "el"
+        ? "Το παρόν έγγραφο αποτελεί δελτίο παραγγελίας και δεν αποτελεί φορολογικό παραστατικό."
+        : "This document is an order form and is not a tax invoice."
+      : base.footerNote,
+  };
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
 
