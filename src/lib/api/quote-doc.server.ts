@@ -223,7 +223,7 @@ export async function createQuoteDoc(
     payment_terms: "Τραπεζική μεταφορά. 70% προκαταβολή και 30% πριν την παράδοση.",
     delivery_time: "",
     validity: "15 ημέρες",
-    transport: "",
+    transport: "Δωρεάν εντός νομού Θεσσαλονίκης.",
     warranty: "",
     technical: "",
     notes: "",
