@@ -361,7 +361,7 @@ export async function renderQuotePdf(input: QuotePdfInput): Promise<Uint8Array> 
     text("TOREO", M, A4[1] - 58, { size: 22, f: bold, color: WHITE });
   }
   const rx = A4[0] - M;
-  text(t.title, rx, A4[1] - 44, { size: 22, f: bold, color: WHITE, align: "right" });
+  text(t.title, rx, A4[1] - 44, { size: isOrder ? 16 : 22, f: bold, color: WHITE, align: "right" });
   text(t.sub1, rx, A4[1] - 60, { size: 7.5, color: rgb(0.72, 0.76, 0.82), align: "right" });
   page.drawRectangle({ x: A4[0] - M - 240, y: A4[1] - 70, width: 240, height: 0.7, color: rgb(0.35, 0.5, 0.75) });
   text(t.sub2, rx, A4[1] - 84, { size: 7.5, color: rgb(0.72, 0.76, 0.82), align: "right" });
