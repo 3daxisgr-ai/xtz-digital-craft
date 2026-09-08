@@ -684,6 +684,8 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
             intake_id: intake.id,
             order_id: order.id,
             order_code: order.order_code ?? null,
+            quotation_number: quotationNumber,
+
             missing_fields: [],
           });
         } catch (e) {
