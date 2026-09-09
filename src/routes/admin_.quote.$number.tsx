@@ -246,41 +246,7 @@ function QuoteEditor() {
           )}
 
           <section className="border border-white/10 rounded-sm p-4 bg-white/[0.02] space-y-2">
-            <div className="text-[10px] font-mono tracking-[0.3em] uppercase text-white/40">Template</div>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { k: "quote", title: "ΠΡΟΣΦΟΡΑ", sub: "Quotation", hint: "Τιμές, ισχύς & όροι" },
-                { k: "order", title: "ΔΕΛΤΙΟ ΠΑΡΑΓΓΕΛΙΑΣ", sub: "Order form", hint: "Επιβεβαίωση παραγγελίας" },
-              ].map((tpl) => {
-                const active = (terms.doc_kind ?? "quote") === tpl.k;
-                return (
-                  <button
-                    key={tpl.k}
-                    type="button"
-                    disabled={locked}
-                    onClick={() => setT("doc_kind", tpl.k)}
-                    className={`text-left rounded-sm border p-3 transition disabled:opacity-50 ${
-                      active ? "border-sky-300/60 bg-sky-300/10" : "border-white/10 bg-white/[0.02] hover:border-white/30"
-                    }`}
-                  >
-                    <div className="h-16 mb-2 rounded-sm bg-white/90 overflow-hidden">
-                      <div className="h-3 bg-neutral-900" />
-                      <div className="p-1.5 space-y-1">
-                        <div className="h-1 w-2/3 bg-neutral-400" />
-                        <div className="h-1 w-1/2 bg-neutral-300" />
-                        <div className="h-1 w-full bg-neutral-200" />
-                        <div className="h-1 w-full bg-neutral-200" />
-                        <div className={`h-1 w-1/3 ${tpl.k === "order" ? "bg-emerald-500" : "bg-sky-500"}`} />
-                      </div>
-                    </div>
-                    <div className="text-[11px] font-semibold leading-tight">{tpl.title}</div>
-                    <div className="text-[10px] text-white/50">{tpl.sub}</div>
-                    <div className="text-[10px] text-white/35 mt-1">{tpl.hint}</div>
-                  </button>
-                );
-              })}
-            </div>
-
+            <div className="text-[10px] font-mono tracking-[0.3em] uppercase text-white/40">Document settings</div>
             <label className="block text-xs">Language
               <select value={terms.lang ?? "el"} onChange={(e) => setT("lang", e.target.value)} disabled={locked} className={inputCls}>
                 <option value="el">Ελληνικά</option>
