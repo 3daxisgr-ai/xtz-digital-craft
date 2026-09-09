@@ -1,15 +1,11 @@
 // Server-side TOREO quotation PDF renderer.
 // Real A4, selectable text, embedded DejaVu Sans (full Greek + € coverage).
-// Visual system follows the TOREO ΠΡΟΣΦΟΡΑ reference document:
-// black header band, light-grey content cards, subtle blue accents, dark footer.
 import { PDFDocument, rgb, StandardFonts, type PDFFont, type PDFPage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import { computeTotals, lineNet, lineVat, lineTotal, round2, type QuoteLine } from "@/lib/quote-calc";
 
 export type QuotePdfInput = {
   lang: "el" | "en";
-  /** Which document this is: a quotation or an order form (ΔΕΛΤΙΟ ΠΑΡΑΓΓΕΛΙΑΣ). */
-  docKind?: "quote" | "order";
   number: string;
   issueDate: string;
   orderReference: string;
