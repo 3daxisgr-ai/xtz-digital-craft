@@ -115,7 +115,7 @@ export function IntroScene() {
       <div className="scene-img-wrap absolute inset-0 opacity-100 will-change-transform origin-center">
         <video
           ref={videoRef}
-          src="https://files.catbox.moe/5tiqal.mp4"
+          src="https://pub-59713968bf3c42aa83f00d4b01b6f1f5.r2.dev/video.mp4"
           autoPlay
           muted
           loop
