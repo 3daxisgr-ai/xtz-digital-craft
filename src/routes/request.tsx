@@ -6,6 +6,10 @@ import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { submitForm } from "@/lib/api/submissions.functions";
+import { MaterialEstimateCard, MaterialEstimateInputs } from "@/components/xtz/MaterialEstimate";
+
+const METAL_CATEGORIES = ["laser", "bending", "welding", "replacement"] as const;
+const isMetal = (c: string | null) => !!c && (METAL_CATEGORIES as readonly string[]).includes(c);
 
 export const Route = createFileRoute("/request")({
   head: () => ({
@@ -106,6 +110,7 @@ function RequestPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState<{ orderCode: string | null } | null>(null);
+  const [materialEstimateId, setMaterialEstimateId] = useState<string | null>(null);
 
   // Pre-select category from ?service= and pre-fill contact from session
   useEffect(() => {
@@ -270,6 +275,7 @@ function RequestPage() {
             contact,
             files: uploaded,
             flags,
+            material_estimate_id: isMetal(category) ? materialEstimateId : null,
           },
         },
       });
@@ -324,6 +330,9 @@ function RequestPage() {
                   setFiles={setFiles}
                 />
               )}
+              {step === "details" && isMetal(category) && (
+                <MaterialEstimateInputs values={details} onChange={(patch) => setDetails((v) => ({ ...v, ...patch }))} />
+              )}
 
               {step === "contact" && (
                 <ContactStep contact={contact} setContact={setContact} />
@@ -336,6 +345,7 @@ function RequestPage() {
                   contact={contact}
                   files={files}
                   onEdit={(s) => goto(s)}
+                  onEstimate={(id) => setMaterialEstimateId(id)}
                 />
               )}
 
@@ -705,9 +715,9 @@ function ContactStep({ contact, setContact }: { contact: ContactInfo; setContact
 }
 
 // ---------------- Step: Review ----------------
-function ReviewStep({ category, details, contact, files, onEdit }: { category: CategoryId; details: Record<string, any>; contact: ContactInfo; files: UploadedFile[]; onEdit: (s: StepId) => void }) {
+function ReviewStep({ category, details, contact, files, onEdit, onEstimate }: { category: CategoryId; details: Record<string, any>; contact: ContactInfo; files: UploadedFile[]; onEdit: (s: StepId) => void; onEstimate: (id: string | null) => void }) {
   const cat = CATEGORIES.find((c) => c.id === category);
-  const detailPairs = Object.entries(details).filter(([, v]) => v !== "" && v !== undefined && v !== null && v !== false);
+  const detailPairs = Object.entries(details).filter(([k, v]) => !k.startsWith("me_") && v !== "" && v !== undefined && v !== null && v !== false);
   return (
     <div className="glass-panel grain p-5 md:p-8 space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3 border-b border-border pb-3">
@@ -717,6 +727,10 @@ function ReviewStep({ category, details, contact, files, onEdit }: { category: C
         </div>
         <button onClick={() => onEdit("service")} className="text-xs font-mono uppercase tracking-widest text-primary hover:underline">Change</button>
       </div>
+
+      {isMetal(category) && (
+        <MaterialEstimateCard service={category} details={details} files={files.map((f) => f.file)} onEstimate={(id) => onEstimate(id)} />
+      )}
 
       <ReviewGrid title="Project Details" onEdit={() => onEdit("details")} pairs={detailPairs} />
 
