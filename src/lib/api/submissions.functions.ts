@@ -211,6 +211,19 @@ export const submitForm = createServerFn({ method: "POST" })
       const orderId = (orderRow as { id: string }).id;
       createdOrderId = orderId;
 
+      // Link material-only estimate (server copy is authoritative; never trust client DTO)
+      const estId = (data.metadata as any)?.material_estimate_id;
+      if (typeof estId === "string" && /^[0-9a-f-]{36}$/i.test(estId)) {
+        try {
+          const { linkEstimate } = await import("@/lib/material-estimate.server");
+          const dto = await linkEstimate(estId, submissionId ?? null, orderId);
+          await (supabaseAdmin as any).from("orders")
+            .update({ metadata: { ...mergedMetadata, material_estimate_id: dto ? estId : null, material_estimate: dto } })
+            .eq("id", orderId);
+        } catch (e) { console.error("[material-estimate] link failed", e); }
+      }
+
+
       // attach uploaded file as customer-visible order file
       if (data.file_path && data.file_name) {
         await (supabaseAdmin as any).from("order_files").insert({

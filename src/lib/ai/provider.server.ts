@@ -16,7 +16,8 @@ export type AiFeature =
   | "detect_duplicate"
   | "summarize_conversation"
   | "generate_email"
-  | "suggest_next_action";
+  | "suggest_next_action"
+  | "material_estimate";
 
 export interface AiSettings {
   provider: string;
