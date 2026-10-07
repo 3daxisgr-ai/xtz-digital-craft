@@ -9,135 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as R3dPrintingQuoteRouteImport } from './routes/3d-printing-quote'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AiRouteImport } from './routes/ai'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as CompanyRouteImport } from './routes/company'
-import { Route as CustomMetalPartsRouteImport } from './routes/custom-metal-parts'
-import { Route as EquipmentRouteImport } from './routes/equipment'
-import { Route as FaqRouteImport } from './routes/faq'
-import { Route as ForumRouteImport } from './routes/forum'
-import { Route as McpRouteImport } from './routes/mcp'
-import { Route as PortalRouteImport } from './routes/portal'
-import { Route as PortfolioRouteImport } from './routes/portfolio'
-import { Route as RapidPrototypingRouteImport } from './routes/rapid-prototyping'
-import { Route as RequestRouteImport } from './routes/request'
-import { Route as ReviewsRouteImport } from './routes/reviews'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as StartRouteImport } from './routes/start'
-import { Route as StartProjectRouteImport } from './routes/start-project'
 import { Route as TrackRouteImport } from './routes/track'
-import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
-import { Route as AdminConfigRouteImport } from './routes/admin_.config'
-import { Route as AdminFactoryRouteImport } from './routes/admin_.factory'
-import { Route as AdminLiveRouteImport } from './routes/admin_.live'
-import { Route as AdminQuotationsRouteImport } from './routes/admin_.quotations'
-import { Route as AdminReviewsRouteImport } from './routes/admin_.reviews'
-import { Route as AdminSchedulerRouteImport } from './routes/admin_.scheduler'
-import { Route as AdminShippingRouteImport } from './routes/admin_.shipping'
-import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
-import { Route as GrCustomMetalPartsRouteImport } from './routes/gr.custom-metal-parts'
-import { Route as GrRapidPrototypingRouteImport } from './routes/gr.rapid-prototyping'
-import { Route as PortalOrderCodeRouteImport } from './routes/portal.$orderCode'
+import { Route as StartProjectRouteImport } from './routes/start-project'
+import { Route as StartRouteImport } from './routes/start'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ReviewsRouteImport } from './routes/reviews'
+import { Route as RequestRouteImport } from './routes/request'
+import { Route as RapidPrototypingRouteImport } from './routes/rapid-prototyping'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as PortalRouteImport } from './routes/portal'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as ForumRouteImport } from './routes/forum'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as EquipmentRouteImport } from './routes/equipment'
+import { Route as CustomMetalPartsRouteImport } from './routes/custom-metal-parts'
+import { Route as CompanyRouteImport } from './routes/company'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AiRouteImport } from './routes/ai'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as R3dPrintingQuoteRouteImport } from './routes/3d-printing-quote'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortalProjectsRouteImport } from './routes/portal_.projects'
-import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
-import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
-import { Route as AdminQuoteNumberRouteImport } from './routes/admin_.quote.$number'
-import { Route as ApiPublicCreateQuotationRouteImport } from './routes/api/public/create-quotation'
+import { Route as PortalOrderCodeRouteImport } from './routes/portal.$orderCode'
+import { Route as GrRapidPrototypingRouteImport } from './routes/gr.rapid-prototyping'
+import { Route as GrCustomMetalPartsRouteImport } from './routes/gr.custom-metal-parts'
+import { Route as CapabilitiesSlugRouteImport } from './routes/capabilities.$slug'
+import { Route as AdminShippingRouteImport } from './routes/admin_.shipping'
+import { Route as AdminSchedulerRouteImport } from './routes/admin_.scheduler'
+import { Route as AdminReviewsRouteImport } from './routes/admin_.reviews'
+import { Route as AdminQuotationsRouteImport } from './routes/admin_.quotations'
+import { Route as AdminLiveRouteImport } from './routes/admin_.live'
+import { Route as AdminFactoryRouteImport } from './routes/admin_.factory'
+import { Route as AdminConfigRouteImport } from './routes/admin_.config'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as ApiPublicIngestEmailOrderRouteImport } from './routes/api/public/ingest-email-order'
+import { Route as ApiPublicCreateQuotationRouteImport } from './routes/api/public/create-quotation'
+import { Route as AdminQuoteNumberRouteImport } from './routes/admin_.quote.$number'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const R3dPrintingQuoteRoute = R3dPrintingQuoteRouteImport.update({
-  id: '/3d-printing-quote',
-  path: '/3d-printing-quote',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AiRoute = AiRouteImport.update({
-  id: '/ai',
-  path: '/ai',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompanyRoute = CompanyRouteImport.update({
-  id: '/company',
-  path: '/company',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CustomMetalPartsRoute = CustomMetalPartsRouteImport.update({
-  id: '/custom-metal-parts',
-  path: '/custom-metal-parts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EquipmentRoute = EquipmentRouteImport.update({
-  id: '/equipment',
-  path: '/equipment',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FaqRoute = FaqRouteImport.update({
-  id: '/faq',
-  path: '/faq',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForumRoute = ForumRouteImport.update({
-  id: '/forum',
-  path: '/forum',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const McpRoute = McpRouteImport.update({
-  id: '/mcp',
-  path: '/mcp',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortalRoute = PortalRouteImport.update({
-  id: '/portal',
-  path: '/portal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioRoute = PortfolioRouteImport.update({
-  id: '/portfolio',
-  path: '/portfolio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RapidPrototypingRoute = RapidPrototypingRouteImport.update({
-  id: '/rapid-prototyping',
-  path: '/rapid-prototyping',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RequestRoute = RequestRouteImport.update({
-  id: '/request',
-  path: '/request',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReviewsRoute = ReviewsRouteImport.update({
-  id: '/reviews',
-  path: '/reviews',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StartRoute = StartRouteImport.update({
-  id: '/start',
-  path: '/start',
+const TrackRoute = TrackRouteImport.update({
+  id: '/track',
+  path: '/track',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StartProjectRoute = StartProjectRouteImport.update({
@@ -145,71 +60,99 @@ const StartProjectRoute = StartProjectRouteImport.update({
   path: '/start-project',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TrackRoute = TrackRouteImport.update({
-  id: '/track',
-  path: '/track',
+const StartRoute = StartRouteImport.update({
+  id: '/start',
+  path: '/start',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Char91DotmcpChar93ListToolsRoute =
-  Char91DotmcpChar93ListToolsRouteImport.update({
-    id: '/.mcp/list-tools',
-    path: '/.mcp/list-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char91DotwellKnownChar93OauthProtectedResourceRoute =
-  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
-    id: '/.well-known/oauth-protected-resource',
-    path: '/.well-known/oauth-protected-resource',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminConfigRoute = AdminConfigRouteImport.update({
-  id: '/admin_/config',
-  path: '/admin/config',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminFactoryRoute = AdminFactoryRouteImport.update({
-  id: '/admin_/factory',
-  path: '/admin/factory',
+const ReviewsRoute = ReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminLiveRoute = AdminLiveRouteImport.update({
-  id: '/admin_/live',
-  path: '/admin/live',
+const RequestRoute = RequestRouteImport.update({
+  id: '/request',
+  path: '/request',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminQuotationsRoute = AdminQuotationsRouteImport.update({
-  id: '/admin_/quotations',
-  path: '/admin/quotations',
+const RapidPrototypingRoute = RapidPrototypingRouteImport.update({
+  id: '/rapid-prototyping',
+  path: '/rapid-prototyping',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminReviewsRoute = AdminReviewsRouteImport.update({
-  id: '/admin_/reviews',
-  path: '/admin/reviews',
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminSchedulerRoute = AdminSchedulerRouteImport.update({
-  id: '/admin_/scheduler',
-  path: '/admin/scheduler',
+const PortalRoute = PortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminShippingRoute = AdminShippingRouteImport.update({
-  id: '/admin_/shipping',
-  path: '/admin/shipping',
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CapabilitiesSlugRoute = CapabilitiesSlugRouteImport.update({
-  id: '/capabilities/$slug',
-  path: '/capabilities/$slug',
+const ForumRoute = ForumRouteImport.update({
+  id: '/forum',
+  path: '/forum',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GrCustomMetalPartsRoute = GrCustomMetalPartsRouteImport.update({
-  id: '/gr/custom-metal-parts',
-  path: '/gr/custom-metal-parts',
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GrRapidPrototypingRoute = GrRapidPrototypingRouteImport.update({
-  id: '/gr/rapid-prototyping',
-  path: '/gr/rapid-prototyping',
+const EquipmentRoute = EquipmentRouteImport.update({
+  id: '/equipment',
+  path: '/equipment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomMetalPartsRoute = CustomMetalPartsRouteImport.update({
+  id: '/custom-metal-parts',
+  path: '/custom-metal-parts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompanyRoute = CompanyRouteImport.update({
+  id: '/company',
+  path: '/company',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiRoute = AiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R3dPrintingQuoteRoute = R3dPrintingQuoteRouteImport.update({
+  id: '/3d-printing-quote',
+  path: '/3d-printing-quote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalProjectsRoute = PortalProjectsRouteImport.update({
+  id: '/portal_/projects',
+  path: '/portal/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalOrderCodeRoute = PortalOrderCodeRouteImport.update({
@@ -217,31 +160,66 @@ const PortalOrderCodeRoute = PortalOrderCodeRouteImport.update({
   path: '/$orderCode',
   getParentRoute: () => PortalRoute,
 } as any)
-const PortalProjectsRoute = PortalProjectsRouteImport.update({
-  id: '/portal_/projects',
-  path: '/portal/projects',
+const GrRapidPrototypingRoute = GrRapidPrototypingRouteImport.update({
+  id: '/gr/rapid-prototyping',
+  path: '/gr/rapid-prototyping',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
-  id: '/.lovable/oauth/consent',
-  path: '/.lovable/oauth/consent',
+const GrCustomMetalPartsRoute = GrCustomMetalPartsRouteImport.update({
+  id: '/gr/custom-metal-parts',
+  path: '/gr/custom-metal-parts',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Char91DotmcpChar93InvokeToolToolRoute =
-  Char91DotmcpChar93InvokeToolToolRouteImport.update({
-    id: '/.mcp/invoke-tool/$tool',
-    path: '/.mcp/invoke-tool/$tool',
+const CapabilitiesSlugRoute = CapabilitiesSlugRouteImport.update({
+  id: '/capabilities/$slug',
+  path: '/capabilities/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminShippingRoute = AdminShippingRouteImport.update({
+  id: '/admin_/shipping',
+  path: '/admin/shipping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSchedulerRoute = AdminSchedulerRouteImport.update({
+  id: '/admin_/scheduler',
+  path: '/admin/scheduler',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/admin_/reviews',
+  path: '/admin/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminQuotationsRoute = AdminQuotationsRouteImport.update({
+  id: '/admin_/quotations',
+  path: '/admin/quotations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLiveRoute = AdminLiveRouteImport.update({
+  id: '/admin_/live',
+  path: '/admin/live',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminFactoryRoute = AdminFactoryRouteImport.update({
+  id: '/admin_/factory',
+  path: '/admin/factory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminConfigRoute = AdminConfigRouteImport.update({
+  id: '/admin_/config',
+  path: '/admin/config',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AdminQuoteNumberRoute = AdminQuoteNumberRouteImport.update({
-  id: '/admin_/quote/$number',
-  path: '/admin/quote/$number',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicCreateQuotationRoute =
-  ApiPublicCreateQuotationRouteImport.update({
-    id: '/api/public/create-quotation',
-    path: '/api/public/create-quotation',
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicIngestEmailOrderRoute =
@@ -250,6 +228,28 @@ const ApiPublicIngestEmailOrderRoute =
     path: '/api/public/ingest-email-order',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCreateQuotationRoute =
+  ApiPublicCreateQuotationRouteImport.update({
+    id: '/api/public/create-quotation',
+    path: '/api/public/create-quotation',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminQuoteNumberRoute = AdminQuoteNumberRouteImport.update({
+  id: '/admin_/quote/$number',
+  path: '/admin/quote/$number',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -557,130 +557,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/3d-printing-quote': {
-      id: '/3d-printing-quote'
-      path: '/3d-printing-quote'
-      fullPath: '/3d-printing-quote'
-      preLoaderRoute: typeof R3dPrintingQuoteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai': {
-      id: '/ai'
-      path: '/ai'
-      fullPath: '/ai'
-      preLoaderRoute: typeof AiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/company': {
-      id: '/company'
-      path: '/company'
-      fullPath: '/company'
-      preLoaderRoute: typeof CompanyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/custom-metal-parts': {
-      id: '/custom-metal-parts'
-      path: '/custom-metal-parts'
-      fullPath: '/custom-metal-parts'
-      preLoaderRoute: typeof CustomMetalPartsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/equipment': {
-      id: '/equipment'
-      path: '/equipment'
-      fullPath: '/equipment'
-      preLoaderRoute: typeof EquipmentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/faq': {
-      id: '/faq'
-      path: '/faq'
-      fullPath: '/faq'
-      preLoaderRoute: typeof FaqRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forum': {
-      id: '/forum'
-      path: '/forum'
-      fullPath: '/forum'
-      preLoaderRoute: typeof ForumRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mcp': {
-      id: '/mcp'
-      path: '/mcp'
-      fullPath: '/mcp'
-      preLoaderRoute: typeof McpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portal': {
-      id: '/portal'
-      path: '/portal'
-      fullPath: '/portal'
-      preLoaderRoute: typeof PortalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio': {
-      id: '/portfolio'
-      path: '/portfolio'
-      fullPath: '/portfolio'
-      preLoaderRoute: typeof PortfolioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/rapid-prototyping': {
-      id: '/rapid-prototyping'
-      path: '/rapid-prototyping'
-      fullPath: '/rapid-prototyping'
-      preLoaderRoute: typeof RapidPrototypingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/request': {
-      id: '/request'
-      path: '/request'
-      fullPath: '/request'
-      preLoaderRoute: typeof RequestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reviews': {
-      id: '/reviews'
-      path: '/reviews'
-      fullPath: '/reviews'
-      preLoaderRoute: typeof ReviewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/start': {
-      id: '/start'
-      path: '/start'
-      fullPath: '/start'
-      preLoaderRoute: typeof StartRouteImport
+    '/track': {
+      id: '/track'
+      path: '/track'
+      fullPath: '/track'
+      preLoaderRoute: typeof TrackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/start-project': {
@@ -690,95 +571,137 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StartProjectRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/track': {
-      id: '/track'
-      path: '/track'
-      fullPath: '/track'
-      preLoaderRoute: typeof TrackRouteImport
+    '/start': {
+      id: '/start'
+      path: '/start'
+      fullPath: '/start'
+      preLoaderRoute: typeof StartRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.mcp/list-tools': {
-      id: '/.mcp/list-tools'
-      path: '/.mcp/list-tools'
-      fullPath: '/.mcp/list-tools'
-      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.well-known/oauth-protected-resource': {
-      id: '/.well-known/oauth-protected-resource'
-      path: '/.well-known/oauth-protected-resource'
-      fullPath: '/.well-known/oauth-protected-resource'
-      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+    '/reviews': {
+      id: '/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof ReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/config': {
-      id: '/admin_/config'
-      path: '/admin/config'
-      fullPath: '/admin/config'
-      preLoaderRoute: typeof AdminConfigRouteImport
+    '/request': {
+      id: '/request'
+      path: '/request'
+      fullPath: '/request'
+      preLoaderRoute: typeof RequestRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/factory': {
-      id: '/admin_/factory'
-      path: '/admin/factory'
-      fullPath: '/admin/factory'
-      preLoaderRoute: typeof AdminFactoryRouteImport
+    '/rapid-prototyping': {
+      id: '/rapid-prototyping'
+      path: '/rapid-prototyping'
+      fullPath: '/rapid-prototyping'
+      preLoaderRoute: typeof RapidPrototypingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/live': {
-      id: '/admin_/live'
-      path: '/admin/live'
-      fullPath: '/admin/live'
-      preLoaderRoute: typeof AdminLiveRouteImport
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/quotations': {
-      id: '/admin_/quotations'
-      path: '/admin/quotations'
-      fullPath: '/admin/quotations'
-      preLoaderRoute: typeof AdminQuotationsRouteImport
+    '/portal': {
+      id: '/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof PortalRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/reviews': {
-      id: '/admin_/reviews'
-      path: '/admin/reviews'
-      fullPath: '/admin/reviews'
-      preLoaderRoute: typeof AdminReviewsRouteImport
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/scheduler': {
-      id: '/admin_/scheduler'
-      path: '/admin/scheduler'
-      fullPath: '/admin/scheduler'
-      preLoaderRoute: typeof AdminSchedulerRouteImport
+    '/forum': {
+      id: '/forum'
+      path: '/forum'
+      fullPath: '/forum'
+      preLoaderRoute: typeof ForumRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/shipping': {
-      id: '/admin_/shipping'
-      path: '/admin/shipping'
-      fullPath: '/admin/shipping'
-      preLoaderRoute: typeof AdminShippingRouteImport
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/capabilities/$slug': {
-      id: '/capabilities/$slug'
-      path: '/capabilities/$slug'
-      fullPath: '/capabilities/$slug'
-      preLoaderRoute: typeof CapabilitiesSlugRouteImport
+    '/equipment': {
+      id: '/equipment'
+      path: '/equipment'
+      fullPath: '/equipment'
+      preLoaderRoute: typeof EquipmentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/gr/custom-metal-parts': {
-      id: '/gr/custom-metal-parts'
-      path: '/gr/custom-metal-parts'
-      fullPath: '/gr/custom-metal-parts'
-      preLoaderRoute: typeof GrCustomMetalPartsRouteImport
+    '/custom-metal-parts': {
+      id: '/custom-metal-parts'
+      path: '/custom-metal-parts'
+      fullPath: '/custom-metal-parts'
+      preLoaderRoute: typeof CustomMetalPartsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/gr/rapid-prototyping': {
-      id: '/gr/rapid-prototyping'
-      path: '/gr/rapid-prototyping'
-      fullPath: '/gr/rapid-prototyping'
-      preLoaderRoute: typeof GrRapidPrototypingRouteImport
+    '/company': {
+      id: '/company'
+      path: '/company'
+      fullPath: '/company'
+      preLoaderRoute: typeof CompanyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai': {
+      id: '/ai'
+      path: '/ai'
+      fullPath: '/ai'
+      preLoaderRoute: typeof AiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/3d-printing-quote': {
+      id: '/3d-printing-quote'
+      path: '/3d-printing-quote'
+      fullPath: '/3d-printing-quote'
+      preLoaderRoute: typeof R3dPrintingQuoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal_/projects': {
+      id: '/portal_/projects'
+      path: '/portal/projects'
+      fullPath: '/portal/projects'
+      preLoaderRoute: typeof PortalProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal/$orderCode': {
@@ -788,32 +711,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalOrderCodeRouteImport
       parentRoute: typeof PortalRoute
     }
-    '/portal_/projects': {
-      id: '/portal_/projects'
-      path: '/portal/projects'
-      fullPath: '/portal/projects'
-      preLoaderRoute: typeof PortalProjectsRouteImport
+    '/gr/rapid-prototyping': {
+      id: '/gr/rapid-prototyping'
+      path: '/gr/rapid-prototyping'
+      fullPath: '/gr/rapid-prototyping'
+      preLoaderRoute: typeof GrRapidPrototypingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.lovable/oauth/consent': {
-      id: '/.lovable/oauth/consent'
-      path: '/.lovable/oauth/consent'
-      fullPath: '/.lovable/oauth/consent'
-      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+    '/gr/custom-metal-parts': {
+      id: '/gr/custom-metal-parts'
+      path: '/gr/custom-metal-parts'
+      fullPath: '/gr/custom-metal-parts'
+      preLoaderRoute: typeof GrCustomMetalPartsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.mcp/invoke-tool/$tool': {
-      id: '/.mcp/invoke-tool/$tool'
-      path: '/.mcp/invoke-tool/$tool'
-      fullPath: '/.mcp/invoke-tool/$tool'
-      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+    '/capabilities/$slug': {
+      id: '/capabilities/$slug'
+      path: '/capabilities/$slug'
+      fullPath: '/capabilities/$slug'
+      preLoaderRoute: typeof CapabilitiesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/quote/$number': {
-      id: '/admin_/quote/$number'
-      path: '/admin/quote/$number'
-      fullPath: '/admin/quote/$number'
-      preLoaderRoute: typeof AdminQuoteNumberRouteImport
+    '/admin_/shipping': {
+      id: '/admin_/shipping'
+      path: '/admin/shipping'
+      fullPath: '/admin/shipping'
+      preLoaderRoute: typeof AdminShippingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/scheduler': {
+      id: '/admin_/scheduler'
+      path: '/admin/scheduler'
+      fullPath: '/admin/scheduler'
+      preLoaderRoute: typeof AdminSchedulerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/reviews': {
+      id: '/admin_/reviews'
+      path: '/admin/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/quotations': {
+      id: '/admin_/quotations'
+      path: '/admin/quotations'
+      fullPath: '/admin/quotations'
+      preLoaderRoute: typeof AdminQuotationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/live': {
+      id: '/admin_/live'
+      path: '/admin/live'
+      fullPath: '/admin/live'
+      preLoaderRoute: typeof AdminLiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/factory': {
+      id: '/admin_/factory'
+      path: '/admin/factory'
+      fullPath: '/admin/factory'
+      preLoaderRoute: typeof AdminFactoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/config': {
+      id: '/admin_/config'
+      path: '/admin/config'
+      fullPath: '/admin/config'
+      preLoaderRoute: typeof AdminConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/ingest-email-order': {
+      id: '/api/public/ingest-email-order'
+      path: '/api/public/ingest-email-order'
+      fullPath: '/api/public/ingest-email-order'
+      preLoaderRoute: typeof ApiPublicIngestEmailOrderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/create-quotation': {
@@ -823,11 +809,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCreateQuotationRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/ingest-email-order': {
-      id: '/api/public/ingest-email-order'
-      path: '/api/public/ingest-email-order'
-      fullPath: '/api/public/ingest-email-order'
-      preLoaderRoute: typeof ApiPublicIngestEmailOrderRouteImport
+    '/admin_/quote/$number': {
+      id: '/admin_/quote/$number'
+      path: '/admin/quote/$number'
+      fullPath: '/admin/quote/$number'
+      preLoaderRoute: typeof AdminQuoteNumberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lovable/email/queue/process': {
