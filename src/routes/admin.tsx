@@ -34,6 +34,7 @@ import {
 import { STATUS_FLOW, STATUS_LABEL } from "@/lib/api/orders.functions";
 import { panelListAnalyses, panelAnalyzeFile, panelApplyOverride, panelListMachines } from "@/lib/api/factory.functions";
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
+import { MaterialEstimateAdmin } from "@/components/admin/MaterialEstimateAdmin";
 import { RequestSummary } from "@/components/xtz/RequestSummary";
 import { acceptQuote, declineQuote } from "@/lib/api/quote-decision.functions";
 import { quoteDocCreate } from "@/lib/api/quote-doc.functions";
@@ -519,7 +520,7 @@ function OrderDetail({ code, onBack }: { code: string; onBack: () => void }) {
           <TabCustomer o={o} patch={patch} />
         </div>
       )}
-      {tab === "ai" && <TabAI code={code} orderMeta={o} />}
+      {tab === "ai" && <div className="space-y-4"><MaterialEstimateAdmin orderId={o.id} /><TabAI code={code} orderMeta={o} /></div>}
       {tab === "files" && <TabFiles d={d} code={code} refresh={refresh} />}
       {tab === "updates" && <TabUpdates d={d} code={code} refresh={refresh} />}
       {tab === "emails" && (

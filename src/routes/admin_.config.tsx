@@ -10,6 +10,7 @@ import {
   panelListMachines, panelUpsertMachine, panelDeleteMachine,
   panelListMaterials, panelUpsertMaterial, panelSetMaterialStatus,
 } from "@/lib/api/factory.functions";
+import { SheetCalculator } from "@/components/admin/MaterialEstimateAdmin";
 
 
 import { panelOvernightOptimize, panelBatchSuggest } from "@/lib/api/insights.functions";
@@ -178,6 +179,10 @@ function PricingSection() {
           </label>
         </div>
       </Panel>
+      <Panel title="Material-only estimate (internal)">
+        <div className="grid md:grid-cols-3 gap-4">{["material_markup_pct"].map(num)}</div>
+        <p className="mt-3 text-[11px] text-white/40">Προσαύξηση επί του κόστους υλικού (τιμή = κόστος × (1 + %/100)). Προεπιλογή 30%. Δεν εμφανίζεται ποτέ στον πελάτη.</p>
+      </Panel>
       <Panel title="Urgency Surcharge Rules">
         <div className="grid md:grid-cols-4 gap-4">
           {["urgency_surcharge_flexible_eur","urgency_surcharge_standard_eur","urgency_surcharge_urgent_eur","urgency_high_load_threshold_hours"].map(num)}
@@ -186,14 +191,22 @@ function PricingSection() {
       </Panel>
       <button onClick={() => {
         const patch: any = {};
-        for (const k of ["min_margin_pct","min_hourly_rate_eur","min_production_charge_eur","min_order_value_eur","work_start_hour","work_end_hour","urgency_surcharge_flexible_eur","urgency_surcharge_standard_eur","urgency_surcharge_urgent_eur","urgency_high_load_threshold_hours"]) {
+        for (const k of ["material_markup_pct","min_margin_pct","min_hourly_rate_eur","min_production_charge_eur","min_order_value_eur","work_start_hour","work_end_hour","urgency_surcharge_flexible_eur","urgency_surcharge_standard_eur","urgency_surcharge_urgent_eur","urgency_high_load_threshold_hours"]) {
           const v = Number(f[k]); if (Number.isFinite(v)) patch[k] = v;
         }
         patch.allow_overnight_default = !!f.allow_overnight_default;
         save(patch);
-      }} className="bg-amber-300 text-black text-xs font-mono px-4 py-2 rounded">SAVE PRICING</button>
+      }} className="bg-amber-300 text-black text-xs font-mono px-4 py-2 rounded mb-6">SAVE PRICING</button>
+      <PricingSheetCalc defaultMarkup={Number(s.material_markup_pct ?? 30)} />
     </>
   );
+}
+
+function PricingSheetCalc({ defaultMarkup }: { defaultMarkup: number }) {
+  const list = useServerFn(panelListMaterials);
+  const [rows, setRows] = useState<any[]>([]);
+  useEffect(() => { list().then((r) => setRows(r as any[])).catch(() => setRows([])); /* eslint-disable-next-line */ }, []);
+  return <SheetCalculator materials={rows} defaultMarkup={defaultMarkup} />;
 }
 
 // ---------- MATERIALS ----------
@@ -227,6 +240,18 @@ function MaterialsSection() {
       status: editing.status ?? "in_stock",
       active: (editing.status ?? "in_stock") !== "disabled",
     };
+    if ((editing.process ?? "") === "sheet_metal") {
+      const pr = { ...(editing.properties ?? {}) } as any;
+      const numOrNull = (v: any) => (v === "" || v == null || !Number.isFinite(Number(v)) ? null : Number(v));
+      pr.grade = editing.p_grade?.trim() || null;
+      pr.grade_known = !!pr.grade;
+      pr.thickness_mm = numOrNull(editing.p_thickness_mm);
+      pr.sheet_width_mm = numOrNull(editing.p_sheet_width_mm);
+      pr.sheet_length_mm = numOrNull(editing.p_sheet_length_mm);
+      pr.finish = editing.p_finish?.trim() || null;
+      pr.customer_label = editing.p_customer_label?.trim() || pr.customer_label || editing.name;
+      patch.properties = pr;
+    }
     try { await upsert({ data: { id: editing.id, patch } }); toast.success("Saved"); setEditing(null); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Save failed"); }
   }
@@ -291,6 +316,9 @@ function MaterialsSection() {
               ))}
               {["price_per_kg","density_g_cm3","stock_kg","minimum_stock_kg"].map((k) => (
                 <label key={k} className="text-xs"><Label>{k.replace(/_/g," ")}</Label><input className={inp} value={editing[k] ?? ""} onChange={(e) => setEditing({ ...editing, [k]: e.target.value })} /></label>
+              ))}
+              {(editing.process ?? "") === "sheet_metal" && (["p_grade","p_thickness_mm","p_sheet_width_mm","p_sheet_length_mm","p_finish","p_customer_label"] as const).map((k) => (
+                <label key={k} className="text-xs"><Label>{({p_grade:"grade / code (empty = unspecified)",p_thickness_mm:"thickness mm",p_sheet_width_mm:"sheet width mm",p_sheet_length_mm:"sheet length mm",p_finish:"finish",p_customer_label:"customer label"} as any)[k]}</Label><input className={inp} value={editing[k] ?? ""} onChange={(e) => setEditing({ ...editing, [k]: e.target.value })} /></label>
               ))}
               <label className="text-xs"><Label>supplier</Label><input className={inp} value={editing.supplier ?? ""} onChange={(e) => setEditing({ ...editing, supplier: e.target.value })} /></label>
               <label className="text-xs"><Label>last restocked</Label><input type="date" className={inp} value={(editing.last_restocked_at ?? "").slice(0,10)} onChange={(e) => setEditing({ ...editing, last_restocked_at: e.target.value })} /></label>
