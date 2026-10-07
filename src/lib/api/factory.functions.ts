@@ -165,6 +165,7 @@ export const panelGetSettings = createServerFn({ method: "GET" }).handler(async 
 
 const settingsInput = z.object({
   min_margin_pct: z.number().min(0).max(300).optional(),
+  material_markup_pct: z.number().min(0).max(1000).optional(),
   min_hourly_rate_eur: z.number().nonnegative().optional(),
   min_production_charge_eur: z.number().nonnegative().optional(),
   min_order_value_eur: z.number().nonnegative().optional(),

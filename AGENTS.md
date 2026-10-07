@@ -1,0 +1,2 @@
+- Material-only estimates: math lives in pure `src/lib/material-estimate.ts` (unit-tested); AI only interprets geometry/material and its prices are ignored. Why: deterministic, auditable prices.
+- `material_estimates` is service-role only (no anon/authenticated policies); customers receive only the DTO from `toCustomerDTO`. Why: never leak purchase cost or markup.

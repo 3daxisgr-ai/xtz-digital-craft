@@ -349,6 +349,7 @@ export type Database = {
           currency: string
           hide_out_of_stock_materials: boolean
           id: string
+          material_markup_pct: number
           min_hourly_rate_eur: number
           min_margin_pct: number
           min_order_value_eur: number
@@ -373,6 +374,7 @@ export type Database = {
           currency?: string
           hide_out_of_stock_materials?: boolean
           id?: string
+          material_markup_pct?: number
           min_hourly_rate_eur?: number
           min_margin_pct?: number
           min_order_value_eur?: number
@@ -397,6 +399,7 @@ export type Database = {
           currency?: string
           hide_out_of_stock_materials?: boolean
           id?: string
+          material_markup_pct?: number
           min_hourly_rate_eur?: number
           min_margin_pct?: number
           min_order_value_eur?: number
@@ -518,6 +521,126 @@ export type Database = {
           vendor?: string | null
         }
         Relationships: []
+      }
+      material_estimates: {
+        Row: {
+          ai_output: Json | null
+          assumptions: Json
+          confidence: number | null
+          cost_per_kg: number | null
+          created_at: string
+          customer_dto: Json
+          density_g_cm3: number | null
+          fingerprint: string
+          geometry: Json
+          geometry_source: string
+          id: string
+          inputs: Json
+          ip_hash: string | null
+          kg: number | null
+          kg_max: number | null
+          kg_min: number | null
+          markup_pct: number | null
+          material_code: string | null
+          material_cost: number | null
+          material_label: string | null
+          missing_fields: Json
+          mode: string
+          model: string | null
+          order_id: string | null
+          price: number | null
+          price_max: number | null
+          price_min: number | null
+          quantity: number
+          service: string | null
+          submission_id: string | null
+          thickness_mm: number | null
+          updated_at: string
+        }
+        Insert: {
+          ai_output?: Json | null
+          assumptions?: Json
+          confidence?: number | null
+          cost_per_kg?: number | null
+          created_at?: string
+          customer_dto?: Json
+          density_g_cm3?: number | null
+          fingerprint: string
+          geometry?: Json
+          geometry_source?: string
+          id?: string
+          inputs?: Json
+          ip_hash?: string | null
+          kg?: number | null
+          kg_max?: number | null
+          kg_min?: number | null
+          markup_pct?: number | null
+          material_code?: string | null
+          material_cost?: number | null
+          material_label?: string | null
+          missing_fields?: Json
+          mode?: string
+          model?: string | null
+          order_id?: string | null
+          price?: number | null
+          price_max?: number | null
+          price_min?: number | null
+          quantity?: number
+          service?: string | null
+          submission_id?: string | null
+          thickness_mm?: number | null
+          updated_at?: string
+        }
+        Update: {
+          ai_output?: Json | null
+          assumptions?: Json
+          confidence?: number | null
+          cost_per_kg?: number | null
+          created_at?: string
+          customer_dto?: Json
+          density_g_cm3?: number | null
+          fingerprint?: string
+          geometry?: Json
+          geometry_source?: string
+          id?: string
+          inputs?: Json
+          ip_hash?: string | null
+          kg?: number | null
+          kg_max?: number | null
+          kg_min?: number | null
+          markup_pct?: number | null
+          material_code?: string | null
+          material_cost?: number | null
+          material_label?: string | null
+          missing_fields?: Json
+          mode?: string
+          model?: string | null
+          order_id?: string | null
+          price?: number | null
+          price_max?: number | null
+          price_min?: number | null
+          quantity?: number
+          service?: string | null
+          submission_id?: string | null
+          thickness_mm?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "material_estimates_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "material_estimates_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       materials: {
         Row: {
