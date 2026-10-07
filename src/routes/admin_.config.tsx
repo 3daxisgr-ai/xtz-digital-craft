@@ -289,6 +289,9 @@ function MaterialsSection() {
                   <span className="font-mono text-xs text-amber-300/80">{m.code}</span>
                   <span className="text-white/70">· {m.family} · {m.name}</span>
                   <span className="text-white/40">· {m.stock_kg ?? 0}kg · €{m.price_per_kg ?? 0}/kg</span>
+                  {m.process === "sheet_metal" && (
+                    <span className="text-white/40">· {(m.properties as any)?.thickness_mm ?? "?"} mm{(m.properties as any)?.sheet_width_mm ? ` · ${(m.properties as any).sheet_width_mm}×${(m.properties as any).sheet_length_mm}` : ""}{(m.properties as any)?.finish ? ` · ${(m.properties as any).finish}` : ""} · ρ {m.density_g_cm3 ?? "?"}{(m.properties as any)?.grade ? "" : <span className="text-amber-300/80"> · grade unspecified</span>}</span>
+                  )}
                 </div>
                 <div className="flex gap-1 items-center">
                   {(["in_stock","low_stock","out_of_stock","disabled"] as MStatus[]).map((s2) => (
@@ -301,7 +304,7 @@ function MaterialsSection() {
                       {s2 === "in_stock" ? "In" : s2 === "low_stock" ? "Low" : s2 === "out_of_stock" ? "OOS" : "Off"}
                     </button>
                   ))}
-                  <button onClick={() => setEditing({ ...m })} className="text-xs text-sky-300 hover:underline ml-2">Edit</button>
+                  <button onClick={() => { const pr = (m.properties ?? {}) as any; setEditing({ ...m, p_grade: pr.grade ?? "", p_thickness_mm: pr.thickness_mm ?? "", p_sheet_width_mm: pr.sheet_width_mm ?? "", p_sheet_length_mm: pr.sheet_length_mm ?? "", p_finish: pr.finish ?? "", p_customer_label: pr.customer_label ?? "" }); }} className="text-xs text-sky-300 hover:underline ml-2">Edit</button>
                 </div>
               </div>
             );
