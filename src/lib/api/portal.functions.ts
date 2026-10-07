@@ -7,7 +7,7 @@ import { z } from "zod";
 async function getUser() {
   const { supabase } = await import("@/integrations/supabase/client");
   const headers = getRequestHeaders();
-  const authHeader = headers["authorization"] || headers["Authorization"];
+  const authHeader = headers.get("authorization");
   if (!authHeader) return null;
   const token = String(authHeader).replace(/^Bearer\s+/i, "");
   const { data, error } = await supabase.auth.getUser(token);

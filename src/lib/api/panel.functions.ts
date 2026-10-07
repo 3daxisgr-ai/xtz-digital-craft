@@ -29,8 +29,8 @@ async function requireAdminCookie() {
 function clientIp() {
   try {
     const h = getRequestHeaders();
-    const xf = (h["x-forwarded-for"] || h["X-Forwarded-For"]) as string | undefined;
-    return (xf?.split(",")[0]?.trim()) || (h["x-real-ip"] as string | undefined) || null;
+    const xf = h.get("x-forwarded-for") ?? undefined;
+    return (xf?.split(",")[0]?.trim()) || h.get("x-real-ip") || null;
   } catch {
     return null;
   }
@@ -38,7 +38,7 @@ function clientIp() {
 function clientUa() {
   try {
     const h = getRequestHeaders();
-    return (h["user-agent"] as string) || null;
+    return h.get("user-agent") || null;
   } catch {
     return null;
   }
