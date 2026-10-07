@@ -68,6 +68,8 @@ async function interpret(req: EstimateRequest, materials: SheetMaterial[]): Prom
     "Never output prices. Choose material_code ONLY from the provided catalog (or null). Prefer thicknesses that exist in the catalog. " +
     "If no drawing dimensions are given, create a simple, plausible INDICATIVE flat-blank geometric assumption (developed blank width × length in mm) " +
     "for the described part and describe it in geometry_note in Greek (e.g. 'Επίπεδο ανάπτυγμα 600×400 mm'). " +
+    "WHENEVER you can assume a geometry you MUST fill the numeric fields: area_mm2 = TOTAL developed flat sheet area in mm² of ALL blanks for ONE unit " +
+    "(e.g. box + lid summed), and width_mm/length_mm = the dimensions of the largest flat blank. Do not leave them null if geometry_note describes dimensions. " +
     "If the request is too vague to assume anything, set confidence below 0.3 and list the minimum missing items in Greek in 'missing'. " +
     'Schema: {"material_code":string|null,"thickness_mm":number|null,"width_mm":number|null,"length_mm":number|null,' +
     '"area_mm2":number|null,"quantity":number|null,"confidence":number(0..1),"assumptions":string[] (Greek),"missing":string[] (Greek),"geometry_note":string|null}';
