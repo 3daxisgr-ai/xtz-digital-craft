@@ -134,7 +134,7 @@ export function MaterialEstimateCard({ service, details, files, onEstimate, desi
   const run = useServerFn(estimateMaterial);
   const [state, setState] = useState<"loading" | "done" | "error">("loading");
   const [dto, setDto] = useState<CustomerEstimateDTO | null>(null);
-  const key = JSON.stringify([details.me_material_code, details.me_other_material, details.me_thickness_mm, details.me_width_mm, details.me_length_mm, details.me_quantity, details.me_description, files.map((f) => f.name + f.size), designInputType]);
+  const key = JSON.stringify([details.me_material_code, details.me_other_material, details.me_thickness_mm, details.me_width_mm, details.me_length_mm, details.me_quantity, details.me_description, details.material, details.material_thickness, details.overall_dimensions, details.quantity, details.di_description, details.di_dimensions, files.map((f) => f.name + f.size), designInputType]);
 
   useEffect(() => {
     let alive = true;
@@ -193,7 +193,7 @@ export function MaterialEstimateCard({ service, details, files, onEstimate, desi
           <div className="border-t border-border pt-4">
             {(dto.mode === "exact" || dto.mode === "range") && dto.price == null && dto.price_min == null && <div className="text-sm text-foreground/80">Η τιμή υλικού θα περιληφθεί στην επίσημη προσφορά.</div>}
             {dto.mode === "exact" && dto.price != null && <div className="font-display text-4xl font-bold text-primary">{eur(dto.price)}</div>}
-            {dto.mode === "range" && dto.price_min != null && <div className="font-display text-3xl md:text-4xl font-bold text-primary">{eur(dto.price_min)} – {eur(dto.price_max!)}</div>}
+            {dto.mode === "range" && dto.price_min != null && <div className="font-display text-3xl md:text-4xl font-bold text-primary">{eur(dto.price_min)}{dto.price_max != null ? ` – ${eur(dto.price_max)}` : ""}</div>}
             {(dto.mode === "exact" || dto.mode === "range") && <div className="text-[11px] font-mono text-foreground/50 mt-1">ενδεικτικά, μόνο υλικό, χωρίς ΦΠΑ</div>}
             {dto.mode === "unpriced" && <div className="text-sm text-foreground/80">Για το συγκεκριμένο υλικό η τιμή υλικού θα περιληφθεί στην επίσημη προσφορά.</div>}
             {dto.mode === "needs_info" && (
