@@ -49,7 +49,7 @@ export const CLIENTS: Client[] = [
       { EN: "Engineering support", GR: "Υποστήριξη μηχανικού" },
       { EN: "Production of custom components", GR: "Παραγωγή εξατομικευμένων εξαρτημάτων" },
     ],
-    status: { EN: "Completed", GR: "Ολοκληρώθηκε" },
+    status: null,
   },
   {
     id: "hotemedia",
