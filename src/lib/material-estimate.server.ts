@@ -74,6 +74,7 @@ async function interpret(req: EstimateRequest, materials: SheetMaterial[]): Prom
     "WHENEVER you can assume a geometry you MUST fill the numeric fields: area_mm2 = TOTAL developed flat sheet area in mm² of ALL blanks for ONE unit " +
     "(e.g. box + lid summed), and width_mm/length_mm = the dimensions of the largest flat blank. Do not leave them null if geometry_note describes dimensions. " +
     "If the request is too vague to assume anything, set confidence below 0.3 and list the minimum missing items in Greek in 'missing'. " +
+    "Assumptions are shown to the customer: write plain Greek and never mention JSON/field names (e.g. other_material, material_code). " +
     'Schema: {"material_code":string|null,"thickness_mm":number|null,"width_mm":number|null,"length_mm":number|null,' +
     '"area_mm2":number|null,"quantity":number|null,"confidence":number(0..1),"assumptions":string[] (Greek),"missing":string[] (Greek),"geometry_note":string|null}';
   const t = req.design_input_type ?? null;
@@ -180,8 +181,10 @@ export async function runEstimate(req: EstimateRequest, ipHash: string | null): 
   if (geometry_source === "drawing" && a) confidence = Math.min(0.8, a.confidence || 0.5);
   confidence = Math.min(confidence, confidenceCap(req.design_input_type ?? null, hasDims || hasArea));
   if (!knownMaterial) confidence = Math.min(confidence, material ? 0.65 : confidence);
-  if (a) assumptions.push(...a.assumptions);
-  if (a) missing.push(...a.missing.filter((m) => !missing.includes(m)));
+  // Customer-facing notes must never expose internal field names (e.g. 'other_material').
+  const clean = (s: string) => s.replace(/\s*\(?\s*(?:στο πεδίο\s*)?['"`]?[a-z]+(?:_[a-z0-9]+)+['"`]?\s*\)?/gi, "").replace(/\s{2,}/g, " ").trim();
+  if (a) assumptions.push(...a.assumptions.map(clean).filter(Boolean));
+  if (a) missing.push(...a.missing.map(clean).filter((m) => m && !missing.includes(m)));
 
   const internal = computeEstimate({
     geometry: area != null && thickness != null ? { kind: "sheet", area_mm2: area, thickness_mm: thickness } : null,
