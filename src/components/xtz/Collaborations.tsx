@@ -41,7 +41,7 @@ export function Collaborations() {
               <button
                 type="button"
                 onClick={() => setActive(c)}
-                className="group block w-full text-left overflow-hidden rounded-lg border border-primary/15 bg-card/40 transition-all duration-500 hover:-translate-y-1 hover:border-primary/40 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="group flex h-full flex-col w-full text-left overflow-hidden rounded-lg border border-primary/15 bg-card/40 transition-all duration-500 hover:-translate-y-1 hover:border-primary/40 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <div className="relative aspect-[16/10] overflow-hidden bg-muted">
                   {c.image ? (
@@ -57,7 +57,7 @@ export function Collaborations() {
                   <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
                   <LogoPlate client={c} className="absolute left-5 bottom-5 h-14 shadow-lg" />
                 </div>
-                <div className="flex items-end justify-between gap-6 p-6 md:p-8">
+                <div className="flex flex-1 items-end justify-between gap-6 p-6 md:p-8">
                   <div>
                     <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-primary mb-2">{c.category[L]}</div>
                     <h3 className="font-display text-2xl md:text-3xl font-bold tracking-tight">{c.name}</h3>
