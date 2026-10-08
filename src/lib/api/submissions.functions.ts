@@ -223,6 +223,14 @@ export const submitForm = createServerFn({ method: "POST" })
         } catch (e) { console.error("[material-estimate] link failed", e); }
       }
 
+      // Internal design-input analysis (file / photo / AI concept). Never blocks the request.
+      if ((data.metadata as any)?.design_input_type) {
+        try {
+          const { analyzeDesignInput } = await import("@/lib/design-input.server");
+          await analyzeDesignInput({ orderId, submissionId: submissionId ?? null, category: (data.metadata as any)?.request_category ?? null, metadata: data.metadata as any });
+        } catch (e) { console.error("[design-input] analysis failed", e); }
+      }
+
 
       // attach uploaded file as customer-visible order file
       if (data.file_path && data.file_name) {
