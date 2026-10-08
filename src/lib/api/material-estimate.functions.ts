@@ -12,6 +12,12 @@ const reqSchema = z.object({
   quantity: z.number().int().min(1).max(10000).nullable().optional(),
   description: z.string().max(3000).nullable().optional(),
   file_names: z.array(z.string().max(200)).max(20).default([]),
+  design_input_type: z.enum(["file", "photo", "ai_design"]).nullable().optional(),
+  attachments: z.array(z.object({
+    name: z.string().max(200),
+    mime: z.enum(["image/jpeg", "image/png", "image/webp", "application/pdf"]),
+    data_url: z.string().max(2_800_000).regex(/^data:(image\/(jpeg|png|webp)|application\/pdf);base64,[A-Za-z0-9+/=]+$/),
+  })).max(3).default([]),
   drawing_bbox: z.object({ width_mm: z.number().min(1).max(6000), length_mm: z.number().min(1).max(6000) }).nullable().optional(),
 });
 
@@ -40,6 +46,7 @@ export const estimateMaterial = createServerFn({ method: "POST" })
         thickness_mm: data.thickness_mm ?? null, width_mm: data.width_mm ?? null, length_mm: data.length_mm ?? null,
         area_mm2: data.area_mm2 ?? null, quantity: data.quantity ?? null, description: data.description ?? null,
         file_names: data.file_names, drawing_bbox: data.drawing_bbox ?? null,
+        design_input_type: data.design_input_type ?? null, attachments: data.attachments,
       }, ipHash);
       return { ok: true as const, estimate_id: r.estimate_id, estimate: r.dto };
     } catch (e) {
@@ -65,4 +72,15 @@ export const panelGetMaterialEstimates = createServerFn({ method: "POST" })
     const { data: rows, error } = await supabaseAdmin.from("material_estimates").select("*").eq("order_id", data.order_id).order("created_at", { ascending: false });
     if (error) throw error;
     return (rows ?? []) as any[];
+  });
+
+/** Admin-only: design-input analysis (file / photo / AI concept) for an order. */
+export const panelGetDesignInput = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ order_id: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => {
+    await requireAdmin();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await (supabaseAdmin as any).from("design_input_analyses").select("*").eq("order_id", data.order_id).order("created_at", { ascending: false }).limit(1);
+    if (error) throw error;
+    return ((rows ?? [])[0] ?? null) as any;
   });

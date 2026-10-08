@@ -17,7 +17,8 @@ export type AiFeature =
   | "summarize_conversation"
   | "generate_email"
   | "suggest_next_action"
-  | "material_estimate";
+  | "material_estimate"
+  | "design_input_analysis";
 
 export interface AiSettings {
   provider: string;
@@ -107,7 +108,14 @@ async function logUsage(entry: {
 
 // ------------------------------------------------------------------ transport
 
-interface ChatMessage { role: "system" | "user"; content: string }
+type ContentPart =
+  | { type: "text"; text: string }
+  | { type: "image_url"; image_url: { url: string } }
+  | { type: "file"; file: { filename: string; file_data: string } };
+interface ChatMessage { role: "system" | "user"; content: string | ContentPart[] }
+
+/** Image (data URL) or PDF (data URL) to send alongside the prompt. */
+export type AiAttachment = { name: string; mime: string; data_url: string };
 
 async function callProvider(
   provider: string,
@@ -153,6 +161,7 @@ export async function aiComplete(
   system: string,
   user: string,
   context: Record<string, unknown> = {},
+  attachments: AiAttachment[] = [],
 ): Promise<{ ok: true; text: string } | { ok: false; error: string }> {
   const settings = await getAiSettings();
   if (!settings.enabled) return { ok: false, error: "AI is disabled in settings" };
@@ -165,7 +174,15 @@ export async function aiComplete(
 
   const messages: ChatMessage[] = [
     { role: "system", content: system },
-    { role: "user", content: user },
+    {
+      role: "user",
+      content: attachments.length === 0 ? user : [
+        { type: "text", text: user },
+        ...attachments.map((a): ContentPart => a.mime === "application/pdf"
+          ? { type: "file", file: { filename: a.name || "drawing.pdf", file_data: a.data_url } }
+          : { type: "image_url", image_url: { url: a.data_url } }),
+      ],
+    },
   ];
 
   const models = [settings.model, settings.fallback_model].filter(Boolean) as string[];

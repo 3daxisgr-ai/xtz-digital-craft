@@ -7,6 +7,10 @@ import { Footer } from "@/components/xtz/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { submitForm } from "@/lib/api/submissions.functions";
 import { MaterialEstimateCard, MaterialEstimateInputs } from "@/components/xtz/MaterialEstimate";
+import {
+  AI_DESIGN_NOTE, DESIGN_INPUT_OPTIONS, FILE_ACCEPT, PHOTO_ACCEPT, fileKind, isDesignInputType, validateDesignInput,
+  type DesignInputType,
+} from "@/lib/design-input";
 
 const METAL_CATEGORIES = ["laser", "bending", "welding", "replacement"] as const;
 const isMetal = (c: string | null) => !!c && (METAL_CATEGORIES as readonly string[]).includes(c);
@@ -53,7 +57,7 @@ const CATEGORIES: {
   {
     id: "3d",
     title: "3D Printing",
-    description: "Upload your existing file and use the TOREO 3D Printing quotation system.",
+    description: "Upload your 3D file for an instant quotation, or send a photo or idea for design support.",
     icon: "▲",
   },
   {
@@ -88,7 +92,6 @@ const CATEGORIES: {
   },
 ];
 
-const ACCEPTED = ".dxf,.dwg,.step,.stp,.stl,.3mf,.pdf,.jpg,.jpeg,.png,.zip";
 const MAX_FILE_MB = 25;
 
 // ---------------- Page ----------------
@@ -125,10 +128,6 @@ function RequestPage() {
       design: "design",
     };
     if (q && map[q]) {
-      if (map[q] === "3d") {
-        window.location.replace("/3d-printing-quote");
-        return;
-      }
       setCategory(map[q]);
       setStep("details");
     }
@@ -152,10 +151,6 @@ function RequestPage() {
   const currentStepIdx = steps.indexOf(step);
 
   function selectCategory(id: CategoryId) {
-    if (id === "3d") {
-      navigate({ to: "/3d-printing-quote" });
-      return;
-    }
     setCategory(id);
     setStep("details");
   }
@@ -169,6 +164,12 @@ function RequestPage() {
   function validateDetails(): string | null {
     if (!category) return "Please select a service.";
     const d = details;
+    const diErr = validateDesignInput(d.design_input_type, {
+      files: files.map((f) => f.file.name),
+      description: d.di_description || d.description || null,
+    });
+    if (diErr) return diErr;
+    if (category === "3d" && d.design_input_type === "file") return null;
     if (!d.project_name || String(d.project_name).trim().length < 2) return "Please enter a project name.";
     if (!d.delivery_date) return "Please select a required delivery date.";
     if (!d.quantity) return "Please enter the approximate quantity.";
@@ -191,7 +192,6 @@ function RequestPage() {
     if (category === "replacement") {
       if (!d.use_case) return "Please describe what the part is used for.";
       if (!d.overall_dimensions) return "Please enter approximate dimensions.";
-      if (files.length === 0) return "Please upload at least one photo, drawing or file.";
     }
     if (category === "design") {
       if (!d.description || String(d.description).trim().length < 10) return "Please describe your idea (at least a couple of sentences).";
@@ -213,6 +213,7 @@ function RequestPage() {
   async function onContinueDetails() {
     const err = validateDetails();
     if (err) { setError(err); return; }
+    if (category === "3d" && details.design_input_type === "file") { navigate({ to: "/3d-printing-quote" }); return; }
     goto("contact");
   }
   async function onContinueContact() {
@@ -245,6 +246,7 @@ function RequestPage() {
       const flags = buildFlags(category, details, files);
 
       const serviceLabel = ({
+        "3d": "3D Printing",
         laser: "Fiber Laser Cutting",
         bending: "Sheet Metal Forming & Welding",
         welding: "Welding / Complete Fabrication",
@@ -275,6 +277,15 @@ function RequestPage() {
             contact,
             files: uploaded,
             flags,
+            design_input_type: details.design_input_type as DesignInputType,
+            design_input: {
+              type: details.design_input_type,
+              description: details.di_description || null,
+              dimensions: details.di_dimensions || null,
+              material: details.di_material || null,
+              purpose: details.di_purpose || null,
+              file_kinds: uploaded.map((u) => fileKind(u.file_name)),
+            },
             material_estimate_id: isMetal(category) ? materialEstimateId : null,
           },
         },
@@ -330,7 +341,7 @@ function RequestPage() {
                   setFiles={setFiles}
                 />
               )}
-              {step === "details" && isMetal(category) && (
+              {step === "details" && isMetal(category) && isDesignInputType(details.design_input_type) && (
                 <MaterialEstimateInputs values={details} onChange={(patch) => setDetails((v) => ({ ...v, ...patch }))} />
               )}
 
@@ -470,14 +481,85 @@ function DetailsStep({
 }) {
   return (
     <div className="glass-panel grain p-5 md:p-8 space-y-8">
+      <DesignInputSelector
+        value={values.design_input_type}
+        onChange={(t) => {
+          onChange({ design_input_type: t });
+          if (t === "ai_design") setFiles([]);
+          if (t === "photo") setFiles((p) => p.filter((f) => fileKind(f.file.name) === "image"));
+        }}
+      />
+      {!isDesignInputType(values.design_input_type) ? null : category === "3d" && values.design_input_type === "file" ? (
+        <div className="border border-primary/40 bg-primary/5 rounded-sm p-4 text-sm text-foreground/80">
+          Για 3D αρχεία (STL, STEP, 3MF) χρησιμοποιήστε το σύστημα προσφορών 3D εκτύπωσης — πατήστε «Continue» για να ανεβάσετε το αρχείο σας.
+        </div>
+      ) : (<>
       <Common values={values} onChange={onChange} />
       {category === "laser" && <LaserFields values={values} onChange={onChange} />}
       {category === "bending" && <BendingFields values={values} onChange={onChange} />}
       {category === "welding" && <WeldingFields values={values} onChange={onChange} />}
       {category === "replacement" && <ReplacementFields values={values} onChange={onChange} />}
       {category === "design" && <DesignFields values={values} onChange={onChange} />}
-      <FileArea files={files} setFiles={setFiles} />
+      <DesignInputFields type={values.design_input_type} values={values} onChange={onChange} />
+      {values.design_input_type !== "ai_design" && (
+        <FileArea files={files} setFiles={setFiles} mode={values.design_input_type === "photo" ? "photo" : "file"} />
+      )}
       <NotesField values={values} onChange={onChange} />
+      </>)}
+    </div>
+  );
+}
+
+function DesignInputSelector({ value, onChange }: { value: unknown; onChange: (t: DesignInputType) => void }) {
+  return (
+    <div>
+      <FieldLabel>Πώς θα μας δώσετε το σχέδιο; *</FieldLabel>
+      <div role="radiogroup" className="mt-3 grid gap-3 md:grid-cols-3">
+        {DESIGN_INPUT_OPTIONS.map((o) => {
+          const sel = value === o.id;
+          return (
+            <button key={o.id} type="button" role="radio" aria-checked={sel} data-design-input={o.id} onClick={() => onChange(o.id)}
+              className={`text-left border rounded-sm p-4 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${sel ? "border-primary bg-primary/10 blue-glow" : "border-border hover:border-primary/60"}`}>
+              <div className="font-display text-base leading-tight">{o.label}</div>
+              <div className="text-xs text-foreground/60 mt-1">{o.hint}</div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function DesignInputFields({ type, values, onChange }: { type: DesignInputType; values: Record<string, any>; onChange: (p: Record<string, any>) => void }) {
+  const area = "mt-2 w-full bg-transparent border border-border focus:border-primary outline-none px-3 py-2 text-sm rounded-sm";
+  if (type === "file") return null;
+  return (
+    <div className="space-y-4">
+      <label className="block">
+        <FieldLabel>{type === "photo" ? "Σύντομη περιγραφή του αντικειμένου" : "Περιγράψτε τι χρειάζεστε *"}</FieldLabel>
+        <textarea rows={3} maxLength={2000} className={area} value={values.di_description ?? ""} onChange={(e) => onChange({ di_description: e.target.value })}
+          placeholder={type === "photo" ? "π.χ. βάση στήριξης από λαμαρίνα, σπασμένη στη μία πλευρά" : "π.χ. ανοξείδωτο κουτί με καπάκι για ηλεκτρολογικό πίνακα"} />
+      </label>
+      <Grid>
+        <label className="block"><FieldLabel>Γνωστές διαστάσεις (αν υπάρχουν)</FieldLabel>
+          <input className={area} maxLength={200} value={values.di_dimensions ?? ""} onChange={(e) => onChange({ di_dimensions: e.target.value })} placeholder="π.χ. 300 × 200 × 100 mm" />
+        </label>
+        {type === "ai_design" && (
+          <>
+            <label className="block"><FieldLabel>Υλικό (αν γνωρίζετε)</FieldLabel>
+              <input className={area} maxLength={120} value={values.di_material ?? ""} onChange={(e) => onChange({ di_material: e.target.value })} />
+            </label>
+            <label className="block"><FieldLabel>Χρήση / σκοπός</FieldLabel>
+              <input className={area} maxLength={200} value={values.di_purpose ?? ""} onChange={(e) => onChange({ di_purpose: e.target.value })} />
+            </label>
+          </>
+        )}
+      </Grid>
+      <p className="text-xs text-foreground/60">
+        {type === "photo"
+          ? "Οι φωτογραφίες χρησιμοποιούνται ως αναφορά — ακριβείς διαστάσεις μόνο αν υπάρχει κλίμακα ή μας τις δώσετε."
+          : AI_DESIGN_NOTE}
+      </p>
     </div>
   );
 }
@@ -717,7 +799,7 @@ function ContactStep({ contact, setContact }: { contact: ContactInfo; setContact
 // ---------------- Step: Review ----------------
 function ReviewStep({ category, details, contact, files, onEdit, onEstimate }: { category: CategoryId; details: Record<string, any>; contact: ContactInfo; files: UploadedFile[]; onEdit: (s: StepId) => void; onEstimate: (id: string | null) => void }) {
   const cat = CATEGORIES.find((c) => c.id === category);
-  const detailPairs = Object.entries(details).filter(([k, v]) => !k.startsWith("me_") && v !== "" && v !== undefined && v !== null && v !== false);
+  const detailPairs = Object.entries(details).filter(([k, v]) => !k.startsWith("me_") && k !== "design_input_type" && v !== "" && v !== undefined && v !== null && v !== false);
   return (
     <div className="glass-panel grain p-5 md:p-8 space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3 border-b border-border pb-3">
@@ -728,8 +810,13 @@ function ReviewStep({ category, details, contact, files, onEdit, onEstimate }: {
         <button onClick={() => onEdit("service")} className="text-xs font-mono uppercase tracking-widest text-primary hover:underline">Change</button>
       </div>
 
+      <div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Σχέδιο</div>
+        <div className="text-sm mt-1">{DESIGN_INPUT_OPTIONS.find((o) => o.id === details.design_input_type)?.label ?? "—"}</div>
+        {details.design_input_type === "ai_design" && <div className="text-xs font-mono text-amber-300/90 mt-1">{AI_DESIGN_NOTE}</div>}
+      </div>
       {isMetal(category) && (
-        <MaterialEstimateCard service={category} details={details} files={files.map((f) => f.file)} onEstimate={(id) => onEstimate(id)} />
+        <MaterialEstimateCard service={category} details={details} files={files.map((f) => f.file)} designInputType={details.design_input_type ?? null} onEstimate={(id) => onEstimate(id)} />
       )}
 
       <ReviewGrid title="Project Details" onEdit={() => onEdit("details")} pairs={detailPairs} />
@@ -844,7 +931,8 @@ function NavBar({ step, onBack, onNext, submitting, canBack, isFinal }: { step: 
 }
 
 // ---------------- File upload ----------------
-function FileArea({ files, setFiles }: { files: UploadedFile[]; setFiles: (f: UploadedFile[] | ((prev: UploadedFile[]) => UploadedFile[])) => void }) {
+function FileArea({ files, setFiles, mode = "file" }: { files: UploadedFile[]; setFiles: (f: UploadedFile[] | ((prev: UploadedFile[]) => UploadedFile[])) => void; mode?: "file" | "photo" }) {
+  const ACCEPTED = mode === "photo" ? PHOTO_ACCEPT : FILE_ACCEPT;
   const [err, setErr] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -870,7 +958,7 @@ function FileArea({ files, setFiles }: { files: UploadedFile[]; setFiles: (f: Up
 
   return (
     <div>
-      <FieldLabel>Files / drawings / photos</FieldLabel>
+      <FieldLabel>{mode === "photo" ? "Φωτογραφίες (προαιρετικό)" : "Σχέδια / αρχεία (προαιρετικό)"}</FieldLabel>
       <label className="mt-2 flex items-center justify-between gap-3 border border-dashed border-border hover:border-primary/60 px-4 py-3 cursor-pointer rounded-sm">
         <span className="font-mono text-xs text-muted-foreground">
           {ACCEPTED} · max {MAX_FILE_MB} MB each

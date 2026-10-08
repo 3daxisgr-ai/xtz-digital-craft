@@ -1,6 +1,7 @@
 // Server-only: catalog loading, AI technical interpretation, persistence.
 import { createHash } from "crypto";
-import { aiComplete } from "@/lib/ai/provider.server";
+import { aiComplete, type AiAttachment } from "@/lib/ai/provider.server";
+import { confidenceCap, uncertaintyFrom, type DesignInputType } from "@/lib/design-input";
 import {
   computeEstimate, customerLabel, DEFAULT_MARKUP_PCT, LIMITS, nearestThickness, toCustomerDTO,
   type CustomerEstimateDTO, type SheetMaterial,
@@ -18,6 +19,8 @@ export type EstimateRequest = {
   description: string | null;
   file_names: string[];
   drawing_bbox: { width_mm: number; length_mm: number } | null;
+  design_input_type?: DesignInputType | null;
+  attachments?: AiAttachment[];
 };
 
 type AiInterp = {
@@ -73,8 +76,14 @@ async function interpret(req: EstimateRequest, materials: SheetMaterial[]): Prom
     "If the request is too vague to assume anything, set confidence below 0.3 and list the minimum missing items in Greek in 'missing'. " +
     'Schema: {"material_code":string|null,"thickness_mm":number|null,"width_mm":number|null,"length_mm":number|null,' +
     '"area_mm2":number|null,"quantity":number|null,"confidence":number(0..1),"assumptions":string[] (Greek),"missing":string[] (Greek),"geometry_note":string|null}';
-  const user = JSON.stringify({ request: req, catalog });
-  const r = await aiComplete("material_estimate", system, user, { service: req.service });
+  const t = req.design_input_type ?? null;
+  const pathRule =
+    t === "file" ? " The customer supplied a drawing/file: read dimensions, thickness and quantity from the attached drawing content FIRST (OCR the dimension annotations). Never invent dimensions that are not on the drawing; if missing, list them in 'missing'." :
+    t === "photo" ? " The customer supplied PHOTOS of an existing part: identify the likely part and sheet-metal characteristics. Photos are reference only — do NOT claim exact dimensions unless a reliable scale/reference (ruler, known object, stated dimension) is visible; otherwise use customer-stated dimensions or give a clearly indicative assumption and confidence <= 0.5." :
+    t === "ai_design" ? " The customer has NO drawing: create an indicative concept geometry from the description. Distinguish clearly in 'assumptions' what is your assumption versus what the customer stated." : "";
+  const { attachments: _att, ...reqNoAtt } = req;
+  const user = JSON.stringify({ request: { ...reqNoAtt, attached_files: (req.attachments ?? []).map((a) => a.name) }, catalog });
+  const r = await aiComplete("material_estimate", system + pathRule, user, { service: req.service, design_input_type: t }, req.attachments ?? []);
   if (!r.ok) return { data: null, model: null };
   const cleaned = r.text.replace(/^```(?:json)?/i, "").replace(/```\s*$/, "");
   const s = cleaned.indexOf("{"), e = cleaned.lastIndexOf("}");
@@ -111,7 +120,7 @@ export async function runEstimate(req: EstimateRequest, ipHash: string | null): 
   const a = ai.data;
 
   // ---------- geometry (customer > drawing > AI draft)
-  let geometry_source: "customer" | "drawing" | "ai_draft" = "customer";
+  let geometry_source: "customer" | "drawing" | "photo" | "ai_draft" = "customer";
   let area: number | null = null;
   let geometry_note: string | null = null;
   let draft: { width_mm: number; length_mm: number } | null = null;
@@ -124,7 +133,7 @@ export async function runEstimate(req: EstimateRequest, ipHash: string | null): 
     geometry_note = `Περίγραμμα σχεδίου ${Math.round(req.drawing_bbox.width_mm)}×${Math.round(req.drawing_bbox.length_mm)} mm (εκτίμηση πάνω στο εξωτερικό περίγραμμα)`;
     assumptions.push("Η μάζα υπολογίστηκε στο εξωτερικό περίγραμμα του σχεδίου (χωρίς αφαίρεση οπών).");
   } else if (a && (inRange(a.area_mm2, 1, LIMITS.dim_mm.max ** 2) || (inRange(a.width_mm, 1, LIMITS.dim_mm.max) && inRange(a.length_mm, 1, LIMITS.dim_mm.max)))) {
-    geometry_source = "ai_draft";
+    geometry_source = req.design_input_type === "photo" ? "photo" : req.design_input_type === "file" && (req.attachments?.length ?? 0) > 0 ? "drawing" : "ai_draft";
     area = inRange(a.area_mm2, 1, LIMITS.dim_mm.max ** 2) ? a.area_mm2! : a.width_mm! * a.length_mm!;
     if (a.width_mm && a.length_mm) draft = { width_mm: a.width_mm, length_mm: a.length_mm };
     geometry_note = a.geometry_note ?? (a.width_mm && a.length_mm ? `Ενδεικτικό ανάπτυγμα ${Math.round(a.width_mm)}×${Math.round(a.length_mm)} mm` : null);
@@ -167,6 +176,9 @@ export async function runEstimate(req: EstimateRequest, ipHash: string | null): 
   let confidence = 0.9;
   if (geometry_source === "drawing") confidence = 0.7;
   if (geometry_source === "ai_draft") confidence = Math.min(0.6, a?.confidence ?? 0.4);
+  if (geometry_source === "photo") confidence = Math.min(0.5, a?.confidence ?? 0.4);
+  if (geometry_source === "drawing" && a) confidence = Math.min(0.8, a.confidence || 0.5);
+  confidence = Math.min(confidence, confidenceCap(req.design_input_type ?? null, hasDims || hasArea));
   if (!knownMaterial) confidence = Math.min(confidence, material ? 0.65 : confidence);
   if (a) assumptions.push(...a.assumptions);
   if (a) missing.push(...a.missing.filter((m) => !missing.includes(m)));
@@ -187,12 +199,15 @@ export async function runEstimate(req: EstimateRequest, ipHash: string | null): 
     missing: internal.mode === "needs_info" ? Array.from(new Set(missing)) : [],
   });
 
-  const fingerprint = createHash("sha256").update(JSON.stringify(req)).digest("hex");
+  const { attachments: atts, ...storedReq } = req;
+  const inputs = { ...storedReq, attachments: (atts ?? []).map((x) => ({ name: x.name, mime: x.mime, bytes: Math.round(x.data_url.length * 0.75) })) };
+  const fingerprint = createHash("sha256").update(JSON.stringify(storedReq) + (atts ?? []).map((x) => createHash("sha256").update(x.data_url).digest("hex")).join(",")).digest("hex");
   let estimate_id: string | null = null;
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data } = await supabaseAdmin.from("material_estimates").insert({
-      fingerprint, service: req.service, inputs: req as any, ai_output: (a as any) ?? null,
+      fingerprint, service: req.service, inputs: inputs as any,
+      design_input_type: req.design_input_type ?? null, uncertainty: uncertaintyFrom(confidence), ai_output: (a as any) ?? null,
       assumptions: dto.notes as any, missing_fields: dto.missing as any, geometry_source,
       geometry: { area_mm2: area, thickness_mm: thickness } as any,
       material_code: material?.code ?? null, material_label: dto.material_label, thickness_mm: thickness,
