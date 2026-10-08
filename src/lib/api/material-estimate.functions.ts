@@ -73,3 +73,14 @@ export const panelGetMaterialEstimates = createServerFn({ method: "POST" })
     if (error) throw error;
     return (rows ?? []) as any[];
   });
+
+/** Admin-only: design-input analysis (file / photo / AI concept) for an order. */
+export const panelGetDesignInput = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ order_id: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => {
+    await requireAdmin();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await (supabaseAdmin as any).from("design_input_analyses").select("*").eq("order_id", data.order_id).order("created_at", { ascending: false }).limit(1);
+    if (error) throw error;
+    return ((rows ?? [])[0] ?? null) as any;
+  });

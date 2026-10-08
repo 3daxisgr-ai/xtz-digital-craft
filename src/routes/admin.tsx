@@ -35,6 +35,7 @@ import { STATUS_FLOW, STATUS_LABEL } from "@/lib/api/orders.functions";
 import { panelListAnalyses, panelAnalyzeFile, panelApplyOverride, panelListMachines } from "@/lib/api/factory.functions";
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
 import { MaterialEstimateAdmin } from "@/components/admin/MaterialEstimateAdmin";
+import { DesignInputAdmin } from "@/components/admin/DesignInputAdmin";
 import { RequestSummary } from "@/components/xtz/RequestSummary";
 import { acceptQuote, declineQuote } from "@/lib/api/quote-decision.functions";
 import { quoteDocCreate } from "@/lib/api/quote-doc.functions";
@@ -515,12 +516,13 @@ function OrderDetail({ code, onBack }: { code: string; onBack: () => void }) {
 
       {tab === "customer" && (
         <div className="space-y-4">
+          <DesignInputAdmin orderId={o.id} metadata={(o as any).metadata} />
           <RequestSummary metadata={(o as any).metadata} />
           <AiRequestSummary orderCode={code} />
           <TabCustomer o={o} patch={patch} />
         </div>
       )}
-      {tab === "ai" && <div className="space-y-4"><MaterialEstimateAdmin orderId={o.id} /><TabAI code={code} orderMeta={o} /></div>}
+      {tab === "ai" && <div className="space-y-4"><DesignInputAdmin orderId={o.id} metadata={(o as any).metadata} /><MaterialEstimateAdmin orderId={o.id} /><TabAI code={code} orderMeta={o} /></div>}
       {tab === "files" && <TabFiles d={d} code={code} refresh={refresh} />}
       {tab === "updates" && <TabUpdates d={d} code={code} refresh={refresh} />}
       {tab === "emails" && (
