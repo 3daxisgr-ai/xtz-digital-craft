@@ -133,7 +133,7 @@ export function MaterialEstimateCard({ service, details, files, onEstimate, desi
       if (designInputType !== "ai_design") {
         for (const f of files) { if (attachments.length >= 3) break; const a = await fileToAttachment(f); if (a) attachments.push(a); }
       }
-      const desc = [details.me_description, details.description, details.project_description, details.part_description].filter(Boolean).join("\n").slice(0, 3000);
+      const desc = [details.me_description, details.di_description, details.di_dimensions ? `Διαστάσεις πελάτη: ${details.di_dimensions}` : null, details.description, details.project_description, details.part_description].filter(Boolean).join("\n").slice(0, 3000);
       const t = n(details.me_thickness_mm);
       const q = n(details.me_quantity) ?? n(details.quantity);
       const r = await run({ data: {

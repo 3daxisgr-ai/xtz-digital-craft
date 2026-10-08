@@ -92,7 +92,6 @@ const CATEGORIES: {
   },
 ];
 
-const ACCEPTED = ".dxf,.dwg,.step,.stp,.stl,.3mf,.pdf,.jpg,.jpeg,.png,.zip";
 const MAX_FILE_MB = 25;
 
 // ---------------- Page ----------------
