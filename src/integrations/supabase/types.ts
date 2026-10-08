@@ -175,6 +175,63 @@ export type Database = {
         }
         Relationships: []
       }
+      design_input_analyses: {
+        Row: {
+          ai_output: Json | null
+          analyzed_file_count: number
+          assumptions: Json
+          category: string | null
+          created_at: string
+          customer_description: string | null
+          design_input_type: string
+          error: string | null
+          files: Json
+          geometry_source: string | null
+          id: string
+          model: string | null
+          order_id: string | null
+          submission_id: string | null
+          supplied_dimensions: string | null
+          uncertainty: string | null
+        }
+        Insert: {
+          ai_output?: Json | null
+          analyzed_file_count?: number
+          assumptions?: Json
+          category?: string | null
+          created_at?: string
+          customer_description?: string | null
+          design_input_type: string
+          error?: string | null
+          files?: Json
+          geometry_source?: string | null
+          id?: string
+          model?: string | null
+          order_id?: string | null
+          submission_id?: string | null
+          supplied_dimensions?: string | null
+          uncertainty?: string | null
+        }
+        Update: {
+          ai_output?: Json | null
+          analyzed_file_count?: number
+          assumptions?: Json
+          category?: string | null
+          created_at?: string
+          customer_description?: string | null
+          design_input_type?: string
+          error?: string | null
+          files?: Json
+          geometry_source?: string | null
+          id?: string
+          model?: string | null
+          order_id?: string | null
+          submission_id?: string | null
+          supplied_dimensions?: string | null
+          uncertainty?: string | null
+        }
+        Relationships: []
+      }
       email_order_intake: {
         Row: {
           ai_data: Json
@@ -531,6 +588,7 @@ export type Database = {
           created_at: string
           customer_dto: Json
           density_g_cm3: number | null
+          design_input_type: string | null
           fingerprint: string
           geometry: Json
           geometry_source: string
@@ -555,6 +613,7 @@ export type Database = {
           service: string | null
           submission_id: string | null
           thickness_mm: number | null
+          uncertainty: string | null
           updated_at: string
         }
         Insert: {
@@ -565,6 +624,7 @@ export type Database = {
           created_at?: string
           customer_dto?: Json
           density_g_cm3?: number | null
+          design_input_type?: string | null
           fingerprint: string
           geometry?: Json
           geometry_source?: string
@@ -589,6 +649,7 @@ export type Database = {
           service?: string | null
           submission_id?: string | null
           thickness_mm?: number | null
+          uncertainty?: string | null
           updated_at?: string
         }
         Update: {
@@ -599,6 +660,7 @@ export type Database = {
           created_at?: string
           customer_dto?: Json
           density_g_cm3?: number | null
+          design_input_type?: string | null
           fingerprint?: string
           geometry?: Json
           geometry_source?: string
@@ -623,6 +685,7 @@ export type Database = {
           service?: string | null
           submission_id?: string | null
           thickness_mm?: number | null
+          uncertainty?: string | null
           updated_at?: string
         }
         Relationships: [
