@@ -111,6 +111,19 @@ export async function fileToAttachment(file: File): Promise<{ name: string; mime
   } catch { return null; }
 }
 
+/** First positive number in free text like "0.8 mm" or "2 τεμ." */
+export function firstNum(v: unknown): number | null {
+  const m = String(v ?? "").replace(",", ".").match(/\d+(?:\.\d+)?/);
+  const x = m ? Number(m[0]) : NaN;
+  return Number.isFinite(x) && x > 0 ? x : null;
+}
+/** "1000x2000", "1000 × 2000 mm", "300*200*100" → numbers (2 or 3), else null. */
+export function parseDims(v: unknown): number[] | null {
+  const parts = String(v ?? "").toLowerCase().replace(/,/g, ".").split(/\s*[x×*]\s*/).map((p) => firstNum(p));
+  if (parts.length < 2 || parts.length > 3 || parts.some((p) => p == null)) return null;
+  return parts as number[];
+}
+
 const n = (v: unknown) => { const x = Number(v); return v !== "" && v != null && Number.isFinite(x) && x > 0 ? x : null; };
 const eur = (v: number) => `€${v.toLocaleString("el-GR")}`;
 
@@ -121,7 +134,7 @@ export function MaterialEstimateCard({ service, details, files, onEstimate, desi
   const run = useServerFn(estimateMaterial);
   const [state, setState] = useState<"loading" | "done" | "error">("loading");
   const [dto, setDto] = useState<CustomerEstimateDTO | null>(null);
-  const key = JSON.stringify([details.me_material_code, details.me_other_material, details.me_thickness_mm, details.me_width_mm, details.me_length_mm, details.me_quantity, details.me_description, files.map((f) => f.name + f.size), designInputType]);
+  const key = JSON.stringify([details.me_material_code, details.me_other_material, details.me_thickness_mm, details.me_width_mm, details.me_length_mm, details.me_quantity, details.me_description, details.material, details.material_thickness, details.overall_dimensions, details.quantity, details.di_description, details.di_dimensions, files.map((f) => f.name + f.size), designInputType]);
 
   useEffect(() => {
     let alive = true;
@@ -133,15 +146,19 @@ export function MaterialEstimateCard({ service, details, files, onEstimate, desi
       if (designInputType !== "ai_design") {
         for (const f of files) { if (attachments.length >= 3) break; const a = await fileToAttachment(f); if (a) attachments.push(a); }
       }
-      const desc = [details.me_description, details.di_description, details.di_dimensions ? `Διαστάσεις πελάτη: ${details.di_dimensions}` : null, details.description, details.project_description, details.part_description].filter(Boolean).join("\n").slice(0, 3000);
-      const t = n(details.me_thickness_mm);
-      const q = n(details.me_quantity) ?? n(details.quantity);
+      const desc = [details.me_description, details.overall_dimensions ? `Συνολικές διαστάσεις: ${details.overall_dimensions}` : null, details.di_description, details.di_dimensions ? `Διαστάσεις πελάτη: ${details.di_dimensions}` : null, details.description, details.project_description, details.part_description].filter(Boolean).join("\n").slice(0, 3000);
+      // Fall back to the main form fields when the optional estimate section is left empty.
+      const t = n(details.me_thickness_mm) ?? firstNum(details.material_thickness);
+      const q = n(details.me_quantity) ?? firstNum(details.quantity);
+      const dims = parseDims(details.overall_dimensions) ?? parseDims(details.di_dimensions);
+      const w = n(details.me_width_mm) ?? (dims && dims.length === 2 ? Math.min(dims[0], dims[1]) : null);
+      const l = n(details.me_length_mm) ?? (dims && dims.length === 2 ? Math.max(dims[0], dims[1]) : null);
       const r = await run({ data: {
         service,
         material_code: details.me_group === "other" ? "other" : (details.me_material_code || null),
         other_material: details.me_other_material || (typeof details.material === "string" ? details.material : null) || null,
         thickness_mm: t != null && t >= 0.3 && t <= 30 ? t : null,
-        width_mm: n(details.me_width_mm), length_mm: n(details.me_length_mm),
+        width_mm: w != null && w <= 6000 ? w : null, length_mm: l != null && l <= 6000 ? l : null,
         quantity: q != null ? Math.min(10000, Math.floor(q)) : null,
         description: desc || null,
         file_names: files.map((f) => f.name).slice(0, 20),
@@ -150,7 +167,7 @@ export function MaterialEstimateCard({ service, details, files, onEstimate, desi
         attachments,
       } }).catch(() => ({ ok: false as const }));
       if (!alive) return;
-      if ((r as any).ok) { setDto((r as any).estimate); setState("done"); onEstimate((r as any).estimate_id, (r as any).estimate); }
+      if ((r as any).ok && (r as any).estimate) { setDto((r as any).estimate); setState("done"); onEstimate((r as any).estimate_id, (r as any).estimate); }
       else { setState("error"); onEstimate(null, null); }
     })();
     return () => { alive = false; };
@@ -161,6 +178,10 @@ export function MaterialEstimateCard({ service, details, files, onEstimate, desi
       <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-primary">Ενδεικτική τιμή υλικού</div>
       {state === "loading" && <div className="text-sm text-foreground/60 animate-pulse">Υπολογισμός εκτίμησης υλικού…</div>}
       {state === "error" && <div className="text-sm text-foreground/70">Η ενδεικτική τιμή υλικού δεν είναι διαθέσιμη αυτή τη στιγμή. Το αίτημά σας θα υποβληθεί κανονικά και η τιμή θα περιληφθεί στην επίσημη προσφορά.</div>}
+      {state === "done" && dto && !["exact", "range", "unpriced", "needs_info"].includes(dto.mode) && (
+        <div className="text-sm text-foreground/80">Η ενδεικτική τιμή υλικού θα περιληφθεί στην επίσημη προσφορά.</div>
+      )}
+      {state === "done" && !dto && <div className="text-sm text-foreground/70">Η ενδεικτική τιμή υλικού δεν είναι διαθέσιμη αυτή τη στιγμή. Το αίτημά σας θα υποβληθεί κανονικά και η τιμή θα περιληφθεί στην επίσημη προσφορά.</div>}
       {state === "done" && dto && (
         <>
           <dl className="grid sm:grid-cols-2 gap-3 text-sm">
@@ -170,8 +191,9 @@ export function MaterialEstimateCard({ service, details, files, onEstimate, desi
             <Item k="Εκτιμώμενο συνολικό βάρος" v={dto.kg_min != null && dto.kg_max != null ? `${dto.kg_min} – ${dto.kg_max} kg` : dto.kg != null ? `${dto.kg} kg` : "—"} />
           </dl>
           <div className="border-t border-border pt-4">
+            {(dto.mode === "exact" || dto.mode === "range") && dto.price == null && dto.price_min == null && <div className="text-sm text-foreground/80">Η τιμή υλικού θα περιληφθεί στην επίσημη προσφορά.</div>}
             {dto.mode === "exact" && dto.price != null && <div className="font-display text-4xl font-bold text-primary">{eur(dto.price)}</div>}
-            {dto.mode === "range" && dto.price_min != null && <div className="font-display text-3xl md:text-4xl font-bold text-primary">{eur(dto.price_min)} – {eur(dto.price_max!)}</div>}
+            {dto.mode === "range" && dto.price_min != null && <div className="font-display text-3xl md:text-4xl font-bold text-primary">{eur(dto.price_min)}{dto.price_max != null ? ` – ${eur(dto.price_max)}` : ""}</div>}
             {(dto.mode === "exact" || dto.mode === "range") && <div className="text-[11px] font-mono text-foreground/50 mt-1">ενδεικτικά, μόνο υλικό, χωρίς ΦΠΑ</div>}
             {dto.mode === "unpriced" && <div className="text-sm text-foreground/80">Για το συγκεκριμένο υλικό η τιμή υλικού θα περιληφθεί στην επίσημη προσφορά.</div>}
             {dto.mode === "needs_info" && (
