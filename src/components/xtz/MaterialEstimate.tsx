@@ -93,16 +93,35 @@ async function dxfBBox(file: File): Promise<{ width_mm: number; length_mm: numbe
   } catch { return null; }
 }
 
+/** Browser-only: downscaled JPEG for images, raw data URL for small PDFs. Null when not analyzable. */
+export async function fileToAttachment(file: File): Promise<{ name: string; mime: "image/jpeg" | "application/pdf"; data_url: string } | null> {
+  try {
+    if (/\.pdf$/i.test(file.name) || file.type === "application/pdf") {
+      if (file.size > 2_000_000) return null;
+      const data_url = await new Promise<string>((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = rej; r.readAsDataURL(file); });
+      return { name: file.name, mime: "application/pdf", data_url: data_url.replace(/^data:[^;]*;/, "data:application/pdf;") };
+    }
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return null;
+    const bmp = await createImageBitmap(file);
+    const k = Math.min(1, 1280 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext("2d")!.drawImage(bmp, 0, 0, c.width, c.height);
+    return { name: file.name, mime: "image/jpeg", data_url: c.toDataURL("image/jpeg", 0.8) };
+  } catch { return null; }
+}
+
 const n = (v: unknown) => { const x = Number(v); return v !== "" && v != null && Number.isFinite(x) && x > 0 ? x : null; };
 const eur = (v: number) => `€${v.toLocaleString("el-GR")}`;
 
-export function MaterialEstimateCard({ service, details, files, onEstimate }: {
+export function MaterialEstimateCard({ service, details, files, onEstimate, designInputType = null }: {
+  designInputType?: "file" | "photo" | "ai_design" | null;
   service: string; details: Record<string, any>; files: File[]; onEstimate: (id: string | null, dto: CustomerEstimateDTO | null) => void;
 }) {
   const run = useServerFn(estimateMaterial);
   const [state, setState] = useState<"loading" | "done" | "error">("loading");
   const [dto, setDto] = useState<CustomerEstimateDTO | null>(null);
-  const key = JSON.stringify([details.me_material_code, details.me_other_material, details.me_thickness_mm, details.me_width_mm, details.me_length_mm, details.me_quantity, details.me_description, files.map((f) => f.name + f.size)]);
+  const key = JSON.stringify([details.me_material_code, details.me_other_material, details.me_thickness_mm, details.me_width_mm, details.me_length_mm, details.me_quantity, details.me_description, files.map((f) => f.name + f.size), designInputType]);
 
   useEffect(() => {
     let alive = true;
@@ -110,6 +129,10 @@ export function MaterialEstimateCard({ service, details, files, onEstimate }: {
     (async () => {
       let bbox: { width_mm: number; length_mm: number } | null = null;
       for (const f of files) { bbox = await dxfBBox(f); if (bbox) break; }
+      const attachments: NonNullable<Awaited<ReturnType<typeof fileToAttachment>>>[] = [];
+      if (designInputType !== "ai_design") {
+        for (const f of files) { if (attachments.length >= 3) break; const a = await fileToAttachment(f); if (a) attachments.push(a); }
+      }
       const desc = [details.me_description, details.description, details.project_description, details.part_description].filter(Boolean).join("\n").slice(0, 3000);
       const t = n(details.me_thickness_mm);
       const q = n(details.me_quantity) ?? n(details.quantity);
@@ -123,6 +146,8 @@ export function MaterialEstimateCard({ service, details, files, onEstimate }: {
         description: desc || null,
         file_names: files.map((f) => f.name).slice(0, 20),
         drawing_bbox: bbox,
+        design_input_type: designInputType,
+        attachments,
       } }).catch(() => ({ ok: false as const }));
       if (!alive) return;
       if ((r as any).ok) { setDto((r as any).estimate); setState("done"); onEstimate((r as any).estimate_id, (r as any).estimate); }
