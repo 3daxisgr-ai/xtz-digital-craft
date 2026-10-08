@@ -8,6 +8,7 @@ import { ProjectCTA } from "@/components/xtz/ProjectCTA";
 
 import { Footer } from "@/components/xtz/Footer";
 import { Metrics } from "@/components/xtz/Metrics";
+import { Collaborations } from "@/components/xtz/Collaborations";
 import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
@@ -69,6 +70,7 @@ function Index() {
       <About />
       <HowItWorks />
       <PortfolioReel />
+      <Collaborations />
       <ProjectCTA />
       
       <Footer />
