@@ -584,6 +584,10 @@ export async function sendQuoteDoc(input: {
   if (d.status === "cancelled" || d.status === "replaced") throw new Error("This quotation is no longer active.");
   if (d.status === "sent" && d.email_status === "sent") throw new Error("This quotation has already been sent.");
   if (!d.pdf_path) throw new Error("Generate the PDF before sending.");
+  // Email-created drafts start at €0; never let an unpriced quotation reach a customer.
+  if (!(Number(d.financial_snapshot?.total ?? d.financial_snapshot?.gross ?? 0) > 0)) {
+    throw new Error("This quotation has no price yet. Add the line prices before sending.");
+  }
 
   const { data: order } = await sb.from("orders").select("*").eq("id", d.order_id).single();
   if (!order) throw new Error("Order not found");
