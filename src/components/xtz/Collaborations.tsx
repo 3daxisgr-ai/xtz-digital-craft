@@ -175,6 +175,7 @@ export function Collaborations() {
                   <div>
                     <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-primary mb-1">{active.label[L]}</div>
                     <DialogTitle className="font-display text-3xl md:text-4xl font-bold tracking-tight">{active.name}</DialogTitle>
+                    {active.location && <p className="mt-1 text-sm text-muted-foreground">{active.location[L]}</p>}
                   </div>
                 </div>
                 <DialogDescription className="text-base md:text-lg text-foreground/75 leading-relaxed">
