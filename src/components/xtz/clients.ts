@@ -13,7 +13,8 @@ type Bi = { EN: string; GR: string };
 export interface Client {
   id: string;
   name: string;
-  logo: string;
+  logo: string | null; // null → typographic wordmark (no fabricated logo)
+  location?: Bi;
   image: string | null; // null → clean logo placeholder
   imageCredit: string; // official source of the photograph
   website: string;
@@ -70,6 +71,30 @@ export const CLIENTS: Client[] = [
     services: [
       { EN: "Custom manufacturing", GR: "Εξατομικευμένη κατασκευή" },
       { EN: "TV stands", GR: "Βάσεις τηλεοράσεων" },
+    ],
+    status: null,
+  },
+  {
+    id: "saridis",
+    name: "SARIDIS",
+    logo: null,
+    image: null,
+    imageCredit: "",
+    website: "",
+    location: { EN: "Kavallari, Thessaloniki, Greece", GR: "Καβαλλάρι, Θεσσαλονίκη, Ελλάδα" },
+    category: { EN: "Refrigeration", GR: "Ψυκτικές μονάδες" },
+    label: { EN: "Design & 3D Printing Collaboration", GR: "Συνεργασία σχεδιασμού & 3D εκτύπωσης" },
+    description: {
+      EN: "TOREO collaborated with SARIDIS on the design and 3D printing of custom components for refrigeration units.",
+      GR: "Συνεργασία με τη SARIDIS για τον σχεδιασμό και την κατασκευή εξειδικευμένων εξαρτημάτων μέσω τρισδιάστατης εκτύπωσης για ψυκτικές μονάδες.",
+    },
+    delivered: {
+      EN: "Custom 3D-printed components for refrigeration units.",
+      GR: "Εξειδικευμένα εξαρτήματα τρισδιάστατης εκτύπωσης για ψυκτικές μονάδες.",
+    },
+    services: [
+      { EN: "Component design", GR: "Σχεδιασμός εξαρτημάτων" },
+      { EN: "3D printing", GR: "Τρισδιάστατη εκτύπωση" },
     ],
     status: null,
   },

@@ -6,9 +6,16 @@ import { CLIENTS, type Client } from "./clients";
 
 function LogoPlate({ client, className = "" }: { client: Client; className?: string }) {
   // Logos kept untouched on a neutral white plate so original colours are preserved.
+  // When no authentic logo is available, show a clean typographic wordmark instead of fabricating one.
   return (
     <div className={`flex items-center justify-center rounded-md bg-white px-5 py-3 ${className}`}>
-      <img src={client.logo} alt={`${client.name} logo`} className="h-full w-auto max-w-full object-contain" />
+      {client.logo ? (
+        <img src={client.logo} alt={`${client.name} logo`} className="h-full w-auto max-w-full object-contain" />
+      ) : (
+        <span className="font-display text-xl md:text-2xl font-bold tracking-[0.2em] text-neutral-900">
+          {client.name}
+        </span>
+      )}
     </div>
   );
 }
@@ -92,7 +99,7 @@ export function Collaborations() {
                     {c.image ? (
                       <img src={c.image} alt={`${c.name} — TOREO collaboration`} loading="lazy" className="h-full w-full object-cover" />
                     ) : (
-                      <div className="h-full w-full bg-muted" />
+                      <div className="h-full w-full bg-muted flex items-center justify-center"><span className="font-display text-3xl font-bold tracking-[0.3em] text-foreground/70">{c.name}</span></div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
                     <span className="absolute right-4 top-4 font-mono text-[10px] text-foreground/50">{c.imageCredit}</span>
@@ -168,6 +175,7 @@ export function Collaborations() {
                   <div>
                     <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-primary mb-1">{active.label[L]}</div>
                     <DialogTitle className="font-display text-3xl md:text-4xl font-bold tracking-tight">{active.name}</DialogTitle>
+                    {active.location && <p className="mt-1 text-sm text-muted-foreground">{active.location[L]}</p>}
                   </div>
                 </div>
                 <DialogDescription className="text-base md:text-lg text-foreground/75 leading-relaxed">
