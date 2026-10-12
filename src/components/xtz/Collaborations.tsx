@@ -99,7 +99,7 @@ export function Collaborations() {
                     {c.image ? (
                       <img src={c.image} alt={`${c.name} — TOREO collaboration`} loading="lazy" className="h-full w-full object-cover" />
                     ) : (
-                      <div className="h-full w-full bg-muted flex items-center justify-center"><LogoPlate client={c} className="h-16" /></div>
+                      <div className="h-full w-full bg-muted flex items-center justify-center"><span className="font-display text-3xl font-bold tracking-[0.3em] text-foreground/70">{c.name}</span></div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
                     <span className="absolute right-4 top-4 font-mono text-[10px] text-foreground/50">{c.imageCredit}</span>
