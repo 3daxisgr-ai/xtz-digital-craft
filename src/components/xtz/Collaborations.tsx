@@ -171,7 +171,13 @@ export function Collaborations() {
               </div>
               <div className="p-6 md:p-10 space-y-8">
                 <div className="flex flex-wrap items-center gap-6">
-                  <LogoPlate client={active} className="h-16" />
+                  {active.website ? (
+                    <a href={active.website} target="_blank" rel="noopener noreferrer" aria-label={`${active.name} — official website`} className="transition-opacity hover:opacity-80">
+                      <LogoPlate client={active} className="h-16" />
+                    </a>
+                  ) : (
+                    <LogoPlate client={active} className="h-16" />
+                  )}
                   <div>
                     <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-primary mb-1">{active.label[L]}</div>
                     <DialogTitle className="font-display text-3xl md:text-4xl font-bold tracking-tight">{active.name}</DialogTitle>
