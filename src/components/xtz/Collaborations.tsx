@@ -6,9 +6,16 @@ import { CLIENTS, type Client } from "./clients";
 
 function LogoPlate({ client, className = "" }: { client: Client; className?: string }) {
   // Logos kept untouched on a neutral white plate so original colours are preserved.
+  // When no authentic logo is available, show a clean typographic wordmark instead of fabricating one.
   return (
     <div className={`flex items-center justify-center rounded-md bg-white px-5 py-3 ${className}`}>
-      <img src={client.logo} alt={`${client.name} logo`} className="h-full w-auto max-w-full object-contain" />
+      {client.logo ? (
+        <img src={client.logo} alt={`${client.name} logo`} className="h-full w-auto max-w-full object-contain" />
+      ) : (
+        <span className="font-display text-xl md:text-2xl font-bold tracking-[0.2em] text-neutral-900">
+          {client.name}
+        </span>
+      )}
     </div>
   );
 }
