@@ -1,6 +1,8 @@
 import metlenLogo from "@/assets/metlen-logo.svg.asset.json";
 import metlenImage from "@/assets/metlen-headquarters.jpg.asset.json";
 import hotemediaLogo from "@/assets/hotemedia-logo.svg.asset.json";
+import saridisLogo from "@/assets/saridis-logo.png.asset.json";
+import saridisImage from "@/assets/saridis-professional-kitchen.jpg.asset.json";
 import hotemediaImage from "@/assets/hotemedia-led-display.jpg.asset.json";
 
 type Bi = { EN: string; GR: string };
@@ -77,12 +79,12 @@ export const CLIENTS: Client[] = [
   {
     id: "saridis",
     name: "SARIDIS",
-    logo: null,
-    image: null,
-    imageCredit: "",
-    website: "",
+    logo: saridisLogo.url,
+    image: saridisImage.url,
+    imageCredit: "Photo: saridis.gr",
+    website: "https://saridis.gr/",
     location: { EN: "Kavallari, Thessaloniki, Greece", GR: "Καβαλλάρι, Θεσσαλονίκη, Ελλάδα" },
-    category: { EN: "Refrigeration", GR: "Ψυκτικές μονάδες" },
+    category: { EN: "Professional Equipment", GR: "Επαγγελματικός εξοπλισμός" },
     label: { EN: "Design & 3D Printing Collaboration", GR: "Συνεργασία σχεδιασμού & 3D εκτύπωσης" },
     description: {
       EN: "TOREO collaborated with SARIDIS on the design and 3D printing of custom components for refrigeration units.",
