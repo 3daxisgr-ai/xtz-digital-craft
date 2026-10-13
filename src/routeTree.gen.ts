@@ -34,7 +34,6 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as AdminConfigRouteImport } from './routes/admin_.config'
 import { Route as AdminFactoryRouteImport } from './routes/admin_.factory'
 import { Route as AdminLiveRouteImport } from './routes/admin_.live'
-import { Route as AdminQuotationsRouteImport } from './routes/admin_.quotations'
 import { Route as AdminReviewsRouteImport } from './routes/admin_.reviews'
 import { Route as AdminSchedulerRouteImport } from './routes/admin_.scheduler'
 import { Route as AdminShippingRouteImport } from './routes/admin_.shipping'
@@ -45,8 +44,6 @@ import { Route as PortalOrderCodeRouteImport } from './routes/portal.$orderCode'
 import { Route as PortalProjectsRouteImport } from './routes/portal_.projects'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
-import { Route as AdminQuoteNumberRouteImport } from './routes/admin_.quote.$number'
-import { Route as ApiPublicCreateQuotationRouteImport } from './routes/api/public/create-quotation'
 import { Route as ApiPublicIngestEmailOrderRouteImport } from './routes/api/public/ingest-email-order'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
@@ -177,11 +174,6 @@ const AdminLiveRoute = AdminLiveRouteImport.update({
   path: '/admin/live',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminQuotationsRoute = AdminQuotationsRouteImport.update({
-  id: '/admin_/quotations',
-  path: '/admin/quotations',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminReviewsRoute = AdminReviewsRouteImport.update({
   id: '/admin_/reviews',
   path: '/admin/reviews',
@@ -233,17 +225,6 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AdminQuoteNumberRoute = AdminQuoteNumberRouteImport.update({
-  id: '/admin_/quote/$number',
-  path: '/admin/quote/$number',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicCreateQuotationRoute =
-  ApiPublicCreateQuotationRouteImport.update({
-    id: '/api/public/create-quotation',
-    path: '/api/public/create-quotation',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiPublicIngestEmailOrderRoute =
   ApiPublicIngestEmailOrderRouteImport.update({
     id: '/api/public/ingest-email-order',
@@ -283,7 +264,6 @@ export interface FileRoutesByFullPath {
   '/admin/config': typeof AdminConfigRoute
   '/admin/factory': typeof AdminFactoryRoute
   '/admin/live': typeof AdminLiveRoute
-  '/admin/quotations': typeof AdminQuotationsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/scheduler': typeof AdminSchedulerRoute
   '/admin/shipping': typeof AdminShippingRoute
@@ -294,8 +274,6 @@ export interface FileRoutesByFullPath {
   '/portal/projects': typeof PortalProjectsRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/admin/quote/$number': typeof AdminQuoteNumberRoute
-  '/api/public/create-quotation': typeof ApiPublicCreateQuotationRoute
   '/api/public/ingest-email-order': typeof ApiPublicIngestEmailOrderRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -325,7 +303,6 @@ export interface FileRoutesByTo {
   '/admin/config': typeof AdminConfigRoute
   '/admin/factory': typeof AdminFactoryRoute
   '/admin/live': typeof AdminLiveRoute
-  '/admin/quotations': typeof AdminQuotationsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/scheduler': typeof AdminSchedulerRoute
   '/admin/shipping': typeof AdminShippingRoute
@@ -336,8 +313,6 @@ export interface FileRoutesByTo {
   '/portal/projects': typeof PortalProjectsRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/admin/quote/$number': typeof AdminQuoteNumberRoute
-  '/api/public/create-quotation': typeof ApiPublicCreateQuotationRoute
   '/api/public/ingest-email-order': typeof ApiPublicIngestEmailOrderRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -368,7 +343,6 @@ export interface FileRoutesById {
   '/admin_/config': typeof AdminConfigRoute
   '/admin_/factory': typeof AdminFactoryRoute
   '/admin_/live': typeof AdminLiveRoute
-  '/admin_/quotations': typeof AdminQuotationsRoute
   '/admin_/reviews': typeof AdminReviewsRoute
   '/admin_/scheduler': typeof AdminSchedulerRoute
   '/admin_/shipping': typeof AdminShippingRoute
@@ -379,8 +353,6 @@ export interface FileRoutesById {
   '/portal_/projects': typeof PortalProjectsRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/admin_/quote/$number': typeof AdminQuoteNumberRoute
-  '/api/public/create-quotation': typeof ApiPublicCreateQuotationRoute
   '/api/public/ingest-email-order': typeof ApiPublicIngestEmailOrderRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -412,7 +384,6 @@ export interface FileRouteTypes {
     | '/admin/config'
     | '/admin/factory'
     | '/admin/live'
-    | '/admin/quotations'
     | '/admin/reviews'
     | '/admin/scheduler'
     | '/admin/shipping'
@@ -423,8 +394,6 @@ export interface FileRouteTypes {
     | '/portal/projects'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
-    | '/admin/quote/$number'
-    | '/api/public/create-quotation'
     | '/api/public/ingest-email-order'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
@@ -454,7 +423,6 @@ export interface FileRouteTypes {
     | '/admin/config'
     | '/admin/factory'
     | '/admin/live'
-    | '/admin/quotations'
     | '/admin/reviews'
     | '/admin/scheduler'
     | '/admin/shipping'
@@ -465,8 +433,6 @@ export interface FileRouteTypes {
     | '/portal/projects'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
-    | '/admin/quote/$number'
-    | '/api/public/create-quotation'
     | '/api/public/ingest-email-order'
     | '/lovable/email/queue/process'
   id:
@@ -496,7 +462,6 @@ export interface FileRouteTypes {
     | '/admin_/config'
     | '/admin_/factory'
     | '/admin_/live'
-    | '/admin_/quotations'
     | '/admin_/reviews'
     | '/admin_/scheduler'
     | '/admin_/shipping'
@@ -507,8 +472,6 @@ export interface FileRouteTypes {
     | '/portal_/projects'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
-    | '/admin_/quote/$number'
-    | '/api/public/create-quotation'
     | '/api/public/ingest-email-order'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
@@ -539,7 +502,6 @@ export interface RootRouteChildren {
   AdminConfigRoute: typeof AdminConfigRoute
   AdminFactoryRoute: typeof AdminFactoryRoute
   AdminLiveRoute: typeof AdminLiveRoute
-  AdminQuotationsRoute: typeof AdminQuotationsRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSchedulerRoute: typeof AdminSchedulerRoute
   AdminShippingRoute: typeof AdminShippingRoute
@@ -549,8 +511,6 @@ export interface RootRouteChildren {
   PortalProjectsRoute: typeof PortalProjectsRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
-  AdminQuoteNumberRoute: typeof AdminQuoteNumberRoute
-  ApiPublicCreateQuotationRoute: typeof ApiPublicCreateQuotationRoute
   ApiPublicIngestEmailOrderRoute: typeof ApiPublicIngestEmailOrderRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
@@ -732,13 +692,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLiveRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/quotations': {
-      id: '/admin_/quotations'
-      path: '/admin/quotations'
-      fullPath: '/admin/quotations'
-      preLoaderRoute: typeof AdminQuotationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin_/reviews': {
       id: '/admin_/reviews'
       path: '/admin/reviews'
@@ -809,20 +762,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/quote/$number': {
-      id: '/admin_/quote/$number'
-      path: '/admin/quote/$number'
-      fullPath: '/admin/quote/$number'
-      preLoaderRoute: typeof AdminQuoteNumberRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/create-quotation': {
-      id: '/api/public/create-quotation'
-      path: '/api/public/create-quotation'
-      fullPath: '/api/public/create-quotation'
-      preLoaderRoute: typeof ApiPublicCreateQuotationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/ingest-email-order': {
       id: '/api/public/ingest-email-order'
       path: '/api/public/ingest-email-order'
@@ -878,7 +817,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConfigRoute: AdminConfigRoute,
   AdminFactoryRoute: AdminFactoryRoute,
   AdminLiveRoute: AdminLiveRoute,
-  AdminQuotationsRoute: AdminQuotationsRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSchedulerRoute: AdminSchedulerRoute,
   AdminShippingRoute: AdminShippingRoute,
@@ -888,8 +826,6 @@ const rootRouteChildren: RootRouteChildren = {
   PortalProjectsRoute: PortalProjectsRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
-  AdminQuoteNumberRoute: AdminQuoteNumberRoute,
-  ApiPublicCreateQuotationRoute: ApiPublicCreateQuotationRoute,
   ApiPublicIngestEmailOrderRoute: ApiPublicIngestEmailOrderRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
