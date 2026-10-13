@@ -32,6 +32,7 @@ import { Route as TrackRouteImport } from './routes/track'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AdminConfigRouteImport } from './routes/admin_.config'
+import { Route as AdminDocumentsRouteImport } from './routes/admin_.documents'
 import { Route as AdminFactoryRouteImport } from './routes/admin_.factory'
 import { Route as AdminLiveRouteImport } from './routes/admin_.live'
 import { Route as AdminReviewsRouteImport } from './routes/admin_.reviews'
@@ -164,6 +165,11 @@ const AdminConfigRoute = AdminConfigRouteImport.update({
   path: '/admin/config',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDocumentsRoute = AdminDocumentsRouteImport.update({
+  id: '/admin_/documents',
+  path: '/admin/documents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminFactoryRoute = AdminFactoryRouteImport.update({
   id: '/admin_/factory',
   path: '/admin/factory',
@@ -262,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/config': typeof AdminConfigRoute
+  '/admin/documents': typeof AdminDocumentsRoute
   '/admin/factory': typeof AdminFactoryRoute
   '/admin/live': typeof AdminLiveRoute
   '/admin/reviews': typeof AdminReviewsRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/config': typeof AdminConfigRoute
+  '/admin/documents': typeof AdminDocumentsRoute
   '/admin/factory': typeof AdminFactoryRoute
   '/admin/live': typeof AdminLiveRoute
   '/admin/reviews': typeof AdminReviewsRoute
@@ -341,6 +349,7 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin_/config': typeof AdminConfigRoute
+  '/admin_/documents': typeof AdminDocumentsRoute
   '/admin_/factory': typeof AdminFactoryRoute
   '/admin_/live': typeof AdminLiveRoute
   '/admin_/reviews': typeof AdminReviewsRoute
@@ -382,6 +391,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/admin/config'
+    | '/admin/documents'
     | '/admin/factory'
     | '/admin/live'
     | '/admin/reviews'
@@ -421,6 +431,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/admin/config'
+    | '/admin/documents'
     | '/admin/factory'
     | '/admin/live'
     | '/admin/reviews'
@@ -460,6 +471,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/admin_/config'
+    | '/admin_/documents'
     | '/admin_/factory'
     | '/admin_/live'
     | '/admin_/reviews'
@@ -500,6 +512,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AdminConfigRoute: typeof AdminConfigRoute
+  AdminDocumentsRoute: typeof AdminDocumentsRoute
   AdminFactoryRoute: typeof AdminFactoryRoute
   AdminLiveRoute: typeof AdminLiveRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
@@ -678,6 +691,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/documents': {
+      id: '/admin_/documents'
+      path: '/admin/documents'
+      fullPath: '/admin/documents'
+      preLoaderRoute: typeof AdminDocumentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/factory': {
       id: '/admin_/factory'
       path: '/admin/factory'
@@ -815,6 +835,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AdminConfigRoute: AdminConfigRoute,
+  AdminDocumentsRoute: AdminDocumentsRoute,
   AdminFactoryRoute: AdminFactoryRoute,
   AdminLiveRoute: AdminLiveRoute,
   AdminReviewsRoute: AdminReviewsRoute,
