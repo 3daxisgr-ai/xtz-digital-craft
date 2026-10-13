@@ -22,6 +22,13 @@
       "when": 1791873089637,
       "tag": "0002_deprecate_quote_documents",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791874212252,
+      "tag": "0003_admin_documents",
+      "breakpoints": true
     }
   ]
 }

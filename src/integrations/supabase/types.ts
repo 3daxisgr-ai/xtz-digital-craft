@@ -50,6 +50,84 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_documents: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          approved_pdf_sha256: string | null
+          created_at: string
+          customer_email: string | null
+          customer_name: string | null
+          doc_type: string
+          email_error: string | null
+          email_message_id: string | null
+          email_subject: string | null
+          fields: Json
+          id: string
+          number: string
+          order_code: string | null
+          order_id: string
+          pdf_generated_at: string | null
+          pdf_path: string | null
+          pdf_sha256: string | null
+          recipient: string | null
+          send_attempts: number
+          sent_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_pdf_sha256?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          doc_type: string
+          email_error?: string | null
+          email_message_id?: string | null
+          email_subject?: string | null
+          fields?: Json
+          id?: string
+          number: string
+          order_code?: string | null
+          order_id: string
+          pdf_generated_at?: string | null
+          pdf_path?: string | null
+          pdf_sha256?: string | null
+          recipient?: string | null
+          send_attempts?: number
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_pdf_sha256?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          doc_type?: string
+          email_error?: string | null
+          email_message_id?: string | null
+          email_subject?: string | null
+          fields?: Json
+          id?: string
+          number?: string
+          order_code?: string | null
+          order_id?: string
+          pdf_generated_at?: string | null
+          pdf_path?: string | null
+          pdf_sha256?: string | null
+          recipient?: string | null
+          send_attempts?: number
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_notifications: {
         Row: {
           body: string | null
