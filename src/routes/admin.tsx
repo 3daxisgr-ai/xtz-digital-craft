@@ -234,6 +234,7 @@ function TopBar({ onJumpOrder }: { onJumpOrder: (code: string) => void }) {
   return (
     <div className="sticky top-0 z-20 bg-[#0a0d12]/95 backdrop-blur border-b border-white/10 px-4 lg:px-8 py-3 flex items-center gap-4">
       <div className="lg:hidden font-mono text-[10px] tracking-[0.3em] text-amber-300/80">TOREO · ADMIN</div>
+      <a href="/admin/documents" className="shrink-0 rounded-sm bg-amber-300 hover:bg-amber-200 text-black px-3 py-2 text-[11px] font-mono font-bold tracking-[0.15em] uppercase">📄 Quotation / Order PDF</a>
       <div className="flex-1 max-w-xl relative">
         <input value={q} onChange={(e) => setQ(e.target.value)} onFocus={() => res && setOpen(true)} onBlur={() => setTimeout(() => setOpen(false), 200)}
           placeholder="Search orders, customers, tracking…"
