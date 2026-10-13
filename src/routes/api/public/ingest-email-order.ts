@@ -542,26 +542,8 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
         }
 
         if (finalAction === "duplicate") {
-          // A reply on an existing order: attach it to that order's sent quotation.
-          let quoteReply: any = null;
-          if (dup.orderId) {
-            try {
-              const qm = await import("@/lib/api/quote-doc.server");
-              quoteReply = await qm.handleQuoteReply({
-                orderId: dup.orderId,
-                threadId: data.thread_id ?? null,
-                messageId: data.message_id,
-                text: `${data.subject ?? ""}\n${data.body_text ?? ""}`,
-              });
-              if (quoteReply?.matched) {
-                console.log(
-                  `[ingest-email-order] reply attached to quotation ${quoteReply.number} accepted=${quoteReply.accepted}`,
-                );
-              }
-            } catch (e) {
-              console.error("[ingest-email-order] quote reply handling failed", e);
-            }
-          }
+          // Quotation documents were removed; reply fields kept for response compatibility.
+          const quoteReply: { matched: boolean; number: string | null; accepted: boolean } | null = null;
           return json({
             quotation_number: quoteReply?.matched ? quoteReply.number : null,
             quotation_accepted: quoteReply?.accepted ?? false,
@@ -661,19 +643,8 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
             await recordIntake(intakeInput, screen, { orderId: order.id, processResult: "created_order" });
           }
 
-          // 6. Draft quotation, pre-filled from the email. Never priced, never sent.
-          let quotationNumber: string | null = null;
-          try {
-            const qm = await import("@/lib/api/quote-doc.server");
-            const draft: any = await qm.createDraftQuoteForOrder(order.order_code, {
-              thread_id: data.thread_id ?? null,
-              message_id: data.message_id,
-            });
-            quotationNumber = draft?.number ?? null;
-            console.log(`[ingest-email-order] draft quotation ${quotationNumber} for ${order.order_code}`);
-          } catch (e) {
-            console.error("[ingest-email-order] draft quotation failed", e);
-          }
+          // Quotation documents were removed; kept null for response compatibility.
+          const quotationNumber: string | null = null;
 
           console.log(`[ingest-email-order] intake ${intake.id} created order ${order.order_code}`);
           return json({
