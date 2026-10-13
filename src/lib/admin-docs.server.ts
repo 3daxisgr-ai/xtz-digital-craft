@@ -126,7 +126,7 @@ export async function renderDocument(type: DocType, number: string, fields: any)
 }
 
 export async function sha256Hex(b: Uint8Array) {
-  const h = await crypto.subtle.digest("SHA-256", b);
+  const h = await crypto.subtle.digest("SHA-256", b as unknown as ArrayBuffer);
   return Array.from(new Uint8Array(h)).map((x) => x.toString(16).padStart(2, "0")).join("");
 }
 
