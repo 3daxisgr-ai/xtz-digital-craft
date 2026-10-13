@@ -38,7 +38,6 @@ import { MaterialEstimateAdmin } from "@/components/admin/MaterialEstimateAdmin"
 import { DesignInputAdmin } from "@/components/admin/DesignInputAdmin";
 import { RequestSummary } from "@/components/xtz/RequestSummary";
 import { acceptQuote, declineQuote } from "@/lib/api/quote-decision.functions";
-import { quoteDocCreate } from "@/lib/api/quote-doc.functions";
 import { OrderEmailHistory, EmailDeliveryWidget } from "@/components/admin/EmailHistory";
 import { AiRequestSummary, AiEmailAssistant } from "@/components/admin/AiEmailAssistant";
 import { AiInboxWidget } from "@/components/admin/AiInboxWidget";
@@ -202,7 +201,6 @@ function Sidebar({ active, onNav, onLogout }: { active: Section; onNav: (s: Sect
         ))}
         <div className="border-t border-white/10 mt-3 pt-3">
           <a href="/admin/shipping" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-sky-300/80 hover:text-sky-200 border-l-2 border-transparent hover:border-sky-300">→ Shipping</a>
-          <a href="/admin/quotations" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-sky-300/80 hover:text-sky-200 border-l-2 border-transparent hover:border-sky-300">→ Quotations</a>
           <a href="/admin/reviews" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-amber-300/80 hover:text-amber-200 border-l-2 border-transparent hover:border-amber-300">→ Reviews</a>
 
           <a href="/admin/factory" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-emerald-300/80 hover:text-emerald-200 border-l-2 border-transparent hover:border-emerald-300">→ Factory</a>
@@ -553,7 +551,6 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
   const upload = useServerFn(panelUploadFile);
   const acceptFn = useServerFn(acceptQuote);
   const declineFn = useServerFn(declineQuote);
-  const createQuoteDocFn = useServerFn(quoteDocCreate);
 
   const [busy, setBusy] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -648,13 +645,6 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
     finally { setBusy(null); }
   }
 
-  async function openQuoteDoc() {
-    setBusy("quotedoc");
-    try {
-      const d: any = await createQuoteDocFn({ data: { order_code: code } });
-      window.open(`/admin/quote/${encodeURIComponent(d.number)}`, "_blank", "noopener,noreferrer");
-    } catch (e: any) { flash(e.message ?? "Failed"); } finally { setBusy(null); }
-  }
 
   const btn = "px-3 py-2 text-[10px] font-mono tracking-[0.25em] uppercase border rounded-sm transition-colors disabled:opacity-40";
   const btnPri = `${btn} border-amber-300/40 hover:border-amber-300 text-amber-200`;
@@ -674,9 +664,6 @@ function QuickActions({ o, code, onChanged, setTab }: { o: any; code: string; on
           <div className="flex flex-wrap gap-2">
             <button className={btnOk} onClick={() => setModal("accept")}>✓ ACCEPT QUOTE</button>
             <button className={btn + " border-red-400/40 hover:border-red-400 text-red-200"} onClick={() => setModal("decline")}>✕ DECLINE QUOTE</button>
-            <button className={btnBlue} disabled={busy === "quotedoc"} onClick={openQuoteDoc}>
-              {busy === "quotedoc" ? "OPENING…" : "📄 QUOTATION PDF"}
-            </button>
           </div>
         </div>
         <div>

@@ -1,0 +1,2 @@
+COMMENT ON TABLE public.quote_documents IS 'DEPRECATED: quotation-document feature removed from the app; drop after the new version is published.';
+COMMENT ON FUNCTION public.next_quote_number() IS 'DEPRECATED: quotation-document feature removed; drop together with quote_documents.';

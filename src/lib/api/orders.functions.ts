@@ -381,28 +381,8 @@ export const trackOrder = createServerFn({ method: "POST" })
       lead_time: pick("lead_time", "urgency", "delivery_speed"),
     };
 
-    // ---- customer documents (quotations + invoice)
+    // ---- customer documents (invoice)
     const documents: { label: string; name: string; url: string; created_at: string | null }[] = [];
-    const { data: quoteDocs } = await supabaseAdmin
-      .from("quote_documents")
-      .select("number, pdf_path, status, created_at")
-      .eq("order_id", order.id)
-      .not("pdf_path", "is", null)
-      .in("status", ["sent", "accepted", "declined", "superseded"])
-      .order("created_at", { ascending: false });
-    for (const d of quoteDocs ?? []) {
-      const { data: signed } = await supabaseAdmin.storage
-        .from("quote-pdfs")
-        .createSignedUrl((d as any).pdf_path, 60 * 30);
-      if (signed?.signedUrl) {
-        documents.push({
-          label: "Quotation",
-          name: `${(d as any).number}.pdf`,
-          url: signed.signedUrl,
-          created_at: (d as any).created_at ?? null,
-        });
-      }
-    }
     const invoicePath = (order as any).invoice_file_path as string | null;
     if (invoicePath) {
       const bucket = invoicePath.startsWith("proformas/") ? "proformas" : "order-files";
