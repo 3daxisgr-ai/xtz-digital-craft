@@ -162,12 +162,6 @@ export function PortfolioDeck({
     return () => window.removeEventListener("keydown", onKey);
   }, [go]);
 
-  const enter = reduced
-    ? { opacity: 0 }
-    : { opacity: 0, x: dir * 320, rotateY: dir * 16, scale: 0.82, filter: "blur(6px)" };
-  const exit = reduced
-    ? { opacity: 0 }
-    : { opacity: 0, x: -dir * 320, rotateY: -dir * 16, scale: 0.86, filter: "blur(8px)" };
 
   return (
     <div
