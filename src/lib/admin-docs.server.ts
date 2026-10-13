@@ -119,8 +119,8 @@ export async function renderDocument(type: DocType, number: string, fields: any)
 
     put(f.delivery_time, 75, 499, { size: 7, maxW: 148 });
     put(f.warranty, 119, 513, { size: 7, maxW: 104 });
-    put(f.technical_details, 230, 523.5, { size: 6.5, maxW: 148 });
-    put(f.remarks, 384, 523.5, { size: 6.5, maxW: 140 });
+    put(f.technical_details, 339, 515, { size: 6, maxW: 42 });
+    put(f.remarks, 451, 515, { size: 6, maxW: 86 });
   }
   return await doc.save();
 }
