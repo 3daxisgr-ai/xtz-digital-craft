@@ -15,6 +15,13 @@
       "when": 1791439678631,
       "tag": "0001_design_input_type",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791873089637,
+      "tag": "0002_deprecate_quote_documents",
+      "breakpoints": true
     }
   ]
 }
