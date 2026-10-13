@@ -196,7 +196,6 @@ function OrderView({
   const pct = (idx / (STAGES.length - 1)) * 100;
   const [showChange, setShowChange] = useState(false);
 
-  const quoteDoc = (data.documents ?? []).find((d: any) => d.label === "Quotation");
   const invoiceDoc = (data.documents ?? []).find((d: any) => d.label === "Invoice");
 
   return (
@@ -223,16 +222,6 @@ function OrderView({
       <section className="border border-white/10 bg-white/[0.02] rounded-xl p-5 md:p-6">
         <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40 mb-4">Actions</div>
         <div className="flex flex-wrap gap-2.5">
-          {quoteDoc && (
-            <a
-              href={quoteDoc.url}
-              target="_blank"
-              rel="noreferrer"
-              className="bg-white text-black hover:bg-white/90 rounded-md px-4 py-2 text-xs font-semibold"
-            >
-              Download Quote PDF
-            </a>
-          )}
           {invoiceDoc && (
             <a
               href={invoiceDoc.url}
