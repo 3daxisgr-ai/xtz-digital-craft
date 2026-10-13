@@ -543,7 +543,7 @@ export const Route = createFileRoute("/api/public/ingest-email-order")({
 
         if (finalAction === "duplicate") {
           // Quotation documents were removed; reply fields kept for response compatibility.
-          const quoteReply: { matched: boolean; number: string | null; accepted: boolean } | null = null;
+          const quoteReply = null as { matched: boolean; number: string | null; accepted: boolean } | null;
           return json({
             quotation_number: quoteReply?.matched ? quoteReply.number : null,
             quotation_accepted: quoteReply?.accepted ?? false,
