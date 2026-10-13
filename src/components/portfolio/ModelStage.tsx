@@ -10,6 +10,10 @@ import * as THREE from "three";
 import { roughnessMap, microNormalMap } from "./materials";
 import type { Part } from "./projects";
 import { GltfModel } from "./GltfModel";
+import { qualityTier, dprFor, useRenderActive, clampDelta } from "./perf";
+
+const ORIGIN = new THREE.Vector3(0, 0, 0);
+const SSAO_COLOR = new THREE.Color("#04070b");
 
 type Props = {
   parts: Part[];
@@ -26,6 +30,8 @@ type Props = {
   transparent?: boolean;
   /** when set, an uploaded GLB replaces the procedural assembly */
   modelUrl?: string;
+  /** pause rendering (e.g. covered by an overlay); resumes cleanly */
+  paused?: boolean;
 };
 
 function geometryFor(part: Part) {
@@ -87,7 +93,7 @@ function PartMesh({
       m.position.copy(goal);
       return;
     }
-    m.position.lerp(goal, 1 - Math.pow(0.005, delta));
+    m.position.lerp(goal, 1 - Math.pow(0.005, clampDelta(delta)));
   });
 
   return (
@@ -129,7 +135,7 @@ function PartMesh({
   );
 }
 
-function Assembly({ parts, exploded, wireframe, section, autoRotate, reducedMotion }: Omit<Props, "showGrid" | "brightLighting" | "accent" | "resetSignal" | "dpr">) {
+function Assembly({ parts, exploded, wireframe, section, autoRotate, reducedMotion }: Omit<Props, "showGrid" | "brightLighting" | "accent" | "resetSignal" | "dpr" | "paused">) {
   const group = useRef<THREE.Group>(null);
   const { gl } = useThree();
   const brushMap = useMemo(() => roughnessMap(), []);
@@ -144,7 +150,7 @@ function Assembly({ parts, exploded, wireframe, section, autoRotate, reducedMoti
 
 
   useFrame((_, delta) => {
-    if (autoRotate && group.current && !reducedMotion) group.current.rotation.y += delta * 0.3;
+    if (autoRotate && group.current && !reducedMotion) group.current.rotation.y += clampDelta(delta) * 0.3;
   });
 
   return (
@@ -181,10 +187,11 @@ function CameraRig({ signal, reducedMotion }: { signal: number; reducedMotion?: 
 
   useFrame((_, delta) => {
     if (!goal.current) return;
-    camera.position.lerp(goal.current, 1 - Math.pow(0.0015, delta));
+    const k = 1 - Math.pow(0.0015, clampDelta(delta));
+    camera.position.lerp(goal.current, k);
     const c = controls as { target?: THREE.Vector3; update?: () => void } | null;
     if (c?.target) {
-      c.target.lerp(new THREE.Vector3(0, 0, 0), 1 - Math.pow(0.0015, delta));
+      c.target.lerp(ORIGIN, k);
       c.update?.();
     }
     if (camera.position.distanceTo(goal.current) < 0.02) goal.current = null;
@@ -206,15 +213,26 @@ export function ModelStage({
   dpr = [1, 1.75],
   transparent = false,
   modelUrl,
+  paused = false,
 }: Props) {
+  const wrap = useRef<HTMLDivElement>(null);
+  const active = useRenderActive(wrap, paused);
+  // Tier is read after mount only (component is client-only / lazy loaded).
+  const tier = useMemo(() => qualityTier(), []);
+  // Transparent hero path: no realtime shadow maps, no post FX — the baked
+  // contact shadow + studio env carry the look at a fraction of the cost.
+  const realtimeShadows = !transparent && tier !== "low";
+  const postFx = !transparent;
+  const ssao = postFx && tier === "high";
   return (
-    <div className="relative h-full w-full">
+    <div ref={wrap} className="relative h-full w-full">
       <Canvas
-        shadows="soft"
-        dpr={dpr}
+        shadows={realtimeShadows ? "soft" : false}
+        frameloop={active ? "always" : "never"}
+        dpr={dprFor(tier, dpr)}
         camera={{ position: [6.2, 3.9, 7.8], fov: 46, near: 0.1, far: 200 }}
         gl={{
-          antialias: true,
+          antialias: tier !== "low",
           alpha: transparent,
           powerPreference: "high-performance",
           toneMapping: THREE.ACESFilmicToneMapping,
@@ -234,8 +252,8 @@ export function ModelStage({
           position={[7, 10, 6]}
           intensity={brightLighting ? 2.6 : 1.7}
           color="#fff6ea"
-          castShadow
-          shadow-mapSize={[1024, 1024]}
+          castShadow={realtimeShadows}
+          shadow-mapSize={tier === "high" ? [1024, 1024] : [512, 512]}
           shadow-bias={-0.0004}
           shadow-normalBias={0.02}
         />
@@ -270,7 +288,7 @@ export function ModelStage({
               )}
             </Center>
           </Bounds>
-          <Environment resolution={512} frames={1} environmentIntensity={brightLighting ? 1.25 : 0.95}>
+          <Environment resolution={tier === "high" && !transparent ? 512 : 256} frames={1} environmentIntensity={brightLighting ? 1.25 : 0.95}>
             <color attach="background" args={["#10151b"]} />
             <Lightformer form="rect" intensity={5} color="#ffffff" scale={[12, 7, 1]} position={[0, 7, 2]} rotation={[-Math.PI / 2, 0, 0]} />
             <Lightformer form="rect" intensity={2.2} color="#dfeaf7" scale={[9, 6, 1]} position={[-9, 2.5, 4]} rotation={[0, Math.PI / 2, 0]} />
@@ -280,7 +298,7 @@ export function ModelStage({
           </Environment>
         </Suspense>
 
-        <ContactShadows position={[0, -2.6, 0]} opacity={transparent ? 0.3 : 0.42} scale={transparent ? 12 : 26} blur={3.4} far={9} resolution={512} frames={1} />
+        <ContactShadows position={[0, -2.6, 0]} opacity={transparent ? 0.3 : 0.42} scale={transparent ? 12 : 26} blur={3.4} far={9} resolution={tier === "low" ? 256 : 512} frames={1} />
         {showGrid && (
           <Grid
             args={[60, 60]}
@@ -308,9 +326,9 @@ export function ModelStage({
           maxDistance={30}
         />
 
-        {!transparent && (
-        <EffectComposer enableNormalPass multisampling={0}>
-          <SSAO
+        {postFx && (
+        <EffectComposer enableNormalPass={ssao} multisampling={0}>
+          <>{ssao && (<SSAO
             samples={12}
             radius={0.12}
             intensity={22}
@@ -319,9 +337,9 @@ export function ModelStage({
             worldDistanceFalloff={2}
             worldProximityThreshold={2}
             worldProximityFalloff={1}
-            color={new THREE.Color("#04070b")}
+            color={SSAO_COLOR}
             blendFunction={BlendFunction.MULTIPLY}
-          />
+          />)}</>
           <Vignette offset={0.28} darkness={0.62} eskil={false} blendFunction={BlendFunction.NORMAL} />
           <SMAA />
         </EffectComposer>
