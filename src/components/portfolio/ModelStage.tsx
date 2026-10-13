@@ -326,9 +326,9 @@ export function ModelStage({
           maxDistance={30}
         />
 
-        {postFx && (
-        <EffectComposer enableNormalPass={ssao} multisampling={0}>
-          <>{ssao && (<SSAO
+        {postFx && ssao && (
+        <EffectComposer enableNormalPass multisampling={0}>
+          <SSAO
             samples={12}
             radius={0.12}
             intensity={22}
@@ -339,7 +339,13 @@ export function ModelStage({
             worldProximityFalloff={1}
             color={SSAO_COLOR}
             blendFunction={BlendFunction.MULTIPLY}
-          />)}</>
+          />
+          <Vignette offset={0.28} darkness={0.62} eskil={false} blendFunction={BlendFunction.NORMAL} />
+          <SMAA />
+        </EffectComposer>
+        )}
+        {postFx && !ssao && (
+        <EffectComposer multisampling={0}>
           <Vignette offset={0.28} darkness={0.62} eskil={false} blendFunction={BlendFunction.NORMAL} />
           <SMAA />
         </EffectComposer>
