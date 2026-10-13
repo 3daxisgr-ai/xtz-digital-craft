@@ -200,6 +200,7 @@ function Sidebar({ active, onNav, onLogout }: { active: Section; onNav: (s: Sect
           </button>
         ))}
         <div className="border-t border-white/10 mt-3 pt-3">
+          <a href="/admin/documents" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-amber-300/90 hover:text-amber-200 border-l-2 border-transparent hover:border-amber-300">→ Offer / Order PDFs</a>
           <a href="/admin/shipping" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-sky-300/80 hover:text-sky-200 border-l-2 border-transparent hover:border-sky-300">→ Shipping</a>
           <a href="/admin/reviews" className="block px-5 py-2.5 text-xs font-mono tracking-[0.2em] uppercase text-amber-300/80 hover:text-amber-200 border-l-2 border-transparent hover:border-amber-300">→ Reviews</a>
 
