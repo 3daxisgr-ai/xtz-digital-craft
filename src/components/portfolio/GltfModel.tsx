@@ -6,6 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
 import { roughnessMap, microNormalMap } from "./materials";
+import { clampDelta } from "./perf";
 
 export function GltfModel({
   url,
@@ -72,7 +73,7 @@ export function GltfModel({
   );
 
   useFrame((_, delta) => {
-    if (autoRotate && group.current && !reducedMotion) group.current.rotation.y += delta * 0.3;
+    if (autoRotate && group.current && !reducedMotion) group.current.rotation.y += clampDelta(delta) * 0.3;
   });
 
   return (

@@ -51,7 +51,7 @@ function PortfolioPage() {
 
       <h1 className="sr-only">TOREO engineering portfolio — interactive 3D projects</h1>
 
-      <PortfolioDeck projects={DECK} onOpenDetails={setActive} />
+      <PortfolioDeck projects={DECK} onOpenDetails={setActive} paused={!introDone || !!active} />
 
       <ProjectViewerHost
         project={active}

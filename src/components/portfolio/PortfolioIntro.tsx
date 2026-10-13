@@ -14,6 +14,7 @@
 // rAF. React never re-renders during playback.
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { dprFor, qualityTier } from "./perf";
 import { Environment, Lightformer, ContactShadows } from "@react-three/drei";
 import { EffectComposer, SMAA, Vignette } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
@@ -434,7 +435,7 @@ export function PortfolioIntro({ onDone }: { onDone: () => void }) {
       <div ref={stageRef} className="absolute inset-0" style={{ opacity: 0, willChange: "opacity" }}>
         <Canvas
           shadows="soft"
-          dpr={[1, 1.6]}
+          dpr={dprFor(qualityTier(), [1, 1.6])}
           frameloop="always"
           camera={{ position: [0.4, 0.9, 10.6], fov: 34, near: 0.1, far: 200 }}
           gl={{

@@ -1,7 +1,7 @@
 // Cinematic horizontal portfolio deck — one project per viewport, wheel /
 // keyboard / swipe driven, spring-animated Apple-style transitions.
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useAnimationControls, useReducedMotion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { RotateCcw, Grid3x3, Boxes, Maximize2, ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
 import { BlueprintBackground } from "./BlueprintBackground";
@@ -43,9 +43,12 @@ function Ctrl({ active, onClick, icon: Icon, label }: { active?: boolean; onClic
 export function PortfolioDeck({
   projects,
   onOpenDetails,
+  paused = false,
 }: {
   projects: Project[];
   onOpenDetails: (p: Project) => void;
+  /** pause the 3D render loop (intro overlay or details viewer on top) */
+  paused?: boolean;
 }) {
   const reduced = useReducedMotion();
   const [index, setIndex] = useState(0);
@@ -65,6 +68,39 @@ export function PortfolioDeck({
 
   useEffect(() => setMounted(true), []);
 
+  // One persistent WebGL canvas: the outgoing model animates out, the canvas
+  // swaps to the next project, then animates in. No two 3D scenes ever render
+  // at the same time, and no WebGL context is re-created per project.
+  const modelCtl = useAnimationControls();
+  const [shown, setShown] = useState(project);
+  const dirRef = useRef(dir);
+  dirRef.current = dir;
+  useEffect(() => {
+    if (project.slug === shown.slug) return;
+    let cancelled = false;
+    const d = dirRef.current;
+    const run = async () => {
+      if (reduced) {
+        await modelCtl.start({ opacity: 0, transition: { duration: 0.15 } });
+      } else {
+        await modelCtl.start({
+          opacity: 0, x: -d * 320, rotateY: -d * 16, scale: 0.86, filter: "blur(6px)",
+          transition: { duration: 0.34, ease: [0.4, 0, 0.6, 1] },
+        });
+      }
+      if (cancelled) return;
+      setShown(project);
+      setAssembling(true);
+      if (!reduced) modelCtl.set({ opacity: 0, x: d * 320, rotateY: d * 16, scale: 0.82, filter: "blur(6px)" });
+      await modelCtl.start({ opacity: 1, x: 0, rotateY: 0, scale: 1, filter: "blur(0px)", transition: reduced ? { duration: 0.2 } : SPRING });
+    };
+    void run();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project.slug]);
+
   const go = useCallback(
     (d: 1 | -1) => {
       const now = performance.now();
@@ -72,7 +108,6 @@ export function PortfolioDeck({
       lock.current = now + 950;
       setDir(d);
       setExploded(false);
-      setAssembling(true);
       setIndex((i) => (i + d + projects.length) % projects.length);
     },
     [projects.length],
@@ -86,7 +121,6 @@ export function PortfolioDeck({
       lock.current = now + 950;
       setDir(target > index ? 1 : -1);
       setExploded(false);
-      setAssembling(true);
       setIndex(target);
     },
     [index],
@@ -97,7 +131,7 @@ export function PortfolioDeck({
     if (!assembling) return;
     const t = window.setTimeout(() => setAssembling(false), 420);
     return () => window.clearTimeout(t);
-  }, [assembling, index]);
+  }, [assembling, shown.slug]);
 
   // vertical wheel drives horizontal navigation (non-passive)
   useEffect(() => {
@@ -128,12 +162,6 @@ export function PortfolioDeck({
     return () => window.removeEventListener("keydown", onKey);
   }, [go]);
 
-  const enter = reduced
-    ? { opacity: 0 }
-    : { opacity: 0, x: dir * 320, rotateY: dir * 16, scale: 0.82, filter: "blur(6px)" };
-  const exit = reduced
-    ? { opacity: 0 }
-    : { opacity: 0, x: -dir * 320, rotateY: -dir * 16, scale: 0.86, filter: "blur(8px)" };
 
   return (
     <div
@@ -167,36 +195,32 @@ export function PortfolioDeck({
 
       {/* hero model */}
       <div className="absolute inset-0 flex items-center justify-center" style={{ perspective: 1400 }}>
-        <AnimatePresence mode="sync" initial={false}>
-          <motion.div
-            key={`model-${project.slug}`}
+        <motion.div
             className="absolute h-[58vh] w-full max-w-[900px] sm:h-[72vh] lg:translate-x-[9%]"
-            initial={enter}
-            animate={{ opacity: 1, x: 0, rotateY: 0, scale: 1, filter: "blur(0px)" }}
-            exit={exit}
-            transition={reduced ? { duration: 0.2 } : SPRING}
+            initial={false}
+            animate={modelCtl}
           >
             {mounted && (
               <Suspense fallback={null}>
                 <ModelStage
-                  parts={project.parts}
-                      modelUrl={project.modelUrl}
+                  parts={shown.parts}
+                  modelUrl={shown.modelUrl}
                   exploded={exploded || assembling}
                   wireframe={wireframe}
                   section={false}
                   autoRotate={spinning}
                   showGrid={false}
                   brightLighting={false}
-                  accent={project.accent}
+                  accent={shown.accent}
                   resetSignal={resetSignal}
                   reducedMotion={!!reduced}
                   dpr={[1, 1.5]}
                   transparent
+                  paused={paused}
                 />
               </Suspense>
             )}
           </motion.div>
-        </AnimatePresence>
       </div>
 
       {/* left: identity */}

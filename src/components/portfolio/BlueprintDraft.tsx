@@ -352,7 +352,19 @@ export function BlueprintDraft({ clock, offset = 0 }: { clock: { t: number }; of
     resize();
     window.addEventListener("resize", resize);
 
+    // Pause drawing while the canvas is off-screen; rAF already pauses in hidden tabs.
+    let visible = true;
+    const io = typeof IntersectionObserver !== "undefined"
+      ? new IntersectionObserver(([e]) => {
+          const was = visible;
+          visible = e.isIntersecting;
+          if (visible && !was) raf = requestAnimationFrame(draw);
+        })
+      : null;
+    io?.observe(cv);
+
     const draw = () => {
+      if (!visible) return;
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       const scale = Math.min((vw * 0.94) / W, (vh * 0.9) / H);
       x.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -368,6 +380,7 @@ export function BlueprintDraft({ clock, offset = 0 }: { clock: { t: number }; of
 
     return () => {
       cancelAnimationFrame(raf);
+      io?.disconnect();
       window.removeEventListener("resize", resize);
     };
   }, [clock, offset]);
