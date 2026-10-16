@@ -29,6 +29,13 @@
       "when": 1791874212252,
       "tag": "0003_admin_documents",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792134900849,
+      "tag": "0004_secure_submission_upload_capabilities",
+      "breakpoints": true
     }
   ]
 }
