@@ -9,7 +9,7 @@ const chapterPrint = chapterPrintAsset.url;
 const p1 = designPrototypePhotoAsset.url;
 const p3 = massProductionAsset.url;
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "./i18n";
 import type { CapabilitySlug } from "./Capabilities";
 
@@ -43,7 +43,6 @@ const slidesGR: Slide[] = [
 export function PortfolioReel() {
   const { t, lang } = useI18n();
   const slides = lang === "GR" ? slidesGR : slidesEN;
-  const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
@@ -270,19 +269,19 @@ export function PortfolioReel() {
             {slides.map((s, i) => {
               const isActive = i === active;
               return (
-                <article
+                <Link
                   key={s.index}
+                  to="/capabilities/$slug"
+                  params={{ slug: s.slug }}
                   ref={(el) => {
                     cardRefs.current[i] = el;
                   }}
-                  onClick={() => {
-                    if (i === active) {
-                      navigate({ to: "/capabilities/$slug", params: { slug: s.slug } });
-                    } else {
+                  onClick={(event) => {
+                    if (i !== active && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) {
+                      event.preventDefault();
                       goTo(i);
                     }
                   }}
-                  role="link"
                   aria-label={`Open ${s.title}`}
                   className={`group relative shrink-0 cursor-pointer transition-transform duration-500 ease-out will-change-transform
                     w-[78vw] sm:w-[55vw] md:w-[40vw] lg:w-[28vw] xl:w-[24vw]
@@ -303,7 +302,8 @@ export function PortfolioReel() {
                     <img
                       src={s.img}
                       alt={s.alt}
-                      loading={i < 2 ? "eager" : "lazy"}
+                      loading="lazy"
+                      decoding="async"
                       draggable={false}
                       className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ${
                         isActive ? "scale-105" : "scale-100 grayscale group-hover:grayscale-0"
@@ -350,7 +350,7 @@ export function PortfolioReel() {
                         {s.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="font-mono text-[9px] tracking-[0.25em] uppercase px-2 py-1 border border-[#05acff]/40 bg-[#05acff]/[0.05] text-[#05acff]"
+                            className="font-mono text-xs tracking-[0.25em] uppercase px-2 py-1 border border-primary/40 bg-primary/5 text-primary"
                           >
                             {tag}
                           </span>
@@ -358,7 +358,7 @@ export function PortfolioReel() {
                       </div>
                     </div>
                   </div>
-                </article>
+                </Link>
               );
             })}
           </div>
