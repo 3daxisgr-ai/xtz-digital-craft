@@ -5,6 +5,7 @@ import { z } from "zod";
 import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
 import { uploadSubmissionFile } from "@/lib/submission-upload";
+import { supabase } from "@/integrations/supabase/client";
 import { submitForm } from "@/lib/api/submissions.functions";
 import { MaterialEstimateCard, MaterialEstimateInputs } from "@/components/xtz/MaterialEstimate";
 import {
