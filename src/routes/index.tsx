@@ -28,6 +28,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: `https://www.toreo.gr${heroLaser.url}` },
     ],
     links: [
+      { rel: "preload", as: "image", href: heroLaser.url },
       { rel: "canonical", href: "https://www.toreo.gr/" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
