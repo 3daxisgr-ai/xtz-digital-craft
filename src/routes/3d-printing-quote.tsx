@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
 import { useI18n } from "@/components/xtz/i18n";
-import { supabase } from "@/integrations/supabase/client";
+import { uploadSubmissionFile } from "@/lib/submission-upload";
 import { submitForm } from "@/lib/api/submissions.functions";
 import { runQuoteAnalysis, getPublicPrintingMaterials } from "@/lib/api/factory.functions";
 import { AIAnalysisCard } from "@/components/factory/AIAnalysisCard";
@@ -130,12 +130,7 @@ function QuotePage() {
     try {
       let filePath: string | null = null;
       let fileName: string | null = null;
-      const ext = file.name.split(".").pop() ?? "bin";
-      const path = `3dp/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("submission-files")
-        .upload(path, file, { upsert: false, contentType: file.type || "application/octet-stream" });
-      if (upErr) throw upErr;
+      const path = await uploadSubmissionFile(file, "3dp");
       filePath = path;
       fileName = file.name;
 

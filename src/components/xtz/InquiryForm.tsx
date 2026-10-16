@@ -2,7 +2,7 @@ import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useI18n } from "./i18n";
-import { supabase } from "@/integrations/supabase/client";
+import { uploadSubmissionFile } from "@/lib/submission-upload";
 import { submitForm } from "@/lib/api/submissions.functions";
 
 const services = [
@@ -101,12 +101,7 @@ export function InquiryForm() {
       let filePath: string | null = null;
       let fileName: string | null = null;
       if (file) {
-        const ext = file.name.split(".").pop() ?? "bin";
-        const path = `inquiry/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-        const { error: upErr } = await supabase.storage
-          .from("submission-files")
-          .upload(path, file, { upsert: false, contentType: file.type || "application/octet-stream" });
-        if (upErr) throw upErr;
+        const path = await uploadSubmissionFile(file, "inquiry");
         filePath = path;
         fileName = file.name;
       }
