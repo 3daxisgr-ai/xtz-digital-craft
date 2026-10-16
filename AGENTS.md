@@ -1,4 +1,5 @@
 - Material-only estimates: math lives in pure `src/lib/material-estimate.ts` (unit-tested); AI only interprets geometry/material and its prices are ignored. Why: deterministic, auditable prices.
+- Submission uploads use a shared helper and server-issued signed creation capabilities for random paths, with no direct client INSERT policy. Why: preserve guest forms without allowing arbitrary bucket writes.
 - MCP tools require delegated OAuth with a client claim and forward the verified caller token through the shared client, never admin access. Why: external access must preserve user identity and existing RLS.
 - `material_estimates` is service-role only (no anon/authenticated policies); customers receive only the DTO from `toCustomerDTO`. Why: never leak purchase cost or markup.
 - Portfolio 3D: one persistent WebGL canvas per view (swap the model, never mount two scenes); quality tier, DPR caps and off-screen pausing live in src/components/portfolio/perf.ts. Why: avoid GPU stalls during transitions and on weak devices.

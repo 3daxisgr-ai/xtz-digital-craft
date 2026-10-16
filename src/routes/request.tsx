@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { Navigation } from "@/components/xtz/Navigation";
 import { Footer } from "@/components/xtz/Footer";
+import { uploadSubmissionFile } from "@/lib/submission-upload";
 import { supabase } from "@/integrations/supabase/client";
 import { submitForm } from "@/lib/api/submissions.functions";
 import { MaterialEstimateCard, MaterialEstimateInputs } from "@/components/xtz/MaterialEstimate";
@@ -234,12 +235,7 @@ function RequestPage() {
       // Upload files
       const uploaded: { file_path: string; file_name: string }[] = [];
       for (const uf of files) {
-        const ext = uf.file.name.split(".").pop() ?? "bin";
-        const path = `inquiry/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-        const { error: upErr } = await supabase.storage
-          .from("submission-files")
-          .upload(path, uf.file, { upsert: false, contentType: uf.file.type || "application/octet-stream" });
-        if (upErr) throw upErr;
+        const path = await uploadSubmissionFile(uf.file, "inquiry");
         uploaded.push({ file_path: path, file_name: uf.file.name });
       }
 
