@@ -1,4 +1,5 @@
 import { defineTool } from "@lovable.dev/mcp-js";
+import { supabaseForUser } from "../supabase";
 
 export default defineTool({
   name: "list_printing_materials",
@@ -6,9 +7,9 @@ export default defineTool({
   description: "List the 3D printing material families currently offered by TOREO with in-stock status.",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
-  handler: async () => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin
+  handler: async (_, ctx) => {
+    if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    const { data, error } = await supabaseForUser(ctx)
       .from("materials")
       .select("code, name, family, stock_kg")
       .eq("active", true)

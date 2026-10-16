@@ -1,5 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
+import { supabaseForUser } from "../supabase";
 
 export default defineTool({
   name: "track_order",
@@ -21,8 +22,7 @@ export default defineTool({
         isError: true,
       };
     }
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: order, error } = await supabaseAdmin
+    const { data: order, error } = await supabaseForUser(ctx)
       .from("orders")
       .select(
         "order_code, status, service, material, quantity, quote_price, currency, due_date, created_at, customer_email",

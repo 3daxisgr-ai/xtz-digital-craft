@@ -5,6 +5,7 @@
   "auth": {
     "type": "oauth",
     "issuer": "https://ykgjvmlunfyoalhbulxt.supabase.co/auth/v1",
+    "require_oauth_client_claim": true,
     "accepted_audiences": [
       "authenticated"
     ]
@@ -13,7 +14,7 @@
     "server": {
       "name": "toreo",
       "version": "0.2.0",
-      "title": "TOREO AI Factory"
+      "title": "Toreo"
     },
     "tools": [
       {
