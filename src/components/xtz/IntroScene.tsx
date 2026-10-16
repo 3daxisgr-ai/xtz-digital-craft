@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import toreoLogo from "@/assets/toreo-white-logo.png.asset.json";
+import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 import { useI18n } from "./i18n";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -11,32 +12,40 @@ export function IntroScene() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { t } = useI18n();
 
-  // Keep the hero video alive on mobile (iOS Safari pauses background video on scroll)
+  // Only decode/play video while visible; leave the poster for reduced motion.
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let inView = true;
     const tryPlay = () => {
+      if (!inView || document.hidden || motion.matches) {
+        v.pause();
+        return;
+      }
       const p = v.play();
       if (p && typeof p.catch === "function") p.catch(() => {});
     };
     tryPlay();
     const onVisibility = () => {
-      if (document.visibilityState === "visible") tryPlay();
+      tryPlay();
     };
     const onPause = () => {
       // Re-resume if it was paused by the OS while still on screen
-      if (!document.hidden) tryPlay();
+      if (inView && !document.hidden && !motion.matches) tryPlay();
     };
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) tryPlay();
+          inView = e.isIntersecting;
+          tryPlay();
         });
       },
       { threshold: 0.05 },
     );
     io.observe(v);
     document.addEventListener("visibilitychange", onVisibility);
+    motion.addEventListener("change", tryPlay);
     v.addEventListener("pause", onPause);
     v.addEventListener("stalled", tryPlay);
     v.addEventListener("suspend", tryPlay);
@@ -45,6 +54,7 @@ export function IntroScene() {
     return () => {
       io.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
+      motion.removeEventListener("change", tryPlay);
       v.removeEventListener("pause", onPause);
       v.removeEventListener("stalled", tryPlay);
       v.removeEventListener("suspend", tryPlay);
@@ -64,18 +74,18 @@ export function IntroScene() {
         .to(".ambient-blue", { opacity: 1, duration: 1.0 }, 0.1)
         .fromTo(
           ".scene-img-wrap",
-          { opacity: 0, scale: reduced ? 1 : 1.25 },
+          { opacity: 1, scale: reduced ? 1 : 1.05 },
           { opacity: 1, scale: 1, duration: reduced ? 0.6 : 1.6, ease: "power2.out" },
           0.2,
         )
         .fromTo(
           ".hero-headline",
-          { y: 30, opacity: 0, filter: "blur(12px)" },
+          { y: reduced ? 0 : 12, opacity: 1, filter: "blur(0px)" },
           { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.0 },
           0.6,
         )
-        .fromTo(".hero-cta", { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, "-=0.3")
-        .fromTo(".intro-xyz", { y: 10, opacity: 0 }, { y: 0, opacity: 0.7, duration: 0.6 }, "-=0.3")
+        .fromTo(".hero-cta", { y: reduced ? 0 : 14, opacity: 1 }, { y: 0, opacity: 1, duration: 0.7 }, "-=0.3")
+        .fromTo(".intro-xyz", { y: reduced ? 0 : 10, opacity: 0.7 }, { y: 0, opacity: 0.7, duration: 0.6 }, "-=0.3")
         .add(() => {
           window.dispatchEvent(new CustomEvent("intro:ready"));
         }, "+=0.05")
@@ -116,14 +126,14 @@ export function IntroScene() {
         <video
           ref={videoRef}
           src="https://pub-59713968bf3c42aa83f00d4b01b6f1f5.r2.dev/video.mp4"
-          autoPlay
+          poster={heroLaser.url}
           muted
           loop
           playsInline
           {...({ "webkit-playsinline": "true" } as Record<string, string>)}
           disablePictureInPicture
           disableRemotePlayback
-          preload="auto"
+          preload="metadata"
           controls={false}
           className="h-full w-full object-cover"
           style={{ width: "100%", height: "100%" }}

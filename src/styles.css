@@ -229,10 +229,8 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Background-attachment: fixed only on desktop (mobile = stutter + iOS bugs) */
-@media (min-width: 768px) {
-  .bg-fixed-desktop { background-attachment: fixed; }
-}
+/* Keep the same image without repainting a fixed full-screen layer on scroll. */
+.bg-fixed-desktop { background-attachment: scroll; }
 
 /* Global mobile safety net — prevent any element from forcing horizontal overflow */
 @media (max-width: 640px) {

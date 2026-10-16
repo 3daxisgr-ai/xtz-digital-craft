@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import { Menu, X } from "lucide-react";
 import { useI18n, type Lang } from "./i18n";
 import toreoLogo from "@/assets/toreo-logo.png.asset.json";
+import { Button } from "@/components/ui/button";
 
 const links: { to: string; hash?: string; k: string }[] = [
   { to: "/", k: "nav.intro" },
@@ -73,7 +74,7 @@ export function Navigation() {
           <Link
             to="/"
             onClick={closeMenu}
-            className="nav-brand flex items-center gap-3 group opacity-0 translate-y-2 shrink-0"
+            className="nav-brand flex items-center gap-3 group shrink-0"
           >
             <span className="relative inline-block h-12 w-28 sm:h-12 sm:w-28 md:h-9 md:w-20">
               <span className="absolute inset-0 bg-primary blur-lg opacity-50 group-hover:opacity-90 transition-opacity" />
@@ -89,7 +90,7 @@ export function Navigation() {
 
           <ul className="hidden lg:flex items-center gap-8 font-mono text-[14px] uppercase tracking-widest">
             {links.map((l) => (
-              <li key={l.k} className="nav-item opacity-0 translate-y-3">
+              <li key={l.k} className="nav-item">
                 <Link
                   to={l.to}
                   hash={l.hash}
@@ -104,34 +105,34 @@ export function Navigation() {
           </ul>
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <div className="nav-lang flex items-center font-mono text-[11px] border border-border/60 opacity-0 translate-y-2">
-              <button
+            <div className="nav-lang flex items-center font-mono text-xs border border-border/60">
+              <Button variant="ghost"
                 onClick={toggle("GR")}
-                className={`px-2 py-1 transition ${lang === "GR" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                className={`h-11 min-w-11 rounded-none px-2 transition ${lang === "GR" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
                 aria-label="Greek"
-              >GR</button>
+              >GR</Button>
               <span className="text-muted-foreground/40">|</span>
-              <button
+              <Button variant="ghost"
                 onClick={toggle("EN")}
-                className={`px-2 py-1 transition ${lang === "EN" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                className={`h-11 min-w-11 rounded-none px-2 transition ${lang === "EN" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
                 aria-label="English"
-              >EN</button>
+              >EN</Button>
             </div>
             <Link
               to="/start"
-              className="nav-cta hidden sm:inline-block font-mono text-[11px] uppercase tracking-widest border border-primary/40 px-4 py-2 hover:bg-primary hover:text-primary-foreground transition-colors opacity-0 translate-y-2"
+              className="nav-cta hidden sm:inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-widest border border-primary/40 px-4 py-2 hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               {t("nav.cta")}
             </Link>
-            <button
+            <Button variant="ghost"
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
-              className="nav-burger lg:hidden inline-flex h-11 w-11 items-center justify-center border border-border/60 text-foreground hover:text-primary hover:border-primary/60 transition-colors opacity-0 translate-y-2"
+              className="nav-burger lg:hidden inline-flex h-11 w-11 rounded-none items-center justify-center border border-border/60 text-foreground hover:text-primary hover:border-primary/60 transition-colors"
             >
               {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+            </Button>
           </div>
         </nav>
       </header>
@@ -148,6 +149,7 @@ export function Navigation() {
           WebkitBackdropFilter: "blur(20px)",
         }}
         aria-hidden={!menuOpen}
+        inert={!menuOpen}
       >
         <div className="flex h-full w-full flex-col overflow-y-auto pt-24 pb-10 px-6 sm:px-10">
           <ul className="flex flex-col gap-1 font-display text-2xl sm:text-3xl font-semibold tracking-tight">

@@ -1,6 +1,7 @@
 import { useI18n, type Lang } from "./i18n";
 import { Link } from "@tanstack/react-router";
 import toreoLogo from "@/assets/toreo-logo.png.asset.json";
+import { Button } from "@/components/ui/button";
 
 export function Footer() {
   const { lang, setLang, t } = useI18n();
@@ -107,28 +108,28 @@ export function Footer() {
           </div>
 
           <nav className="flex flex-wrap items-center gap-x-8 gap-y-3 font-mono text-[14px] uppercase tracking-[0.35em] text-muted-foreground">
-            <a href="#concept" className="hover:text-primary transition-colors text-xs">{t("foot.nav.why")}</a>
-            <a href="#capabilities" className="hover:text-primary transition-colors text-xs">{t("foot.nav.caps")}</a>
-            <a href="#catalog" className="hover:text-primary transition-colors text-xs">{t("foot.nav.catalog")}</a>
-            <a href="#network" className="hover:text-primary transition-colors text-xs">{t("foot.nav.network")}</a>
+            <Link to="/company" className="hover:text-primary transition-colors text-xs">{t("foot.nav.why")}</Link>
+            <Link to="/" hash="capabilities" className="hover:text-primary transition-colors text-xs">{t("foot.nav.caps")}</Link>
+            <Link to="/portfolio" className="hover:text-primary transition-colors text-xs">{t("foot.nav.catalog")}</Link>
+            <Link to="/" hash="collaborations" className="hover:text-primary transition-colors text-xs">{t("foot.nav.network")}</Link>
             <Link to="/start" className="hover:text-primary transition-colors text-xs">{t("foot.nav.inquiry")}</Link>
             <Link to="/track" className="hover:text-primary transition-colors text-xs">TRACK ORDER</Link>
             <Link to="/portal" className="hover:text-primary transition-colors text-xs">PORTAL</Link>
             <Link to="/ai" className="hover:text-primary transition-colors text-xs">AI REFERENCE</Link>
           </nav>
 
-          <div className="flex items-center font-mono text-[11px] border border-border/60">
-            <button
+          <div className="flex items-center font-mono text-xs border border-border/60">
+            <Button variant="ghost"
               onClick={toggle("GR")}
-              className={`px-3 py-1.5 transition ${lang === "GR" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              className={`h-11 min-w-11 rounded-none px-3 transition ${lang === "GR" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
               aria-label="Greek"
-            >GR</button>
+            >GR</Button>
             <span className="text-muted-foreground/40">|</span>
-            <button
+            <Button variant="ghost"
               onClick={toggle("EN")}
-              className={`px-3 py-1.5 transition ${lang === "EN" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              className={`h-11 min-w-11 rounded-none px-3 transition ${lang === "EN" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
               aria-label="English"
-            >EN</button>
+            >EN</Button>
           </div>
         </div>
       </div>
@@ -151,7 +152,7 @@ function ContactCol({
       <ul className="space-y-4">
         {items.map((it) => (
           <li key={it.k}>
-            <div className="font-mono text-[9px] uppercase tracking-[0.35em] text-muted-foreground mb-1">
+            <div className="font-mono text-xs uppercase tracking-[0.35em] text-muted-foreground mb-1">
               {it.k}
             </div>
             {it.href ? (
