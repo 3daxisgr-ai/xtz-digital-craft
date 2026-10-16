@@ -8,13 +8,14 @@ const projectRef = import.meta.env['VITE_SUPABASE_PROJECT_ID'] ?? "project-ref-u
 
 export default defineMcp({
   name: "toreo",
-  title: "TOREO AI Factory",
+  title: "Toreo",
   version: "0.2.0",
   instructions:
     "Tools for TOREO's on-demand manufacturing platform. Callers sign in as a TOREO customer. Use `list_services` to enumerate offered services, `list_printing_materials` to see 3D printing materials in stock, and `track_order` to look up the status of one of the signed-in customer's own orders.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
+    requireOAuthClientClaim: true,
   }),
   tools: [listServicesTool, listPrintingMaterialsTool, trackOrderTool],
 });

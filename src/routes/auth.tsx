@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { oauthReturnPath } from "@/lib/oauth-return-path";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -17,17 +18,10 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-/** Only same-origin relative paths are accepted as a post-login destination. */
-function safeNext(next?: string): string | null {
-  if (!next) return null;
-  if (!next.startsWith("/") || next.startsWith("//")) return null;
-  return next;
-}
-
 function AuthPage() {
   const navigate = useNavigate();
   const { next } = Route.useSearch();
-  const dest = safeNext(next);
+  const dest = next ? oauthReturnPath(next) : "/portal";
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -55,7 +49,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}${dest ?? "/portal"}`,
+            emailRedirectTo: new URL(dest, window.location.origin).href,
             data: { full_name: fullName },
           },
         });
@@ -77,7 +71,7 @@ function AuthPage() {
     setError(null);
     try {
       await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: `${window.location.origin}${dest ?? "/portal"}`,
+        redirect_uri: new URL(dest, window.location.origin).href,
       });
     } catch (e: any) {
       setError(e.message ?? "Google sign-in failed");

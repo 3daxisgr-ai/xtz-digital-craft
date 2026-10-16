@@ -1,4 +1,5 @@
 - Material-only estimates: math lives in pure `src/lib/material-estimate.ts` (unit-tested); AI only interprets geometry/material and its prices are ignored. Why: deterministic, auditable prices.
+- MCP tools require delegated OAuth with a client claim and forward the verified caller token through the shared client, never admin access. Why: external access must preserve user identity and existing RLS.
 - `material_estimates` is service-role only (no anon/authenticated policies); customers receive only the DTO from `toCustomerDTO`. Why: never leak purchase cost or markup.
 - Portfolio 3D: one persistent WebGL canvas per view (swap the model, never mount two scenes); quality tier, DPR caps and off-screen pausing live in src/components/portfolio/perf.ts. Why: avoid GPU stalls during transitions and on weak devices.
 - Admin Offer/Order Form PDFs: original templates (src/assets/templates/*.pdf.asset.json) are only filled, never redrawn; `admin_documents` is service-role only and sending requires an approved status plus a matching PDF SHA-256, claimed atomically. Why: exact templates, no unapproved or duplicate sends.
