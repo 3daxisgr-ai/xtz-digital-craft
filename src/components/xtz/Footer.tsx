@@ -1,5 +1,6 @@
 import { useI18n, type Lang } from "./i18n";
 import { Link } from "@tanstack/react-router";
+import { Instagram } from "lucide-react";
 import toreoLogo from "@/assets/toreo-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
 
@@ -73,6 +74,26 @@ export function Footer() {
                 { k: t("foot.hours"), v: t("foot.hours.v") },
               ]}
             />
+            <div className="sm:col-span-2">
+              <div className="font-mono text-[14px] uppercase tracking-[0.4em] text-primary/80 mb-5">
+                INSTAGRAM
+              </div>
+              <a
+                href="https://www.instagram.com/toreo.gr/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 hover:opacity-80 transition-opacity"
+              >
+                <span className="flex items-center justify-center size-11 border border-primary/40 bg-primary/10 text-primary">
+                  <Instagram className="size-5" />
+                </span>
+                <span className="font-display text-base md:text-lg">
+                  <span className="text-foreground">Toreo</span>
+                  <span className="text-primary">.</span>
+                  <span className="text-foreground">gr</span>
+                </span>
+              </a>
+            </div>
           </div>
         </div>
 
