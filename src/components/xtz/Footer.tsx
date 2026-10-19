@@ -79,7 +79,7 @@ export function Footer() {
                 INSTAGRAM
               </div>
               <a
-                href="https://instagram.com/toreo.gr"
+                href="https://www.instagram.com/toreo.gr"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 hover:opacity-80 transition-opacity"
