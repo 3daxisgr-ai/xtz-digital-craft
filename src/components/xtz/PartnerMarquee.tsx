@@ -19,12 +19,10 @@ const DRAG_THRESHOLD = 6;
 export function PartnerMarquee({
   clients,
   L,
-  activeId,
   onPartner,
 }: {
   clients: Client[];
   L: Lang;
-  activeId: string;
   onPartner: (c: Client) => void;
 }) {
   const items = clients;
@@ -33,6 +31,7 @@ export function PartnerMarquee({
   const trackRef = useRef<HTMLDivElement>(null);
   const setRef = useRef<HTMLUListElement>(null);
   const [copies, setCopies] = useState(2);
+  const [stopped, setStopped] = useState(false); // drives the hint text only
   const st = useRef({
     x: 0,
     setW: 0,
@@ -41,8 +40,7 @@ export function PartnerMarquee({
     down: false,
     dragging: false,
     suppressClick: false,
-    tapPaused: false, // touch: first tap stops the strip, the next tap restarts it
-    pointerType: "mouse",
+    tapPaused: false, // first click/tap stops the strip; the next one on a logo opens it
     startX: 0,
     startOff: 0,
     pointerId: -1,
@@ -153,7 +151,6 @@ export function PartnerMarquee({
     s.startX = e.clientX;
     s.startOff = s.x;
     s.pointerId = e.pointerId;
-    s.pointerType = e.pointerType;
   };
   const onPointerMove = (e: React.PointerEvent) => {
     const s = st.current;
@@ -192,9 +189,14 @@ export function PartnerMarquee({
             type="button"
             tabIndex={copy > 0 ? -1 : undefined}
             aria-label={`${c.name} — ${L === "GR" ? "δείτε τη συνεργασία" : "view collaboration"}`}
-            onClick={() => onPartner(c)}
+            onClick={() => {
+              // Opening resumes the strip, so it is moving again when the card closes.
+              st.current.tapPaused = false;
+              setStopped(false);
+              onPartner(c);
+            }}
             className={`group block rounded-lg p-1 transition-[opacity,box-shadow] duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none ${
-              c.id === activeId ? "opacity-100 ring-1 ring-primary/60" : "opacity-60 hover:opacity-100"
+              stopped ? "opacity-100 hover:ring-1 hover:ring-primary/60" : "opacity-60 hover:opacity-100"
             }`}
           >
             <LogoPlate client={c} className="h-12 md:h-14" />
@@ -205,6 +207,7 @@ export function PartnerMarquee({
   );
 
   return (
+    <div>
     <div className="flex items-center gap-4">
       <button
         type="button"
@@ -236,16 +239,19 @@ export function PartnerMarquee({
             e.stopPropagation();
             return;
           }
-          if (s.pointerType === "mouse") return; // mouse: hover pauses, click opens
+          if (e.detail === 0) return; // keyboard Enter/Space opens directly
           if (!s.tapPaused) {
-            // First tap: stop right here, open nothing.
+            // First click/tap: stop right here, open nothing.
             s.tapPaused = true;
+            setStopped(true);
             e.preventDefault();
             e.stopPropagation();
-          } else {
-            // Next tap: restart; a tap on a logo also opens that partner.
+          } else if (!(e.target as HTMLElement).closest("button")) {
+            // Second click on empty space: just restart.
             s.tapPaused = false;
+            setStopped(false);
           }
+          // Second click on a logo: the button's own handler opens the partner.
         }}
         onDragStart={(e) => e.preventDefault()}
       >
@@ -261,6 +267,12 @@ export function PartnerMarquee({
       >
         <ChevronRight className="h-4 w-4" />
       </button>
+    </div>
+    <p aria-live="polite" className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+      {stopped
+        ? L === "GR" ? "Πατήστε ένα λογότυπο για να δείτε τη συνεργασία" : "Tap a logo to view the collaboration"
+        : L === "GR" ? "Πατήστε για να σταματήσει η κίνηση" : "Tap to stop the strip"}
+    </p>
     </div>
   );
 }
