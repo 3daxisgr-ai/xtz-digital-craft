@@ -1,32 +1,32 @@
 import { useState } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { useI18n } from "./i18n";
 import { CLIENTS, type Client, type ClientProject } from "./clients";
 import { ProjectDetail, ProjectGrid } from "./PartnerProjects";
-
-function LogoPlate({ client, className = "" }: { client: Client; className?: string }) {
-  // Logos kept untouched on a neutral white plate so original colours are preserved.
-  // When no authentic logo is available, show a clean typographic wordmark instead of fabricating one.
-  return (
-    <div className={`flex items-center justify-center rounded-md bg-white px-5 py-3 ${className}`}>
-      {client.logo ? (
-        <img src={client.logo} alt={`${client.name} logo`} className="h-full w-auto max-w-full object-contain" />
-      ) : (
-        <span className="font-display text-xl md:text-2xl font-bold tracking-[0.2em] text-neutral-900">
-          {client.name}
-        </span>
-      )}
-    </div>
-  );
-}
+import { LogoPlate } from "./LogoPlate";
+import { PartnerMarquee } from "./PartnerMarquee";
 
 export function Collaborations() {
   const { lang } = useI18n();
   const L = lang === "GR" ? "GR" : "EN";
   const [active, setActiveRaw] = useState<Client | null>(null);
   const [project, setProject] = useState<ClientProject | null>(null);
-  const setActive = (c: Client | null) => { setProject(null); setActiveRaw(c); };
+  const [jumpToProjects, setJumpToProjects] = useState(false);
+  const setActive = (c: Client | null) => { setProject(null); setJumpToProjects(false); setActiveRaw(c); };
+  // From the partner strip: open the partner, landing on its projects when it has any.
+  const openPartner = (c: Client) => {
+    setIdx(CLIENTS.findIndex((x) => x.id === c.id));
+    setProject(null);
+    setJumpToProjects(!!c.projects?.length);
+    setActiveRaw(c);
+  };
+  const openProject = (c: Client, p: ClientProject) => {
+    setIdx(CLIENTS.findIndex((x) => x.id === c.id));
+    setJumpToProjects(false);
+    setActiveRaw(c);
+    setProject(p);
+  };
   const [idx, setIdx] = useState(0);
   const N = CLIENTS.length;
   const go = (d: number) => setIdx((i) => (i + d + N) % N);
@@ -126,32 +126,15 @@ export function Collaborations() {
           </div>
         </div>
 
-        {/* Logo strip */}
-        <div className="mt-16 md:mt-24 flex items-center gap-4 border-t border-border/40 pt-8">
-          <button type="button" onClick={() => go(-1)} aria-label={L === "GR" ? "Προηγούμενος" : "Previous"} className="shrink-0 rounded-full border border-border/60 p-3 transition-colors hover:border-primary hover:text-primary">
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <ul className="flex flex-1 items-center justify-center gap-4 md:gap-8 overflow-x-auto">
-            {CLIENTS.map((c, i) => (
-              <li key={c.id}>
-                <button
-                  type="button"
-                  onClick={() => setIdx(i)}
-                  aria-pressed={i === idx}
-                  aria-label={c.name}
-                  className={`rounded-lg p-1 transition-all duration-500 motion-reduce:transition-none ${i === idx ? "opacity-100 ring-1 ring-primary/60" : "opacity-45 hover:opacity-80"}`}
-                >
-                  <LogoPlate client={c} className="h-12 md:h-14" />
-                </button>
-              </li>
-            ))}
-          </ul>
-          <button type="button" onClick={() => go(1)} aria-label={L === "GR" ? "Επόμενος" : "Next"} className="shrink-0 rounded-full border border-border/60 p-3 transition-colors hover:border-primary hover:text-primary">
-            <ChevronRight className="h-4 w-4" />
-          </button>
-          <span className="hidden sm:block shrink-0 font-mono text-[11px] tracking-[0.3em] text-foreground/50">
-            {String(idx + 1).padStart(2, "0")} / {String(N).padStart(2, "0")}
-          </span>
+        {/* Partner strip — continuous, pausable, draggable */}
+        <div className="mt-16 md:mt-24 border-t border-border/40 pt-8">
+          <PartnerMarquee
+            clients={CLIENTS}
+            L={L}
+            activeId={featured.id}
+            onPartner={openPartner}
+            onProject={openProject}
+          />
         </div>
       </div>
 
@@ -165,7 +148,7 @@ export function Collaborations() {
                 <X className="h-5 w-5" />
                 <span className="sr-only">{L === "GR" ? "Κλείσιμο" : "Close"}</span>
               </DialogClose>
-              <ProjectDetail project={project} partnerName={active.name} L={L} onBack={() => setProject(null)} />
+              <ProjectDetail project={project} partnerName={active.name} L={L} onBack={() => { setJumpToProjects(true); setProject(null); }} />
             </div>
           )}
           {active && !project && (
@@ -226,7 +209,7 @@ export function Collaborations() {
                   </div>
                 </div>
                 {active.projects && active.projects.length > 0 && (
-                  <ProjectGrid projects={active.projects} L={L} onOpen={setProject} />
+                  <ProjectGrid projects={active.projects} L={L} onOpen={setProject} scrollIntoViewOnMount={jumpToProjects} />
                 )}
               </div>
             </article>
