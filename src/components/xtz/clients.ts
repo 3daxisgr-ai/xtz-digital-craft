@@ -4,8 +4,31 @@ import hotemediaLogo from "@/assets/hotemedia-logo.svg.asset.json";
 import saridisLogo from "@/assets/saridis-logo.png.asset.json";
 import saridisImage from "@/assets/saridis-professional-kitchen.jpg.asset.json";
 import hotemediaImage from "@/assets/hotemedia-led-display.jpg.asset.json";
+import cosmos1563 from "@/assets/hotemedia-cosmos-1563.jpg.asset.json";
+import cosmos1562 from "@/assets/hotemedia-cosmos-1562.jpg.asset.json";
+import cosmos1561 from "@/assets/hotemedia-cosmos-1561.jpg.asset.json";
+import cosmos1560 from "@/assets/hotemedia-cosmos-1560.jpg.asset.json";
+import cosmos1559 from "@/assets/hotemedia-cosmos-1559.jpg.asset.json";
 
-type Bi = { EN: string; GR: string };
+export type Bi = { EN: string; GR: string };
+
+/** A photograph of completed work. Use only TOREO's own, unedited photos. */
+export interface ProjectPhoto {
+  src: string;
+  alt: Bi;
+}
+
+/**
+ * A completed project with a partner. Group every photo of the same project
+ * here — add a new project by appending another entry to `projects`.
+ */
+export interface ClientProject {
+  id: string;
+  title: Bi;
+  description: Bi;
+  work: Bi; // what TOREO made — confirmed by the owner only
+  photos: ProjectPhoto[]; // first photo is the cover
+}
 
 /**
  * Selected collaborations. Add a new company by appending an entry here —
@@ -26,6 +49,7 @@ export interface Client {
   delivered: Bi;
   services: Bi[];
   status: Bi | null;
+  projects?: ClientProject[];
 }
 
 export const CLIENTS: Client[] = [
@@ -75,6 +99,24 @@ export const CLIENTS: Client[] = [
       { EN: "TV stands", GR: "Βάσεις τηλεοράσεων" },
     ],
     status: null,
+    projects: [
+      {
+        id: "cosmos-tv-stands",
+        title: { EN: "TV stands — Cosmos shopping center", GR: "Βάσεις τηλεοράσεων — Εμπορικό κέντρο Cosmos" },
+        description: {
+          EN: "TOREO manufactured the metal skeleton and frame for the TV stands of the Cosmos shopping center, in collaboration with HOTEMEDIA.",
+          GR: "Η TOREO κατασκεύασε τον μεταλλικό σκελετό και το πλαίσιο για τις βάσεις τηλεοράσεων του εμπορικού κέντρου Cosmos, σε συνεργασία με τη HOTEMEDIA.",
+        },
+        work: { EN: "Metal skeleton – frame.", GR: "Μεταλλικός σκελετός – πλαίσιο." },
+        photos: [
+          { src: cosmos1563.url, alt: { EN: "Ceiling-suspended four-screen TV stand at Cosmos", GR: "Κρεμαστή βάση τεσσάρων οθονών στο Cosmos" } },
+          { src: cosmos1562.url, alt: { EN: "Ceiling-suspended TV stand, view along the walkway", GR: "Κρεμαστή βάση οθονών, θέα από τον διάδρομο" } },
+          { src: cosmos1561.url, alt: { EN: "Framed TV screen mounted on a column", GR: "Οθόνη σε πλαίσιο πάνω σε κολόνα" } },
+          { src: cosmos1560.url, alt: { EN: "Two framed screens on a column in the food court", GR: "Δύο οθόνες σε πλαίσιο σε κολόνα του χώρου εστίασης" } },
+          { src: cosmos1559.url, alt: { EN: "Framed screens on a column, side view", GR: "Οθόνες σε πλαίσιο σε κολόνα, πλάγια όψη" } },
+        ],
+      },
+    ],
   },
   {
     id: "saridis",
