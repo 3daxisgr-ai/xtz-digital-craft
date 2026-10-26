@@ -21,12 +21,6 @@ export function Collaborations() {
     setJumpToProjects(!!c.projects?.length);
     setActiveRaw(c);
   };
-  const openProject = (c: Client, p: ClientProject) => {
-    setIdx(CLIENTS.findIndex((x) => x.id === c.id));
-    setJumpToProjects(false);
-    setActiveRaw(c);
-    setProject(p);
-  };
   const [idx, setIdx] = useState(0);
   const N = CLIENTS.length;
   const go = (d: number) => setIdx((i) => (i + d + N) % N);
@@ -133,7 +127,6 @@ export function Collaborations() {
             L={L}
             activeId={featured.id}
             onPartner={openPartner}
-            onProject={openProject}
           />
         </div>
       </div>
