@@ -12,6 +12,29 @@ export function IntroScene() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { t } = useI18n();
 
+  // Start the hero video at a random point on every page load, so returning
+  // visitors don't see the same opening each time. Avoids the last start used
+  // in this browser and the final seconds before the loop point.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const KEY = "toreo:hero-start";
+    const seekRandom = () => {
+      const d = v.duration;
+      if (!Number.isFinite(d) || d < 6) return;
+      const max = d - 4;
+      let last = NaN;
+      try { last = Number(localStorage.getItem(KEY)); } catch { /* storage blocked */ }
+      let t = Math.random() * max;
+      for (let i = 0; i < 6 && Number.isFinite(last) && Math.abs(t - last) < d * 0.2; i++) t = Math.random() * max;
+      try { localStorage.setItem(KEY, t.toFixed(2)); } catch { /* storage blocked */ }
+      v.currentTime = t;
+    };
+    if (v.readyState >= 1) seekRandom();
+    else v.addEventListener("loadedmetadata", seekRandom, { once: true });
+    return () => v.removeEventListener("loadedmetadata", seekRandom);
+  }, []);
+
   // Only decode/play video while visible; leave the poster for reduced motion.
   useEffect(() => {
     const v = videoRef.current;
