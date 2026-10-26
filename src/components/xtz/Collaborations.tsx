@@ -40,7 +40,7 @@ export function Collaborations() {
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
       <div className="relative mx-auto max-w-[1400px] px-6 md:px-12">
-        <div className="grid items-end gap-12 lg:grid-cols-12 lg:gap-10">
+        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-10">
           {/* Left: headline */}
           <header className="lg:col-span-6">
             <div className="mb-6 flex items-center gap-4">
