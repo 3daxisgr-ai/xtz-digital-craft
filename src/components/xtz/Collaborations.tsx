@@ -2,7 +2,8 @@ import { useState } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { useI18n } from "./i18n";
-import { CLIENTS, type Client } from "./clients";
+import { CLIENTS, type Client, type ClientProject } from "./clients";
+import { ProjectDetail, ProjectGrid } from "./PartnerProjects";
 
 function LogoPlate({ client, className = "" }: { client: Client; className?: string }) {
   // Logos kept untouched on a neutral white plate so original colours are preserved.
@@ -23,7 +24,9 @@ function LogoPlate({ client, className = "" }: { client: Client; className?: str
 export function Collaborations() {
   const { lang } = useI18n();
   const L = lang === "GR" ? "GR" : "EN";
-  const [active, setActive] = useState<Client | null>(null);
+  const [active, setActiveRaw] = useState<Client | null>(null);
+  const [project, setProject] = useState<ClientProject | null>(null);
+  const setActive = (c: Client | null) => { setProject(null); setActiveRaw(c); };
   const [idx, setIdx] = useState(0);
   const N = CLIENTS.length;
   const go = (d: number) => setIdx((i) => (i + d + N) % N);
@@ -154,7 +157,18 @@ export function Collaborations() {
 
       <Dialog open={!!active} onOpenChange={(o) => !o && setActive(null)}>
         <DialogContent className="max-w-5xl w-[100vw] sm:w-[95vw] h-[100svh] sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 gap-0 border-primary/20 [&>button:last-child]:hidden">
-          {active && (
+          {active && project && (
+            <div className="relative">
+              <DialogTitle className="sr-only">{project.title[L]}</DialogTitle>
+              <DialogDescription className="sr-only">{project.description[L]}</DialogDescription>
+              <DialogClose className="absolute right-4 top-4 z-10 rounded-full bg-background/80 p-2 text-foreground hover:bg-background">
+                <X className="h-5 w-5" />
+                <span className="sr-only">{L === "GR" ? "Κλείσιμο" : "Close"}</span>
+              </DialogClose>
+              <ProjectDetail project={project} partnerName={active.name} L={L} onBack={() => setProject(null)} />
+            </div>
+          )}
+          {active && !project && (
             <article>
               <div className="relative aspect-[16/9] bg-muted">
                 {active.image ? (
@@ -211,6 +225,9 @@ export function Collaborations() {
                     </ul>
                   </div>
                 </div>
+                {active.projects && active.projects.length > 0 && (
+                  <ProjectGrid projects={active.projects} L={L} onOpen={setProject} />
+                )}
               </div>
             </article>
           )}
