@@ -9,13 +9,22 @@ export function ProjectGrid({
   projects,
   L,
   onOpen,
+  scrollIntoViewOnMount = false,
 }: {
   projects: ClientProject[];
   L: Lang;
   onOpen: (p: ClientProject) => void;
+  scrollIntoViewOnMount?: boolean;
 }) {
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!scrollIntoViewOnMount) return;
+    // Wait for the dialog's opening animation before scrolling inside it.
+    const t = setTimeout(() => ref.current?.scrollIntoView({ block: "start", behavior: "smooth" }), 250);
+    return () => clearTimeout(t);
+  }, [scrollIntoViewOnMount]);
   return (
-    <section aria-labelledby="partner-projects-title">
+    <section ref={ref} aria-labelledby="partner-projects-title" className="scroll-mt-6">
       <h4
         id="partner-projects-title"
         className="mb-4 font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground"
