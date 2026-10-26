@@ -1,11 +1,18 @@
 import { useState } from "react";
-import { ArrowRight, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { useI18n } from "./i18n";
 import { CLIENTS, type Client, type ClientProject } from "./clients";
 import { ProjectDetail, ProjectGrid } from "./PartnerProjects";
 import { LogoPlate } from "./LogoPlate";
 import { PartnerMarquee } from "./PartnerMarquee";
+
+// Confirmed joint work only (see clients.ts) — never add claims that are not on record.
+const PROOF: { GR: string; EN: string; partner: string }[] = [
+  { partner: "METLEN", GR: "Γαλβανιζέ γωνίες για τη στήριξη φωτοβολταϊκών πάνελ", EN: "Galvanized angle brackets for mounting solar panels" },
+  { partner: "HOTEMEDIA", GR: "Μεταλλικός σκελετός για τις βάσεις τηλεοράσεων του Cosmos", EN: "Metal frames for the TV stands at the Cosmos shopping center" },
+  { partner: "SARIDIS", GR: "Σχεδιασμός και 3D εκτύπωση εξαρτημάτων για ψυκτικές μονάδες", EN: "Design and 3D printing of components for refrigeration units" },
+];
 
 export function Collaborations() {
   const { lang } = useI18n();
@@ -17,119 +24,62 @@ export function Collaborations() {
   // Every partner opens its own profile card (its own main image at the top);
   // joint projects are listed inside it and open from there.
   const openPartner = (c: Client) => {
-    setIdx(CLIENTS.findIndex((x) => x.id === c.id));
     setProject(null);
     setJumpToProjects(false);
     setActiveRaw(c);
   };
-  // The partner with joint project work stands in front of the stack first.
-  const [idx, setIdx] = useState(() => Math.max(0, CLIENTS.findIndex((c) => (c.projects?.length ?? 0) > 0)));
-  const N = CLIENTS.length;
-  const go = (d: number) => setIdx((i) => (i + d + N) % N);
-  const featured = CLIENTS[idx];
 
   return (
     <section
       id="collaborations"
       aria-labelledby="collab-title"
       className="relative w-full overflow-hidden py-24 md:py-36"
-      onKeyDown={(e) => { if (e.key === "ArrowRight") go(1); if (e.key === "ArrowLeft") go(-1); }}
     >
       {/* Ambient cool-blue glow, cheap radial gradients only */}
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_75%_40%,color-mix(in_oklab,var(--primary)_18%,transparent),transparent_70%)]" />
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
       <div className="relative mx-auto max-w-[1400px] px-6 md:px-12">
-        <div className="grid items-center gap-14 lg:grid-cols-12 lg:gap-10">
-          {/* Left: copy */}
-          <header className="lg:col-span-5">
+        <div className="grid items-end gap-12 lg:grid-cols-12 lg:gap-10">
+          {/* Left: headline */}
+          <header className="lg:col-span-6">
             <div className="mb-6 flex items-center gap-4">
               <span className="h-px w-10 bg-primary" />
               <span className="font-mono text-[11px] uppercase tracking-[0.5em] text-primary">
                 {L === "GR" ? "Συνεργάτες" : "Partners"}
               </span>
             </div>
-            <h2 id="collab-title" className="font-display font-bold leading-[0.95] tracking-tighter text-[clamp(2.2rem,4.6vw,4.2rem)] mb-6">
+            <h2 id="collab-title" className="font-display font-bold leading-[0.95] tracking-tighter text-[clamp(2.2rem,4.6vw,4.2rem)]">
               {L === "GR" ? (
-                <>Μαζί με <span className="text-primary">κορυφαίες εταιρείες</span>, δημιουργούμε το μέλλον.</>
+                <>Όταν η ακρίβεια <span className="text-primary">δεν είναι επιλογή</span>, μας εμπιστεύονται.</>
               ) : (
-                <>Together with <span className="text-primary">leading companies</span>, we build the future.</>
+                <>When precision <span className="text-primary">isn't optional</span>, they trust us.</>
               )}
             </h2>
-            <p className="mb-10 max-w-md text-base md:text-lg font-light leading-relaxed text-foreground/65">
-              {L === "GR"
-                ? "Μας εμπιστεύονται εταιρείες που εκτιμούν την ακρίβεια, την ποιότητα και την αξιόπιστη κατασκευή."
-                : "Trusted by companies that value precision, quality and reliable manufacturing."}
-            </p>
-            <button
-              type="button"
-              onClick={() => openPartner(featured)}
-              className="group inline-flex items-center gap-3 rounded-full border border-primary/50 px-6 py-3 font-mono text-[11px] uppercase tracking-[0.3em] text-foreground transition-colors duration-300 hover:border-primary hover:bg-primary/10"
-            >
-              {L === "GR" ? "Δείτε τη συνεργασία" : "View collaboration"}
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none" />
-            </button>
           </header>
 
-          {/* Right: stacked cards */}
-          <div className="relative lg:col-span-7 h-[460px] sm:h-[520px]" aria-live="polite">
-            {CLIENTS.map((c, i) => {
-              const off = (i - idx + N) % N; // 0 = featured, 1.. = behind
-              const isF = off === 0;
-              return (
-                <article
-                  key={c.id}
-                  aria-hidden={!isF}
-                  onClick={() => (isF ? openPartner(c) : setIdx(i))}
-                  style={{
-                    transform: isF
-                      ? "translate3d(0,0,0) scale(1)"
-                      : `translate3d(${off * 9}%, ${-off * 5}%, 0) scale(${1 - off * 0.09})`,
-                    zIndex: 10 - off,
-                    opacity: isF ? 1 : Math.max(0, 0.55 - (off - 1) * 0.2),
-                    filter: isF ? "none" : `blur(${off * 2}px)`,
-                    transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
-                  }}
-                  className={`absolute inset-y-0 left-0 w-full sm:w-[86%] cursor-pointer overflow-hidden rounded-2xl border bg-card/60 backdrop-blur-md shadow-2xl transition-[transform,opacity,filter] duration-700 motion-reduce:transition-none will-change-transform ${
-                    isF ? "border-primary/30" : "border-border/40"
-                  }`}
-                >
-                  <div className="relative h-[55%] overflow-hidden">
-                    {c.image ? (
-                      <img src={c.image} alt={`${c.name} — TOREO collaboration`} loading="lazy" className="h-full w-full object-cover" />
-                    ) : (
-                      <div className="h-full w-full bg-muted flex items-center justify-center"><span className="font-display text-3xl font-bold tracking-[0.3em] text-foreground/70">{c.name}</span></div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
-                    <span className="absolute right-4 top-4 font-mono text-[10px] text-foreground/50">{c.imageCredit}</span>
-                  </div>
-                  <div className="relative flex h-[45%] flex-col justify-between p-6 md:p-8">
-                    <div>
-                      <div className="mb-4 flex items-center gap-4">
-                        <LogoPlate client={c} className="h-11 px-4 py-2" />
-                        <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">{c.label[L]}</span>
-                      </div>
-                      <p className="line-clamp-3 text-sm md:text-base leading-relaxed text-foreground/75">{c.description[L]}</p>
-                    </div>
-                    <span className="inline-flex items-center gap-2 self-start text-sm text-primary">
-                      {L === "GR" ? "Περισσότερα" : "More"} <ArrowRight className="h-4 w-4" />
-                    </span>
-                  </div>
-                  <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-foreground/5" />
-                </article>
-              );
-            })}
+          {/* Right: what we have actually built together */}
+          <div className="lg:col-span-6">
+            <p className="mb-8 max-w-xl text-base md:text-lg font-light leading-relaxed text-foreground/70">
+              {L === "GR"
+                ? "Από τη στήριξη φωτοβολταϊκών μέχρι εμπορικά κέντρα και ψυκτικές μονάδες, τα εξαρτήματα της TOREO δουλεύουν καθημερινά εκεί όπου μετρούν η αντοχή, η ακρίβεια και η συνέπεια στην παράδοση."
+                : "From solar panel mounting to shopping centers and refrigeration units, TOREO parts work every day where strength, precision and on-time delivery matter."}
+            </p>
+            <ol className="divide-y divide-border/40 border-y border-border/40">
+              {PROOF.map((x, i) => (
+                <li key={x.partner} className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-5 py-4 sm:grid-cols-[auto_minmax(0,1fr)_auto]">
+                  <span className="font-mono text-[11px] tracking-[0.3em] text-primary">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="text-sm md:text-base text-foreground/85">{x[L]}</span>
+                  <span className="col-start-2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground sm:col-start-auto">{x.partner}</span>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
 
-        {/* Partner strip — continuous, pausable, draggable */}
+        {/* Partner strip — continuous; first tap stops it, the next tap opens the partner */}
         <div className="mt-16 md:mt-24 border-t border-border/40 pt-8">
-          <PartnerMarquee
-            clients={CLIENTS}
-            L={L}
-            activeId={featured.id}
-            onPartner={openPartner}
-          />
+          <PartnerMarquee clients={CLIENTS} L={L} onPartner={openPartner} />
         </div>
       </div>
 
