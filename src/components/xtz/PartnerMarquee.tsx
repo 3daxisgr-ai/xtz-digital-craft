@@ -15,16 +15,13 @@ const SPEED = 28; // px per second
 const STEP = 260; // px per arrow press
 const DRAG_THRESHOLD = 6;
 
-
 export function PartnerMarquee({
   clients,
   L,
-  activeId,
   onPartner,
 }: {
   clients: Client[];
   L: Lang;
-  activeId: string;
   onPartner: (c: Client) => void;
 }) {
   const items = clients;
@@ -33,6 +30,7 @@ export function PartnerMarquee({
   const trackRef = useRef<HTMLDivElement>(null);
   const setRef = useRef<HTMLUListElement>(null);
   const [copies, setCopies] = useState(2);
+  const [stopped, setStopped] = useState(false); // drives the hint text only
   const st = useRef({
     x: 0,
     setW: 0,
@@ -41,8 +39,7 @@ export function PartnerMarquee({
     down: false,
     dragging: false,
     suppressClick: false,
-    tapPaused: false, // touch: first tap stops the strip, the next tap restarts it
-    pointerType: "mouse",
+    tapPaused: false, // first click/tap stops the strip; the next one on a logo opens it
     startX: 0,
     startOff: 0,
     pointerId: -1,
@@ -117,7 +114,9 @@ export function PartnerMarquee({
   useEffect(() => {
     const s = st.current;
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onMq = () => { s.reduced = mq.matches; };
+    const onMq = () => {
+      s.reduced = mq.matches;
+    };
     onMq();
     mq.addEventListener("change", onMq);
     const onVis = () => (document.hidden ? stop() : start());
@@ -153,7 +152,6 @@ export function PartnerMarquee({
     s.startX = e.clientX;
     s.startOff = s.x;
     s.pointerId = e.pointerId;
-    s.pointerType = e.pointerType;
   };
   const onPointerMove = (e: React.PointerEvent) => {
     const s = st.current;
@@ -175,9 +173,9 @@ export function PartnerMarquee({
     s.down = false;
     s.dragging = false;
     s.pointerId = -1;
-    if (viewportRef.current?.hasPointerCapture(e.pointerId)) viewportRef.current.releasePointerCapture(e.pointerId);
+    if (viewportRef.current?.hasPointerCapture(e.pointerId))
+      viewportRef.current.releasePointerCapture(e.pointerId);
   };
-
 
   const renderSet = (copy: number) => (
     <ul
@@ -192,9 +190,16 @@ export function PartnerMarquee({
             type="button"
             tabIndex={copy > 0 ? -1 : undefined}
             aria-label={`${c.name} — ${L === "GR" ? "δείτε τη συνεργασία" : "view collaboration"}`}
-            onClick={() => onPartner(c)}
+            onClick={() => {
+              // Opening resumes the strip, so it is moving again when the card closes.
+              st.current.tapPaused = false;
+              setStopped(false);
+              onPartner(c);
+            }}
             className={`group block rounded-lg p-1 transition-[opacity,box-shadow] duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none ${
-              c.id === activeId ? "opacity-100 ring-1 ring-primary/60" : "opacity-60 hover:opacity-100"
+              stopped
+                ? "opacity-100 hover:ring-1 hover:ring-primary/60"
+                : "opacity-60 hover:opacity-100"
             }`}
           >
             <LogoPlate client={c} className="h-12 md:h-14" />
@@ -205,62 +210,87 @@ export function PartnerMarquee({
   );
 
   return (
-    <div className="flex items-center gap-4">
-      <button
-        type="button"
-        onClick={() => nudge(-1)}
-        aria-label={L === "GR" ? "Προηγούμενος" : "Previous"}
-        className="shrink-0 rounded-full border border-border/60 p-3 transition-colors hover:border-primary hover:text-primary"
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </button>
-      <div
-        ref={viewportRef}
-        role="region"
-        aria-label={L === "GR" ? "Συνεργάτες" : "Partners"}
-        className="relative min-w-0 flex-1 cursor-grab touch-pan-y select-none overflow-hidden py-1 active:cursor-grabbing [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]"
-        onPointerEnter={(e) => { if (e.pointerType === "mouse") st.current.hover = true; }}
-        onPointerLeave={(e) => { if (e.pointerType === "mouse") st.current.hover = false; }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        // Only keyboard focus pauses; a tap also focuses the button and must not.
-        onFocus={(e) => { st.current.focus = (e.target as HTMLElement).matches(":focus-visible"); }}
-        onBlur={() => { st.current.focus = false; }}
-        onClickCapture={(e) => {
-          const s = st.current;
-          if (s.suppressClick) {
-            s.suppressClick = false;
-            e.preventDefault();
-            e.stopPropagation();
-            return;
-          }
-          if (s.pointerType === "mouse") return; // mouse: hover pauses, click opens
-          if (!s.tapPaused) {
-            // First tap: stop right here, open nothing.
-            s.tapPaused = true;
-            e.preventDefault();
-            e.stopPropagation();
-          } else {
-            // Next tap: restart; a tap on a logo also opens that partner.
-            s.tapPaused = false;
-          }
-        }}
-        onDragStart={(e) => e.preventDefault()}
-      >
-        <div ref={trackRef} className="flex w-max will-change-transform">
-          {Array.from({ length: copies }, (_, c) => renderSet(c))}
+    <div>
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          onClick={() => nudge(-1)}
+          aria-label={L === "GR" ? "Προηγούμενος" : "Previous"}
+          className="shrink-0 rounded-full border border-border/60 p-3 transition-colors hover:border-primary hover:text-primary"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <div
+          ref={viewportRef}
+          role="region"
+          aria-label={L === "GR" ? "Συνεργάτες" : "Partners"}
+          className="relative min-w-0 flex-1 cursor-grab touch-pan-y select-none overflow-hidden py-1 active:cursor-grabbing [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]"
+          onPointerEnter={(e) => {
+            if (e.pointerType === "mouse") st.current.hover = true;
+          }}
+          onPointerLeave={(e) => {
+            if (e.pointerType === "mouse") st.current.hover = false;
+          }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          // Only keyboard focus pauses; a tap also focuses the button and must not.
+          onFocus={(e) => {
+            st.current.focus = (e.target as HTMLElement).matches(":focus-visible");
+          }}
+          onBlur={() => {
+            st.current.focus = false;
+          }}
+          onClickCapture={(e) => {
+            const s = st.current;
+            if (s.suppressClick) {
+              s.suppressClick = false;
+              e.preventDefault();
+              e.stopPropagation();
+              return;
+            }
+            if (e.detail === 0) return; // keyboard Enter/Space opens directly
+            if (!s.tapPaused) {
+              // First click/tap: stop right here, open nothing.
+              s.tapPaused = true;
+              setStopped(true);
+              e.preventDefault();
+              e.stopPropagation();
+            } else if (!(e.target as HTMLElement).closest("button")) {
+              // Second click on empty space: just restart.
+              s.tapPaused = false;
+              setStopped(false);
+            }
+            // Second click on a logo: the button's own handler opens the partner.
+          }}
+          onDragStart={(e) => e.preventDefault()}
+        >
+          <div ref={trackRef} className="flex w-max will-change-transform">
+            {Array.from({ length: copies }, (_, c) => renderSet(c))}
+          </div>
         </div>
+        <button
+          type="button"
+          onClick={() => nudge(1)}
+          aria-label={L === "GR" ? "Επόμενος" : "Next"}
+          className="shrink-0 rounded-full border border-border/60 p-3 transition-colors hover:border-primary hover:text-primary"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
       </div>
-      <button
-        type="button"
-        onClick={() => nudge(1)}
-        aria-label={L === "GR" ? "Επόμενος" : "Next"}
-        className="shrink-0 rounded-full border border-border/60 p-3 transition-colors hover:border-primary hover:text-primary"
+      <p
+        aria-live="polite"
+        className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground"
       >
-        <ChevronRight className="h-4 w-4" />
-      </button>
+        {stopped
+          ? L === "GR"
+            ? "Πατήστε ένα λογότυπο για να δείτε τη συνεργασία"
+            : "Tap a logo to view the collaboration"
+          : L === "GR"
+            ? "Πατήστε για να σταματήσει η κίνηση"
+            : "Tap to stop the strip"}
+      </p>
     </div>
   );
 }
