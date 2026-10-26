@@ -51,9 +51,9 @@ export function Collaborations() {
             </div>
             <h2 id="collab-title" className="font-display font-bold leading-[0.95] tracking-tighter text-[clamp(2.2rem,4.6vw,4.2rem)]">
               {L === "GR" ? (
-                <>Όταν η ακρίβεια <span className="text-primary">δεν είναι επιλογή</span>, μας εμπιστεύονται.</>
+                <>Όταν η ακρίβεια είναι ανάγκη, η TOREO είναι <span className="text-primary">μονόδρομος</span>.</>
               ) : (
-                <>When precision <span className="text-primary">isn't optional</span>, they trust us.</>
+                <>When precision is a must, TOREO is <span className="text-primary">the only way</span>.</>
               )}
             </h2>
           </header>
