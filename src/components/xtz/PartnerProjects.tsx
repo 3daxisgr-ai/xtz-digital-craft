@@ -82,7 +82,7 @@ export function ProjectDetail({
 
   return (
     <article
-      className="animate-fade-in"
+      className="animate-in fade-in duration-500 motion-reduce:animate-none"
       onKeyDown={(e) => {
         if (e.key === "ArrowRight") { e.stopPropagation(); go(1); }
         if (e.key === "ArrowLeft") { e.stopPropagation(); go(-1); }
@@ -97,7 +97,7 @@ export function ProjectDetail({
                 key={photo.src}
                 src={photo.src}
                 alt={photo.alt[L]}
-                className="absolute inset-0 h-full w-full animate-fade-in object-contain"
+                className="absolute inset-0 h-full w-full animate-in fade-in duration-500 object-contain motion-reduce:animate-none"
               />
             )}
           </div>
