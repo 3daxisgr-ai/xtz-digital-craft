@@ -14,13 +14,12 @@ export function Collaborations() {
   const [project, setProject] = useState<ClientProject | null>(null);
   const [jumpToProjects, setJumpToProjects] = useState(false);
   const setActive = (c: Client | null) => { setProject(null); setJumpToProjects(false); setActiveRaw(c); };
-  // Partners with exactly one joint project open straight onto that project —
-  // nothing else. Several projects open the partner card at its project grid.
+  // Every partner opens its own profile card (its own main image at the top);
+  // joint projects are listed inside it and open from there.
   const openPartner = (c: Client) => {
     setIdx(CLIENTS.findIndex((x) => x.id === c.id));
-    const projects = c.projects ?? [];
-    setProject(projects.length === 1 ? projects[0] : null);
-    setJumpToProjects(projects.length > 1);
+    setProject(null);
+    setJumpToProjects(false);
     setActiveRaw(c);
   };
   // The partner with joint project work stands in front of the stack first.
@@ -148,7 +147,7 @@ export function Collaborations() {
                 project={project}
                 partnerName={active.name}
                 L={L}
-                onBack={(active.projects?.length ?? 0) > 1 ? () => { setJumpToProjects(true); setProject(null); } : undefined}
+                onBack={() => { setJumpToProjects(true); setProject(null); }}
               />
             </div>
           )}
