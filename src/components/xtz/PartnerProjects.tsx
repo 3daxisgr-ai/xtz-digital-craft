@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ChevronLeft, ChevronRight, Images } from "lucide-react";
 import type { ClientProject } from "./clients";
 
@@ -78,10 +78,15 @@ export function ProjectDetail({
   const go = (d: number) => setI((x) => (x + d + N) % N);
   const photo = project.photos[i];
 
-  useEffect(() => setI(0), [project.id]);
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    setI(0);
+    ref.current?.scrollIntoView({ block: "start" });
+  }, [project.id]);
 
   return (
     <article
+      ref={ref}
       className="animate-in fade-in duration-500 motion-reduce:animate-none"
       onKeyDown={(e) => {
         if (e.key === "ArrowRight") { e.stopPropagation(); go(1); }
