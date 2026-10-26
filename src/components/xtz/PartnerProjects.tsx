@@ -143,7 +143,7 @@ export function ProjectDetail({
         {/* Text + thumbnails */}
         <div className="flex flex-col gap-8 p-6 md:p-10">
           {onBack && (
-          <button
+            <button
               type="button"
               onClick={onBack}
               className="group inline-flex items-center gap-2 self-start font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground transition-colors hover:text-primary"
