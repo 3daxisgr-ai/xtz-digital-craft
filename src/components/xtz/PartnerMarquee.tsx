@@ -6,7 +6,7 @@
 // never auto-scrolls for visitors who prefer reduced motion.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Client, ClientProject } from "./clients";
+import type { Client } from "./clients";
 import { LogoPlate } from "./LogoPlate";
 
 type Lang = "EN" | "GR";
@@ -15,27 +15,19 @@ const SPEED = 28; // px per second
 const STEP = 260; // px per arrow press
 const DRAG_THRESHOLD = 6;
 
-type Item =
-  | { kind: "partner"; key: string; client: Client }
-  | { kind: "project"; key: string; client: Client; project: ClientProject };
 
 export function PartnerMarquee({
   clients,
   L,
   activeId,
   onPartner,
-  onProject,
 }: {
   clients: Client[];
   L: Lang;
   activeId: string;
   onPartner: (c: Client) => void;
-  onProject: (c: Client, p: ClientProject) => void;
 }) {
-  const items: Item[] = clients.flatMap((c) => [
-    { kind: "partner" as const, key: c.id, client: c },
-    ...(c.projects ?? []).map((p) => ({ kind: "project" as const, key: `${c.id}:${p.id}`, client: c, project: p })),
-  ]);
+  const items = clients;
 
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -49,6 +41,8 @@ export function PartnerMarquee({
     down: false,
     dragging: false,
     suppressClick: false,
+    tapPaused: false, // touch: first tap stops the strip, the next tap restarts it
+    pointerType: "mouse",
     startX: 0,
     startOff: 0,
     pointerId: -1,
@@ -78,7 +72,7 @@ export function PartnerMarquee({
         const e = 1 - Math.pow(1 - t, 3);
         s.x = s.tween.from + (s.tween.to - s.tween.from) * e;
         if (t >= 1) s.tween = null;
-      } else if (!s.hover && !s.focus && !s.down && !s.reduced) {
+      } else if (!s.hover && !s.focus && !s.down && !s.tapPaused && !s.reduced) {
         s.x -= SPEED * dt;
       }
       if (!s.tween && s.setW > 0 && Math.abs(s.x) > s.setW * 4) s.x %= s.setW;
@@ -159,6 +153,7 @@ export function PartnerMarquee({
     s.startX = e.clientX;
     s.startOff = s.x;
     s.pointerId = e.pointerId;
+    s.pointerType = e.pointerType;
   };
   const onPointerMove = (e: React.PointerEvent) => {
     const s = st.current;
@@ -183,10 +178,6 @@ export function PartnerMarquee({
     if (viewportRef.current?.hasPointerCapture(e.pointerId)) viewportRef.current.releasePointerCapture(e.pointerId);
   };
 
-  const label = (it: Item) =>
-    it.kind === "partner"
-      ? `${it.client.name} — ${L === "GR" ? "δείτε τη συνεργασία" : "view collaboration"}`
-      : `${it.client.name}: ${it.project.title[L]}`;
 
   const renderSet = (copy: number) => (
     <ul
@@ -195,35 +186,18 @@ export function PartnerMarquee({
       aria-hidden={copy > 0 || undefined}
       className="flex shrink-0 items-center gap-6 pr-6 md:gap-10 md:pr-10"
     >
-      {items.map((it) => (
-        <li key={it.key} className="shrink-0">
+      {items.map((c) => (
+        <li key={c.id} className="shrink-0">
           <button
             type="button"
             tabIndex={copy > 0 ? -1 : undefined}
-            aria-label={label(it)}
-            onClick={() => (it.kind === "partner" ? onPartner(it.client) : onProject(it.client, it.project))}
+            aria-label={`${c.name} — ${L === "GR" ? "δείτε τη συνεργασία" : "view collaboration"}`}
+            onClick={() => onPartner(c)}
             className={`group block rounded-lg p-1 transition-[opacity,box-shadow] duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none ${
-              it.client.id === activeId ? "opacity-100 ring-1 ring-primary/60" : "opacity-60 hover:opacity-100"
+              c.id === activeId ? "opacity-100 ring-1 ring-primary/60" : "opacity-60 hover:opacity-100"
             }`}
           >
-            {it.kind === "partner" ? (
-              <LogoPlate client={it.client} className="h-12 md:h-14" />
-            ) : (
-              <span className="flex h-12 items-center gap-3 rounded-md border border-border/60 bg-card/60 pr-4 md:h-14">
-                <img
-                  src={it.project.photos[0]?.src}
-                  alt=""
-                  draggable={false}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-9 rounded-l-md object-cover md:w-11"
-                />
-                <span className="flex flex-col text-left leading-tight">
-                  <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-primary">{it.client.name}</span>
-                  <span className="max-w-[12rem] truncate text-xs text-foreground/85 md:text-sm">{it.project.title[L]}</span>
-                </span>
-              </span>
-            )}
+            <LogoPlate client={c} className="h-12 md:h-14" />
           </button>
         </li>
       ))}
@@ -251,13 +225,26 @@ export function PartnerMarquee({
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
-        onFocus={() => { st.current.focus = true; }}
+        // Only keyboard focus pauses; a tap also focuses the button and must not.
+        onFocus={(e) => { st.current.focus = (e.target as HTMLElement).matches(":focus-visible"); }}
         onBlur={() => { st.current.focus = false; }}
         onClickCapture={(e) => {
-          if (st.current.suppressClick) {
-            st.current.suppressClick = false;
+          const s = st.current;
+          if (s.suppressClick) {
+            s.suppressClick = false;
             e.preventDefault();
             e.stopPropagation();
+            return;
+          }
+          if (s.pointerType === "mouse") return; // mouse: hover pauses, click opens
+          if (!s.tapPaused) {
+            // First tap: stop right here, open nothing.
+            s.tapPaused = true;
+            e.preventDefault();
+            e.stopPropagation();
+          } else {
+            // Next tap: restart; a tap on a logo also opens that partner.
+            s.tapPaused = false;
           }
         }}
         onDragStart={(e) => e.preventDefault()}
