@@ -14,14 +14,17 @@ export function Collaborations() {
   const [project, setProject] = useState<ClientProject | null>(null);
   const [jumpToProjects, setJumpToProjects] = useState(false);
   const setActive = (c: Client | null) => { setProject(null); setJumpToProjects(false); setActiveRaw(c); };
-  // From the partner strip: open the partner, landing on its projects when it has any.
+  // Partners with exactly one joint project open straight onto that project —
+  // nothing else. Several projects open the partner card at its project grid.
   const openPartner = (c: Client) => {
     setIdx(CLIENTS.findIndex((x) => x.id === c.id));
-    setProject(null);
-    setJumpToProjects(!!c.projects?.length);
+    const projects = c.projects ?? [];
+    setProject(projects.length === 1 ? projects[0] : null);
+    setJumpToProjects(projects.length > 1);
     setActiveRaw(c);
   };
-  const [idx, setIdx] = useState(0);
+  // The partner with joint project work stands in front of the stack first.
+  const [idx, setIdx] = useState(() => Math.max(0, CLIENTS.findIndex((c) => (c.projects?.length ?? 0) > 0)));
   const N = CLIENTS.length;
   const go = (d: number) => setIdx((i) => (i + d + N) % N);
   const featured = CLIENTS[idx];
@@ -61,7 +64,7 @@ export function Collaborations() {
             </p>
             <button
               type="button"
-              onClick={() => setActive(featured)}
+              onClick={() => openPartner(featured)}
               className="group inline-flex items-center gap-3 rounded-full border border-primary/50 px-6 py-3 font-mono text-[11px] uppercase tracking-[0.3em] text-foreground transition-colors duration-300 hover:border-primary hover:bg-primary/10"
             >
               {L === "GR" ? "Δείτε τη συνεργασία" : "View collaboration"}
@@ -78,7 +81,7 @@ export function Collaborations() {
                 <article
                   key={c.id}
                   aria-hidden={!isF}
-                  onClick={() => (isF ? setActive(c) : setIdx(i))}
+                  onClick={() => (isF ? openPartner(c) : setIdx(i))}
                   style={{
                     transform: isF
                       ? "translate3d(0,0,0) scale(1)"
@@ -141,7 +144,12 @@ export function Collaborations() {
                 <X className="h-5 w-5" />
                 <span className="sr-only">{L === "GR" ? "Κλείσιμο" : "Close"}</span>
               </DialogClose>
-              <ProjectDetail project={project} partnerName={active.name} L={L} onBack={() => { setJumpToProjects(true); setProject(null); }} />
+              <ProjectDetail
+                project={project}
+                partnerName={active.name}
+                L={L}
+                onBack={(active.projects?.length ?? 0) > 1 ? () => { setJumpToProjects(true); setProject(null); } : undefined}
+              />
             </div>
           )}
           {active && !project && (

@@ -80,7 +80,7 @@ export function ProjectDetail({
   project: ClientProject;
   partnerName: string;
   L: Lang;
-  onBack: () => void;
+  onBack?: () => void;
 }) {
   const [i, setI] = useState(0);
   const N = project.photos.length;
@@ -142,14 +142,16 @@ export function ProjectDetail({
 
         {/* Text + thumbnails */}
         <div className="flex flex-col gap-8 p-6 md:p-10">
-          <button
-            type="button"
-            onClick={onBack}
-            className="group inline-flex items-center gap-2 self-start font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground transition-colors hover:text-primary"
-          >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1 motion-reduce:transition-none" />
-            {partnerName}
-          </button>
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="group inline-flex items-center gap-2 self-start font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground transition-colors hover:text-primary"
+            >
+              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1 motion-reduce:transition-none" />
+              {partnerName}
+            </button>
+          )}
           <div>
             <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.3em] text-primary">
               TOREO × {partnerName}
