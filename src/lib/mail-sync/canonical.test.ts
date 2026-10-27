@@ -513,3 +513,66 @@ describe("ids and duplicate review", () => {
     expect(d.size).toBe(0);
   });
 });
+
+describe("TOREO-initiated mail and owner-deleted records", () => {
+  const SUP = "sales@supplier.com";
+  it("an email TOREO sent to a supplier creates nothing and is not a review item", () => {
+    const p = planCanonical(
+      input({ messages: [sent("<o1@toreo>", [SUP], null, "2026-10-01T09:00:00Z", "RFQ sheet")] }),
+    );
+    expect(p.requests).toHaveLength(0);
+    expect(p.review).toHaveLength(0);
+    expect(p.skipped).toHaveLength(1);
+  });
+
+  it("the supplier's reply goes to the supplier queue, never becomes an order", () => {
+    const p = planCanonical(
+      input({
+        messages: [
+          sent("<o1@toreo>", [SUP], null, "2026-10-01T09:00:00Z", "RFQ sheet"),
+          m({
+            messageId: "<s1@supplier>",
+            fromEmail: SUP,
+            fromName: "Supplier",
+            inReplyTo: "<o1@toreo>",
+            refs: ["<o1@toreo>"],
+            subject: "Re: RFQ sheet",
+            date: iso("2026-10-02T09:00:00Z"),
+          }),
+          sent("<o2@toreo>", [SUP], "<s1@supplier>", "2026-10-02T12:00:00Z", "Re: RFQ sheet"),
+        ],
+      }),
+    );
+    expect(p.requests).toHaveLength(0);
+    expect(p.review.map((r) => r.queue)).toEqual(["supplier"]);
+  });
+
+  it("a TOREO email to a customer with an open request but no thread goes to review", () => {
+    const p = planCanonical(
+      input({
+        requests: [existing({ id: "o1" })],
+        messages: [sent("<x@toreo>", [CUST], null, "2026-10-12T09:00:00Z", "Νέα τιμή")],
+      }),
+    );
+    expect(p.review.map((r) => r.queue)).toEqual(["match"]);
+    expect(p.requests[0].replyState).not.toBe("Replied");
+  });
+
+  it("a message in the thread of a record the owner deleted is not recreated", () => {
+    const p = planCanonical(
+      input({
+        removedKeys: new Set(["msg:<gone@client>"]),
+        messages: [
+          m({
+            messageId: "<c9@client>",
+            inReplyTo: "<gone@client>",
+            refs: ["<gone@client>"],
+            subject: "Re: Παλιό",
+          }),
+        ],
+      }),
+    );
+    expect(p.requests).toHaveLength(0);
+    expect(p.review).toHaveLength(0);
+  });
+});
