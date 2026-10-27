@@ -51,14 +51,18 @@ export interface HistoryResult {
 
 async function loadSubmissions(db: any): Promise<HSubmission[]> {
   const [subs, orders, intake] = await Promise.all([
-    db.from("submissions").select("id, name, surname, email, service, created_at").order("created_at"),
+    db
+      .from("submissions")
+      .select("id, name, surname, email, service, created_at")
+      .order("created_at"),
     db.from("orders").select("id, order_code, customer_email, status, created_at"),
     db.from("request_intake").select("submission_id, order_id").not("submission_id", "is", null),
   ]);
   for (const r of [subs, orders, intake]) if (r.error) throw new Error(r.error.message);
   const byId = new Map<string, any>((orders.data ?? []).map((o: any) => [o.id, o]));
   const viaIntake = new Map<string, any>();
-  for (const r of intake.data ?? []) if (r.order_id && byId.has(r.order_id)) viaIntake.set(r.submission_id, byId.get(r.order_id));
+  for (const r of intake.data ?? [])
+    if (r.order_id && byId.has(r.order_id)) viaIntake.set(r.submission_id, byId.get(r.order_id));
   return (subs.data ?? []).map((s: any) => {
     let o = viaIntake.get(s.id);
     if (!o) {
@@ -137,7 +141,12 @@ async function buildPlan(db: any, settings: any, password: string) {
     cls:
       kind === "sent"
         ? "outgoing"
-        : classifyIncoming({ headers: msg.headers, from: msg.from, ownAddress: own, siteSender: sender }),
+        : classifyIncoming({
+            headers: msg.headers,
+            from: msg.from,
+            ownAddress: own,
+            siteSender: sender,
+          }),
   }));
   const ids = msgs.map((m) => m.messageId).concat(submissions.map((s) => `website:${s.id}`));
   const done = new Set<string>();
@@ -161,7 +170,14 @@ async function buildPlan(db: any, settings: any, password: string) {
     staleDays: settings.history_stale_days,
   });
   const byId = new Map(mail.messages.map(({ msg }) => [msg.messageId, msg]));
-  return { units, folders: mail.folders, byId, submissions, notionPages: orderPages.length, logPages: logPages.length };
+  return {
+    units,
+    folders: mail.folders,
+    byId,
+    submissions,
+    notionPages: orderPages.length,
+    logPages: logPages.length,
+  };
 }
 
 export async function runHistory(opts: {
@@ -170,16 +186,31 @@ export async function runHistory(opts: {
   limit?: number;
 }): Promise<HistoryResult> {
   const db = await admin();
-  const { data: settings, error: sErr } = await db.from("mail_sync_settings").select("*").eq("id", 1).single();
+  const { data: settings, error: sErr } = await db
+    .from("mail_sync_settings")
+    .select("*")
+    .eq("id", 1)
+    .single();
   if (sErr) throw new Error(sErr.message);
-  const result: HistoryResult = { ok: false, runId: null, mode: opts.mode, counts: {}, rows: [], remaining: 0, error: null };
+  const result: HistoryResult = {
+    ok: false,
+    runId: null,
+    mode: opts.mode,
+    counts: {},
+    rows: [],
+    remaining: 0,
+    error: null,
+  };
   const password = process.env.PAPAKI_EMAIL_PASSWORD;
   if (!password) return { ...result, error: "Ο κωδικός του email δεν είναι ρυθμισμένος." };
 
   let approved: Map<string, string> | null = null;
   if (opts.mode === "history") {
     if (!settings.live_writes || !settings.history_import)
-      return { ...result, error: "Απαιτούνται ενεργές «Ζωντανές εγγραφές» και «Ιστορική εισαγωγή»." };
+      return {
+        ...result,
+        error: "Απαιτούνται ενεργές «Ζωντανές εγγραφές» και «Ιστορική εισαγωγή».",
+      };
     const { data: prev } = await db
       .from("mail_sync_runs")
       .select("id, approved_at, report")
@@ -189,11 +220,15 @@ export async function runHistory(opts: {
       .limit(1)
       .maybeSingle();
     if (!prev || Date.now() - Date.parse(prev.approved_at) > PREVIEW_MAX_AGE_MS)
-      return { ...result, error: "Χρειάζεται εγκεκριμένη προεπισκόπηση από τις τελευταίες 24 ώρες." };
+      return {
+        ...result,
+        error: "Χρειάζεται εγκεκριμένη προεπισκόπηση από τις τελευταίες 24 ώρες.",
+      };
     approved = new Map((prev.report?.rows ?? []).map((r: PreviewRow) => [r.key, r.fingerprint]));
   }
 
-  if (!(await claimLock(db, "admin", settings))) return { ...result, error: "Τρέχει ήδη άλλη εκτέλεση." };
+  if (!(await claimLock(db, "admin", settings)))
+    return { ...result, error: "Τρέχει ήδη άλλη εκτέλεση." };
   const { data: run } = await db
     .from("mail_sync_runs")
     .insert({ mode: opts.mode, trigger: "admin" })
@@ -239,7 +274,11 @@ export async function runHistory(opts: {
     let queue = go.filter((u) => !opts.only || u.kind === opts.only);
     const limit = Math.min(Math.max(opts.limit ?? 20, 1), 50);
     for (const u of changed)
-      result.rows.push({ ...previewRow(u), action: "manual_review", reason: "Άλλαξε μετά την προεπισκόπηση — νέα προεπισκόπηση" });
+      result.rows.push({
+        ...previewRow(u),
+        action: "manual_review",
+        reason: "Άλλαξε μετά την προεπισκόπηση — νέα προεπισκόπηση",
+      });
     let processed = 0;
     for (const u of queue) {
       if (processed >= limit || Date.now() - started > RUN_BUDGET_MS - UNIT_RESERVE_MS) break;
@@ -249,7 +288,11 @@ export async function runHistory(opts: {
         result.counts[u.action] = (result.counts[u.action] ?? 0) + 1;
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
-        result.rows.push({ ...previewRow(u), action: "manual_review", reason: `Σφάλμα: ${msg.slice(0, 200)}` });
+        result.rows.push({
+          ...previewRow(u),
+          action: "manual_review",
+          reason: `Σφάλμα: ${msg.slice(0, 200)}`,
+        });
         result.counts.error = (result.counts.error ?? 0) + 1;
         processed++;
         break; // keep order; the rest waits for the next run
@@ -281,10 +324,18 @@ export async function runHistory(opts: {
 
 /** Ledger row claim: the unique message_id prevents duplicates across runs and the live sync. */
 async function claim(db: any, row: Record<string, unknown>) {
-  const ins = await db.from("mail_sync_messages").insert({ status: "processing", ...row }).select("*").single();
+  const ins = await db
+    .from("mail_sync_messages")
+    .insert({ status: "processing", ...row })
+    .select("*")
+    .single();
   if (!ins.error) return ins.data;
   if (ins.error.code !== "23505") throw new Error(ins.error.message);
-  const { data } = await db.from("mail_sync_messages").select("*").eq("message_id", row.message_id).single();
+  const { data } = await db
+    .from("mail_sync_messages")
+    .select("*")
+    .eq("message_id", row.message_id)
+    .single();
   return data;
 }
 
@@ -314,7 +365,9 @@ async function importUnit(db: any, u: PlanUnit, byId: Map<string, Msg>, logOpts:
   }
 
   if (!pageId && u.action === "new_record") {
-    const trackUrl = u.orderCode ? `https://www.toreo.gr/track?code=${encodeURIComponent(u.orderCode)}` : null;
+    const trackUrl = u.orderCode
+      ? `https://www.toreo.gr/track?code=${encodeURIComponent(u.orderCode)}`
+      : null;
     const page = readOrderPage(
       await createPage(
         DATA_SOURCES.orders,
@@ -327,7 +380,10 @@ async function importUnit(db: any, u: PlanUnit, byId: Map<string, Msg>, logOpts:
           lastContact: u.lastDate,
           threadUrl: u.threadRoot ? mid(u.threadRoot) : null,
           websiteUrl: trackUrl,
-          nextAction: u.status === "Awaiting TOREO Reply" ? "Απάντηση στον πελάτη" : "Έλεγχος ιστορικού αιτήματος",
+          nextAction:
+            u.status === "Awaiting TOREO Reply"
+              ? "Απάντηση στον πελάτη"
+              : "Έλεγχος ιστορικού αιτήματος",
           status: u.status ?? undefined,
         }),
       ),
@@ -342,7 +398,8 @@ async function importUnit(db: any, u: PlanUnit, byId: Map<string, Msg>, logOpts:
   } else if (pageId && u.action === "attach" && u.threadRoot) {
     // Only fills an empty thread marker; status and other fields stay untouched.
     const existing = await (await import("./notion.server")).notionFetch(`/pages/${pageId}`);
-    if (!readExistingPage(existing).threadUrl) await updatePage(pageId, threadMarkerProps(mid(u.threadRoot)));
+    if (!readExistingPage(existing).threadUrl)
+      await updatePage(pageId, threadMarkerProps(mid(u.threadRoot)));
   }
   if (!pageId) throw new Error("Δεν βρέθηκε εγγραφή-στόχος");
 
@@ -358,8 +415,14 @@ async function importUnit(db: any, u: PlanUnit, byId: Map<string, Msg>, logOpts:
         contactName: u.customerName,
         summary: "Ιστορική εισαγωγή αιτήματος από το site.",
         threadUrl: null,
-        messageUrl: u.orderCode ? `https://www.toreo.gr/track?code=${encodeURIComponent(u.orderCode)}` : null,
-        status: u.messages.some((m) => m.direction === "outgoing") ? "Replied" : u.status === "Needs Review" ? "Follow-up Needed" : "Needs Reply",
+        messageUrl: u.orderCode
+          ? `https://www.toreo.gr/track?code=${encodeURIComponent(u.orderCode)}`
+          : null,
+        status: u.messages.some((m) => m.direction === "outgoing")
+          ? "Replied"
+          : u.status === "Needs Review"
+            ? "Follow-up Needed"
+            : "Needs Reply",
         relatedRecord: record,
       }),
     );
@@ -405,7 +468,10 @@ async function importUnit(db: any, u: PlanUnit, byId: Map<string, Msg>, logOpts:
           date: msg.date,
           contactEmail: counterpart?.email ?? null,
           contactName: counterpart?.name ?? null,
-          summary: [cleanSnippet(msg.snippet), msg.attachments.length ? `Συνημμένα: ${msg.attachments.join(", ")}` : ""]
+          summary: [
+            cleanSnippet(msg.snippet),
+            msg.attachments.length ? `Συνημμένα: ${msg.attachments.join(", ")}` : "",
+          ]
             .filter(Boolean)
             .join("\n"),
           threadUrl: mid(msg.root),
@@ -418,7 +484,11 @@ async function importUnit(db: any, u: PlanUnit, byId: Map<string, Msg>, logOpts:
     }
     await db.from("mail_sync_messages").update({ status: "synced", error: null }).eq("id", row.id);
   }
-  if (unitRow) await db.from("mail_sync_messages").update({ status: "synced", error: null }).eq("id", unitRow.id);
+  if (unitRow)
+    await db
+      .from("mail_sync_messages")
+      .update({ status: "synced", error: null })
+      .eq("id", unitRow.id);
 }
 
 /** Admin approval of a preview (required before importing). */

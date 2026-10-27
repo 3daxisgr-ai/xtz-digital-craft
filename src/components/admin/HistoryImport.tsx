@@ -63,7 +63,10 @@ export function HistoryImport({
     key: string,
     data: { mode: "history_preview" | "history"; only?: "website" | "thread"; limit?: number },
   ) {
-    if (data.mode === "history" && !confirm("Εισαγωγή στο Notion: θα δημιουργηθούν εγγραφές. Συνέχεια;"))
+    if (
+      data.mode === "history" &&
+      !confirm("Εισαγωγή στο Notion: θα δημιουργηθούν εγγραφές. Συνέχεια;")
+    )
       return;
     setBusy(key);
     setRes(null);
@@ -113,7 +116,9 @@ export function HistoryImport({
       </p>
       <div className="flex flex-wrap items-end gap-3 text-xs">
         <label>
-          <span className="block text-[10px] font-mono uppercase text-white/50 mb-1">Από ημερομηνία</span>
+          <span className="block text-[10px] font-mono uppercase text-white/50 mb-1">
+            Από ημερομηνία
+          </span>
           <input
             type="date"
             value={cutoff}
@@ -137,7 +142,10 @@ export function HistoryImport({
         <button
           className={btn}
           onClick={() =>
-            saveSettings({ history_cutoff: cutoff, history_stale_days: stale }, "Αποθήκευση ρυθμίσεων εισαγωγής;")
+            saveSettings(
+              { history_cutoff: cutoff, history_stale_days: stale },
+              "Αποθήκευση ρυθμίσεων εισαγωγής;",
+            )
           }
         >
           Αποθήκευση
@@ -155,11 +163,17 @@ export function HistoryImport({
         </button>
       </div>
       <div className="flex flex-wrap gap-2">
-        <button disabled={!!busy} className={btn} onClick={() => go("preview", { mode: "history_preview" })}>
+        <button
+          disabled={!!busy}
+          className={btn}
+          onClick={() => go("preview", { mode: "history_preview" })}
+        >
           {busy === "preview" ? "…" : "Προεπισκόπηση"}
         </button>
         <button
-          disabled={!res?.runId || res.mode !== "history_preview" || !res.ok || approvedId === res.runId}
+          disabled={
+            !res?.runId || res.mode !== "history_preview" || !res.ok || approvedId === res.runId
+          }
           className={btn}
           onClick={doApprove}
         >
@@ -195,7 +209,9 @@ export function HistoryImport({
       )}
       {res && (
         <div className="space-y-2 text-sm">
-          {res.error && <div className="rounded bg-red-500/10 text-red-200 px-3 py-2">{res.error}</div>}
+          {res.error && (
+            <div className="rounded bg-red-500/10 text-red-200 px-3 py-2">{res.error}</div>
+          )}
           {res.counts && (
             <div className="flex flex-wrap gap-2 text-xs">
               {Object.entries(res.counts).map(([k, v]) => (
@@ -203,7 +219,9 @@ export function HistoryImport({
                   {LABEL[k] ?? k}: <b>{v}</b>
                 </span>
               ))}
-              {res.mode === "history" && <span className="rounded bg-white/10 px-2 py-1">Υπόλοιπα: {res.remaining}</span>}
+              {res.mode === "history" && (
+                <span className="rounded bg-white/10 px-2 py-1">Υπόλοιπα: {res.remaining}</span>
+              )}
             </div>
           )}
           <ul className="divide-y divide-white/5 max-h-96 overflow-auto text-xs">

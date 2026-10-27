@@ -217,7 +217,9 @@ export function planHistory(input: PlanInput): PlanUnit[] {
     const externalOut = outgoing.filter((m) => m.toEmails.some((t) => lc(t) !== own));
     const first = thread[0];
     const root = first.root;
-    const allDone = thread.every((m) => input.done.has(m.messageId) || input.loggedLinks.has(mid(m.messageId)));
+    const allDone = thread.every(
+      (m) => input.done.has(m.messageId) || input.loggedLinks.has(mid(m.messageId)),
+    );
 
     const base = {
       key: `thread:${root}`,
@@ -246,7 +248,9 @@ export function planHistory(input: PlanInput): PlanUnit[] {
       continue;
     }
 
-    const customer = lc(customerMsgs[0]?.fromEmail ?? externalOut[0]?.toEmails.find((t) => lc(t) !== own));
+    const customer = lc(
+      customerMsgs[0]?.fromEmail ?? externalOut[0]?.toEmails.find((t) => lc(t) !== own),
+    );
     base.customerName = customerMsgs[0]?.fromName ?? null;
     const relevant = thread.filter((m) => m.cls === "customer" || externalOut.includes(m));
     const dirs = relevant.map((m) => ({
@@ -265,7 +269,13 @@ export function planHistory(input: PlanInput): PlanUnit[] {
 
     if (allDone || messages.every((m) => m.done)) {
       units.push(
-        finish({ ...base, action: "duplicate", reason: "Υπάρχει ήδη στο Notion", customerEmail: customer, messages }),
+        finish({
+          ...base,
+          action: "duplicate",
+          reason: "Υπάρχει ήδη στο Notion",
+          customerEmail: customer,
+          messages,
+        }),
       );
       continue;
     }
@@ -377,7 +387,10 @@ export function planHistory(input: PlanInput): PlanUnit[] {
     const customer = lc(s.email);
     const msgs = threads
       .flat()
-      .filter((m) => m.cls === "customer" || (m.cls === "outgoing" && m.toEmails.some((t) => lc(t) !== own)))
+      .filter(
+        (m) =>
+          m.cls === "customer" || (m.cls === "outgoing" && m.toEmails.some((t) => lc(t) !== own)),
+      )
       .sort((a, b) => a.date.localeCompare(b.date));
     const dirs = [
       { direction: "incoming" as const, toCustomer: false, date: s.createdAt },
@@ -399,7 +412,8 @@ export function planHistory(input: PlanInput): PlanUnit[] {
     const existing = pageForSubmission(s);
     const mapped = s.orderStatus ? (ORDER_STATUS_TO_NOTION[s.orderStatus] ?? null) : null;
     const derived = finalThreadStatus(dirs, input.now, input.staleDays);
-    const status = mapped && mapped !== "New" ? mapped : msgs.length ? derived : (mapped ?? derived);
+    const status =
+      mapped && mapped !== "New" ? mapped : msgs.length ? derived : (mapped ?? derived);
     const base = {
       key,
       kind: "website" as const,
@@ -414,7 +428,15 @@ export function planHistory(input: PlanInput): PlanUnit[] {
       messages,
     };
     if (input.done.has(key)) {
-      units.push(finish({ ...base, action: "duplicate", reason: "Έχει ήδη καταχωρηθεί", status: null, target: null }));
+      units.push(
+        finish({
+          ...base,
+          action: "duplicate",
+          reason: "Έχει ήδη καταχωρηθεί",
+          status: null,
+          target: null,
+        }),
+      );
     } else if (existing) {
       units.push(
         finish({

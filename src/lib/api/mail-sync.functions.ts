@@ -32,7 +32,9 @@ export const mailSyncOverview = createServerFn({ method: "GET" }).handler(async 
     db.from("mail_sync_settings").select("*").eq("id", 1).single(),
     db
       .from("mail_sync_runs")
-      .select("id, mode, trigger, started_at, finished_at, ok, counts, error, approved_at, approved_by")
+      .select(
+        "id, mode, trigger, started_at, finished_at, ok, counts, error, approved_at, approved_by",
+      )
       .order("started_at", { ascending: false })
       .limit(20),
     db
@@ -133,7 +135,10 @@ export const mailSyncHistory = createServerFn({ method: "POST" })
 
 export const mailSyncApprovePreview = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
-    z.object({ runId: z.string().uuid(), actor: z.string().trim().min(2).max(80) }).strict().parse(d),
+    z
+      .object({ runId: z.string().uuid(), actor: z.string().trim().min(2).max(80) })
+      .strict()
+      .parse(d),
   )
   .handler(async ({ data }) => {
     await requireAdminCookie();
