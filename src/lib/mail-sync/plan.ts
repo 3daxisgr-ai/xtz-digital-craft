@@ -54,16 +54,23 @@ export function decideIncoming(target: Target | null, pendingNewFrom: string | n
 }
 
 export interface OutgoingDecision {
-  action: "mark_replied" | "log_only" | "manual_review";
+  action: "mark_replied" | "log_only" | "forward_logged" | "manual_review";
   setStatus: string | null;
   reason: string;
 }
 
 /**
- * A TOREO reply is linked only through In-Reply-To / References (never by guessing).
+ * A TOREO reply is linked only through In-Reply-To / References (never by guessing),
+ * and counts as a reply only when it goes to that record's customer. A forward to a
+ * third party (e.g. a supplier) is logged without changing the record.
  * `hint` is an unsafe guess (same recipient) shown to the admin, never acted on.
  */
-export function decideOutgoing(target: Target | null, isReply: boolean, hint: OrderPage | null = null): OutgoingDecision {
+export function decideOutgoing(
+  target: Target | null,
+  isReply: boolean,
+  hint: OrderPage | null = null,
+  recipients: string[] = [],
+): OutgoingDecision {
   if (!target) {
     const why = isReply
       ? "Η απάντηση δεν αντιστοιχεί με ασφάλεια σε γνωστό εισερχόμενο email"
@@ -74,13 +81,30 @@ export function decideOutgoing(target: Target | null, isReply: boolean, hint: Or
       reason: hint ? `${why}. Πιθανή εγγραφή: ${hint.record ?? hint.title} — χρειάζεται έλεγχο.` : `${why} — χρειάζεται έλεγχο.`,
     };
   }
+  const label = target.record ?? target.title;
+  const customer = target.customerEmail?.toLowerCase() ?? null;
+  const to = recipients.map((r) => r.toLowerCase());
+  if (!customer) {
+    return {
+      action: "manual_review",
+      setStatus: null,
+      reason: `Το ${label} δεν έχει email πελάτη — δεν μπορεί να επιβεβαιωθεί ότι είναι απάντηση. Χρειάζεται έλεγχο.`,
+    };
+  }
+  if (!to.includes(customer)) {
+    return {
+      action: "forward_logged",
+      setStatus: null,
+      reason: `Προώθηση στο ${to.join(", ") || "—"} (όχι στον πελάτη) για το ${label}; η κατάσταση δεν αλλάζει`,
+    };
+  }
   if (target.status && REPLIED_FROM.includes(target.status)) {
-    return { action: "mark_replied", setStatus: "Replied", reason: `Απάντηση στο ${target.record ?? target.title}` };
+    return { action: "mark_replied", setStatus: "Replied", reason: `Απάντηση στο ${label}` };
   }
   return {
     action: "log_only",
     setStatus: null,
-    reason: `Απάντηση στο ${target.record ?? target.title}; η κατάσταση «${target.status ?? "—"}» διατηρείται`,
+    reason: `Απάντηση στο ${label}; η κατάσταση «${target.status ?? "—"}» διατηρείται`,
   };
 }
 
