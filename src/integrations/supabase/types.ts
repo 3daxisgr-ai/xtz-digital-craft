@@ -657,6 +657,27 @@ export type Database = {
         }
         Relationships: []
       }
+      mail_sync_auto_labels: {
+        Row: {
+          reason: string | null
+          target: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          reason?: string | null
+          target: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          reason?: string | null
+          target?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       mail_sync_messages: {
         Row: {
           action: string | null

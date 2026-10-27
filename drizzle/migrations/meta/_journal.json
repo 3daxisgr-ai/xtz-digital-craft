@@ -71,6 +71,13 @@
       "when": 1793102005055,
       "tag": "0009_canonical_requests_order_codes",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793102435866,
+      "tag": "0010_mail_sync_auto_labels",
+      "breakpoints": true
     }
   ]
 }
