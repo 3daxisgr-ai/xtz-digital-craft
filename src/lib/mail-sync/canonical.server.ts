@@ -775,6 +775,27 @@ export async function reconcile(opts: {
         break; // stop safely; the next run resumes (every step above is idempotent)
       }
     }
+    // Possible duplicates: flagged with permanent Order IDs (now assigned), never merged.
+    if (!result.counts.error)
+      for (const r of ordered) {
+        if (!r.duplicates.length || outOfTime()) continue;
+        const own = pageOf.get(r.id);
+        if (!own) continue;
+        const current = r.isNew ? null : (pages.get(r.id) ?? null);
+        if (current?.duplicateCheck && current.duplicateCheck !== "Possible duplicate") continue;
+        const codes = r.duplicates
+          .map((id) => pageOf.get(id)?.code ?? pages.get(id)?.orderId ?? null)
+          .filter((c): c is string => !!c)
+          .sort();
+        if (!codes.length || current?.possibleDuplicates === codes.join(", ")) continue;
+        try {
+          await updatePage(own.pageId, canonPatchProps({ duplicates: codes }));
+          count("duplicates_flagged");
+        } catch (e) {
+          console.error("[mail-sync] duplicate flag failed", errText(e));
+          count("error");
+        }
+      }
     if (!result.counts.error && !outOfTime()) await classifyPhase(true);
     else pending++;
     result.remaining = pending;
