@@ -43,6 +43,9 @@ import {
   type Target,
 } from "./plan";
 
+import type { FolderReport, ReportItem } from "./types";
+export type { FolderReport, ReportItem } from "./types";
+
 export type Mode = "dry" | "live" | "probe";
 export type Trigger = "admin" | "cron";
 
@@ -113,34 +116,6 @@ function toMsg(rec: FetchRecord, folder: string, uidvalidity: number | null): Ms
     attachments: rec.attachmentNames.map((n) => decodeWords(n)).slice(0, 20),
     headers,
   };
-}
-
-export interface ReportItem {
-  folder: "inbox" | "sent";
-  uid: number;
-  date: string;
-  from: string | null;
-  to: string | null;
-  subject: string;
-  classification: Classification | "outgoing";
-  action: string;
-  reason: string;
-  target: { record: string | null; title: string; status: string | null } | null;
-  setStatus: string | null;
-  ok: boolean;
-  error?: string;
-}
-
-export interface FolderReport {
-  folder: string;
-  kind: "inbox" | "sent";
-  exists: number;
-  uidvalidity: number | null;
-  checkpointBefore: number;
-  checkpointAfter: number;
-  initialized: boolean;
-  pending: number;
-  taken: number;
 }
 
 export interface RunResult {
