@@ -21,6 +21,7 @@ interface HistoryView {
 const LABEL: Record<string, string> = {
   new_record: "Νέα εγγραφή",
   attach: "Προσθήκη σε υπάρχουσα",
+  log_only: "Μόνο ιστορικό",
   duplicate: "Υπάρχει ήδη",
   skip: "Παράλειψη",
   manual_review: "Χειροκίνητος έλεγχος",
