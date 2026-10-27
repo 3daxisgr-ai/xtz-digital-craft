@@ -42,6 +42,7 @@ export const Route = createFileRoute("/api/public/mail-sync")({
         const { runMailSync } = await import("@/lib/mail-sync/sync.server");
         const r = await runMailSync({ mode: parsed.mode, trigger: "cron" });
         if (r.busy) return json({ ok: false, busy: true }, 429);
+        if (!r.runId) return json({ ok: false, mode: r.mode, error: r.error }, 409);
         return json(
           {
             ok: r.ok,
