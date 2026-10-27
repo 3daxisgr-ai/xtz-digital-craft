@@ -789,6 +789,8 @@ export type Database = {
           history_import: boolean
           history_stale_days: number
           id: number
+          ignore_senders: string[]
+          internal_senders: string[]
           last_run_at: string | null
           live_writes: boolean
           lock_until: string | null
@@ -804,6 +806,8 @@ export type Database = {
           history_import?: boolean
           history_stale_days?: number
           id?: number
+          ignore_senders?: string[]
+          internal_senders?: string[]
           last_run_at?: string | null
           live_writes?: boolean
           lock_until?: string | null
@@ -819,6 +823,8 @@ export type Database = {
           history_import?: boolean
           history_stale_days?: number
           id?: number
+          ignore_senders?: string[]
+          internal_senders?: string[]
           last_run_at?: string | null
           live_writes?: boolean
           lock_until?: string | null

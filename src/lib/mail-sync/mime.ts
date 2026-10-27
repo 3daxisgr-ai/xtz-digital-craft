@@ -157,14 +157,41 @@ export function normalizeSubject(s: string | null | undefined): string {
   return v.replace(/\s+/g, " ").trim().toLowerCase();
 }
 
-export type Classification = "customer" | "own" | "site_notification" | "auto" | "bulk";
+export type Classification =
+  | "customer"
+  | "own"
+  | "internal"
+  | "site_notification"
+  | "auto"
+  | "bulk"
+  | "ignored";
 
 export interface ClassifyInput {
   headers: Record<string, string>;
   from: Address | null;
   ownAddress: string;
   siteSender: string | null;
+  /** TOREO staff/test addresses (never customer requests). */
+  internal?: string[];
+  /** Domains/addresses of platforms, marketing and solicitations (never customer requests). */
+  ignore?: string[];
 }
+
+/** True when the address equals an entry, or its domain equals/ends with a domain entry. */
+export function matchesSenderList(email: string, list: string[] = []): boolean {
+  const e = email.trim().toLowerCase();
+  const domain = e.split("@")[1] ?? "";
+  return list.some((raw) => {
+    const x = raw.trim().toLowerCase();
+    if (!x) return false;
+    if (x.includes("@")) return x === e;
+    return domain === x || domain.endsWith(`.${x}`);
+  });
+}
+
+/** Bulk-mail sending subdomains (mg.example.com, updates.example.com, ...). */
+const SENDING_SUBDOMAIN =
+  /^(mg|mail|mail-notify|mailer|updates?|notifications?|notify|news(letter)?|email|em\d*|bounce|marketing|info-noreply)\./i;
 
 /** Decide whether an incoming email is a real customer message. */
 export function classifyIncoming({
@@ -172,10 +199,13 @@ export function classifyIncoming({
   from,
   ownAddress,
   siteSender,
+  internal = [],
+  ignore = [],
 }: ClassifyInput): Classification {
-  const email = from?.email ?? "";
+  const email = (from?.email ?? "").toLowerCase();
   if (!email) return "auto";
   if (email === ownAddress.toLowerCase()) return "own";
+  if (matchesSenderList(email, internal)) return "internal";
   if (siteSender && email === siteSender.toLowerCase()) return "site_notification";
   const autoSubmitted = (headers["auto-submitted"] ?? "").toLowerCase();
   if (autoSubmitted && autoSubmitted !== "no") return "auto";
@@ -184,6 +214,8 @@ export function classifyIncoming({
   const prec = (headers["precedence"] ?? "").toLowerCase();
   if (prec === "bulk" || prec === "list" || prec === "junk") return "bulk";
   if (headers["list-id"] || headers["list-unsubscribe"]) return "bulk";
+  if (matchesSenderList(email, ignore)) return "ignored";
+  if (SENDING_SUBDOMAIN.test(email.split("@")[1] ?? "")) return "bulk";
   return "customer";
 }
 

@@ -8,7 +8,18 @@ const GATEWAY = "https://connector-gateway.lovable.dev/notion/v1";
 export const DATA_SOURCES = {
   orders: "8e924d4d-3b87-4ca2-b42c-63887bd8f285",
   log: "9e5aa660-6e30-42df-b52e-fbfe08153f55",
+  customers: "428d2a4b-8436-4eff-b1e7-991e44149294",
+  tasks: "4157d5f5-9f01-408f-9661-f8acec89e3e5",
 };
+
+/** Customer card id for an email (exact match), or null. */
+export async function findCustomerByEmail(email: string): Promise<string | null> {
+  const r = await notionFetch(`/data_sources/${DATA_SOURCES.customers}/query`, {
+    method: "POST",
+    body: { filter: { property: "Email", email: { equals: email.toLowerCase() } }, page_size: 1 },
+  });
+  return r.results?.[0]?.id ?? null;
+}
 
 export class NotionError extends Error {
   constructor(

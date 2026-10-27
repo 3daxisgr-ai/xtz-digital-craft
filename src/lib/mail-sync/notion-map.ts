@@ -9,7 +9,10 @@ export type PropType =
   | "date"
   | "url"
   | "unique_id"
-  | "phone_number";
+  | "phone_number"
+  | "relation"
+  | "people"
+  | "status";
 
 export interface SchemaRequirement {
   props: Record<string, PropType>;
@@ -31,6 +34,7 @@ export const ORDERS_SCHEMA: SchemaRequirement = {
     "Website Submission": "url",
     "Next Action": "rich_text",
     "Record ID": "unique_id",
+    Customer: "relation",
   },
   options: {
     Status: ["Awaiting TOREO Reply", "Replied"],
@@ -52,11 +56,48 @@ export const LOG_SCHEMA: SchemaRequirement = {
     Status: "select",
     "Message / Submission Link": "url",
     "Related Record ID": "rich_text",
+    "Order / Request": "relation",
+    Customer: "relation",
+    Attachments: "rich_text",
   },
   options: {
     Direction: ["Incoming", "Outgoing"],
     Channel: ["Email", "Website"],
-    Status: ["Needs Reply", "Replied", "Follow-up Needed"],
+    Status: ["Needs Reply", "Replied", "Follow-up Needed", "Closed"],
+  },
+};
+
+export const CUSTOMERS_SCHEMA: SchemaRequirement = {
+  props: {
+    Customer: "title",
+    Email: "email",
+    Phone: "phone_number",
+    Type: "select",
+    Status: "select",
+    Source: "select",
+  },
+  options: {
+    Type: ["Lead", "Client"],
+    Status: ["Prospect", "Active"],
+    Source: ["Email", "Website"],
+  },
+};
+
+export const TASKS_SCHEMA: SchemaRequirement = {
+  props: {
+    Task: "title",
+    Status: "status",
+    Category: "select",
+    Source: "select",
+    Priority: "select",
+    "Related Record ID": "rich_text",
+    "Order / Request": "relation",
+  },
+  options: {
+    Status: ["Not Started"],
+    Category: ["Customer Reply"],
+    Source: ["Email", "Website"],
+    Priority: ["Normal"],
   },
 };
 
@@ -71,8 +112,8 @@ export function validateSchema(properties: Record<string, any>, req: SchemaRequi
   }
   for (const [name, opts] of Object.entries(req.options)) {
     const p = properties?.[name];
-    if (!p || p.type !== "select") continue;
-    const have = new Set((p.select?.options ?? []).map((o: any) => o.name));
+    if (!p || (p.type !== "select" && p.type !== "status")) continue;
+    const have = new Set((p[p.type]?.options ?? []).map((o: any) => o.name));
     for (const o of opts)
       if (!have.has(o)) problems.push(`Το πεδίο «${name}» δεν έχει την επιλογή «${o}»`);
   }
@@ -89,6 +130,9 @@ const select = (name: string) => ({ select: { name } });
 const date = (iso: string) => ({ date: { start: iso } });
 const url = (u: string | null | undefined) => ({ url: u || null });
 const email = (e: string | null | undefined) => ({ email: e || null });
+const relation = (...ids: (string | null | undefined)[]) => ({
+  relation: ids.filter((x): x is string => !!x).map((id) => ({ id })),
+});
 
 export interface NewOrderInput {
   subject: string;
@@ -103,6 +147,8 @@ export interface NewOrderInput {
   /** Historical import only: status computed from the whole thread (default "Awaiting TOREO Reply"). */
   status?: string;
   lastContact?: string;
+  customerPageId?: string | null;
+  internalNotes?: string | null;
 }
 
 export function orderCreateProps(i: NewOrderInput): Record<string, unknown> {
@@ -120,6 +166,8 @@ export function orderCreateProps(i: NewOrderInput): Record<string, unknown> {
   };
   if (i.customerPhone) props["Customer Phone"] = { phone_number: i.customerPhone.slice(0, 60) };
   if (i.websiteUrl) props["Website Submission"] = url(i.websiteUrl);
+  if (i.customerPageId) props.Customer = relation(i.customerPageId);
+  if (i.internalNotes) props["Internal Notes"] = rich(i.internalNotes);
   return props;
 }
 
@@ -151,6 +199,9 @@ export interface LogInput {
   messageUrl: string | null;
   status: "Needs Reply" | "Replied" | "Follow-up Needed" | "Closed";
   relatedRecord: string | null;
+  orderPageId?: string | null;
+  customerPageId?: string | null;
+  attachments?: string[];
 }
 
 export function logCreateProps(i: LogInput): Record<string, unknown> {
@@ -166,6 +217,52 @@ export function logCreateProps(i: LogInput): Record<string, unknown> {
     "Message / Submission Link": url(i.messageUrl),
     Status: select(i.status),
     "Related Record ID": rich(i.relatedRecord),
+    ...(i.orderPageId ? { "Order / Request": relation(i.orderPageId) } : {}),
+    ...(i.customerPageId ? { Customer: relation(i.customerPageId) } : {}),
+    ...(i.attachments?.length ? { Attachments: rich(i.attachments.join(", ")) } : {}),
+  };
+}
+
+export interface CustomerInput {
+  name: string | null;
+  email: string;
+  phone?: string | null;
+  source: "Email" | "Website";
+  client: boolean;
+}
+
+/** New customer card. Company/address are left empty (never guessed). */
+export function customerCreateProps(i: CustomerInput): Record<string, unknown> {
+  const props: Record<string, unknown> = {
+    Customer: title(i.name || i.email),
+    Email: email(i.email.toLowerCase()),
+    Type: select(i.client ? "Client" : "Lead"),
+    Status: select(i.client ? "Active" : "Prospect"),
+    Source: select(i.source),
+  };
+  if (i.phone) props.Phone = { phone_number: i.phone.slice(0, 60) };
+  return props;
+}
+
+export interface TaskInput {
+  title: string;
+  source: "Email" | "Website";
+  orderPageId: string;
+  relatedRecord: string | null;
+  notes?: string | null;
+}
+
+/** Follow-up task for TOREO. Owner and due date are left empty (never invented). */
+export function taskCreateProps(i: TaskInput): Record<string, unknown> {
+  return {
+    Task: title(i.title),
+    Status: { status: { name: "Not Started" } },
+    Category: select("Customer Reply"),
+    Source: select(i.source),
+    Priority: select("Normal"),
+    "Related Record ID": rich(i.relatedRecord),
+    "Order / Request": relation(i.orderPageId),
+    ...(i.notes ? { Notes: rich(i.notes) } : {}),
   };
 }
 
