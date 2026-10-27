@@ -55,6 +55,7 @@ export interface HSubmission {
   createdAt: string;
   orderCode: string | null;
   orderStatus: string | null;
+  orderId?: string | null;
   /** Hash of service + message, used only to spot double submissions. */
   contentKey: string;
 }

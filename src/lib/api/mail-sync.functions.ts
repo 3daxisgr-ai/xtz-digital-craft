@@ -145,3 +145,12 @@ export const mailSyncApprovePreview = createServerFn({ method: "POST" })
     const { approvePreview } = await import("@/lib/mail-sync/history.server");
     return approvePreview(data.runId, data.actor);
   });
+
+/** Canonical reconcile: read-only preview, or apply (server-side gated by live_writes). */
+export const mailSyncReconcile = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ apply: z.boolean() }).strict().parse(d))
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { reconcile } = await import("@/lib/mail-sync/canonical.server");
+    return reconcile({ apply: data.apply, trigger: "admin" });
+  });

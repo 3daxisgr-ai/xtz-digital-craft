@@ -349,7 +349,9 @@ export const submitForm = createServerFn({ method: "POST" })
 
     // 2. Send email notification (best-effort, never block the user)
     const sourceLabel = data.source === "3d-printing-quote" ? "3D Printing Quote" : "Project Inquiry";
-    const subject = `🚀 New Quote Request - TOREO`;
+    // The Order ID in the subject + X-TOREO headers let the mailbox sync attach this notification
+    // (and any reply to it) to the website order instead of creating a second record.
+    const subject = orderCode ? `🚀 New Quote Request – ${orderCode} - TOREO` : `🚀 New Quote Request - TOREO`;
 
     const fileLine = data.file_name
       ? fileUrl
@@ -416,6 +418,10 @@ export const submitForm = createServerFn({ method: "POST" })
             from: cfg.from,
             to: [NOTIFY_EMAIL],
             reply_to: data.email,
+            headers: {
+              ...(orderCode ? { "X-TOREO-Order-ID": orderCode } : {}),
+              ...(submissionId ? { "X-TOREO-Submission-ID": submissionId } : {}),
+            },
             subject,
             html,
             text: textBody,
@@ -531,6 +537,7 @@ export const submitForm = createServerFn({ method: "POST" })
             service: data.service ?? null,
             message: data.message ?? null,
             orderCode,
+            orderId: createdOrderId,
             trackUrl: orderCode ? `https://www.toreo.gr/track?code=${encodeURIComponent(orderCode)}` : null,
           }),
           new Promise((r) => setTimeout(r, 6000)),
