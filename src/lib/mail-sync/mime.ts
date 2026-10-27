@@ -189,6 +189,8 @@ export function matchesSenderList(email: string, list: string[] = []): boolean {
   });
 }
 
+const lc = (s: string | null | undefined) => (s ?? "").trim().toLowerCase();
+
 /** Platform / notification domains: an email from them is never a customer by itself. */
 export const SYSTEM_DOMAINS = [
   "microsoft.com",

@@ -15,6 +15,8 @@ const DAY = 86_400_000;
 export const SUBJECT_WINDOW_DAYS = 30;
 export const NOTIFICATION_WINDOW_MS = 15 * 60_000;
 export const DUPLICATE_WINDOW_DAYS = 14;
+/** An email this close to a request, from the same customer, is about that request. */
+export const SAME_REQUEST_WINDOW_MS = DAY;
 export const CLOSED_STATUSES = ["Delivered", "Lost / Cancelled"];
 /** Pipeline statuses that only describe "who has the ball"; the reply engine may move these. */
 export const REPLY_STATUSES = ["New", "Needs Review", "Awaiting TOREO Reply", "Replied", "Awaiting Customer"];
@@ -562,7 +564,9 @@ export function planCanonical(input: CanonInput): CanonPlan {
         w = bySubject[0];
         via = "email_subject";
       } else {
-        // 5. The customer's only open request active around this date.
+        // 5. Never dedupe by person alone: the customer's only open request attaches only when this
+        //    email arrives within a day of that request (e.g. the form + a follow-up email). Later
+        //    emails without thread / Order ID / subject evidence may be a new purchase -> review.
         const active = open.filter(
           (o) =>
             t >= Date.parse(o.receivedAt) - DAY &&
@@ -573,8 +577,13 @@ export function planCanonical(input: CanonInput): CanonPlan {
           continue;
         }
         if (active.length === 1) {
-          w = active[0];
-          via = "only_open_request";
+          if (Math.abs(t - Date.parse(active[0].receivedAt)) <= SAME_REQUEST_WINDOW_MS) {
+            w = active[0];
+            via = "same_day_as_request";
+          } else {
+            toReview(m, "incoming", "Ίδιος πελάτης με ανοιχτό αίτημα — ίδια ή νέα παραγγελία;", [active[0].id]);
+            continue;
+          }
         }
       }
     }
