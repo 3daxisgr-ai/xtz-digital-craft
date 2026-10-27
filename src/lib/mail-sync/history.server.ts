@@ -2,29 +2,37 @@
 // One-off historical import (website requests + info@toreo.gr) into the existing Notion databases.
 // Preview: read-only everywhere (mailbox EXAMINE + BODY.PEEK, Notion queries, DB selects) and stores
 // only a metadata report. Import: admin-triggered, gated by live_writes + history_import + an
-// approved preview (<24h); writes only to Orders & Quotes / Communication Log; never sends email.
+// approved preview (<24h); writes only to the existing TOREO databases; never sends email.
 import { ImapSession, PAPAKI } from "./imap.server";
 import { imapDate } from "./imap-parse";
 import { classifyIncoming, cleanSnippet, mid } from "./mime";
 import {
+  CUSTOMERS_SCHEMA,
   LOG_SCHEMA,
   ORDERS_SCHEMA,
+  TASKS_SCHEMA,
+  customerCreateProps,
   logCreateProps,
   orderCreateProps,
   readExistingPage,
   readLogLink,
   readOrderPage,
+  taskCreateProps,
   threadMarkerProps,
   validateSchema,
 } from "./notion-map";
 import {
   DATA_SOURCES,
   createPage,
+  findCustomerByEmail,
   getDataSourceProperties,
   listAllPages,
+  notionFetch,
   updatePage,
 } from "./notion.server";
 import {
+  CLIENT_STATUSES,
+  fingerprint,
   importable,
   planHistory,
   previewRow,
@@ -35,9 +43,10 @@ import {
 } from "./history";
 import { admin, claimLock, releaseLock, siteSender, toMsg, type Msg } from "./sync.server";
 
-const RUN_BUDGET_MS = 20_000;
+const DEFAULT_BUDGET_MS = 20_000;
 const UNIT_RESERVE_MS = 6_000;
 const PREVIEW_MAX_AGE_MS = 24 * 3_600_000;
+const HISTORY_TAG = "Ιστορική εισαγωγή";
 
 export interface HistoryResult {
   ok: boolean;
@@ -49,11 +58,14 @@ export interface HistoryResult {
   error: string | null;
 }
 
+const trackUrl = (code: string | null) =>
+  code ? `https://www.toreo.gr/track?code=${encodeURIComponent(code)}` : null;
+
 async function loadSubmissions(db: any): Promise<HSubmission[]> {
   const [subs, orders, intake] = await Promise.all([
     db
       .from("submissions")
-      .select("id, name, surname, email, service, created_at")
+      .select("id, name, surname, email, phone, service, message, created_at")
       .order("created_at"),
     db.from("orders").select("id, order_code, customer_email, status, created_at"),
     db.from("request_intake").select("submission_id, order_id").not("submission_id", "is", null),
@@ -79,10 +91,12 @@ async function loadSubmissions(db: any): Promise<HSubmission[]> {
       id: s.id,
       email: s.email,
       name: `${s.name ?? ""}${s.surname ? " " + s.surname : ""}`.trim(),
+      phone: s.phone ?? null,
       service: s.service ?? null,
       createdAt: new Date(s.created_at).toISOString(),
       orderCode: o?.order_code ?? null,
       orderStatus: o?.status ?? null,
+      contentKey: fingerprint([s.service ?? "", (s.message ?? "").trim()]),
     };
   });
 }
@@ -117,9 +131,23 @@ async function loadMailbox(cutoff: string, password: string) {
   }
 }
 
+async function selectIn(db: any, column: string, values: string[], extra: (q: any) => any) {
+  const rows: any[] = [];
+  for (let i = 0; i < values.length; i += 150) {
+    const { data, error } = await extra(
+      db.from("mail_sync_messages").select("message_id, notion_order_page_id, status").in(column, values.slice(i, i + 150)),
+    );
+    if (error) throw new Error(error.message);
+    rows.push(...(data ?? []));
+  }
+  return rows;
+}
+
 async function buildPlan(db: any, settings: any, password: string) {
   const own = PAPAKI.user;
   const sender = siteSender();
+  const internal: string[] = settings.internal_senders ?? [];
+  const ignore: string[] = settings.ignore_senders ?? [];
   const [mail, submissions, orderPages, logPages] = await Promise.all([
     loadMailbox(settings.history_cutoff, password),
     loadSubmissions(db),
@@ -146,28 +174,40 @@ async function buildPlan(db: any, settings: any, password: string) {
             from: msg.from,
             ownAddress: own,
             siteSender: sender,
+            internal,
+            ignore,
           }),
   }));
-  const ids = msgs.map((m) => m.messageId).concat(submissions.map((s) => `website:${s.id}`));
-  const done = new Set<string>();
-  for (let i = 0; i < ids.length; i += 150) {
-    const { data, error } = await db
-      .from("mail_sync_messages")
-      .select("message_id")
-      .in("message_id", ids.slice(i, i + 150))
-      .in("status", ["synced", "skipped"]);
-    if (error) throw new Error(error.message);
-    for (const r of data ?? []) done.add(r.message_id);
-  }
+  const keys = [
+    ...msgs.map((m) => m.messageId),
+    ...msgs.map((m) => `thread:${m.root}`),
+    ...submissions.map((s) => `website:${s.id}`),
+  ];
+  const ledger = await selectIn(db, "message_id", Array.from(new Set(keys)), (q) =>
+    q.in("status", ["synced", "skipped"]),
+  );
+  const done = new Set<string>(ledger.map((r) => r.message_id));
+  // Records this import created are matched through the ledger, never re-matched by email.
+  const own_pages = new Set<string>(
+    (
+      await db
+        .from("mail_sync_messages")
+        .select("notion_order_page_id")
+        .eq("match_reason", HISTORY_TAG)
+        .not("notion_order_page_id", "is", null)
+    ).data?.map((r: any) => r.notion_order_page_id) ?? [],
+  );
   const units = planHistory({
     messages: msgs,
     submissions: submissions.filter((s) => Date.parse(s.createdAt) >= cutoffMs),
-    pages: orderPages.map(readExistingPage),
+    pages: orderPages.filter((p: any) => !own_pages.has(p.id)).map(readExistingPage),
     loggedLinks: new Set(logPages.map(readLogLink).filter((x): x is string => !!x)),
     done,
     own,
     now: Date.now(),
     staleDays: settings.history_stale_days,
+    internal,
+    ignore,
   });
   const byId = new Map(mail.messages.map(({ msg }) => [msg.messageId, msg]));
   return {
@@ -184,6 +224,7 @@ export async function runHistory(opts: {
   mode: "history_preview" | "history";
   only?: "website" | "thread";
   limit?: number;
+  budgetMs?: number;
 }): Promise<HistoryResult> {
   const db = await admin();
   const { data: settings, error: sErr } = await db
@@ -236,16 +277,23 @@ export async function runHistory(opts: {
     .single();
   result.runId = run?.id ?? null;
   const started = Date.now();
+  const budget = Math.min(Math.max(opts.budgetMs ?? DEFAULT_BUDGET_MS, 10_000), 120_000);
   let extra: Record<string, unknown> = {};
   try {
-    const [op, lp] = await Promise.all([
+    const [op, lp, cp, tp] = await Promise.all([
       getDataSourceProperties(DATA_SOURCES.orders),
       getDataSourceProperties(DATA_SOURCES.log),
+      getDataSourceProperties(DATA_SOURCES.customers),
+      getDataSourceProperties(DATA_SOURCES.tasks),
     ]);
-    const problems = [...validateSchema(op, ORDERS_SCHEMA), ...validateSchema(lp, LOG_SCHEMA)];
-    const statusOpts = new Set((op.Status?.select?.options ?? []).map((o: any) => o.name));
-    const logOpts = new Set((lp.Status?.select?.options ?? []).map((o: any) => o.name));
+    const problems = [
+      ...validateSchema(op, ORDERS_SCHEMA).map((p) => `Orders & Quotes: ${p}`),
+      ...validateSchema(lp, LOG_SCHEMA).map((p) => `Communication Log: ${p}`),
+      ...validateSchema(cp, CUSTOMERS_SCHEMA).map((p) => `Customers: ${p}`),
+      ...validateSchema(tp, TASKS_SCHEMA).map((p) => `Tasks: ${p}`),
+    ];
     if (problems.length) throw new Error(`Το Notion άλλαξε: ${problems.join("; ")}`);
+    const statusOpts = new Set((op.Status?.select?.options ?? []).map((o: any) => o.name));
 
     const plan = await buildPlan(db, settings, password);
     for (const u of plan.units) {
@@ -270,21 +318,28 @@ export async function runHistory(opts: {
       return result;
     }
 
+    const clientEmails = new Set(
+      plan.units
+        .filter((u) => u.status && CLIENT_STATUSES.includes(u.status) && u.customerEmail)
+        .map((u) => u.customerEmail!),
+    );
     const { go, changed } = importable(plan.units, approved!);
-    let queue = go.filter((u) => !opts.only || u.kind === opts.only);
-    const limit = Math.min(Math.max(opts.limit ?? 20, 1), 50);
+    const queue = go.filter((u) => !opts.only || u.kind === opts.only);
+    const limit = Math.min(Math.max(opts.limit ?? 20, 1), 100);
     for (const u of changed)
       result.rows.push({
         ...previewRow(u),
         action: "manual_review",
         reason: "Άλλαξε μετά την προεπισκόπηση — νέα προεπισκόπηση",
       });
+    const customers = new Map<string, string | null>();
     let processed = 0;
     for (const u of queue) {
-      if (processed >= limit || Date.now() - started > RUN_BUDGET_MS - UNIT_RESERVE_MS) break;
+      if (processed >= limit || Date.now() - started > budget - UNIT_RESERVE_MS) break;
+      processed++;
       try {
-        await importUnit(db, u, plan.byId, logOpts);
-        result.rows.push({ ...previewRow(u), reason: "Καταχωρήθηκε" });
+        await importUnit(db, u, plan.byId, customers, clientEmails);
+        result.rows.push({ ...previewRow(u), reason: `Καταχωρήθηκε · ${u.reason}` });
         result.counts[u.action] = (result.counts[u.action] ?? 0) + 1;
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
@@ -294,13 +349,10 @@ export async function runHistory(opts: {
           reason: `Σφάλμα: ${msg.slice(0, 200)}`,
         });
         result.counts.error = (result.counts.error ?? 0) + 1;
-        processed++;
         break; // keep order; the rest waits for the next run
       }
-      processed++;
     }
-    queue = queue.slice(processed);
-    result.remaining = queue.length;
+    result.remaining = queue.length - processed + (result.counts.error ? 1 : 0);
     result.ok = !result.counts.error;
     return result;
   } catch (e) {
@@ -326,7 +378,7 @@ export async function runHistory(opts: {
 async function claim(db: any, row: Record<string, unknown>) {
   const ins = await db
     .from("mail_sync_messages")
-    .insert({ status: "processing", ...row })
+    .insert({ status: "processing", match_reason: HISTORY_TAG, ...row })
     .select("*")
     .single();
   if (!ins.error) return ins.data;
@@ -338,36 +390,64 @@ async function claim(db: any, row: Record<string, unknown>) {
     .single();
   return data;
 }
+const setRow = (db: any, id: string, patch: Record<string, unknown>) =>
+  db.from("mail_sync_messages").update(patch).eq("id", id);
 
-async function importUnit(db: any, u: PlanUnit, byId: Map<string, Msg>, logOpts: Set<unknown>) {
-  const own = PAPAKI.user;
-  let pageId = u.target?.pageId ?? null;
-  let record = u.target?.record ?? null;
-
-  let unitRow: any = null;
-  if (u.kind === "website") {
-    unitRow = await claim(db, {
-      message_id: u.key,
-      folder: "website",
-      direction: "website",
-      from_email: u.customerEmail,
-      from_name: u.customerName,
-      subject: u.subject.slice(0, 500),
-      sent_at: u.firstDate,
-      classification: "customer",
-      action: u.action,
-      match_reason: "Ιστορική εισαγωγή",
-    });
-    if (unitRow.notion_order_page_id) {
-      pageId = unitRow.notion_order_page_id;
-      record = unitRow.notion_order_record;
-    }
+/** Find or create the customer card (only for real customer requests). */
+async function customerFor(
+  u: PlanUnit,
+  cache: Map<string, string | null>,
+  clientEmails: Set<string>,
+  create: boolean,
+): Promise<string | null> {
+  const email = u.customerEmail;
+  if (!email) return null;
+  if (cache.has(email) && (cache.get(email) || !create)) return cache.get(email)!;
+  let id = await findCustomerByEmail(email);
+  if (!id && create) {
+    const page = await createPage(
+      DATA_SOURCES.customers,
+      customerCreateProps({
+        name: u.customerName,
+        email,
+        phone: u.customerPhone,
+        source: u.kind === "website" ? "Website" : "Email",
+        client: clientEmails.has(email),
+      }),
+    );
+    id = page.id;
   }
+  cache.set(email, id);
+  return id;
+}
 
+async function importUnit(
+  db: any,
+  u: PlanUnit,
+  byId: Map<string, Msg>,
+  customers: Map<string, string | null>,
+  clientEmails: Set<string>,
+) {
+  const own = PAPAKI.user;
+  const isRequest = u.action === "new_record" || u.action === "attach";
+  const flagged = u.action === "manual_review";
+  const unitRow = await claim(db, {
+    message_id: u.key,
+    folder: u.kind === "website" ? "website" : "history",
+    direction: u.kind === "website" ? "website" : "incoming",
+    from_email: u.customerEmail,
+    from_name: u.customerName,
+    subject: u.subject.slice(0, 500),
+    sent_at: u.firstDate,
+    classification: "customer",
+    action: u.action,
+    thread_root: u.threadRoot,
+  });
+  const customerId = await customerFor(u, customers, clientEmails, isRequest || flagged);
+
+  let pageId: string | null = unitRow.notion_order_page_id ?? u.target?.pageId ?? null;
+  let record: string | null = unitRow.notion_order_record ?? u.target?.record ?? null;
   if (!pageId && u.action === "new_record") {
-    const trackUrl = u.orderCode
-      ? `https://www.toreo.gr/track?code=${encodeURIComponent(u.orderCode)}`
-      : null;
     const page = readOrderPage(
       await createPage(
         DATA_SOURCES.orders,
@@ -376,34 +456,37 @@ async function importUnit(db: any, u: PlanUnit, byId: Map<string, Msg>, logOpts:
           source: u.kind === "website" ? "Website" : "Email",
           customerName: u.customerName,
           customerEmail: u.customerEmail!,
+          customerPhone: u.customerPhone,
           receivedAt: u.firstDate,
           lastContact: u.lastDate,
           threadUrl: u.threadRoot ? mid(u.threadRoot) : null,
-          websiteUrl: trackUrl,
+          websiteUrl: trackUrl(u.orderCode),
           nextAction:
-            u.status === "Awaiting TOREO Reply"
+            u.status === "Awaiting TOREO Reply" || u.status === "New"
               ? "Απάντηση στον πελάτη"
-              : "Έλεγχος ιστορικού αιτήματος",
+              : u.status === "Needs Review"
+                ? "Έλεγχος αν το αίτημα είναι ακόμη ενεργό"
+                : "Παρακολούθηση",
           status: u.status ?? undefined,
+          customerPageId: customerId,
+          internalNotes: `${HISTORY_TAG}: ${u.reason}`,
         }),
       ),
     );
     pageId = page.pageId;
     record = page.record;
-    if (unitRow)
-      await db
-        .from("mail_sync_messages")
-        .update({ notion_order_page_id: pageId, notion_order_record: record })
-        .eq("id", unitRow.id);
-  } else if (pageId && u.action === "attach" && u.threadRoot) {
-    // Only fills an empty thread marker; status and other fields stay untouched.
-    const existing = await (await import("./notion.server")).notionFetch(`/pages/${pageId}`);
-    if (!readExistingPage(existing).threadUrl)
+    await setRow(db, unitRow.id, { notion_order_page_id: pageId, notion_order_record: record });
+  } else if (pageId && u.action === "attach") {
+    // Existing record: only fill an empty thread marker / customer link; status stays untouched.
+    const existing = readExistingPage(await notionFetch(`/pages/${pageId}`));
+    if (!existing.threadUrl && u.threadRoot)
       await updatePage(pageId, threadMarkerProps(mid(u.threadRoot)));
+    await setRow(db, unitRow.id, { notion_order_page_id: pageId, notion_order_record: record });
   }
-  if (!pageId) throw new Error("Δεν βρέθηκε εγγραφή-στόχος");
+  if (isRequest && !pageId) throw new Error("Δεν βρέθηκε εγγραφή-στόχος");
 
-  if (unitRow && !unitRow.notion_log_page_id) {
+  // Website request entry (once).
+  if (u.kind === "website" && !unitRow.notion_log_page_id) {
     const log = await createPage(
       DATA_SOURCES.log,
       logCreateProps({
@@ -413,20 +496,23 @@ async function importUnit(db: any, u: PlanUnit, byId: Map<string, Msg>, logOpts:
         date: u.firstDate,
         contactEmail: u.customerEmail,
         contactName: u.customerName,
-        summary: "Ιστορική εισαγωγή αιτήματος από το site.",
-        threadUrl: null,
-        messageUrl: u.orderCode
-          ? `https://www.toreo.gr/track?code=${encodeURIComponent(u.orderCode)}`
-          : null,
+        summary:
+          u.submissionIds.length > 1
+            ? `${HISTORY_TAG} · ${u.submissionIds.length} ίδιες υποβολές συγχωνεύτηκαν.`
+            : `${HISTORY_TAG} αιτήματος από το site.`,
+        threadUrl: u.threadRoot ? mid(u.threadRoot) : null,
+        messageUrl: trackUrl(u.orderCode),
         status: u.messages.some((m) => m.direction === "outgoing")
           ? "Replied"
           : u.status === "Needs Review"
             ? "Follow-up Needed"
             : "Needs Reply",
         relatedRecord: record,
+        orderPageId: pageId,
+        customerPageId: customerId,
       }),
     );
-    await db.from("mail_sync_messages").update({ notion_log_page_id: log.id }).eq("id", unitRow.id);
+    await setRow(db, unitRow.id, { notion_log_page_id: log.id });
   }
 
   for (const m of u.messages) {
@@ -451,44 +537,76 @@ async function importUnit(db: any, u: PlanUnit, byId: Map<string, Msg>, logOpts:
       snippet: msg.snippet,
       attachment_names: msg.attachments,
       classification: outgoing ? "outgoing" : "customer",
-      action: "history",
-      match_reason: "Ιστορική εισαγωγή",
+      action: u.action,
       notion_order_page_id: pageId,
       notion_order_record: record,
     });
     if (row.status === "synced") continue;
     if (!row.notion_log_page_id) {
-      const status = logOpts.has(m.logStatus) ? m.logStatus : "Replied";
+      const label = outgoing ? "Email TOREO" : "Εισερχόμενο email";
       const log = await createPage(
         DATA_SOURCES.log,
         logCreateProps({
-          activity: `${outgoing ? "Απάντηση TOREO" : "Εισερχόμενο email"}: ${msg.subject || "(χωρίς θέμα)"}`,
+          activity: `${flagged ? "⚠ Έλεγχος — " : ""}${label}: ${msg.subject || "(χωρίς θέμα)"}`,
           direction: outgoing ? "Outgoing" : "Incoming",
           channel: "Email",
           date: msg.date,
           contactEmail: counterpart?.email ?? null,
           contactName: counterpart?.name ?? null,
           summary: [
-            cleanSnippet(msg.snippet),
-            msg.attachments.length ? `Συνημμένα: ${msg.attachments.join(", ")}` : "",
+            flagged || u.action === "log_only" ? `${HISTORY_TAG}: ${u.reason}` : "",
+            cleanSnippet(msg.snippet, 300),
           ]
             .filter(Boolean)
             .join("\n"),
           threadUrl: mid(msg.root),
           messageUrl: mid(msg.messageId),
-          status,
+          status: m.logStatus,
           relatedRecord: record,
+          orderPageId: pageId,
+          customerPageId: customerId,
+          attachments: msg.attachments,
         }),
       );
-      await db.from("mail_sync_messages").update({ notion_log_page_id: log.id }).eq("id", row.id);
+      await setRow(db, row.id, { notion_log_page_id: log.id });
     }
-    await db.from("mail_sync_messages").update({ status: "synced", error: null }).eq("id", row.id);
+    await setRow(db, row.id, { status: "synced", error: null });
   }
-  if (unitRow)
-    await db
-      .from("mail_sync_messages")
-      .update({ status: "synced", error: null })
-      .eq("id", unitRow.id);
+
+  if (u.task && pageId) {
+    const fresh = await db.from("mail_sync_messages").select("action").eq("id", unitRow.id).single();
+    if (fresh.data?.action !== "task_created") {
+      await createPage(
+        DATA_SOURCES.tasks,
+        taskCreateProps({
+          title: `Απάντηση σε ${u.customerName || u.customerEmail}: ${u.subject}`.slice(0, 200),
+          source: u.kind === "website" ? "Website" : "Email",
+          orderPageId: pageId,
+          relatedRecord: record,
+          notes: "Δημιουργήθηκε από την ιστορική εισαγωγή. Ορίστε υπεύθυνο και προθεσμία.",
+        }),
+      );
+      await setRow(db, unitRow.id, { action: "task_created" });
+    }
+  }
+
+  // Double website submissions point to the same record.
+  for (const sid of u.submissionIds.slice(1)) {
+    await db.from("mail_sync_messages").upsert(
+      {
+        message_id: `website:${sid}`,
+        folder: "website",
+        direction: "website",
+        status: "synced",
+        action: "duplicate",
+        match_reason: HISTORY_TAG,
+        notion_order_page_id: pageId,
+        notion_order_record: record,
+      },
+      { onConflict: "message_id" },
+    );
+  }
+  await setRow(db, unitRow.id, { status: "synced", error: null });
 }
 
 /** Admin approval of a preview (required before importing). */
