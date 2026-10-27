@@ -12,7 +12,8 @@ export type PropType =
   | "phone_number"
   | "relation"
   | "people"
-  | "status";
+  | "status"
+  | "checkbox";
 
 export interface SchemaRequirement {
   props: Record<string, PropType>;
@@ -63,6 +64,35 @@ export const ORDERS_CANON_PROPS: Record<string, unknown> = {
     },
   },
   "Possible Duplicates": { rich_text: {} },
+  "Order Check": {
+    select: {
+      options: [
+        { name: "Genuine order", color: "green" },
+        { name: "Sales inquiry", color: "blue" },
+        { name: "Suspected non-order", color: "gray" },
+        { name: "Customer mismatch", color: "red" },
+        { name: "Needs review", color: "orange" },
+      ],
+    },
+  },
+  "Check Reason": { rich_text: {} },
+};
+/** Evidence-based contact classification on Customers (added additively). */
+export const CUSTOMERS_CANON_PROPS: Record<string, unknown> = {
+  Classification: {
+    select: {
+      options: [
+        { name: "Confirmed customer", color: "green" },
+        { name: "Prospect / lead", color: "blue" },
+        { name: "Supplier / partner", color: "purple" },
+        { name: "Automated / system", color: "gray" },
+        { name: "Spam / marketing", color: "brown" },
+        { name: "Uncertain", color: "orange" },
+      ],
+    },
+  },
+  "Classification Reason": { rich_text: {} },
+  "Classification Review": { checkbox: {} },
 };
 export const ORDERS_CANON_SCHEMA: SchemaRequirement = {
   props: {
@@ -70,6 +100,8 @@ export const ORDERS_CANON_SCHEMA: SchemaRequirement = {
     "Reply State": "select",
     "Duplicate Check": "select",
     "Possible Duplicates": "rich_text",
+    "Order Check": "select",
+    "Check Reason": "rich_text",
     Tasks: "relation",
   },
   options: {
@@ -260,6 +292,10 @@ export function readCanonPage(page: any) {
     customerIds: (p.Customer?.relation ?? []).map((r: any) => r.id as string),
     taskIds: (p.Tasks?.relation ?? []).map((r: any) => r.id as string),
     source: (p.Source?.select?.name ?? null) as string | null,
+    customerName: plain(p["Customer Name"]).trim() || null,
+    orderCheck: (p["Order Check"]?.select?.name ?? null) as string | null,
+    checkReason: plain(p["Check Reason"]).trim() || null,
+    internalNotes: plain(p["Internal Notes"]).trim() || null,
   };
 }
 export type CanonPage = ReturnType<typeof readCanonPage>;
@@ -272,6 +308,22 @@ export function readLogPage(page: any) {
     status: (p.Status?.select?.name ?? null) as string | null,
     orderIds: (p["Order / Request"]?.relation ?? []).map((r: any) => r.id as string),
     related: plain(p["Related Record ID"]).trim() || null,
+    direction: (p.Direction?.select?.name ?? null) as string | null,
+    contactEmail: (p["Contact Email"]?.email ?? null) as string | null,
+  };
+}
+
+export function readCustomerPage(page: any) {
+  const p = page?.properties ?? {};
+  return {
+    id: page.id as string,
+    name: plain(p.Customer).trim() || null,
+    email: (p.Email?.email ?? null) as string | null,
+    type: (p.Type?.select?.name ?? null) as string | null,
+    classification: (p.Classification?.select?.name ?? null) as string | null,
+    reason: plain(p["Classification Reason"]).trim() || null,
+    review: !!p["Classification Review"]?.checkbox,
+    orderIds: (p["Orders & Quotes"]?.relation ?? []).map((r: any) => r.id as string),
   };
 }
 

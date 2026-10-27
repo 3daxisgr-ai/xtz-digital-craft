@@ -136,14 +136,15 @@ export async function updatePage(
   return notionFetch(`/pages/${pageId}`, { method: "PATCH", body: { properties } });
 }
 
-/** Add the canonical-request fields to Orders & Quotes when missing (additive; never removes). */
+/** Add fields (Orders & Quotes by default) when missing (additive; never removes). */
 export async function ensureOrderFields(
   wanted: Record<string, unknown>,
   current: Record<string, any>,
+  dataSourceId: string = DATA_SOURCES.orders,
 ): Promise<string[]> {
   const missing = Object.keys(wanted).filter((k) => !current?.[k]);
   if (!missing.length) return [];
-  await notionFetch(`/data_sources/${DATA_SOURCES.orders}`, {
+  await notionFetch(`/data_sources/${dataSourceId}`, {
     method: "PATCH",
     body: { properties: Object.fromEntries(missing.map((k) => [k, wanted[k]])) },
   });
