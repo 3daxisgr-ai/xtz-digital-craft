@@ -61,7 +61,7 @@ export interface HistoryResult {
 const trackUrl = (code: string | null) =>
   code ? `https://www.toreo.gr/track?code=${encodeURIComponent(code)}` : null;
 
-async function loadSubmissions(db: any): Promise<HSubmission[]> {
+export async function loadSubmissions(db: any): Promise<HSubmission[]> {
   const [subs, orders, intake] = await Promise.all([
     db
       .from("submissions")
@@ -96,12 +96,13 @@ async function loadSubmissions(db: any): Promise<HSubmission[]> {
       createdAt: new Date(s.created_at).toISOString(),
       orderCode: o?.order_code ?? null,
       orderStatus: o?.status ?? null,
+      orderId: o?.id ?? null,
       contentKey: fingerprint([s.service ?? "", (s.message ?? "").trim()]),
     };
   });
 }
 
-async function loadMailbox(cutoff: string, password: string) {
+export async function loadMailbox(cutoff: string, password: string) {
   const session = await ImapSession.open(PAPAKI.host, PAPAKI.port);
   try {
     await session.login(PAPAKI.user, password);

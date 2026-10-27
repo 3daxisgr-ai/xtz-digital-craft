@@ -136,6 +136,29 @@ export async function updatePage(
   return notionFetch(`/pages/${pageId}`, { method: "PATCH", body: { properties } });
 }
 
+/** Add the canonical-request fields to Orders & Quotes when missing (additive; never removes). */
+export async function ensureOrderFields(
+  wanted: Record<string, unknown>,
+  current: Record<string, any>,
+): Promise<string[]> {
+  const missing = Object.keys(wanted).filter((k) => !current?.[k]);
+  if (!missing.length) return [];
+  await notionFetch(`/data_sources/${DATA_SOURCES.orders}`, {
+    method: "PATCH",
+    body: { properties: Object.fromEntries(missing.map((k) => [k, wanted[k]])) },
+  });
+  return missing;
+}
+
+/** Orders page carrying this permanent Order ID, if one exists (crash-safe re-runs). */
+export async function findOrderByOrderId(code: string): Promise<any | null> {
+  const r = await notionFetch(`/data_sources/${DATA_SOURCES.orders}/query`, {
+    method: "POST",
+    body: { filter: { property: "Order ID", rich_text: { equals: code } }, page_size: 2 },
+  });
+  return r.results?.[0] ?? null;
+}
+
 /** Extract only Notion's machine error code (e.g. "validation_error"); never the message. */
 export function notionErrorCode(body: string): string {
   try {
