@@ -354,6 +354,40 @@ function MailSyncPage() {
           )}
         </section>
 
+        <section className="rounded border border-white/10 p-4 space-y-2 text-xs">
+          <h2 className="font-mono text-xs uppercase tracking-widest text-white/60">
+            Αυτόματη εκτέλεση
+          </h2>
+          {(data?.scheduler?.jobs ?? []).length === 0 ? (
+            <p className="text-white/40">Δεν υπάρχει προγραμματισμένη εκτέλεση.</p>
+          ) : (
+            (data?.scheduler?.jobs ?? []).map((j) => (
+              <div key={j.name} className="flex flex-wrap gap-3">
+                <span
+                  className={`px-2 py-0.5 rounded font-mono uppercase ${j.active ? "bg-emerald-400/20 text-emerald-200" : "bg-white/10"}`}
+                >
+                  {j.active ? "ενεργή" : "σε παύση"}
+                </span>
+                <span className="text-white/70">
+                  {j.schedule === "*/5 * * * *" ? "κάθε 5 λεπτά" : j.schedule}
+                </span>
+              </div>
+            ))
+          )}
+          {(data?.scheduler?.recent ?? []).length > 0 && (
+            <div className="text-white/50">
+              Τελευταίες κλήσεις:{" "}
+              {(data?.scheduler?.recent ?? [])
+                .map((x) => `${fmt(x.start)} (${x.status === "succeeded" ? "ok" : x.status})`)
+                .join(" · ")}
+            </div>
+          )}
+          <p className="text-white/40">
+            Το αποτέλεσμα κάθε εκτέλεσης (και τυχόν σφάλμα) φαίνεται στο ιστορικό παρακάτω. Η
+            εκτέλεση δεν στέλνει ποτέ email.
+          </p>
+        </section>
+
         <section className="rounded border border-white/10 p-4 space-y-2">
           <h2 className="font-mono text-xs uppercase tracking-widest text-white/60">
             Ιστορικό εκτελέσεων
