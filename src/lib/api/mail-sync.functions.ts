@@ -7,7 +7,12 @@ type AdminSession = { authed?: boolean };
 function sessionConfig() {
   const raw = process.env.ADMIN_PASSWORD ?? "";
   const password = (raw + "::skg3d-admin-session-pad-do-not-share::").padEnd(64, "x");
-  return { password, name: "skg3d_admin", maxAge: 60 * 60 * 8, cookie: { httpOnly: true, sameSite: "lax" as const, path: "/" } };
+  return {
+    password,
+    name: "skg3d_admin",
+    maxAge: 60 * 60 * 8,
+    cookie: { httpOnly: true, sameSite: "lax" as const, path: "/" },
+  };
 }
 async function requireAdminCookie() {
   const s = await useSession<AdminSession>(sessionConfig());
@@ -23,10 +28,19 @@ export const mailSyncOverview = createServerFn({ method: "GET" }).handler(async 
   const db = await admin();
   const [settings, runs, review, state] = await Promise.all([
     db.from("mail_sync_settings").select("*").eq("id", 1).single(),
-    db.from("mail_sync_runs").select("id, mode, trigger, started_at, finished_at, ok, counts, error").order("started_at", { ascending: false }).limit(20),
-    db.from("mail_sync_messages")
-      .select("id, direction, folder, from_email, to_emails, subject, sent_at, status, match_reason, error, notion_order_record, updated_at")
-      .in("status", ["manual_review", "failed"]).order("updated_at", { ascending: false }).limit(50),
+    db
+      .from("mail_sync_runs")
+      .select("id, mode, trigger, started_at, finished_at, ok, counts, error")
+      .order("started_at", { ascending: false })
+      .limit(20),
+    db
+      .from("mail_sync_messages")
+      .select(
+        "id, direction, folder, from_email, to_emails, subject, sent_at, status, match_reason, error, notion_order_record, updated_at",
+      )
+      .in("status", ["manual_review", "failed"])
+      .order("updated_at", { ascending: false })
+      .limit(50),
     db.from("mail_sync_state").select("*"),
   ]);
   if (settings.error) throw new Error(settings.error.message);
@@ -47,7 +61,11 @@ export const mailSyncGetRun = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     await requireAdminCookie();
     const db = await admin();
-    const { data: run, error } = await db.from("mail_sync_runs").select("*").eq("id", data.id).single();
+    const { data: run, error } = await db
+      .from("mail_sync_runs")
+      .select("*")
+      .eq("id", data.id)
+      .single();
     if (error) throw new Error(error.message);
     return run;
   });

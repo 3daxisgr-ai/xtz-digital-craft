@@ -20,7 +20,8 @@ function fakeServer(reply: (cmd: string, tag: string) => string | null | "close"
       if (r === "close") push(null);
       else if (r !== null) push(enc.encode(r));
     },
-    read: () => (inbox.length ? Promise.resolve(inbox.shift()!) : new Promise((res) => waiters.push(res))),
+    read: () =>
+      inbox.length ? Promise.resolve(inbox.shift()!) : new Promise((res) => waiters.push(res)),
     close: async () => {},
   };
   return { t, sent };
@@ -28,7 +29,9 @@ function fakeServer(reply: (cmd: string, tag: string) => string | null | "close"
 
 describe("IMAP session failures", () => {
   it("reports a rejected password as an auth error", async () => {
-    const { t } = fakeServer((_c, tag) => `${tag} NO [AUTHENTICATIONFAILED] Authentication failed.\r\n`);
+    const { t } = fakeServer(
+      (_c, tag) => `${tag} NO [AUTHENTICATIONFAILED] Authentication failed.\r\n`,
+    );
     const s = await ImapSession.fromTransport(t, 500);
     await expect(s.login("info@toreo.gr", "wrong")).rejects.toMatchObject({ kind: "auth" });
   });
@@ -36,7 +39,9 @@ describe("IMAP session failures", () => {
     const { t } = fakeServer(() => "close");
     const s = await ImapSession.fromTransport(t, 500);
     await expect(s.examine("INBOX")).rejects.toBeInstanceOf(ImapError);
-    await expect(ImapSession.fromTransport(fakeServer(() => "close").t, 500).then((x) => x.examine("INBOX"))).rejects.toMatchObject({ kind: "network" });
+    await expect(
+      ImapSession.fromTransport(fakeServer(() => "close").t, 500).then((x) => x.examine("INBOX")),
+    ).rejects.toMatchObject({ kind: "network" });
   });
   it("times out when the server stops answering", async () => {
     const { t } = fakeServer(() => null);
@@ -45,13 +50,16 @@ describe("IMAP session failures", () => {
   });
   it("opens folders read-only and fetches with PEEK (never marks emails as read)", async () => {
     const { t, sent } = fakeServer((c, tag) => {
-      if (c.startsWith("EXAMINE")) return `* 2 EXISTS\r\n* OK [UIDVALIDITY 7] x\r\n${tag} OK [READ-ONLY] done\r\n`;
+      if (c.startsWith("EXAMINE"))
+        return `* 2 EXISTS\r\n* OK [UIDVALIDITY 7] x\r\n${tag} OK [READ-ONLY] done\r\n`;
       return `${tag} OK done\r\n`;
     });
     const s = await ImapSession.fromTransport(t, 500);
     expect((await s.examine("INBOX")).uidvalidity).toBe(7);
     await s.uidFetch([5]);
-    expect(sent.some((l) => /\bSELECT\b|\bSTORE\b|EXPUNGE|\bMOVE\b|\bCOPY\b|APPEND/.test(l))).toBe(false);
+    expect(sent.some((l) => /\bSELECT\b|\bSTORE\b|EXPUNGE|\bMOVE\b|\bCOPY\b|APPEND/.test(l))).toBe(
+      false,
+    );
     expect(sent.find((l) => l.includes("UID FETCH"))).toContain("BODY.PEEK[");
   });
 });

@@ -25,7 +25,10 @@ function keys() {
   return { lovable, notion };
 }
 
-export async function notionFetch(path: string, init: { method?: string; body?: unknown } = {}): Promise<any> {
+export async function notionFetch(
+  path: string,
+  init: { method?: string; body?: unknown } = {},
+): Promise<any> {
   const { lovable, notion } = keys();
   for (let attempt = 0; attempt < 2; attempt++) {
     const res = await fetch(`${GATEWAY}${path}`, {
@@ -45,7 +48,9 @@ export async function notionFetch(path: string, init: { method?: string; body?: 
     }
     if (!res.ok) {
       const body = await res.text();
-      console.error(`[mail-sync] Notion ${init.method ?? "GET"} ${path} failed [${res.status}]: ${body.slice(0, 500)}`);
+      console.error(
+        `[mail-sync] Notion ${init.method ?? "GET"} ${path} failed [${res.status}]: ${body.slice(0, 500)}`,
+      );
       throw new NotionError(`Notion [${res.status}]: ${body.slice(0, 300)}`, res.status);
     }
     return res.json();
@@ -61,7 +66,11 @@ export async function getDataSourceProperties(id: string): Promise<Record<string
 async function queryOrders(filter: unknown, pageSize = 20): Promise<OrderPage[]> {
   const r = await notionFetch(`/data_sources/${DATA_SOURCES.orders}/query`, {
     method: "POST",
-    body: { filter, page_size: pageSize, sorts: [{ timestamp: "last_edited_time", direction: "descending" }] },
+    body: {
+      filter,
+      page_size: pageSize,
+      sorts: [{ timestamp: "last_edited_time", direction: "descending" }],
+    },
   });
   return (r.results ?? []).map(readOrderPage);
 }
@@ -70,7 +79,10 @@ async function queryOrders(filter: unknown, pageSize = 20): Promise<OrderPage[]>
 export async function findOrdersByThread(threadUrls: string[]): Promise<OrderPage[]> {
   const urls = Array.from(new Set(threadUrls)).slice(0, 10);
   if (!urls.length) return [];
-  return queryOrders({ or: urls.map((u) => ({ property: "Email Thread", url: { equals: u } })) }, 5);
+  return queryOrders(
+    { or: urls.map((u) => ({ property: "Email Thread", url: { equals: u } })) },
+    5,
+  );
 }
 
 export async function findOrdersByEmail(email: string): Promise<OrderPage[]> {
@@ -81,13 +93,19 @@ export async function getOrder(pageId: string): Promise<OrderPage> {
   return readOrderPage(await notionFetch(`/pages/${pageId}`));
 }
 
-export async function createPage(dataSourceId: string, properties: Record<string, unknown>): Promise<any> {
+export async function createPage(
+  dataSourceId: string,
+  properties: Record<string, unknown>,
+): Promise<any> {
   return notionFetch(`/pages`, {
     method: "POST",
     body: { parent: { type: "data_source_id", data_source_id: dataSourceId }, properties },
   });
 }
 
-export async function updatePage(pageId: string, properties: Record<string, unknown>): Promise<any> {
+export async function updatePage(
+  pageId: string,
+  properties: Record<string, unknown>,
+): Promise<any> {
   return notionFetch(`/pages/${pageId}`, { method: "PATCH", body: { properties } });
 }

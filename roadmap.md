@@ -9,3 +9,4 @@
 - [ ] Email → Notion: read-only mailbox probe on hosted build (hosted preview copy not rebuilt yet; verify next turn)
 - [x] Email → Notion: dry-run sync (inbox + sent), admin page, tests
 - [ ] Email → Notion: website form hook built (off) and schedule not created — waiting for user approval
+- [ ] Email → Notion: scoped lint fix, redact Notion logs, verify mail_sync grants

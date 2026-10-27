@@ -25,7 +25,10 @@ function isWorkerRuntime() {
 async function socketsTransport(host: string, port: number): Promise<Transport> {
   const spec = "cloudflare:sockets";
   const mod: any = await import(/* @vite-ignore */ spec);
-  const socket = mod.connect({ hostname: host, port }, { secureTransport: "on", allowHalfOpen: false });
+  const socket = mod.connect(
+    { hostname: host, port },
+    { secureTransport: "on", allowHalfOpen: false },
+  );
   await socket.opened;
   const writer = socket.writable.getWriter();
   const reader = socket.readable.getReader();
@@ -61,7 +64,10 @@ async function nodeTlsTransport(host: string, port: number, timeoutMs: number): 
   sock.on("end", () => deliver(null));
   sock.on("close", () => deliver(null));
   await new Promise<void>((resolve, reject) => {
-    const t = setTimeout(() => reject(new Error("Λήξη χρόνου σύνδεσης στον mail server")), timeoutMs);
+    const t = setTimeout(
+      () => reject(new Error("Λήξη χρόνου σύνδεσης στον mail server")),
+      timeoutMs,
+    );
     sock.once("secureConnect", () => {
       clearTimeout(t);
       resolve();
@@ -79,7 +85,9 @@ async function nodeTlsTransport(host: string, port: number, timeoutMs: number): 
   return {
     kind: "node-tls",
     write: (d) =>
-      new Promise((resolve, reject) => sock.write(d, (e: Error | null) => (e ? reject(e) : resolve()))),
+      new Promise((resolve, reject) =>
+        sock.write(d, (e: Error | null) => (e ? reject(e) : resolve())),
+      ),
     read: () => {
       if (failure) return Promise.reject(failure);
       if (queue.length) return Promise.resolve(queue.shift()!);
@@ -91,10 +99,18 @@ async function nodeTlsTransport(host: string, port: number, timeoutMs: number): 
   };
 }
 
-export async function openTransport(host: string, port: number, timeoutMs = 10_000): Promise<Transport> {
+export async function openTransport(
+  host: string,
+  port: number,
+  timeoutMs = 10_000,
+): Promise<Transport> {
   if (isWorkerRuntime()) {
     try {
-      return await withTimeout(socketsTransport(host, port), timeoutMs, "Λήξη χρόνου σύνδεσης στον mail server");
+      return await withTimeout(
+        socketsTransport(host, port),
+        timeoutMs,
+        "Λήξη χρόνου σύνδεσης στον mail server",
+      );
     } catch (e) {
       // Fall back to the Node-compatible TLS layer if the sockets module is unavailable.
       const msg = e instanceof Error ? e.message : String(e);
@@ -150,7 +166,10 @@ export class ImapSession {
     try {
       t = await openTransport(host, port);
     } catch (e) {
-      throw new ImapError(`Δεν ήταν δυνατή η σύνδεση στον mail server: ${(e as Error).message}`, "network");
+      throw new ImapError(
+        `Δεν ήταν δυνατή η σύνδεση στον mail server: ${(e as Error).message}`,
+        "network",
+      );
     }
     return ImapSession.fromTransport(t, cmdTimeoutMs);
   }
@@ -171,7 +190,11 @@ export class ImapSession {
     while (!this.ready.length) {
       const left = deadline - Date.now();
       if (left <= 0) throw new ImapError("Λήξη χρόνου απάντησης από τον mail server", "network");
-      const chunk = await withTimeout(this.t.read(), left, "Λήξη χρόνου απάντησης από τον mail server").catch((e) => {
+      const chunk = await withTimeout(
+        this.t.read(),
+        left,
+        "Λήξη χρόνου απάντησης από τον mail server",
+      ).catch((e) => {
         throw new ImapError((e as Error).message, "network");
       });
       if (chunk === null) throw new ImapError("Ο mail server έκλεισε τη σύνδεση", "network");
