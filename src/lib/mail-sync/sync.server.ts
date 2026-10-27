@@ -19,6 +19,8 @@ import {
 import {
   LOG_SCHEMA,
   ORDERS_SCHEMA,
+  customerCreateProps,
+  taskCreateProps,
   logCreateProps,
   orderCreateProps,
   orderUpdateProps,
@@ -29,6 +31,7 @@ import {
 import {
   DATA_SOURCES,
   createPage,
+  findCustomerByEmail,
   findOrdersByEmail,
   findOrdersByThread,
   getDataSourceProperties,
@@ -67,6 +70,8 @@ export interface Settings {
   last_run_at: string | null;
   updated_by: string | null;
   updated_at: string;
+  ignore_senders?: string[];
+  internal_senders?: string[];
 }
 
 export async function getSettings(): Promise<Settings> {
@@ -116,6 +121,42 @@ export function toMsg(rec: FetchRecord, folder: string, uidvalidity: number | nu
     attachments: rec.attachmentNames.map((n) => decodeWords(n)).slice(0, 20),
     headers,
   };
+}
+
+/** Customer card for a requester: existing one by email, else a new Lead (never guessed fields). */
+export async function ensureCustomer(
+  email: string,
+  name: string | null,
+  source: "Email" | "Website",
+  phone?: string | null,
+): Promise<string> {
+  const found = await findCustomerByEmail(email);
+  if (found) return found;
+  const page = await createPage(
+    DATA_SOURCES.customers,
+    customerCreateProps({ name, email, phone, source, client: false }),
+  );
+  return page.id;
+}
+
+/** "Reply to customer" task linked to the record (owner/due date left for TOREO to set). */
+export async function createReplyTask(opts: {
+  who: string;
+  subject: string;
+  source: "Email" | "Website";
+  orderPageId: string;
+  record: string | null;
+}) {
+  return createPage(
+    DATA_SOURCES.tasks,
+    taskCreateProps({
+      title: `Απάντηση σε ${opts.who}: ${opts.subject}`.slice(0, 200),
+      source: opts.source,
+      orderPageId: opts.orderPageId,
+      relatedRecord: opts.record,
+      notes: "Ορίστε υπεύθυνο και προθεσμία.",
+    }),
+  );
 }
 
 export interface RunResult {
@@ -417,11 +458,15 @@ export async function runMailSync(opts: { mode: Mode; trigger: Trigger }): Promi
               from: m.from,
               ownAddress: own,
               siteSender: sender,
+              internal: settings.internal_senders ?? [],
+              ignore: settings.ignore_senders ?? [],
             });
             base.classification = cls;
             if (cls !== "customer") {
               const why: Record<string, string> = {
                 own: "Μήνυμα από το info@toreo.gr",
+                internal: "Εσωτερικός / δοκιμαστικός αποστολέας TOREO",
+                ignored: "Πλατφόρμα, διαφήμιση ή προσφορά συνεργασίας (λίστα εξαιρέσεων)",
                 site_notification: "Ειδοποίηση φόρμας του site (καταγράφεται από τη φόρμα)",
                 auto: "Αυτόματο μήνυμα",
                 bulk: "Newsletter / μαζική αποστολή",
@@ -482,10 +527,14 @@ export async function runMailSync(opts: { mode: Mode; trigger: Trigger }): Promi
             });
             let page: OrderPage | null = target;
             if (!page && row.notion_order_page_id) page = await getOrder(row.notion_order_page_id);
+            let createdNew = false;
+            const customerId = await ensureCustomer(m.from!.email, m.from?.name ?? null, "Email");
             if (!page) {
+              createdNew = true;
               const created = await createPage(
                 DATA_SOURCES.orders,
                 orderCreateProps({
+                  customerPageId: customerId,
                   subject: m.subject || `Email από ${m.from?.name ?? m.from?.email}`,
                   source: "Email",
                   customerName: m.from?.name ?? null,
@@ -534,10 +583,21 @@ export async function runMailSync(opts: { mode: Mode; trigger: Trigger }): Promi
                   messageUrl: mid(m.messageId),
                   status: "Needs Reply",
                   relatedRecord: page.record,
+                  orderPageId: page.pageId,
+                  customerPageId: customerId,
+                  attachments: m.attachments,
                 }),
               );
               await setRow(row.id, { notion_log_page_id: log.id });
             }
+            if (createdNew)
+              await createReplyTask({
+                who: m.from?.name || m.from!.email,
+                subject: m.subject || "(χωρίς θέμα)",
+                source: "Email",
+                orderPageId: page.pageId,
+                record: page.record,
+              });
             await setRow(row.id, { status: "synced", error: null });
             const t: Target = { ...page, via: target?.via ?? "batch" };
             batchTargets.set(m.messageId, { target: t, pendingNew: null });
@@ -649,6 +709,8 @@ export async function runMailSync(opts: { mode: Mode; trigger: Trigger }): Promi
                   messageUrl: mid(m.messageId),
                   status: manual || forward ? "Follow-up Needed" : "Replied",
                   relatedRecord: target?.record ?? null,
+                  orderPageId: target && target.pageId !== "(νέα εγγραφή)" ? target.pageId : null,
+                  attachments: m.attachments,
                 }),
               );
               await setRow(row.id, { notion_log_page_id: log.id });
@@ -770,6 +832,12 @@ export async function syncWebsiteSubmission(input: {
       };
     const now = new Date().toISOString();
     const title = `${input.orderCode ? input.orderCode + " — " : ""}${input.service ?? "Αίτημα από το site"}`;
+    const customerId = await ensureCustomer(
+      input.email.toLowerCase(),
+      input.name,
+      "Website",
+      input.phone ?? null,
+    );
     const page = readOrderPage(
       await createPage(
         DATA_SOURCES.orders,
@@ -783,6 +851,7 @@ export async function syncWebsiteSubmission(input: {
           threadUrl: null,
           websiteUrl: input.trackUrl ?? null,
           nextAction: "Απάντηση στον πελάτη",
+          customerPageId: customerId,
         }),
       ),
     );
@@ -804,8 +873,17 @@ export async function syncWebsiteSubmission(input: {
         messageUrl: input.trackUrl ?? null,
         status: "Needs Reply",
         relatedRecord: page.record,
+        orderPageId: page.pageId,
+        customerPageId: customerId,
       }),
     );
+    await createReplyTask({
+      who: input.name || input.email,
+      subject: title,
+      source: "Website",
+      orderPageId: page.pageId,
+      record: page.record,
+    });
     await db
       .from("mail_sync_messages")
       .update({ notion_log_page_id: log.id, status: "synced" })
