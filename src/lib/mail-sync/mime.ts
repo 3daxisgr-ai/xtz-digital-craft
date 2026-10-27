@@ -191,7 +191,7 @@ export function matchesSenderList(email: string, list: string[] = []): boolean {
 
 /** Bulk-mail sending subdomains (mg.example.com, updates.example.com, ...). */
 const SENDING_SUBDOMAIN =
-  /^(mg|mail|mail-notify|mailer|updates?|notifications?|notify|news(letter)?|email|em\d*|e|bounce|marketing|info-noreply)\./i;
+  /^(mg|mail|mail-notify|mailer|updates?|notifications?|notify|news(letter)?|email|em\d*|bounce|marketing|info-noreply)\./i;
 
 /** Decide whether an incoming email is a real customer message. */
 export function classifyIncoming({
