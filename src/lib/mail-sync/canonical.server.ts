@@ -372,8 +372,10 @@ export async function reconcile(opts: {
     for (const r of plan.requests)
       if (r.duplicates.length)
         result.duplicates.push({
-          order: label(r) ?? r.subject.slice(0, 40),
-          candidates: r.duplicates,
+          order: label(r) ?? pages.get(r.id)?.record ?? "νέο αίτημα",
+          candidates: r.duplicates.map(
+            (id) => pages.get(id)?.orderId ?? pages.get(id)?.record ?? "νέο αίτημα",
+          ),
         });
 
     const attachByReq = new Map<string, typeof plan.attachments>();
@@ -525,7 +527,6 @@ export async function reconcile(opts: {
                 customerPageId: customerId,
                 orderId: code,
                 replyState: r.replyState,
-                duplicates: r.duplicates,
               }),
             );
             pageId = created.id;
@@ -567,20 +568,6 @@ export async function reconcile(opts: {
             const want =
               r.replyState === "Replied" ? "Αναμονή απάντησης πελάτη" : "Απάντηση στον πελάτη";
             if (current.nextAction !== want) patch.nextAction = want;
-          }
-          if (r.duplicates.length && current.duplicateCheck !== "Not a duplicate") {
-            const text = r.duplicates.join(", ");
-            if (
-              !current.duplicateCheck ||
-              (current.duplicateCheck === "Possible duplicate" &&
-                current.possibleDuplicates !== text)
-            ) {
-              patch.duplicates = r.duplicates;
-              if (!current.duplicateCheck) {
-                notes.push("πιθανό διπλότυπο");
-                count("duplicates_flagged");
-              }
-            }
           }
           if (Object.keys(canonPatchProps(patch)).length) {
             await updatePage(pageId!, canonPatchProps(patch));

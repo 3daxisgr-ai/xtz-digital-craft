@@ -779,7 +779,7 @@ export function planCanonical(input: CanonInput): CanonPlan {
   const dups = duplicateCandidates(
     [...work.values()].map((w) => ({
       id: w.id,
-      label: label(w),
+      label: w.id, // ids: the caller turns them into permanent Order IDs once assigned
       customerEmail: w.customerEmail,
       subject: w.subject,
       receivedAt: w.receivedAt,
