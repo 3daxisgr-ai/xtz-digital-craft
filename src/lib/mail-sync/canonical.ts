@@ -132,6 +132,8 @@ export interface Attachment {
 
 export interface ReviewItem {
   key: string;
+  /** "match": which request?  "supplier": reply to a TOREO-initiated email (likely supplier). */
+  queue: "match" | "supplier";
   kind: "incoming" | "outgoing" | "website";
   date: string;
   email: string | null;
@@ -326,6 +328,8 @@ export function planCanonical(input: CanonInput): CanonPlan {
   const review: ReviewItem[] = [];
   const skipped: { key: string; reason: string }[] = [];
   const reviewKeys = new Set<string>();
+  /** TOREO-initiated emails with no customer request (suppliers, outreach) and replies to them. */
+  const outreach = new Set<string>();
 
   for (const r of input.requests)
     work.set(r.id, {
@@ -398,6 +402,7 @@ export function planCanonical(input: CanonInput): CanonPlan {
         kind: "website",
         date: s.createdAt,
         email: lc(s.email),
+        queue: "match",
         reason: "Η υποβολή αντιστοιχεί σε περισσότερες από μία εγγραφές",
         candidates: [...hits].map((id) => label(work.get(id)!)),
       });
@@ -456,7 +461,14 @@ export function planCanonical(input: CanonInput): CanonPlan {
     [m.inReplyTo, ...[...m.refs].reverse()].filter((x): x is string => !!x);
   const strongMatch = (
     m: CMsg,
-  ): { id?: string; via?: string; removed?: boolean; conflict?: string[]; inReview?: boolean } => {
+  ): {
+    id?: string;
+    via?: string;
+    removed?: boolean;
+    conflict?: string[];
+    inReview?: boolean;
+    outreach?: boolean;
+  } => {
     const self = lookup(`msg:${m.messageId}`);
     if (self.removed) return { removed: true };
     if (self.id) return { id: self.id, via: "already" };
@@ -476,16 +488,24 @@ export function planCanonical(input: CanonInput): CanonPlan {
     if (byCode.size === 1) return { id: [...byCode][0], via: "order_id" };
     for (const t of threadIds(m)) {
       if (reviewKeys.has(t)) return { inReview: true };
+      if (outreach.has(t)) return { outreach: true };
       const r = lookup(`msg:${t}`);
       if (r.removed) return { removed: true };
       if (r.id) return { id: r.id, via: "thread" };
     }
     return {};
   };
-  const toReview = (m: CMsg, kind: ReviewItem["kind"], reason: string, ids: string[]) => {
+  const toReview = (
+    m: CMsg,
+    kind: ReviewItem["kind"],
+    reason: string,
+    ids: string[],
+    queue: ReviewItem["queue"] = "match",
+  ) => {
     reviewKeys.add(m.messageId);
     review.push({
       key: m.messageId,
+      queue,
       kind,
       date: m.date,
       email:
