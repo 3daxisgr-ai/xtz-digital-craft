@@ -100,18 +100,21 @@ export interface NewOrderInput {
   threadUrl: string | null;
   websiteUrl?: string | null;
   nextAction: string;
+  /** Historical import only: status computed from the whole thread (default "Awaiting TOREO Reply"). */
+  status?: string;
+  lastContact?: string;
 }
 
 export function orderCreateProps(i: NewOrderInput): Record<string, unknown> {
   const props: Record<string, unknown> = {
     "Request / Order": title(i.subject),
-    Status: select("Awaiting TOREO Reply"),
+    Status: select(i.status ?? "Awaiting TOREO Reply"),
     Source: select(i.source),
     Type: select("Inquiry"),
     "Customer Name": rich(i.customerName),
     "Customer Email": email(i.customerEmail),
     "Received At": date(i.receivedAt),
-    "Last Contact": date(i.receivedAt),
+    "Last Contact": date(i.lastContact ?? i.receivedAt),
     "Email Thread": url(i.threadUrl),
     "Next Action": rich(i.nextAction),
   };
@@ -131,6 +134,11 @@ export function orderUpdateProps(opts: {
   return props;
 }
 
+/** Historical import: set the thread marker on an existing record only when it has none. */
+export function threadMarkerProps(threadUrl: string) {
+  return { "Email Thread": url(threadUrl) };
+}
+
 export interface LogInput {
   activity: string;
   direction: "Incoming" | "Outgoing";
@@ -141,7 +149,7 @@ export interface LogInput {
   summary: string;
   threadUrl: string | null;
   messageUrl: string | null;
-  status: "Needs Reply" | "Replied" | "Follow-up Needed";
+  status: "Needs Reply" | "Replied" | "Follow-up Needed" | "Closed";
   relatedRecord: string | null;
 }
 
@@ -188,4 +196,19 @@ export function readOrderPage(page: any): OrderPage {
     status: p.Status?.select?.name ?? null,
     customerEmail: p["Customer Email"]?.email ?? null,
   };
+}
+
+/** Order page with the link fields the historical import matches on. */
+export function readExistingPage(page: any) {
+  const p = page?.properties ?? {};
+  return {
+    ...readOrderPage(page),
+    threadUrl: p["Email Thread"]?.url ?? null,
+    websiteUrl: p["Website Submission"]?.url ?? null,
+  };
+}
+
+/** The mid: link of a Communication Log page (null when absent). */
+export function readLogLink(page: any): string | null {
+  return page?.properties?.["Message / Submission Link"]?.url ?? null;
 }

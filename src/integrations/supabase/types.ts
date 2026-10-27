@@ -743,6 +743,8 @@ export type Database = {
       }
       mail_sync_runs: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           counts: Json
           error: string | null
           finished_at: string | null
@@ -754,6 +756,8 @@ export type Database = {
           trigger: string
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           counts?: Json
           error?: string | null
           finished_at?: string | null
@@ -765,6 +769,8 @@ export type Database = {
           trigger: string
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           counts?: Json
           error?: string | null
           finished_at?: string | null
@@ -779,6 +785,9 @@ export type Database = {
       }
       mail_sync_settings: {
         Row: {
+          history_cutoff: string
+          history_import: boolean
+          history_stale_days: number
           id: number
           last_run_at: string | null
           live_writes: boolean
@@ -791,6 +800,9 @@ export type Database = {
           website_hook: boolean
         }
         Insert: {
+          history_cutoff?: string
+          history_import?: boolean
+          history_stale_days?: number
           id?: number
           last_run_at?: string | null
           live_writes?: boolean
@@ -803,6 +815,9 @@ export type Database = {
           website_hook?: boolean
         }
         Update: {
+          history_cutoff?: string
+          history_import?: boolean
+          history_stale_days?: number
           id?: number
           last_run_at?: string | null
           live_writes?: boolean

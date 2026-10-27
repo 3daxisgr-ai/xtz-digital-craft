@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { ReportItem, FolderReport } from "@/lib/mail-sync/types";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { HistoryImport } from "@/components/admin/HistoryImport";
 import {
   mailSyncOverview,
   mailSyncGetRun,
@@ -292,6 +293,8 @@ function MailSyncPage() {
           </p>
           {result && <Report r={result} />}
         </section>
+
+        <HistoryImport actor={actor} settings={s ?? null} onChange={reload} />
 
         <section className="rounded border border-white/10 p-4 space-y-3">
           <h2 className="font-mono text-xs uppercase tracking-widest text-white/60">Ρυθμίσεις</h2>
