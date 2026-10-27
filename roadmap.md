@@ -12,3 +12,4 @@
 - [x] Email → Notion: scoped lint fix, redact Notion logs, verify mail_sync grants
 - [x] Historical import (preview/approve/pilot/batches) built; actual import waits on owner approval
 - [x] Notion Business OS: links, views, dashboard page; historical backfill done (23 requests, 92 log entries, 17 customers, 5 tasks); switches off
+- [ ] Canonical requests: one record per real request (site + notification + customer email + replies), atomic TR-YYYY-NNNN Order IDs, reply-state recompute from INBOX+Sent, duplicate review queue, calm Notion dashboard, tests + backfill
