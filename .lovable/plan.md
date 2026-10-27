@@ -1,61 +1,69 @@
-# Ενδεικτική τιμή ΜΟΝΟ ΥΛΙΚΟΥ για μεταλλικές κατασκευές
+# Email info@toreo.gr → Notion Business OS (χωρίς Make)
 
-## Τι θα δει ο πελάτης
-Στη φόρμα αιτήματος (`/request`), για τις υπηρεσίες Laser Cutting, Bending, Welding, Replacement Parts, προστίθεται στο βήμα **Review** μια κάρτα «Ενδεικτική τιμή υλικού»:
-- Υλικό, πάχος, εκτιμώμενο βάρος (kg), ενδεικτική τιμή υλικού (ή εύρος).
-- Μόνιμη σημείωση: «Η τιμή αφορά ΜΟΝΟ το υλικό. Δεν περιλαμβάνει εργατικά, κοπή, κάμψη, συγκόλληση, φινίρισμα, μεταφορά ή άλλες κατεργασίες. Η τελική τιμή καθορίζεται στην επίσημη προσφορά μετά από έλεγχο.»
-- Αν δεν υπάρχει σχέδιο: σήμανση «Βασισμένο σε ενδεικτική γεωμετρική παραδοχή — όχι τελικό σχέδιο» και σύντομη περιγραφή της παραδοχής (π.χ. «Επίπεδη λαμαρίνα 1000×500 mm»).
-- Αν η αβεβαιότητα είναι μεγάλη: εμφανίζεται εύρος (min–max) ή μήνυμα «Χρειαζόμαστε: διαστάσεις / πάχος / ποσότητα» με τα ελάχιστα πεδία προς συμπλήρωση. Ποτέ δεν φαίνεται κόστος/kg, margin ή λέξη «AI».
-- 3D Printing flow και Product Design: δεν αλλάζουν.
+## Τι έλεγξα ήδη (χωρίς κωδικό, χωρίς αλλαγές)
 
-## Τι θα δει ο admin
-Στην καρτέλα παραγγελίας/αιτήματος, νέο μπλοκ «Material Estimate (internal)»: κόστος/kg, kg, κόστος υλικού, markup %, τελική τιμή, βεβαιότητα, όλες οι παραδοχές της AI, πηγή γεωμετρίας (σχέδιο/πελάτης/AI προσχέδιο). Στο Admin Config → Pricing: πεδίο «Material markup %» (προεπιλογή 30) και όριο βεβαιότητας.
+- **Papaki mail server**: το `mail-gr.securemail.pro:993` απαντά με κανονική ασφαλή σύνδεση (έγκυρο πιστοποιητικό, Dovecot). Υποστηρίζει απλή είσοδο με κωδικό. Δεν έκανα σύνδεση, γιατί δεν υπάρχει κωδικός.
+- **Backend της TOREO**: το περιβάλλον όπου τρέχει το live site επιτρέπει ασφαλείς εξερχόμενες συνδέσεις σε θύρες όπως η 993. **Όμως δεν μπορώ να το αποδείξω μέσα από το preview**, γιατί το preview τρέχει σε διαφορετικό περιβάλλον. Η πραγματική απόδειξη χρειάζεται ένα πρώτο βήμα που μόνο διαβάζει: σύνδεση, λίστα φακέλων, πλήθος μηνυμάτων, χωρίς εγγραφές. Αν αποτύχει, σταματάμε εκεί και πάμε στην εναλλακτική (δες παρακάτω).
+- **Notion**: δεν υπάρχει ακόμα σύνδεση Notion στο project.
+- **Φόρμα του site**: σήμερα αποθηκεύει το αίτημα, δημιουργεί παραγγελία και το καταγράφει στο αρχείο ελέγχου διπλοτύπων. Δεν θα την αλλάξω. Μόνο μια προαιρετική, απενεργοποιημένη προσθήκη στο τέλος.
+- Η υπάρχουσα διεύθυνση εισαγωγής email (αυτή που χρησιμοποιεί σήμερα το Make) μένει ως έχει.
 
-## Ροή δεδομένων
-```text
-Πελάτης (Details step: υλικό ή "Άλλο/Δεν ξέρω", πάχος, διαστάσεις, ποσότητα, αρχεία)
-   -> server fn estimateMaterial
-        1. AI (μόνο τεχνικά): προτεινόμενο υλικό-κωδικός, πάχος, γεωμετρία,
-           όγκος ή εμβαδό, ποσότητα, confidence, παραδοχές, missing_fields
-        2. Ντετερμινιστικός υπολογισμός (κώδικας, όχι AI):
-           kg = volume_cm3 × density / 1000 (ή εμβαδό × πάχος × density)
-           κόστος = kg × price_per_kg ;  τιμή = κόστος × (1 + markup)
-           confidence χαμηλό -> εύρος ±% αντί για μία τιμή
-        3. Επιστρέφει στον πελάτη ΜΟΝΟ: υλικό, πάχος, kg, τιμή/εύρος, παραδοχή κειμένου
-   -> Review step δείχνει την κάρτα
-   -> submitForm (υπάρχον) αποθηκεύει το πλήρες estimate στο metadata (server-side επανυπολογισμός)
-   -> Admin βλέπει πλήρη ανάλυση· η επίσημη προσφορά (TR-NNNN) μένει χειροκίνητη
-```
-Η AI δεν δίνει ποτέ τιμή· ό,τι αριθμό τιμής επιστρέψει αγνοείται (ίδια αρχή με `pricing.ts`).
+## Βήματα
 
-## Υλικά
-Χρήση του υπάρχοντος πίνακα `materials` (έχει ήδη `density_g_cm3`, `price_per_kg`, `process`, `properties`). Προσθήκη εγγραφών με `process = 'sheet_metal'`: π.χ. DC01 χάλυβας (7.85), Γαλβανιζέ (7.85), Inox AISI 304 / 316 (7.93/8.0), Αλουμίνιο 1050/5754 (2.70/2.66). Διαθέσιμα πάχη στο `properties.thicknesses_mm`. **Τις πραγματικές τιμές κόστους/kg θα τις ορίσετε εσείς** από το Admin → Materials (θα μπουν προσωρινά κενές· χωρίς τιμή δεν εμφανίζεται ποσό, μόνο βάρος).
-«Άλλο υλικό»: ελεύθερο κείμενο· αν η AI το αντιστοιχίσει σε υλικό του καταλόγου χρησιμοποιείται, αλλιώς εμφανίζεται μόνο βάρος (αν υπάρχει πυκνότητα) ή «η τιμή θα δοθεί στην προσφορά».
+**Βήμα 1 — Συνδέσεις (θα χρειαστώ εσένα)**
+- Notion: κάρτα σύνδεσης. Επιλέγεις **μόνο** τις βάσεις `TOREO | Orders & Quotes` και `TOREO | Communication Log`. Το κλειδί μένει μόνο στο backend.
+- Papaki: ασφαλής φόρμα για το `PAPAKI_EMAIL_PASSWORD`. Ο κωδικός δεν περνά ποτέ από το chat ή τον κώδικα.
 
-## Validation
-- Zod σε input (διαστάσεις 1–6000 mm, πάχος 0.3–30 mm, ποσότητα 1–10000) και σε AI output (strict JSON schema).
-- Κωδικός υλικού πρέπει να υπάρχει & να είναι active· πάχος πρέπει να ανήκει στα διαθέσιμα (αλλιώς πλησιέστερο, σημειώνεται ως παραδοχή).
-- Sanity checks: kg > 0, kg < όριο (π.χ. 5000), αλλιώς «χρειάζεται έλεγχος».
-- Αποτυχία AI / χωρίς credits: η φόρμα υποβάλλεται κανονικά χωρίς estimate (δεν μπλοκάρει ποτέ αίτημα).
-- Rate limit ανά IP/session και cache με fingerprint (ίδια είσοδος -> ίδιο αποτέλεσμα).
+**Βήμα 2 — Έλεγχος Notion (μόνο ανάγνωση)**
+- Διαβάζω τα πραγματικά πεδία και τις τιμές κατάστασης των δύο βάσεων, π.χ. αν υπάρχουν τα `Awaiting TOREO Reply` και `Replied`, ποιο πεδίο είναι υποχρεωτικό και πώς συνδέεται το Log με την Παραγγελία.
+- Σου δείχνω την αντιστοίχιση πεδίων πριν γίνει οποιαδήποτε εγγραφή. Αν λείπει πεδίο, π.χ. για το Message-ID, σε ρωτάω. Δεν φτιάχνω αντίγραφα βάσεων.
 
-## Αποθήκευση
-Νέος πίνακας `material_estimates` (admin-only RLS): `id, fingerprint (unique), submission_id/order_id, inputs jsonb, ai_output jsonb, assumptions jsonb, geometry_source ('drawing'|'customer'|'ai_draft'), material_code, thickness_mm, kg_min, kg_max, cost_per_kg, material_cost, markup_pct, price_min, price_max, confidence, model, created_at`. Στο `metadata` του αιτήματος μπαίνει μόνο το `material_estimate_id` + τα customer-safe πεδία. Ο πελάτης στο `/track` βλέπει μόνο τα ίδια customer-safe πεδία.
+**Βήμα 3 — Δοκιμή σύνδεσης email (μόνο ανάγνωση)**
+- Το mailbox ανοίγει **μόνο για ανάγνωση**. Τα email δεν σημειώνονται ως αναγνωσμένα, δεν μετακινούνται και δεν διαγράφονται.
+- Βρίσκω τον φάκελο Απεσταλμένα αυτόματα.
 
-## Δεν αλλάζει
-Quote documents/PDF, TR-NNNN αρίθμηση, email ingestion, dedupe, order statuses, emails, 3D printing pricing.
+**Βήμα 4 — Εισερχόμενα (dry-run)**
+- Νέα email εντοπίζονται με αποθηκευμένο σημείο ελέγχου για κάθε φάκελο. Τα διπλότυπα αποκλείονται με το Message-ID.
+- Παραλείπονται αυτόματες απαντήσεις, newsletters και δικά μας μηνύματα.
+- Αντιστοίχιση με υπάρχουσα εγγραφή στο `Orders & Quotes`, πρώτα με το νήμα (References/In-Reply-To) και μετά με αποστολέα και θέμα. Αλλιώς, νέα εγγραφή με `Awaiting TOREO Reply`.
+- Κάθε μήνυμα καταγράφεται στο `Communication Log`.
+- Αποθηκεύονται μόνο τα απαραίτητα: αποστολέας, θέμα, ημερομηνία, αναγνωριστικά, σύντομο απόσπασμα και ονόματα συνημμένων. Όχι ολόκληρα κείμενα ή αρχεία.
+
+**Βήμα 5 — Απεσταλμένα (dry-run)**
+- Κάθε απάντηση της TOREO αντιστοιχίζεται στο αρχικό email μέσω In-Reply-To/References → η εγγραφή γίνεται `Replied`.
+- Αν η αντιστοίχιση δεν είναι σίγουρη, δεν αλλάζει τίποτα. Δημιουργείται εκκρεμότητα «Χειροκίνητος έλεγχος».
+
+**Βήμα 6 — Σελίδα ελέγχου στο admin**
+- Νέα σελίδα «Email → Notion»: κουμπί «Εκτέλεση dry-run» και αναλυτική αναφορά για το τι *θα* γινόταν (νέες εγγραφές, ενημερώσεις, `Replied`, χειροκίνητοι έλεγχοι, σφάλματα).
+- Ξεχωριστός διακόπτης «Ζωντανές εγγραφές», κλειστός από προεπιλογή. Ανοίγει μόνο όταν το εγκρίνεις.
+
+**Βήμα 7 — Φόρμα του site (πρόταση, ανενεργό)**
+- Μετά από επιτυχή υποβολή, το αίτημα στέλνεται στην ίδια ροή προς Notion, στο παρασκήνιο. Αν το Notion αποτύχει, η φόρμα δουλεύει κανονικά.
+- Η προσθήκη μένει κλειστή μέχρι να την εγκρίνεις.
+
+**Βήμα 8 — Προγραμματισμένη εκτέλεση (δεν ενεργοποιείται τώρα)**
+- Έτοιμη αλλά ανενεργή. Προτεινόμενη συχνότητα: κάθε 10 λεπτά (144 φορές/ημέρα). Η τελική συχνότητα αποφασίζεται μαζί, αφού δούμε αξιόπιστα αποτελέσματα.
+
+## Εναλλακτική αν η σύνδεση email αποτύχει στο Βήμα 3
+- Το Papaki κάνει προώθηση μόνο σε άλλο email, όχι σε webhook. Δεν θα σου παρουσιάσω λύση που δεν συνδέεται.
+- Πρόταση: ένα μικρό ξεχωριστό πρόγραμμα σε server που διαβάζει το mailbox και στέλνει τα στοιχεία στη δική μας προστατευμένη διεύθυνση εισαγωγής. Όλη η υπόλοιπη λογική (Notion, διπλότυπα, αντιστοίχιση) μένει ίδια.
+
+## Ασφάλεια
+- Καμία πρόσβαση σε email ή Notion από τον browser. Όλα τα κλειδιά μένουν μόνο στο backend.
+- Το dry-run το ξεκινά μόνο συνδεδεμένος admin. Η προγραμματισμένη εκτέλεση χρειάζεται ξεχωριστό μυστικό κλειδί, που δεν φαίνεται πουθενά.
+- Τρέχει μία εκτέλεση τη φορά, με ελάχιστο διάστημα μεταξύ εκτελέσεων, έλεγχο όλων των δεδομένων και όριο μηνυμάτων ανά εκτέλεση.
+- Καμία αυτόματη απάντηση σε πελάτη, καμία διαγραφή ή μετακίνηση email.
+- Σε σφάλμα δικτύου ή Notion, το σημείο ελέγχου δεν προχωρά, οπότε τίποτα δεν χάνεται. Στην επόμενη εκτέλεση ξαναδοκιμάζεται χωρίς διπλοεγγραφές.
+
+## Δοκιμές
+- Αυτόματα tests: ανάγνωση κεφαλίδων (και ελληνικά θέματα), αντιστοίχιση νήματος, διπλότυπα, αντιστοίχιση πεδίων Notion, ασφαλής χειρισμός ασαφών απαντήσεων, αποτυχίες δικτύου (timeout, λάθος κωδικός, Notion εκτός λειτουργίας).
+- Ζωντανά: Βήμα 3 (μόνο ανάγνωση), μετά dry-run σε πραγματικά εισερχόμενα και απεσταλμένα, μετά δοκιμαστική υποβολή φόρμας.
 
 ## Technical details
-- `src/lib/material-estimate.ts` — καθαρή συνάρτηση `computeMaterialEstimate(geometry, material, settings)` + unit tests (vitest).
-- `src/lib/ai/material-geometry.server.ts` — κλήση AI (`openai/gpt-6-astra`, Responses API, strict json_schema, streaming consumed server-side). Αρχεία: PDF/εικόνες περνούν στο μοντέλο· DXF: απλό server-side parse bounding box/εμβαδού περιγράμματος· STEP/STL: όγκος από υπάρχον `geometry-hash.server.ts` όπου είναι εφικτό.
-- `src/lib/api/material-estimate.functions.ts` — `estimateMaterial` (public, rate-limited, επιστρέφει customer-safe DTO) και `adminGetMaterialEstimate` (admin cookie).
-- `src/routes/request.tsx` — πεδία υλικό/πάχος/«Άλλο» στο Details, κάρτα στο Review, `material_estimate_id` στο metadata.
-- `src/lib/api/submissions.functions.ts` — σύνδεση estimate με submission κατά την υποβολή.
-- `src/routes/admin.tsx` (order detail) + `admin_.config.tsx` (markup %, threshold) + Materials σελίδα (πάχη, process sheet_metal).
-- Migration: `material_estimates` + GRANT/RLS, seed sheet-metal υλικών, settings keys `material_markup_pct=30`, `material_estimate_min_confidence`.
-- i18n EL/EN για όλα τα νέα κείμενα στο `i18n.tsx`.
-
-## Ανοιχτά σημεία προς επιβεβαίωση
-1. Τιμές κόστους/kg ανά υλικό — θα τις δώσετε ή θα τις περάσετε από το Admin;
-2. Markup 30% ενιαίο για όλα τα υλικά ή ανά υλικό; (προτείνεται ενιαίο με override ανά υλικό)
-3. Τιμή με ή χωρίς ΦΠΑ στον πελάτη; (προτείνεται «χωρίς ΦΠΑ» με σημείωση)
+- IMAP client: small in-house module over `cloudflare:sockets` `connect(..., { secureTransport: "on" })`, with a Node `tls` transport only for local dev/tests. No new npm dependency. Commands: LOGIN, LIST (SPECIAL-USE `\Sent`), EXAMINE (read-only), UID SEARCH UID n:*, UID FETCH BODY.PEEK[HEADER.FIELDS (...)] + BODY.PEEK[TEXT]<0.2048>. RFC 2047 decoding. Hard per-run cap of about 25 messages per folder and a 20s budget.
+- Proof of hosted runtime: a read-only admin probe on the hosted build (preview build URL), because the local dev server runs on Node.
+- New tables, service-role only, no anon/authenticated policies: `mail_sync_state` (folder, uidvalidity, last_uid, lock), `mail_sync_messages` (message_id unique, folder, direction, in_reply_to, references, from, subject, date, snippet, notion_order_page_id, notion_log_page_id, match_result, status), `mail_sync_runs` (mode dry/live, counts, report jsonb, error).
+- Notion via connector gateway, `Notion-Version: 2025-09-03`, data sources resolved from the database IDs; schema read before any write; idempotency by checking `mail_sync_messages` before each create.
+- Triggers: admin server function (existing admin cookie auth) and `src/routes/api/public/mail-sync.ts` for cron, with a `MAIL_SYNC_TOKEN` server-only secret (timing-safe compare) plus a DB lock and minimum interval. pg_cron is not scheduled in this work.
+- Website hook: optional non-blocking call at the end of `submitForm`, behind a `factory_settings` flag defaulting to off.
+- Existing Make endpoint `ingest-email-order` untouched.
