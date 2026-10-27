@@ -296,6 +296,7 @@ export async function runMailSync(opts: { mode: Mode; trigger: Trigger }): Promi
     const own = PAPAKI.user;
     const sender = siteSender();
     const batchTargets = new Map<string, { target: Target | null; pendingNew: string | null }>();
+    const pendingInfo = new Map<string, { email: string; subject: string }>();
     const emailCache = new Map<string, OrderPage[]>();
     const ordersFor = async (email: string) => {
       if (!emailCache.has(email)) emailCache.set(email, await findOrdersByEmail(email));
@@ -387,6 +388,7 @@ export async function runMailSync(opts: { mode: Mode; trigger: Trigger }): Promi
             if (!live) {
               result.items.push(item);
               batchTargets.set(m.messageId, target ? { target, pendingNew: null } : { target: null, pendingNew: pendingNew ?? m.messageId });
+              if (!target && !pendingNew && m.from) pendingInfo.set(m.messageId, { email: m.from.email, subject: m.subject });
               outcomes.push({ uid: m.uid, ok: true });
               continue;
             }
@@ -441,17 +443,24 @@ export async function runMailSync(opts: { mode: Mode; trigger: Trigger }): Promi
               continue;
             }
             const isReply = !!(m.inReplyTo || m.refs.length);
-            const { target, pendingNew } = await threadTarget(m, true);
+            const found = await threadTarget(m, true);
+            let target = found.target;
+            // Dry-run only: the original is a record that would be created earlier in this run.
+            if (!target && found.pendingNew) {
+              const p = pendingInfo.get(found.pendingNew);
+              target = {
+                pageId: "(νέα εγγραφή)", record: null, title: p?.subject ?? "(νέα εγγραφή)", status: "Awaiting TOREO Reply",
+                customerEmail: p?.email ?? null, via: "batch",
+              };
+            }
             let hint: OrderPage | null = null;
             if (!target) {
               const pages = await ordersFor(recipients[0].email);
               hint = pages.find((p) => p.status === "Awaiting TOREO Reply") ?? null;
             }
-            const d = pendingNew && !target
-              ? { action: "mark_replied" as const, setStatus: "Replied", reason: `Απάντηση στο νέο αίτημα του ίδιου νήματος (${pendingNew})` }
-              : decideOutgoing(target, isReply, hint);
+            const d = decideOutgoing(target, isReply, hint, recipients.map((r) => r.email));
             const item: ReportItem = {
-              ...base, to: recipients[0].email, action: d.action, reason: d.reason, setStatus: d.setStatus,
+              ...base, to: recipients.map((r) => r.email).join(", "), action: d.action, reason: d.reason, setStatus: d.setStatus,
               target: target ? { record: target.record, title: target.title, status: target.status } : null,
             };
             if (!live) {
@@ -463,19 +472,21 @@ export async function runMailSync(opts: { mode: Mode; trigger: Trigger }): Promi
               ...fullFields(m), classification: "outgoing", action: d.action, match_reason: d.reason,
               notion_order_page_id: target?.pageId ?? null, notion_order_record: target?.record ?? null,
             });
-            if (target && d.action !== "manual_review") {
+            if (target && (d.action === "mark_replied" || d.action === "log_only")) {
               await updatePage(target.pageId, orderUpdateProps({ status: d.setStatus, lastContact: m.date }));
             }
             if (!row.notion_log_page_id) {
               const manual = d.action === "manual_review";
+              const forward = d.action === "forward_logged";
               const log = await createPage(
                 DATA_SOURCES.log,
                 logCreateProps({
-                  activity: `${manual ? "⚠ Έλεγχος — " : ""}Απάντηση TOREO: ${m.subject || "(χωρίς θέμα)"}`,
+                  activity: `${manual ? "⚠ Έλεγχος — " : ""}${forward ? "Προώθηση TOREO" : "Απάντηση TOREO"}: ${m.subject || "(χωρίς θέμα)"}`,
                   direction: "Outgoing", channel: "Email", date: m.date, contactEmail: recipients[0].email,
-                  contactName: recipients[0].name, summary: manual ? `Χειροκίνητος έλεγχος: ${d.reason}\n${m.snippet}` : m.snippet,
+                  contactName: recipients[0].name,
+                  summary: manual || forward ? `${manual ? "Χειροκίνητος έλεγχος: " : ""}${d.reason}\n${m.snippet}` : m.snippet,
                   threadUrl: mid(m.root), messageUrl: mid(m.messageId),
-                  status: manual ? "Follow-up Needed" : "Replied", relatedRecord: target?.record ?? null,
+                  status: manual || forward ? "Follow-up Needed" : "Replied", relatedRecord: target?.record ?? null,
                 }),
               );
               await setRow(row.id, { notion_log_page_id: log.id });
