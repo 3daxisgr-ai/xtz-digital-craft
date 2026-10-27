@@ -32,7 +32,7 @@ export const mailSyncOverview = createServerFn({ method: "GET" }).handler(async 
     db.from("mail_sync_settings").select("*").eq("id", 1).single(),
     db
       .from("mail_sync_runs")
-      .select("id, mode, trigger, started_at, finished_at, ok, counts, error")
+      .select("id, mode, trigger, started_at, finished_at, ok, counts, error, approved_at, approved_by")
       .order("started_at", { ascending: false })
       .limit(20),
     db
@@ -87,6 +87,12 @@ export const mailSyncUpdateSettings = createServerFn({ method: "POST" })
         actor: z.string().trim().min(2).max(80),
         live_writes: z.boolean().optional(),
         website_hook: z.boolean().optional(),
+        history_import: z.boolean().optional(),
+        history_cutoff: z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}$/)
+          .optional(),
+        history_stale_days: z.number().int().min(7).max(365).optional(),
         max_per_folder: z.number().int().min(1).max(25).optional(),
         lookback_days: z.number().int().min(1).max(60).optional(),
       })
@@ -105,4 +111,32 @@ export const mailSyncUpdateSettings = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
     return row;
+  });
+
+/** Historical import: read-only preview, or an import batch (gated server-side). */
+export const mailSyncHistory = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        mode: z.enum(["history_preview", "history"]),
+        only: z.enum(["website", "thread"]).optional(),
+        limit: z.number().int().min(1).max(50).optional(),
+      })
+      .strict()
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { runHistory } = await import("@/lib/mail-sync/history.server");
+    return runHistory(data);
+  });
+
+export const mailSyncApprovePreview = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ runId: z.string().uuid(), actor: z.string().trim().min(2).max(80) }).strict().parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdminCookie();
+    const { approvePreview } = await import("@/lib/mail-sync/history.server");
+    return approvePreview(data.runId, data.actor);
   });
