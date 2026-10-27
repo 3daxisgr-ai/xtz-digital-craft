@@ -90,6 +90,7 @@ export const TASKS_SCHEMA: SchemaRequirement = {
     "Order / Request": "relation",
   },
   options: {
+    Status: ["Not Started"],
     Category: ["Customer Reply"],
     Source: ["Email", "Website"],
     Priority: ["Normal"],
@@ -107,8 +108,8 @@ export function validateSchema(properties: Record<string, any>, req: SchemaRequi
   }
   for (const [name, opts] of Object.entries(req.options)) {
     const p = properties?.[name];
-    if (!p || p.type !== "select") continue;
-    const have = new Set((p.select?.options ?? []).map((o: any) => o.name));
+    if (!p || (p.type !== "select" && p.type !== "status")) continue;
+    const have = new Set((p[p.type]?.options ?? []).map((o: any) => o.name));
     for (const o of opts)
       if (!have.has(o)) problems.push(`Το πεδίο «${name}» δεν έχει την επιλογή «${o}»`);
   }
