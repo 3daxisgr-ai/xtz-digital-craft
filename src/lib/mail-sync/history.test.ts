@@ -243,6 +243,8 @@ describe("historical import — data quality", () => {
     });
     const u = planHistory(input({ messages: [out] }));
     expect(u[0].action).toBe("log_only");
+    // Unmatched/ambiguous items are never imported automatically.
+    expect(importable(u, new Map([[u[0].key, u[0].fingerprint]])).go).toHaveLength(0);
     expect(u[0].task).toBe(false);
   });
 
