@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- service-role client follows the existing untyped admin-client pattern */
 // Admin controls for the info@toreo.gr -> Notion sync (cookie-session authed like the admin panel).
 import { createServerFn } from "@tanstack/react-start";
 import { useSession } from "@tanstack/react-start/server";
@@ -15,6 +16,7 @@ function sessionConfig() {
   };
 }
 async function requireAdminCookie() {
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- TanStack server session helper, not a React hook
   const s = await useSession<AdminSession>(sessionConfig());
   if (!s.data.authed) throw new Error("Unauthorized");
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- runtime socket/TLS modules are loaded dynamically and have no shared typings */
 // Minimal read-only IMAP client (TLS). Server-only; the password never leaves this module.
 // Hosted runtime: secure sockets API. Local dev / tests: node:tls.
 import {

@@ -73,7 +73,7 @@ function Report({ r }: { r: RunView }) {
         <div className="rounded border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-amber-100">
           <div className="font-mono text-[10px] uppercase tracking-widest mb-1">Δομή Notion</div>
           <ul className="list-disc pl-5">
-            {rep.schemaProblems.map((p: string) => (
+            {(rep.schemaProblems ?? []).map((p: string) => (
               <li key={p}>{p}</li>
             ))}
           </ul>

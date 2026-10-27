@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- test fixtures build loose Notion JSON */
 import { describe, expect, it } from "vitest";
 import {
   classifyIncoming,

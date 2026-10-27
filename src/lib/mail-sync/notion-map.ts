@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Notion API property JSON is dynamic; shapes are checked by validateSchema */
 // Pure Notion property mapping + schema checks for the TOREO Business OS. Unit-tested.
 
 export type PropType =
