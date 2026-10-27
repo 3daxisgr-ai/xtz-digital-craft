@@ -268,13 +268,13 @@ export function classifyIncoming({
   if (autoSubmitted && autoSubmitted !== "no") return "auto";
   if (headers["x-autoreply"] || headers["x-autorespond"]) return "auto";
   if (/^(mailer-daemon|postmaster|no-?reply|do-?not-?reply|bounce)/i.test(email)) return "auto";
-  // Microsoft 365 / platform notifications and *-noreply senders are never customer requests.
-  if (isSystemSender(email)) return "auto";
   const prec = (headers["precedence"] ?? "").toLowerCase();
   if (prec === "bulk" || prec === "list" || prec === "junk") return "bulk";
   if (headers["list-id"] || headers["list-unsubscribe"]) return "bulk";
   if (matchesSenderList(email, ignore)) return "ignored";
   if (SENDING_SUBDOMAIN.test(email.split("@")[1] ?? "")) return "bulk";
+  // Microsoft 365 / platform notifications and *-noreply senders are never customer requests.
+  if (isSystemSender(email)) return "auto";
   return "customer";
 }
 
