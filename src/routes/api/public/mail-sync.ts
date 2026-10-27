@@ -1,6 +1,8 @@
 /**
  * Scheduled trigger for the info@toreo.gr -> Notion sync.
- * Auth: Authorization: Bearer <MAIL_SYNC_TOKEN> (server-only secret, constant-time compare).
+ * Auth: Authorization: Bearer <token>. Accepted: the MAIL_SYNC_TOKEN server secret (constant-time
+ * compare) or the scheduler token, whose SHA-256 hash is stored service-role-only in
+ * mail_sync_cron_auth (the raw value exists only inside the database's scheduled job).
  * Rate limit: one run at a time + minimum interval (enforced in the database).
  * The response carries counts only — never email addresses, subjects or content.
  */
@@ -18,6 +20,20 @@ async function safeEqual(a: string, b: string) {
   for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
   return diff === 0;
 }
+async function hex(s: string) {
+  return [...(await digest(s))].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+async function authorized(token: string) {
+  const secret = process.env.MAIL_SYNC_TOKEN;
+  if (secret && (await safeEqual(token, secret))) return true;
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("mail_sync_cron_auth")
+    .select("token_hash")
+    .eq("id", 1)
+    .maybeSingle();
+  return !!data?.token_hash && (await safeEqual(await hex(token), data.token_hash));
+}
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
@@ -28,11 +44,10 @@ export const Route = createFileRoute("/api/public/mail-sync")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const expected = process.env.MAIL_SYNC_TOKEN;
-        if (!expected) return json({ error: "not_configured" }, 503);
         const token = (request.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
-        if (!token || !(await safeEqual(token, expected)))
+        if (!token || token.length < 32 || token.length > 256)
           return json({ error: "unauthorized" }, 401);
+        if (!(await authorized(token))) return json({ error: "unauthorized" }, 401);
 
         let parsed: z.infer<typeof bodySchema>;
         try {
