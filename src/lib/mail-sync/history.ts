@@ -555,7 +555,11 @@ export function previewRow(u: PlanUnit) {
 }
 export type PreviewRow = ReturnType<typeof previewRow>;
 
-const IMPORTABLE: UnitAction[] = ["new_record", "attach", "log_only", "manual_review"];
+/**
+ * Only confident items are written automatically. Unmatched TOREO emails ("log_only") and
+ * ambiguous matches ("manual_review") stay in the preview/report for a human to decide.
+ */
+const IMPORTABLE: UnitAction[] = ["new_record", "attach"];
 
 /** Units that may be imported now: approved in the preview with an unchanged fingerprint. */
 export function importable(
