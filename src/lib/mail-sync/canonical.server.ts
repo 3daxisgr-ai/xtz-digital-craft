@@ -360,9 +360,12 @@ export async function reconcile(opts: {
       result.rows.push({
         key: rv.key,
         kind: "review",
-        action: "review",
+        action: rv.queue === "supplier" ? "supplier" : "review",
         reason: rv.reason,
-        order: rv.candidates.join(", ") || null,
+        order:
+          rv.candidates
+            .map((id) => pages.get(id)?.orderId ?? pages.get(id)?.record ?? "νέο αίτημα")
+            .join(", ") || null,
         domain: domainOf(rv.email),
         date: rv.date,
       });
@@ -792,7 +795,10 @@ export async function reconcile(opts: {
           await updatePage(own.pageId, canonPatchProps({ duplicates: codes }));
           count("duplicates_flagged");
         } catch (e) {
-          console.error("[mail-sync] duplicate flag failed", errText(e));
+          console.error(
+            "[mail-sync] duplicate flag failed",
+            (e instanceof Error ? e.message : String(e)).slice(0, 200),
+          );
           count("error");
         }
       }

@@ -50,6 +50,12 @@ const QUEUES: { id: string; title: string; hint: string; match: (r: ReconcileRow
     match: (r) => r.kind === "review" && r.action === "review",
   },
   {
+    id: "supplier",
+    title: "Απαντήσεις σε email της TOREO προς τρίτους (πιθανοί προμηθευτές)",
+    hint: "Δεν δημιουργούν αίτημα. Αν κάποιο είναι πελάτης, δημιούργησε αίτημα χειροκίνητα.",
+    match: (r) => r.action === "supplier",
+  },
+  {
     id: "contact",
     title: "Αβέβαιη κατηγορία επαφής",
     hint: "Όρισε Classification στην κάρτα του πελάτη.",

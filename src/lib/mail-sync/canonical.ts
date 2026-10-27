@@ -618,7 +618,10 @@ export function planCanonical(input: CanonInput): CanonPlan {
     const s = strongMatch(m);
     if (s.removed) {
       // The owner deleted that record in Notion on purpose: never recreate it.
-      skipped.push({ key: m.messageId, reason: "Η εγγραφή αυτού του νήματος διαγράφηκε στο Notion" });
+      skipped.push({
+        key: m.messageId,
+        reason: "Η εγγραφή αυτού του νήματος διαγράφηκε στο Notion",
+      });
       continue;
     }
     if (s.outreach) {
