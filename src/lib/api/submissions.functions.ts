@@ -517,6 +517,30 @@ export const submitForm = createServerFn({ method: "POST" })
       processResult: screen.verdict.review ? "needs_review" : "created",
     });
 
+    // Optional: mirror the submission into Notion (off unless enabled in admin → Email → Notion).
+    // Bounded wait; any failure is logged and never affects the form response.
+    if (submissionId) {
+      try {
+        const { syncWebsiteSubmission } = await import("@/lib/mail-sync/sync.server");
+        await Promise.race([
+          syncWebsiteSubmission({
+            submissionId,
+            name: `${data.name}${data.surname ? " " + data.surname : ""}`.trim(),
+            email: data.email,
+            phone: data.phone ?? null,
+            service: data.service ?? null,
+            message: data.message ?? null,
+            orderCode,
+            trackUrl: orderCode ? `https://www.toreo.gr/track?code=${encodeURIComponent(orderCode)}` : null,
+          }),
+          new Promise((r) => setTimeout(r, 6000)),
+        ]);
+      } catch (e) {
+        console.error("[mail-sync] website hook failed", e);
+      }
+    }
+
+
     return {
       ok: true,
       id: submissionId,
