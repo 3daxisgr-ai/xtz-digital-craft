@@ -29,7 +29,7 @@ export class ResponseFramer {
   private need = 0; // literal bytes still required for `pending`
 
   push(chunk: Uint8Array): Unit[] {
-    this.buf = concat(this.buf, chunk);
+    this.buf = concat(this.buf, chunk) as Uint8Array<ArrayBuffer>;
     const out: Unit[] = [];
     for (;;) {
       if (this.pending && this.need > 0) {
