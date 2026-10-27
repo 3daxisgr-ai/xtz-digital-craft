@@ -5,6 +5,7 @@
 // email, never deletes or merges records, and never moves Delivered / Lost / production statuses.
 import { mid, cleanSnippet, classifyIncoming } from "./mime";
 import {
+  CUSTOMERS_CANON_PROPS,
   CUSTOMERS_SCHEMA,
   LOG_SCHEMA,
   ORDERS_CANON_PROPS,
@@ -15,6 +16,7 @@ import {
   logCreateProps,
   orderCreateProps,
   readCanonPage,
+  readCustomerPage,
   readLogPage,
   readTaskPage,
   taskCreateProps,
@@ -40,6 +42,7 @@ import {
   type RequestPlan,
 } from "./canonical";
 import { ORDER_STATUS_TO_NOTION, domainOf } from "./history";
+import { checkOrder, classifyContact, mayWriteLabel, type OrderCheck } from "./classify";
 import { loadMailbox, loadSubmissions } from "./history.server";
 import { admin, claimLock, ensureCustomer, releaseLock, siteSender, type Msg } from "./sync.server";
 import { PAPAKI } from "./imap.server";
@@ -202,6 +205,8 @@ export async function reconcile(opts: {
       const fresh = added.length ? await getDataSourceProperties(DATA_SOURCES.orders) : op;
       const p2 = validateSchema(fresh, ORDERS_CANON_SCHEMA);
       if (p2.length) throw new Error(`Orders & Quotes: ${p2.join("; ")}`);
+      const addedC = await ensureOrderFields(CUSTOMERS_CANON_PROPS, cp, DATA_SOURCES.customers);
+      if (addedC.length) count("fields_added", addedC.length);
     }
 
     // 2. Everything we know (read-only).
@@ -210,7 +215,7 @@ export async function reconcile(opts: {
     const ignore: string[] = settings.ignore_senders ?? [];
     const sender = siteSender();
     const cutoffMs = Date.parse(settings.history_cutoff);
-    const [mail, subsAll, orderPages, logPages, taskPages, canonRows, canonKeys, ledger] =
+    const [mail, subsAll, orderPages, logPages, taskPages, canonRows, canonKeys, ledger, customerPages, autoLabels] =
       await Promise.all([
         loadMailbox(settings.history_cutoff, password),
         loadSubmissions(db),
@@ -224,6 +229,8 @@ export async function reconcile(opts: {
           "mail_sync_messages",
           "id, message_id, status, action, notion_order_page_id, notion_log_page_id",
         ),
+        listAllPages(DATA_SOURCES.customers),
+        selectAll(db, "mail_sync_auto_labels", "target, value"),
       ]);
     const pages = new Map<string, CanonPage>(orderPages.map((p: any) => [p.id, readCanonPage(p)]));
     const logs = logPages.map(readLogPage);
@@ -340,6 +347,7 @@ export async function reconcile(opts: {
         result.rows.push({ key: r.id, kind: "request", action, reason: changes.join(" · ") || "Καμία αλλαγή", order: label(r), domain: domainOf(r.customerEmail), date: r.lastActivity });
       }
       count("duplicates", result.duplicates.length);
+      await classifyPhase(false);
       result.ok = true;
       return result;
     }
@@ -613,9 +621,112 @@ export async function reconcile(opts: {
         break; // stop safely; the next run resumes (every step above is idempotent)
       }
     }
+    if (!result.counts.error && !outOfTime()) await classifyPhase(true);
+    else pending++;
     result.remaining = pending;
     result.ok = !result.counts.error;
     return result;
+
+    // 5. Evidence-based labels: Order Check on requests, Classification on Customers. A label a
+    //    person changed in Notion is never overwritten; only strong mislinks are corrected.
+    async function classifyPhase(write: boolean) {
+      const customers = customerPages.map(readCustomerPage);
+      const custById = new Map(customers.map((c) => [c.id, c]));
+      const custByEmail = new Map(customers.filter((c) => c.email).map((c) => [c.email!.toLowerCase(), c]));
+      const lastAuto = new Map<string, string>(autoLabels.map((a: any) => [a.target, a.value]));
+      const planById = new Map(plan.requests.map((r) => [r.id, r]));
+      const checks = new Map<string, OrderCheck>();
+      const remember = async (target: string, value: string, reason: string) =>
+        db.from("mail_sync_auto_labels").upsert({ target, value, reason, updated_at: new Date().toISOString() }, { onConflict: "target" });
+
+      for (const p of pages.values()) {
+        if (write && outOfTime()) return;
+        const r = planById.get(p.pageId);
+        const senders = new Set<string>();
+        for (const a of attachByReq.get(p.pageId) ?? [])
+          if (a.role === "customer") {
+            const f = byId.get(a.key)?.from?.email;
+            if (f && f !== own) senders.add(f);
+          }
+        for (const l of logs)
+          if (l.orderIds.includes(p.pageId) && l.direction === "Incoming" && l.contactEmail && l.contactEmail !== own)
+            senders.add(l.contactEmail.toLowerCase());
+        const linked = p.customerIds.map((id) => custById.get(id)).filter((c): c is NonNullable<typeof c> => !!c);
+        const evidence = {
+          status: r?.status ?? p.status,
+          source: p.source,
+          subject: p.title,
+          customerEmail: p.customerEmail,
+          customerName: p.customerName,
+          linkedCustomers: linked.map((c) => ({ email: c.email, name: c.name })),
+          submissionEmails: (r?.submissionIds ?? []).map((id) => subById.get(id)?.email).filter((e): e is string => !!e),
+          incomingSenders: [...senders],
+        };
+        let v = checkOrder(evidence);
+        // Strong-evidence correction: linked to another person's card while a card with the
+        // record's exact email exists -> relink to that card and note it on the record.
+        const exact = p.customerEmail ? custByEmail.get(p.customerEmail.toLowerCase()) : undefined;
+        const wrong = linked.find((c) => c.email && p.customerEmail && c.email.toLowerCase() !== p.customerEmail.toLowerCase());
+        if (v.value === "Customer mismatch" && wrong && exact && exact.id !== wrong.id) {
+          const note = `Διόρθωση ${new Date().toISOString().slice(0, 10)}: η σύνδεση πελάτη άλλαξε από «${wrong.name ?? wrong.email}» σε «${exact.name ?? exact.email}» (ίδιο email με το αίτημα).`;
+          if (write) {
+            await updatePage(p.pageId, {
+              Customer: { relation: [{ id: exact.id }] },
+              "Internal Notes": { rich_text: [{ type: "text", text: { content: [p.internalNotes, note].filter(Boolean).join("\n").slice(0, 1900) } }] },
+            });
+            count("customer_links_fixed");
+          } else count("customer_links_to_fix");
+          result.rows.push({ key: p.pageId, kind: "request", action: "correction", reason: note, order: p.orderId, domain: domainOf(p.customerEmail), date: p.lastContact ?? p.receivedAt ?? "" });
+          v = checkOrder({ ...evidence, linkedCustomers: [{ email: exact.email, name: exact.name }] });
+        }
+        checks.set(p.pageId, v.value);
+        count(`check:${v.value}`);
+        if (v.review)
+          result.rows.push({ key: p.pageId, kind: "review", action: v.value, reason: v.reason, order: p.orderId ?? websiteCodeOf(p), domain: domainOf(p.customerEmail), date: p.lastContact ?? p.receivedAt ?? "" });
+        const target = `order:${p.pageId}`;
+        if (write && p.orderCheck !== v.value && mayWriteLabel(p.orderCheck, lastAuto.get(target) ?? null)) {
+          await updatePage(p.pageId, {
+            "Order Check": { select: { name: v.value } },
+            "Check Reason": { rich_text: [{ type: "text", text: { content: v.reason } }] },
+          });
+          await remember(target, v.value, v.reason);
+          count("checks_written");
+        } else if (write && !lastAuto.has(target) && p.orderCheck === v.value) await remember(target, v.value, v.reason);
+      }
+
+      for (const c of customers) {
+        if (write && outOfTime()) return;
+        if (!c.email) continue;
+        const email = c.email.toLowerCase();
+        const orders = [...pages.values()].filter((p) => p.customerIds.includes(c.id) || (p.customerEmail ?? "").toLowerCase() === email);
+        const inbound = messages.filter((m) => m.folder === "inbox" && (m.fromEmail ?? "").toLowerCase() === email).map((m) => ({ cls: m.cls, subject: m.subject }));
+        const outbound = plan.attachments
+          .filter((a) => (a.role === "reply" || a.role === "forward") && byId.get(a.key)?.to.some((t) => t.email === email))
+          .map((a) => a.role as "reply" | "forward");
+        const v = classifyContact({
+          email,
+          type: c.type,
+          orders: orders.map((p) => ({ status: planById.get(p.pageId)?.status ?? p.status, check: checks.get(p.pageId) ?? null })),
+          inbound,
+          outbound,
+          website: submissions.some((s) => s.email.toLowerCase() === email),
+          ignore,
+        });
+        count(`contact:${v.value}`);
+        if (v.review)
+          result.rows.push({ key: c.id, kind: "review", action: `Πελάτης: ${v.value}`, reason: v.reason, order: null, domain: domainOf(email), date: "" });
+        const target = `customer:${c.id}`;
+        if (write && (c.classification !== v.value || c.review !== v.review || c.reason !== v.reason) && mayWriteLabel(c.classification, lastAuto.get(target) ?? null)) {
+          await updatePage(c.id, {
+            Classification: { select: { name: v.value } },
+            "Classification Reason": { rich_text: [{ type: "text", text: { content: v.reason } }] },
+            "Classification Review": { checkbox: v.review },
+          });
+          await remember(target, v.value, v.reason);
+          count("classifications_written");
+        }
+      }
+    }
   } catch (e) {
     result.error = (e instanceof Error ? e.message : String(e)).slice(0, 500);
     return result;
