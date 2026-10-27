@@ -4,8 +4,8 @@
 - [x] Material-only indicative pricing (sheet metal) with admin calculator
 - [x] Quotation-files feature removed (UI, code, data); empty table/bucket drop waits for publish
 - [x] Two-template PDF editor (Offer + Order Form) with draft/approve/send at /admin/documents
-- [ ] Email info@toreo.gr → Notion: connect Notion + Papaki password (needs user)
-- [ ] Email → Notion: read Notion schema, confirm field mapping with user
-- [ ] Email → Notion: read-only mailbox probe on hosted build
-- [ ] Email → Notion: dry-run sync (inbox + sent), admin page, tests
-- [ ] Email → Notion: website form hook (off), schedule (off) until approved
+- [x] Email info@toreo.gr → Notion: connect Notion + Papaki password
+- [x] Email → Notion: read Notion schema, field mapping built in (user to confirm)
+- [ ] Email → Notion: read-only mailbox probe on hosted build (hosted preview copy not rebuilt yet; verify next turn)
+- [x] Email → Notion: dry-run sync (inbox + sent), admin page, tests
+- [ ] Email → Notion: website form hook built (off) and schedule not created — waiting for user approval

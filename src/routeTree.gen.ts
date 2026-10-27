@@ -35,6 +35,7 @@ import { Route as AdminConfigRouteImport } from './routes/admin_.config'
 import { Route as AdminDocumentsRouteImport } from './routes/admin_.documents'
 import { Route as AdminFactoryRouteImport } from './routes/admin_.factory'
 import { Route as AdminLiveRouteImport } from './routes/admin_.live'
+import { Route as AdminMailSyncRouteImport } from './routes/admin_.mail-sync'
 import { Route as AdminReviewsRouteImport } from './routes/admin_.reviews'
 import { Route as AdminSchedulerRouteImport } from './routes/admin_.scheduler'
 import { Route as AdminShippingRouteImport } from './routes/admin_.shipping'
@@ -46,6 +47,7 @@ import { Route as PortalProjectsRouteImport } from './routes/portal_.projects'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as ApiPublicIngestEmailOrderRouteImport } from './routes/api/public/ingest-email-order'
+import { Route as ApiPublicMailSyncRouteImport } from './routes/api/public/mail-sync'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const IndexRoute = IndexRouteImport.update({
@@ -180,6 +182,11 @@ const AdminLiveRoute = AdminLiveRouteImport.update({
   path: '/admin/live',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMailSyncRoute = AdminMailSyncRouteImport.update({
+  id: '/admin_/mail-sync',
+  path: '/admin/mail-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminReviewsRoute = AdminReviewsRouteImport.update({
   id: '/admin_/reviews',
   path: '/admin/reviews',
@@ -237,6 +244,11 @@ const ApiPublicIngestEmailOrderRoute =
     path: '/api/public/ingest-email-order',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicMailSyncRoute = ApiPublicMailSyncRouteImport.update({
+  id: '/api/public/mail-sync',
+  path: '/api/public/mail-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -271,6 +283,7 @@ export interface FileRoutesByFullPath {
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/factory': typeof AdminFactoryRoute
   '/admin/live': typeof AdminLiveRoute
+  '/admin/mail-sync': typeof AdminMailSyncRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/scheduler': typeof AdminSchedulerRoute
   '/admin/shipping': typeof AdminShippingRoute
@@ -282,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/ingest-email-order': typeof ApiPublicIngestEmailOrderRoute
+  '/api/public/mail-sync': typeof ApiPublicMailSyncRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
@@ -311,6 +325,7 @@ export interface FileRoutesByTo {
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/factory': typeof AdminFactoryRoute
   '/admin/live': typeof AdminLiveRoute
+  '/admin/mail-sync': typeof AdminMailSyncRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/scheduler': typeof AdminSchedulerRoute
   '/admin/shipping': typeof AdminShippingRoute
@@ -322,6 +337,7 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/ingest-email-order': typeof ApiPublicIngestEmailOrderRoute
+  '/api/public/mail-sync': typeof ApiPublicMailSyncRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -352,6 +368,7 @@ export interface FileRoutesById {
   '/admin_/documents': typeof AdminDocumentsRoute
   '/admin_/factory': typeof AdminFactoryRoute
   '/admin_/live': typeof AdminLiveRoute
+  '/admin_/mail-sync': typeof AdminMailSyncRoute
   '/admin_/reviews': typeof AdminReviewsRoute
   '/admin_/scheduler': typeof AdminSchedulerRoute
   '/admin_/shipping': typeof AdminShippingRoute
@@ -363,6 +380,7 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/ingest-email-order': typeof ApiPublicIngestEmailOrderRoute
+  '/api/public/mail-sync': typeof ApiPublicMailSyncRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -394,6 +412,7 @@ export interface FileRouteTypes {
     | '/admin/documents'
     | '/admin/factory'
     | '/admin/live'
+    | '/admin/mail-sync'
     | '/admin/reviews'
     | '/admin/scheduler'
     | '/admin/shipping'
@@ -405,6 +424,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/ingest-email-order'
+    | '/api/public/mail-sync'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -434,6 +454,7 @@ export interface FileRouteTypes {
     | '/admin/documents'
     | '/admin/factory'
     | '/admin/live'
+    | '/admin/mail-sync'
     | '/admin/reviews'
     | '/admin/scheduler'
     | '/admin/shipping'
@@ -445,6 +466,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/ingest-email-order'
+    | '/api/public/mail-sync'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -474,6 +496,7 @@ export interface FileRouteTypes {
     | '/admin_/documents'
     | '/admin_/factory'
     | '/admin_/live'
+    | '/admin_/mail-sync'
     | '/admin_/reviews'
     | '/admin_/scheduler'
     | '/admin_/shipping'
@@ -485,6 +508,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/ingest-email-order'
+    | '/api/public/mail-sync'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -515,6 +539,7 @@ export interface RootRouteChildren {
   AdminDocumentsRoute: typeof AdminDocumentsRoute
   AdminFactoryRoute: typeof AdminFactoryRoute
   AdminLiveRoute: typeof AdminLiveRoute
+  AdminMailSyncRoute: typeof AdminMailSyncRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSchedulerRoute: typeof AdminSchedulerRoute
   AdminShippingRoute: typeof AdminShippingRoute
@@ -525,6 +550,7 @@ export interface RootRouteChildren {
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicIngestEmailOrderRoute: typeof ApiPublicIngestEmailOrderRoute
+  ApiPublicMailSyncRoute: typeof ApiPublicMailSyncRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -712,6 +738,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/mail-sync': {
+      id: '/admin_/mail-sync'
+      path: '/admin/mail-sync'
+      fullPath: '/admin/mail-sync'
+      preLoaderRoute: typeof AdminMailSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/reviews': {
       id: '/admin_/reviews'
       path: '/admin/reviews'
@@ -789,6 +822,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicIngestEmailOrderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mail-sync': {
+      id: '/api/public/mail-sync'
+      path: '/api/public/mail-sync'
+      fullPath: '/api/public/mail-sync'
+      preLoaderRoute: typeof ApiPublicMailSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -838,6 +878,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminDocumentsRoute: AdminDocumentsRoute,
   AdminFactoryRoute: AdminFactoryRoute,
   AdminLiveRoute: AdminLiveRoute,
+  AdminMailSyncRoute: AdminMailSyncRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSchedulerRoute: AdminSchedulerRoute,
   AdminShippingRoute: AdminShippingRoute,
@@ -848,6 +889,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicIngestEmailOrderRoute: ApiPublicIngestEmailOrderRoute,
+  ApiPublicMailSyncRoute: ApiPublicMailSyncRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport

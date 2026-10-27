@@ -36,6 +36,13 @@
       "when": 1792134900849,
       "tag": "0004_secure_submission_upload_capabilities",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793095633062,
+      "tag": "0005_mail_sync_notion",
+      "breakpoints": true
     }
   ]
 }

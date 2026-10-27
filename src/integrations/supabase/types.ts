@@ -657,6 +657,186 @@ export type Database = {
         }
         Relationships: []
       }
+      mail_sync_messages: {
+        Row: {
+          action: string | null
+          attachment_names: string[]
+          classification: string | null
+          created_at: string
+          direction: string
+          error: string | null
+          folder: string
+          from_email: string | null
+          from_name: string | null
+          id: string
+          in_reply_to: string | null
+          match_reason: string | null
+          message_id: string
+          notion_log_page_id: string | null
+          notion_order_page_id: string | null
+          notion_order_record: string | null
+          refs: string[]
+          sent_at: string | null
+          snippet: string | null
+          status: string
+          subject: string | null
+          thread_root: string | null
+          to_emails: string[]
+          uid: number | null
+          updated_at: string
+        }
+        Insert: {
+          action?: string | null
+          attachment_names?: string[]
+          classification?: string | null
+          created_at?: string
+          direction: string
+          error?: string | null
+          folder: string
+          from_email?: string | null
+          from_name?: string | null
+          id?: string
+          in_reply_to?: string | null
+          match_reason?: string | null
+          message_id: string
+          notion_log_page_id?: string | null
+          notion_order_page_id?: string | null
+          notion_order_record?: string | null
+          refs?: string[]
+          sent_at?: string | null
+          snippet?: string | null
+          status?: string
+          subject?: string | null
+          thread_root?: string | null
+          to_emails?: string[]
+          uid?: number | null
+          updated_at?: string
+        }
+        Update: {
+          action?: string | null
+          attachment_names?: string[]
+          classification?: string | null
+          created_at?: string
+          direction?: string
+          error?: string | null
+          folder?: string
+          from_email?: string | null
+          from_name?: string | null
+          id?: string
+          in_reply_to?: string | null
+          match_reason?: string | null
+          message_id?: string
+          notion_log_page_id?: string | null
+          notion_order_page_id?: string | null
+          notion_order_record?: string | null
+          refs?: string[]
+          sent_at?: string | null
+          snippet?: string | null
+          status?: string
+          subject?: string | null
+          thread_root?: string | null
+          to_emails?: string[]
+          uid?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      mail_sync_runs: {
+        Row: {
+          counts: Json
+          error: string | null
+          finished_at: string | null
+          id: string
+          mode: string
+          ok: boolean | null
+          report: Json
+          started_at: string
+          trigger: string
+        }
+        Insert: {
+          counts?: Json
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          mode: string
+          ok?: boolean | null
+          report?: Json
+          started_at?: string
+          trigger: string
+        }
+        Update: {
+          counts?: Json
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          mode?: string
+          ok?: boolean | null
+          report?: Json
+          started_at?: string
+          trigger?: string
+        }
+        Relationships: []
+      }
+      mail_sync_settings: {
+        Row: {
+          id: number
+          last_run_at: string | null
+          live_writes: boolean
+          lock_until: string | null
+          lookback_days: number
+          max_per_folder: number
+          min_interval_seconds: number
+          updated_at: string
+          updated_by: string | null
+          website_hook: boolean
+        }
+        Insert: {
+          id?: number
+          last_run_at?: string | null
+          live_writes?: boolean
+          lock_until?: string | null
+          lookback_days?: number
+          max_per_folder?: number
+          min_interval_seconds?: number
+          updated_at?: string
+          updated_by?: string | null
+          website_hook?: boolean
+        }
+        Update: {
+          id?: number
+          last_run_at?: string | null
+          live_writes?: boolean
+          lock_until?: string | null
+          lookback_days?: number
+          max_per_folder?: number
+          min_interval_seconds?: number
+          updated_at?: string
+          updated_by?: string | null
+          website_hook?: boolean
+        }
+        Relationships: []
+      }
+      mail_sync_state: {
+        Row: {
+          folder: string
+          last_uid: number
+          uidvalidity: number | null
+          updated_at: string
+        }
+        Insert: {
+          folder: string
+          last_uid?: number
+          uidvalidity?: number | null
+          updated_at?: string
+        }
+        Update: {
+          folder?: string
+          last_uid?: number
+          uidvalidity?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       material_estimates: {
         Row: {
           ai_output: Json | null
