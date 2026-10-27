@@ -41,7 +41,13 @@ const m = (p: Partial<CMsg> & { messageId: string }): CMsg => ({
   cls: "customer",
   ...p,
 });
-const sent = (id: string, to: string[], parent: string | null, date: string, subject = "Re: Ερώτηση"): CMsg =>
+const sent = (
+  id: string,
+  to: string[],
+  parent: string | null,
+  date: string,
+  subject = "Re: Ερώτηση",
+): CMsg =>
   m({
     messageId: id,
     folder: "sent",
@@ -103,7 +109,13 @@ describe("one canonical record per real request", () => {
     subject: "🚀 New Quote Request - TOREO",
     date: iso("2026-10-20T09:00:20Z"),
   });
-  const toreoReply = sent("<r1@toreo>", [CUST], "<n1@site>", "2026-10-20T12:00:00Z", "Re: 🚀 New Quote Request - TOREO");
+  const toreoReply = sent(
+    "<r1@toreo>",
+    [CUST],
+    "<n1@site>",
+    "2026-10-20T12:00:00Z",
+    "Re: 🚀 New Quote Request - TOREO",
+  );
   const customerReply = m({
     messageId: "<c2@client>",
     inReplyTo: "<r1@toreo>",
@@ -111,11 +123,18 @@ describe("one canonical record per real request", () => {
     subject: "Re: Re: 🚀 New Quote Request - TOREO",
     date: iso("2026-10-22T08:00:00Z"),
   });
-  const separateEmail = m({ messageId: "<c1@client>", subject: "Σχέδια για την παραγγελία", date: iso("2026-10-20T15:00:00Z") });
+  const separateEmail = m({
+    messageId: "<c1@client>",
+    subject: "Σχέδια για την παραγγελία",
+    date: iso("2026-10-20T15:00:00Z"),
+  });
 
   it("website + notification + customer emails + replies => exactly one order", () => {
     const plan = planCanonical(
-      input({ submissions: [sub()], messages: [notification, toreoReply, separateEmail, customerReply] }),
+      input({
+        submissions: [sub()],
+        messages: [notification, toreoReply, separateEmail, customerReply],
+      }),
     );
     expect(plan.requests).toHaveLength(1);
     const r = plan.requests[0];
@@ -141,15 +160,28 @@ describe("one canonical record per real request", () => {
   });
 
   it("a repeat run creates nothing new and keeps every Order ID", () => {
-    const msgs = [notification, toreoReply, separateEmail, customerReply, m({ messageId: "<x1@other>", fromEmail: "nikos@other.gr" })];
+    const msgs = [
+      notification,
+      toreoReply,
+      separateEmail,
+      customerReply,
+      m({ messageId: "<x1@other>", fromEmail: "nikos@other.gr" }),
+    ];
     const first = planCanonical(input({ submissions: [sub()], messages: msgs }));
     expect(first.requests.filter((r) => r.isNew)).toHaveLength(2);
     const codes = { [first.requests[1].id]: "TR-2026-0031" };
     const state = asExisting(first, codes);
     const second = planCanonical(input({ submissions: [sub()], messages: msgs, ...state }));
     expect(second.requests.filter((r) => r.isNew)).toHaveLength(0);
-    expect(second.requests.map((r) => r.orderCode).sort()).toEqual(["TR-2026-0030", "TR-2026-0031"]);
-    expect(second.attachments.every((a) => state.keys.has(a.role === "website" ? "submission:s1" : `msg:${a.key}`))).toBe(true);
+    expect(second.requests.map((r) => r.orderCode).sort()).toEqual([
+      "TR-2026-0030",
+      "TR-2026-0031",
+    ]);
+    expect(
+      second.attachments.every((a) =>
+        state.keys.has(a.role === "website" ? "submission:s1" : `msg:${a.key}`),
+      ),
+    ).toBe(true);
   });
 
   it("webhook retries / double submissions of the same request become one record", () => {
@@ -164,7 +196,12 @@ describe("one canonical record per real request", () => {
 
   it("two different website Order IDs stay two orders", () => {
     const plan = planCanonical(
-      input({ submissions: [sub(), sub({ id: "s2", orderCode: "TR-2026-0031", createdAt: iso("2026-10-20T09:05:00Z") })] }),
+      input({
+        submissions: [
+          sub(),
+          sub({ id: "s2", orderCode: "TR-2026-0031", createdAt: iso("2026-10-20T09:05:00Z") }),
+        ],
+      }),
     );
     expect(plan.requests.map((r) => r.orderCode).sort()).toEqual(["TR-2026-0030", "TR-2026-0031"]);
   });
@@ -180,7 +217,13 @@ describe("one canonical record per real request", () => {
       input({
         requests: [existing({ id: "p1" })],
         keys: new Map([["order:TR-2026-0040", "p1"]]),
-        messages: [m({ messageId: "<z@c>", fromEmail: "colleague@client.gr", subject: "Για το TR-2026-0040" })],
+        messages: [
+          m({
+            messageId: "<z@c>",
+            fromEmail: "colleague@client.gr",
+            subject: "Για το TR-2026-0040",
+          }),
+        ],
       }),
     );
     expect(plan.requests).toHaveLength(1);
@@ -192,9 +235,16 @@ describe("one canonical record per real request", () => {
       input({
         requests: [
           existing({ id: "p1", subject: "Α" }),
-          existing({ id: "p2", orderCode: "TR-2026-0041", subject: "Β", receivedAt: iso("2026-10-12T09:00:00Z") }),
+          existing({
+            id: "p2",
+            orderCode: "TR-2026-0041",
+            subject: "Β",
+            receivedAt: iso("2026-10-12T09:00:00Z"),
+          }),
         ],
-        messages: [m({ messageId: "<q@c>", subject: "Κάτι άλλο", date: iso("2026-10-15T09:00:00Z") })],
+        messages: [
+          m({ messageId: "<q@c>", subject: "Κάτι άλλο", date: iso("2026-10-15T09:00:00Z") }),
+        ],
       }),
     );
     expect(plan.requests.filter((r) => r.isNew)).toHaveLength(0);
@@ -221,28 +271,57 @@ describe("reply state from INBOX + Sent", () => {
 
   it("a sent reply to the customer clears a false 'needs reply'", () => {
     const plan = planCanonical(
-      input({ requests: [base], keys, messages: [in1, sent("<s1@t>", [CUST], "<in1@c>", "2026-10-11T09:00:00Z")] }),
+      input({
+        requests: [base],
+        keys,
+        messages: [in1, sent("<s1@t>", [CUST], "<in1@c>", "2026-10-11T09:00:00Z")],
+      }),
     );
     const r = plan.requests[0];
     expect(r.replyState).toBe("Replied");
     expect(r.status).toBe("Replied");
     expect(plan.attachments.find((a) => a.key === "<in1@c>")?.logStatus).toBe("Replied");
-    const tasks = planReplyTasks(r.replyState, [{ id: "t1", status: "Not Started", category: "Customer Reply", lastEdited: iso("2026-10-10T09:01:00Z") }], r.lastCustomerAt);
+    const tasks = planReplyTasks(
+      r.replyState,
+      [
+        {
+          id: "t1",
+          status: "Not Started",
+          category: "Customer Reply",
+          lastEdited: iso("2026-10-10T09:01:00Z"),
+        },
+      ],
+      r.lastCustomerAt,
+    );
     expect(tasks).toEqual({ create: false, done: ["t1"], cancel: [] });
   });
 
   it("a forward to a supplier does not count as a reply", () => {
     const plan = planCanonical(
-      input({ requests: [base], keys, messages: [in1, sent("<f1@t>", ["sales@supplier.com"], "<in1@c>", "2026-10-11T09:00:00Z", "Fwd: Ερώτηση")] }),
+      input({
+        requests: [base],
+        keys,
+        messages: [
+          in1,
+          sent("<f1@t>", ["sales@supplier.com"], "<in1@c>", "2026-10-11T09:00:00Z", "Fwd: Ερώτηση"),
+        ],
+      }),
     );
     expect(plan.requests[0].replyState).toBe("Needs Reply");
     expect(plan.requests[0].status).toBeNull(); // stays Awaiting TOREO Reply
-    expect(plan.attachments.find((a) => a.key === "<f1@t>")).toMatchObject({ role: "forward", logStatus: "Closed" });
+    expect(plan.attachments.find((a) => a.key === "<f1@t>")).toMatchObject({
+      role: "forward",
+      logStatus: "Closed",
+    });
   });
 
   it("an unrelated TOREO email is not a reply and is left for review", () => {
     const plan = planCanonical(
-      input({ requests: [base], keys, messages: [in1, sent("<u1@t>", [CUST], null, "2026-10-11T09:00:00Z", "Newsletter")] }),
+      input({
+        requests: [base],
+        keys,
+        messages: [in1, sent("<u1@t>", [CUST], null, "2026-10-11T09:00:00Z", "Newsletter")],
+      }),
     );
     expect(plan.requests[0].replyState).toBe("Needs Reply");
     expect(plan.review.map((r) => r.key)).toEqual(["<u1@t>"]);
@@ -256,7 +335,12 @@ describe("reply state from INBOX + Sent", () => {
         messages: [
           in1,
           sent("<s1@t>", [CUST], "<in1@c>", "2026-10-11T09:00:00Z"),
-          m({ messageId: "<in2@c>", inReplyTo: "<s1@t>", refs: ["<in1@c>", "<s1@t>"], date: iso("2026-10-12T09:00:00Z") }),
+          m({
+            messageId: "<in2@c>",
+            inReplyTo: "<s1@t>",
+            refs: ["<in1@c>", "<s1@t>"],
+            date: iso("2026-10-12T09:00:00Z"),
+          }),
         ],
       }),
     );
@@ -265,15 +349,36 @@ describe("reply state from INBOX + Sent", () => {
     expect(r.status).toBe("Awaiting TOREO Reply");
     expect(plan.requests).toHaveLength(1);
     const two = [
-      { id: "t1", status: "Not Started", category: "Customer Reply", lastEdited: iso("2026-10-12T09:01:00Z") },
-      { id: "t2", status: "Waiting", category: "Customer Reply", lastEdited: iso("2026-10-12T09:02:00Z") },
+      {
+        id: "t1",
+        status: "Not Started",
+        category: "Customer Reply",
+        lastEdited: iso("2026-10-12T09:01:00Z"),
+      },
+      {
+        id: "t2",
+        status: "Waiting",
+        category: "Customer Reply",
+        lastEdited: iso("2026-10-12T09:02:00Z"),
+      },
     ];
-    expect(planReplyTasks("Needs Reply", two, r.lastCustomerAt)).toEqual({ create: false, done: [], cancel: ["t2"] });
+    expect(planReplyTasks("Needs Reply", two, r.lastCustomerAt)).toEqual({
+      create: false,
+      done: [],
+      cancel: ["t2"],
+    });
     expect(planReplyTasks("Needs Reply", [], r.lastCustomerAt).create).toBe(true);
   });
 
   it("a reply task a person closed after the last customer message stays closed", () => {
-    const closed = [{ id: "t1", status: "Cancelled", category: "Customer Reply", lastEdited: iso("2026-10-13T09:00:00Z") }];
+    const closed = [
+      {
+        id: "t1",
+        status: "Cancelled",
+        category: "Customer Reply",
+        lastEdited: iso("2026-10-13T09:00:00Z"),
+      },
+    ];
     expect(planReplyTasks("Needs Reply", closed, iso("2026-10-12T09:00:00Z")).create).toBe(false);
     expect(planReplyTasks("Needs Reply", closed, iso("2026-10-14T09:00:00Z")).create).toBe(true);
   });
@@ -295,7 +400,14 @@ describe("reply state from INBOX + Sent", () => {
   });
 
   it("terminal and production statuses are never overwritten by mail", () => {
-    for (const s of ["Delivered", "Lost / Cancelled", "In Production", "Quote Sent", "Confirmed Order", "On Hold"]) {
+    for (const s of [
+      "Delivered",
+      "Lost / Cancelled",
+      "In Production",
+      "Quote Sent",
+      "Confirmed Order",
+      "On Hold",
+    ]) {
       expect(nextStatus(s, "Needs Reply", iso("2026-10-26T09:00:00Z"), NOW, 60)).toBeNull();
       expect(nextStatus(s, "Replied", iso("2026-10-26T09:00:00Z"), NOW, 60)).toBeNull();
     }
@@ -315,7 +427,15 @@ describe("reply state from INBOX + Sent", () => {
       input({
         requests: [base],
         keys,
-        messages: [in1, m({ messageId: "<in2@c>", inReplyTo: "<in1@c>", refs: ["<in1@c>"], subject: "Re: Ερώτηση" })],
+        messages: [
+          in1,
+          m({
+            messageId: "<in2@c>",
+            inReplyTo: "<in1@c>",
+            refs: ["<in1@c>"],
+            subject: "Re: Ερώτηση",
+          }),
+        ],
       }),
     );
     expect(plan.requests).toHaveLength(1);
@@ -324,15 +444,45 @@ describe("reply state from INBOX + Sent", () => {
 
 describe("ids and duplicate review", () => {
   it("finds TOREO Order IDs in subjects", () => {
-    expect(orderCodesIn("Re: Quote Request Received – tr-2026-0021", null)).toEqual(["TR-2026-0021"]);
+    expect(orderCodesIn("Re: Quote Request Received – tr-2026-0021", null)).toEqual([
+      "TR-2026-0021",
+    ]);
   });
 
   it("flags same-customer records with the same subject or close dates, not merged", () => {
     const d = duplicateCandidates([
-      { id: "a", label: "TR-2026-0001", customerEmail: CUST, subject: "RFQ – Prototype", receivedAt: iso("2026-09-01T00:00:00Z"), status: "Replied" },
-      { id: "b", label: "TR-2026-0002", customerEmail: CUST, subject: "Re: RFQ – Prototype", receivedAt: iso("2026-10-20T00:00:00Z"), status: "Replied" },
-      { id: "c", label: "TR-2026-0003", customerEmail: CUST, subject: "Άλλο", receivedAt: iso("2026-12-20T00:00:00Z"), status: "New" },
-      { id: "d", label: "TR-2026-0004", customerEmail: CUST, subject: "RFQ – Prototype", receivedAt: iso("2026-09-02T00:00:00Z"), status: "Delivered" },
+      {
+        id: "a",
+        label: "TR-2026-0001",
+        customerEmail: CUST,
+        subject: "RFQ – Prototype",
+        receivedAt: iso("2026-09-01T00:00:00Z"),
+        status: "Replied",
+      },
+      {
+        id: "b",
+        label: "TR-2026-0002",
+        customerEmail: CUST,
+        subject: "Re: RFQ – Prototype",
+        receivedAt: iso("2026-10-20T00:00:00Z"),
+        status: "Replied",
+      },
+      {
+        id: "c",
+        label: "TR-2026-0003",
+        customerEmail: CUST,
+        subject: "Άλλο",
+        receivedAt: iso("2026-12-20T00:00:00Z"),
+        status: "New",
+      },
+      {
+        id: "d",
+        label: "TR-2026-0004",
+        customerEmail: CUST,
+        subject: "RFQ – Prototype",
+        receivedAt: iso("2026-09-02T00:00:00Z"),
+        status: "Delivered",
+      },
     ]);
     expect(d.get("a")).toEqual(["TR-2026-0002"]);
     expect(d.get("b")).toEqual(["TR-2026-0001"]);
@@ -342,8 +492,23 @@ describe("ids and duplicate review", () => {
 
   it("a pair marked 'Not a duplicate' is not flagged again", () => {
     const d = duplicateCandidates([
-      { id: "a", label: "A", customerEmail: CUST, subject: "X", receivedAt: iso("2026-09-01T00:00:00Z"), status: "New", duplicateCheck: "Not a duplicate" },
-      { id: "b", label: "B", customerEmail: CUST, subject: "X", receivedAt: iso("2026-09-02T00:00:00Z"), status: "New" },
+      {
+        id: "a",
+        label: "A",
+        customerEmail: CUST,
+        subject: "X",
+        receivedAt: iso("2026-09-01T00:00:00Z"),
+        status: "New",
+        duplicateCheck: "Not a duplicate",
+      },
+      {
+        id: "b",
+        label: "B",
+        customerEmail: CUST,
+        subject: "X",
+        receivedAt: iso("2026-09-02T00:00:00Z"),
+        status: "New",
+      },
     ]);
     expect(d.size).toBe(0);
   });

@@ -366,7 +366,8 @@ export async function syncWebsiteSubmission(input: {
     const settings = await getSettings();
     if (!settings.website_hook) return { ok: true, skipped: true };
     const db = await admin();
-    const { claimCanonical, claimNotionCreation, saveNotionPage } = await import("./canonical.server");
+    const { claimCanonical, claimNotionCreation, saveNotionPage } =
+      await import("./canonical.server");
     const { findOrderByOrderId } = await import("./notion.server");
     const email = input.email.toLowerCase();
     const code = input.orderCode?.toUpperCase() ?? null;
@@ -379,7 +380,10 @@ export async function syncWebsiteSubmission(input: {
       orderId: input.orderId ?? null,
     });
     if (canon.conflict || !canon.request_id || !canon.order_code)
-      return { ok: false, error: "Η υποβολή αντιστοιχεί σε περισσότερες εγγραφές — χειροκίνητος έλεγχος" };
+      return {
+        ok: false,
+        error: "Η υποβολή αντιστοιχεί σε περισσότερες εγγραφές — χειροκίνητος έλεγχος",
+      };
     if (canon.notion_page_id) return { ok: true, skipped: true }; // retry / already created
     if (!(await claimNotionCreation(db, canon.request_id))) return { ok: true, skipped: true };
     const orderCode = canon.order_code;
@@ -390,7 +394,8 @@ export async function syncWebsiteSubmission(input: {
     }
     const now = new Date().toISOString();
     const title = `${orderCode} — ${input.service ?? "Αίτημα από το site"}`;
-    const trackUrl = input.trackUrl ?? `https://www.toreo.gr/track?code=${encodeURIComponent(orderCode)}`;
+    const trackUrl =
+      input.trackUrl ?? `https://www.toreo.gr/track?code=${encodeURIComponent(orderCode)}`;
     const customerId = await ensureCustomer(email, input.name, "Website", input.phone ?? null);
     const page = readOrderPage(
       await createPage(

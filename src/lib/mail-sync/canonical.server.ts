@@ -124,7 +124,11 @@ export async function claimNotionCreation(db: any, requestId: string): Promise<b
 export async function saveNotionPage(db: any, requestId: string, pageId: string) {
   await db
     .from("mail_sync_requests")
-    .update({ notion_page_id: pageId, notion_claim_until: null, updated_at: new Date().toISOString() })
+    .update({
+      notion_page_id: pageId,
+      notion_claim_until: null,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", requestId)
     .is("notion_page_id", null);
 }
@@ -132,7 +136,10 @@ export async function saveNotionPage(db: any, requestId: string, pageId: string)
 async function selectAll(db: any, table: string, columns: string) {
   const out: any[] = [];
   for (let from = 0; ; from += 1000) {
-    const { data, error } = await db.from(table).select(columns).range(from, from + 999);
+    const { data, error } = await db
+      .from(table)
+      .select(columns)
+      .range(from, from + 999);
     if (error) throw new Error(error.message);
     out.push(...(data ?? []));
     if (!data || data.length < 1000) break;
@@ -172,7 +179,11 @@ export async function reconcile(opts: {
   const password = process.env.PAPAKI_EMAIL_PASSWORD;
   if (!password) return { ...result, error: "Ο κωδικός του email δεν είναι ρυθμισμένος." };
   if (!(await claimLock(db, opts.trigger, settings)))
-    return { ...result, busy: true, error: "Τρέχει ήδη άλλη εκτέλεση ή η προηγούμενη έγινε πολύ πρόσφατα." };
+    return {
+      ...result,
+      busy: true,
+      error: "Τρέχει ήδη άλλη εκτέλεση ή η προηγούμενη έγινε πολύ πρόσφατα.",
+    };
   const { data: run } = await db
     .from("mail_sync_runs")
     .insert({ mode, trigger: opts.trigger })
@@ -198,7 +209,8 @@ export async function reconcile(opts: {
       ...validateSchema(cp, CUSTOMERS_SCHEMA).map((p) => `Customers: ${p}`),
       ...validateSchema(tp, TASKS_SCHEMA).map((p) => `Tasks: ${p}`),
     ];
-    if (result.schemaProblems.length) throw new Error("Η δομή του Notion άλλαξε — δεν έγινε καμία αλλαγή.");
+    if (result.schemaProblems.length)
+      throw new Error("Η δομή του Notion άλλαξε — δεν έγινε καμία αλλαγή.");
     if (opts.apply) {
       const added = await ensureOrderFields(ORDERS_CANON_PROPS, op);
       if (added.length) count("fields_added", added.length);
@@ -215,23 +227,33 @@ export async function reconcile(opts: {
     const ignore: string[] = settings.ignore_senders ?? [];
     const sender = siteSender();
     const cutoffMs = Date.parse(settings.history_cutoff);
-    const [mail, subsAll, orderPages, logPages, taskPages, canonRows, canonKeys, ledger, customerPages, autoLabels] =
-      await Promise.all([
-        loadMailbox(settings.history_cutoff, password),
-        loadSubmissions(db),
-        listAllPages(DATA_SOURCES.orders),
-        listAllPages(DATA_SOURCES.log),
-        listAllPages(DATA_SOURCES.tasks),
-        selectAll(db, "mail_sync_requests", "id, order_code, notion_page_id, removed_at, source"),
-        selectAll(db, "mail_sync_request_keys", "key, request_id"),
-        selectAll(
-          db,
-          "mail_sync_messages",
-          "id, message_id, status, action, notion_order_page_id, notion_log_page_id",
-        ),
-        listAllPages(DATA_SOURCES.customers),
-        selectAll(db, "mail_sync_auto_labels", "target, value"),
-      ]);
+    const [
+      mail,
+      subsAll,
+      orderPages,
+      logPages,
+      taskPages,
+      canonRows,
+      canonKeys,
+      ledger,
+      customerPages,
+      autoLabels,
+    ] = await Promise.all([
+      loadMailbox(settings.history_cutoff, password),
+      loadSubmissions(db),
+      listAllPages(DATA_SOURCES.orders),
+      listAllPages(DATA_SOURCES.log),
+      listAllPages(DATA_SOURCES.tasks),
+      selectAll(db, "mail_sync_requests", "id, order_code, notion_page_id, removed_at, source"),
+      selectAll(db, "mail_sync_request_keys", "key, request_id"),
+      selectAll(
+        db,
+        "mail_sync_messages",
+        "id, message_id, status, action, notion_order_page_id, notion_log_page_id",
+      ),
+      listAllPages(DATA_SOURCES.customers),
+      selectAll(db, "mail_sync_auto_labels", "target, value"),
+    ]);
     const pages = new Map<string, CanonPage>(orderPages.map((p: any) => [p.id, readCanonPage(p)]));
     const logs = logPages.map(readLogPage);
     const logById = new Map(logs.map((l) => [l.id, l]));
@@ -255,7 +277,11 @@ export async function reconcile(opts: {
       else removedKeys.add(k.key);
     }
     const ledgerKey = (id: string) =>
-      id.startsWith("website:") ? `submission:${id.slice(8)}` : id.startsWith("thread:") ? null : `msg:${id}`;
+      id.startsWith("website:")
+        ? `submission:${id.slice(8)}`
+        : id.startsWith("thread:")
+          ? null
+          : `msg:${id}`;
     const priorReview = new Set<string>();
     for (const row of ledger) {
       const k = ledgerKey(row.message_id);
@@ -301,7 +327,14 @@ export async function reconcile(opts: {
         cls:
           kind === "sent"
             ? "outgoing"
-            : classifyIncoming({ headers: msg.headers, from: msg.from, ownAddress: own, siteSender: sender, internal, ignore }),
+            : classifyIncoming({
+                headers: msg.headers,
+                from: msg.from,
+                ownAddress: own,
+                siteSender: sender,
+                internal,
+                ignore,
+              }),
       };
     });
     const submissions = subsAll.filter((s) => Date.parse(s.createdAt) >= cutoffMs);
@@ -321,16 +354,31 @@ export async function reconcile(opts: {
     });
 
     // Report (metadata only: no subjects, bodies or full addresses).
-    const label = (r: RequestPlan) => r.orderCode ?? (r.isNew ? "νέο" : (pages.get(r.id)?.orderId ?? null));
+    const label = (r: RequestPlan) =>
+      r.orderCode ?? (r.isNew ? "νέο" : (pages.get(r.id)?.orderId ?? null));
     for (const rv of plan.review) {
-      result.rows.push({ key: rv.key, kind: "review", action: "review", reason: rv.reason, order: rv.candidates.join(", ") || null, domain: domainOf(rv.email), date: rv.date });
+      result.rows.push({
+        key: rv.key,
+        kind: "review",
+        action: "review",
+        reason: rv.reason,
+        order: rv.candidates.join(", ") || null,
+        domain: domainOf(rv.email),
+        date: rv.date,
+      });
       count("review");
     }
     count("skipped", plan.skipped.length);
-    for (const r of plan.requests) if (r.duplicates.length) result.duplicates.push({ order: label(r) ?? r.subject.slice(0, 40), candidates: r.duplicates });
+    for (const r of plan.requests)
+      if (r.duplicates.length)
+        result.duplicates.push({
+          order: label(r) ?? r.subject.slice(0, 40),
+          candidates: r.duplicates,
+        });
 
     const attachByReq = new Map<string, typeof plan.attachments>();
-    for (const a of plan.attachments) attachByReq.set(a.requestId, [...(attachByReq.get(a.requestId) ?? []), a]);
+    for (const a of plan.attachments)
+      attachByReq.set(a.requestId, [...(attachByReq.get(a.requestId) ?? []), a]);
 
     if (!opts.apply) {
       for (const r of plan.requests) {
@@ -340,11 +388,21 @@ export async function reconcile(opts: {
         if (!r.isNew && !p?.orderId) changes.push("Order ID");
         if (r.replyState && p?.replyState !== r.replyState) changes.push(`→ ${r.replyState}`);
         if (r.status && !r.isNew) changes.push(`Status → ${r.status}`);
-        const newLogs = (attachByReq.get(r.id) ?? []).filter((a) => a.role !== "notification" && !hasLog(a.key)).length;
+        const newLogs = (attachByReq.get(r.id) ?? []).filter(
+          (a) => a.role !== "notification" && !hasLog(a.key),
+        ).length;
         if (newLogs) changes.push(`${newLogs} νέα στο ιστορικό`);
         const action = r.isNew ? "new_record" : changes.length ? "update" : "unchanged";
         count(action);
-        result.rows.push({ key: r.id, kind: "request", action, reason: changes.join(" · ") || "Καμία αλλαγή", order: label(r), domain: domainOf(r.customerEmail), date: r.lastActivity });
+        result.rows.push({
+          key: r.id,
+          kind: "request",
+          action,
+          reason: changes.join(" · ") || "Καμία αλλαγή",
+          order: label(r),
+          domain: domainOf(r.customerEmail),
+          date: r.lastActivity,
+        });
       }
       count("duplicates", result.duplicates.length);
       await classifyPhase(false);
@@ -357,14 +415,22 @@ export async function reconcile(opts: {
     }
     function ledgerLog(key: string) {
       const row = ledger.find((l) => l.message_id === key);
-      return row?.notion_log_page_id && logById.has(row.notion_log_page_id) ? logById.get(row.notion_log_page_id)! : null;
+      return row?.notion_log_page_id && logById.has(row.notion_log_page_id)
+        ? logById.get(row.notion_log_page_id)!
+        : null;
     }
 
     // 4. Apply. Owner-removed records are marked, never recreated.
     for (const id of removedCanon)
-      await db.from("mail_sync_requests").update({ removed_at: new Date().toISOString() }).eq("id", id).is("removed_at", null);
+      await db
+        .from("mail_sync_requests")
+        .update({ removed_at: new Date().toISOString() })
+        .eq("id", id)
+        .is("removed_at", null);
 
-    const ordered = [...plan.requests].sort((a, b) => Number(a.isNew) - Number(b.isNew) || a.receivedAt.localeCompare(b.receivedAt));
+    const ordered = [...plan.requests].sort(
+      (a, b) => Number(a.isNew) - Number(b.isNew) || a.receivedAt.localeCompare(b.receivedAt),
+    );
     const pageOf = new Map<string, { pageId: string; code: string }>();
     let pending = 0;
     for (const r of ordered) {
@@ -372,7 +438,15 @@ export async function reconcile(opts: {
         pending++;
         continue;
       }
-      const row: ReconcileRow = { key: r.id, kind: "request", action: "unchanged", reason: "", order: null, domain: domainOf(r.customerEmail), date: r.lastActivity };
+      const row: ReconcileRow = {
+        key: r.id,
+        kind: "request",
+        action: "unchanged",
+        reason: "",
+        order: null,
+        domain: domainOf(r.customerEmail),
+        date: r.lastActivity,
+      };
       const notes: string[] = [];
       try {
         const page = r.isNew ? null : pages.get(r.id)!;
@@ -424,20 +498,29 @@ export async function reconcile(opts: {
             customerId = r.customerEmail
               ? await ensureCustomer(r.customerEmail, r.customerName, r.source, r.customerPhone)
               : null;
-            const firstMsg = (attachByReq.get(r.id) ?? []).find((a) => a.role === "customer" || a.role === "notification");
+            const firstMsg = (attachByReq.get(r.id) ?? []).find(
+              (a) => a.role === "customer" || a.role === "notification",
+            );
             const created = await createPage(
               DATA_SOURCES.orders,
               orderCreateProps({
-                subject: r.source === "Website" || r.subject.includes(code) ? r.subject : `${code} — ${r.subject}`,
+                subject:
+                  r.source === "Website" || r.subject.includes(code)
+                    ? r.subject
+                    : `${code} — ${r.subject}`,
                 source: r.source,
                 customerName: r.customerName,
                 customerEmail: r.customerEmail ?? "",
                 customerPhone: r.customerPhone,
                 receivedAt: r.receivedAt,
                 lastContact: r.lastActivity,
-                threadUrl: firstMsg && !firstMsg.key.startsWith("website:") ? mid(byId.get(firstMsg.key)?.root ?? firstMsg.key) : null,
+                threadUrl:
+                  firstMsg && !firstMsg.key.startsWith("website:")
+                    ? mid(byId.get(firstMsg.key)?.root ?? firstMsg.key)
+                    : null,
                 websiteUrl: r.source === "Website" ? trackUrl(code) : null,
-                nextAction: r.replyState === "Replied" ? "Αναμονή απάντησης πελάτη" : "Απάντηση στον πελάτη",
+                nextAction:
+                  r.replyState === "Replied" ? "Αναμονή απάντησης πελάτη" : "Απάντηση στον πελάτη",
                 status: r.status ?? undefined,
                 customerPageId: customerId,
                 orderId: code,
@@ -461,7 +544,8 @@ export async function reconcile(opts: {
             patch.orderId = code;
             notes.push(`Order ID ${code}`);
             count("ids_assigned");
-          } else if (current.orderId !== code) notes.push(`Order ID στο Notion: ${current.orderId}`);
+          } else if (current.orderId !== code)
+            notes.push(`Order ID στο Notion: ${current.orderId}`);
           if (r.replyState && current.replyState !== r.replyState) {
             patch.replyState = r.replyState;
             notes.push(`→ ${r.replyState}`);
@@ -471,15 +555,26 @@ export async function reconcile(opts: {
             notes.push(`Status ${current.status ?? "—"} → ${r.status}`);
             count("status_changed");
           }
-          if (r.lastActivity && (!current.lastContact || r.lastActivity.slice(0, 16) > current.lastContact.slice(0, 16)))
+          if (
+            r.lastActivity &&
+            (!current.lastContact || r.lastActivity.slice(0, 16) > current.lastContact.slice(0, 16))
+          )
             patch.lastContact = r.lastActivity;
-          if (r.replyState && (!current.nextAction || AUTO_NEXT_ACTIONS.includes(current.nextAction))) {
-            const want = r.replyState === "Replied" ? "Αναμονή απάντησης πελάτη" : "Απάντηση στον πελάτη";
+          if (
+            r.replyState &&
+            (!current.nextAction || AUTO_NEXT_ACTIONS.includes(current.nextAction))
+          ) {
+            const want =
+              r.replyState === "Replied" ? "Αναμονή απάντησης πελάτη" : "Απάντηση στον πελάτη";
             if (current.nextAction !== want) patch.nextAction = want;
           }
           if (r.duplicates.length && current.duplicateCheck !== "Not a duplicate") {
             const text = r.duplicates.join(", ");
-            if (!current.duplicateCheck || (current.duplicateCheck === "Possible duplicate" && current.possibleDuplicates !== text)) {
+            if (
+              !current.duplicateCheck ||
+              (current.duplicateCheck === "Possible duplicate" &&
+                current.possibleDuplicates !== text)
+            ) {
               patch.duplicates = r.duplicates;
               if (!current.duplicateCheck) {
                 notes.push("πιθανό διπλότυπο");
@@ -496,24 +591,53 @@ export async function reconcile(opts: {
         // Communication Log: one entry per message / form submission, linked and with the Order ID.
         for (const a of attachByReq.get(r.id) ?? []) {
           if (a.role === "notification") {
-            await upsertLedger(db, a.key, { folder: "INBOX", direction: "incoming", classification: "site_notification", action: "notification", status: "synced", notion_order_page_id: pageId, notion_order_record: code });
+            await upsertLedger(db, a.key, {
+              folder: "INBOX",
+              direction: "incoming",
+              classification: "site_notification",
+              action: "notification",
+              status: "synced",
+              notion_order_page_id: pageId,
+              notion_order_record: code,
+            });
             continue;
           }
-          const existingLog = ledgerLog(a.key) ?? (a.key.startsWith("website:") ? null : (logByLink.get(mid(a.key)) ?? null));
+          const existingLog =
+            ledgerLog(a.key) ??
+            (a.key.startsWith("website:") ? null : (logByLink.get(mid(a.key)) ?? null));
           if (existingLog) {
             const patch: Record<string, unknown> = {};
-            if (a.logStatus && existingLog.status !== a.logStatus && AUTO_LOG.includes(existingLog.status ?? "")) patch.Status = { select: { name: a.logStatus } };
-            if (!existingLog.orderIds.length) patch["Order / Request"] = { relation: [{ id: pageId }] };
-            if (existingLog.related !== code) patch["Related Record ID"] = { rich_text: [{ type: "text", text: { content: code } }] };
+            if (
+              a.logStatus &&
+              existingLog.status !== a.logStatus &&
+              AUTO_LOG.includes(existingLog.status ?? "")
+            )
+              patch.Status = { select: { name: a.logStatus } };
+            if (!existingLog.orderIds.length)
+              patch["Order / Request"] = { relation: [{ id: pageId }] };
+            if (existingLog.related !== code)
+              patch["Related Record ID"] = {
+                rich_text: [{ type: "text", text: { content: code } }],
+              };
             if (Object.keys(patch).length) {
               await updatePage(existingLog.id, patch);
               count("log_updated");
             }
-            await upsertLedger(db, a.key, { status: "synced", notion_order_page_id: pageId, notion_order_record: code, notion_log_page_id: existingLog.id });
+            await upsertLedger(db, a.key, {
+              status: "synced",
+              notion_order_page_id: pageId,
+              notion_order_record: code,
+              notion_log_page_id: existingLog.id,
+            });
             continue;
           }
           if (!customerId && r.customerEmail)
-            customerId = await ensureCustomer(r.customerEmail, r.customerName, r.source, r.customerPhone);
+            customerId = await ensureCustomer(
+              r.customerEmail,
+              r.customerName,
+              r.source,
+              r.customerPhone,
+            );
           let props: Record<string, unknown>;
           if (a.role === "website") {
             const s = subById.get(a.key.slice(8));
@@ -524,7 +648,10 @@ export async function reconcile(opts: {
               date: a.date,
               contactEmail: r.customerEmail,
               contactName: r.customerName,
-              summary: r.submissionIds.length > 1 ? `${r.submissionIds.length} ίδιες υποβολές → 1 αίτημα.` : "Υποβολή φόρμας του site.",
+              summary:
+                r.submissionIds.length > 1
+                  ? `${r.submissionIds.length} ίδιες υποβολές → 1 αίτημα.`
+                  : "Υποβολή φόρμας του site.",
               threadUrl: null,
               messageUrl: trackUrl(s?.orderCode ?? code),
               status: a.logStatus ?? "Needs Reply",
@@ -544,7 +671,14 @@ export async function reconcile(opts: {
               date: msg.date,
               contactEmail: counterpart?.email ?? null,
               contactName: counterpart?.name ?? null,
-              summary: [a.role === "forward" ? "Προώθηση σε τρίτο — δεν μετράει ως απάντηση στον πελάτη." : "", cleanSnippet(msg.snippet, 300)].filter(Boolean).join("\n"),
+              summary: [
+                a.role === "forward"
+                  ? "Προώθηση σε τρίτο — δεν μετράει ως απάντηση στον πελάτη."
+                  : "",
+                cleanSnippet(msg.snippet, 300),
+              ]
+                .filter(Boolean)
+                .join("\n"),
               threadUrl: mid(msg.root),
               messageUrl: mid(msg.messageId),
               status: a.logStatus ?? "Needs Reply",
@@ -560,7 +694,11 @@ export async function reconcile(opts: {
           await upsertLedger(db, a.key, {
             folder: a.key.startsWith("website:") ? "website" : (msg?.folder ?? "INBOX"),
             uid: msg?.uid ?? null,
-            direction: a.key.startsWith("website:") ? "website" : a.role === "customer" ? "incoming" : "outgoing",
+            direction: a.key.startsWith("website:")
+              ? "website"
+              : a.role === "customer"
+                ? "incoming"
+                : "outgoing",
             in_reply_to: msg?.inReplyTo ?? null,
             refs: msg?.refs ?? [],
             thread_root: msg?.root ?? null,
@@ -581,19 +719,43 @@ export async function reconcile(opts: {
         const mine = tasks.filter((t) => t.orderIds.includes(pageId!));
         const tp = planReplyTasks(r.replyState, mine, r.lastCustomerAt);
         for (const id of tp.done) {
-          await updatePage(id, { Status: { status: { name: "Done" } }, Notes: { rich_text: [{ type: "text", text: { content: "Ολοκληρώθηκε αυτόματα: βρέθηκε απάντηση της TOREO στο νήμα (Απεσταλμένα)." } }] } });
+          await updatePage(id, {
+            Status: { status: { name: "Done" } },
+            Notes: {
+              rich_text: [
+                {
+                  type: "text",
+                  text: {
+                    content:
+                      "Ολοκληρώθηκε αυτόματα: βρέθηκε απάντηση της TOREO στο νήμα (Απεσταλμένα).",
+                  },
+                },
+              ],
+            },
+          });
           count("tasks_done");
           notes.push("task → Done");
         }
         for (const id of tp.cancel) {
-          await updatePage(id, { Status: { status: { name: "Cancelled" } }, Notes: { rich_text: [{ type: "text", text: { content: "Διπλό task απάντησης — κρατήθηκε ένα." } }] } });
+          await updatePage(id, {
+            Status: { status: { name: "Cancelled" } },
+            Notes: {
+              rich_text: [
+                { type: "text", text: { content: "Διπλό task απάντησης — κρατήθηκε ένα." } },
+              ],
+            },
+          });
           count("tasks_cancelled");
         }
         if (tp.create) {
           await createPage(
             DATA_SOURCES.tasks,
             taskCreateProps({
-              title: `Απάντηση σε ${r.customerName || r.customerEmail || "πελάτη"}: ${r.subject}`.slice(0, 200),
+              title:
+                `Απάντηση σε ${r.customerName || r.customerEmail || "πελάτη"}: ${r.subject}`.slice(
+                  0,
+                  200,
+                ),
               source: r.source,
               orderPageId: pageId!,
               relatedRecord: code,
@@ -605,11 +767,16 @@ export async function reconcile(opts: {
         }
         for (const t of mine)
           if (t.related !== code && !tp.cancel.includes(t.id)) {
-            await updatePage(t.id, { "Related Record ID": { rich_text: [{ type: "text", text: { content: code } }] } });
+            await updatePage(t.id, {
+              "Related Record ID": { rich_text: [{ type: "text", text: { content: code } }] },
+            });
             count("task_ids_updated");
           }
-        if (row.action === "unchanged" && (tp.create || tp.done.length || tp.cancel.length)) row.action = "update";
-        row.reason = notes.join(" · ") || (row.action === "unchanged" ? "Καμία αλλαγή" : "Ενημερώθηκε το ιστορικό");
+        if (row.action === "unchanged" && (tp.create || tp.done.length || tp.cancel.length))
+          row.action = "update";
+        row.reason =
+          notes.join(" · ") ||
+          (row.action === "unchanged" ? "Καμία αλλαγή" : "Ενημερώθηκε το ιστορικό");
         count(row.action);
         result.rows.push(row);
       } catch (e) {
@@ -632,12 +799,19 @@ export async function reconcile(opts: {
     async function classifyPhase(write: boolean) {
       const customers = customerPages.map(readCustomerPage);
       const custById = new Map(customers.map((c) => [c.id, c]));
-      const custByEmail = new Map(customers.filter((c) => c.email).map((c) => [c.email!.toLowerCase(), c]));
+      const custByEmail = new Map(
+        customers.filter((c) => c.email).map((c) => [c.email!.toLowerCase(), c]),
+      );
       const lastAuto = new Map<string, string>(autoLabels.map((a: any) => [a.target, a.value]));
       const planById = new Map(plan.requests.map((r) => [r.id, r]));
       const checks = new Map<string, OrderCheck>();
       const remember = async (target: string, value: string, reason: string) =>
-        db.from("mail_sync_auto_labels").upsert({ target, value, reason, updated_at: new Date().toISOString() }, { onConflict: "target" });
+        db
+          .from("mail_sync_auto_labels")
+          .upsert(
+            { target, value, reason, updated_at: new Date().toISOString() },
+            { onConflict: "target" },
+          );
 
       for (const p of pages.values()) {
         if (write && outOfTime()) return;
@@ -649,9 +823,16 @@ export async function reconcile(opts: {
             if (f && f !== own) senders.add(f);
           }
         for (const l of logs)
-          if (l.orderIds.includes(p.pageId) && l.direction === "Incoming" && l.contactEmail && l.contactEmail !== own)
+          if (
+            l.orderIds.includes(p.pageId) &&
+            l.direction === "Incoming" &&
+            l.contactEmail &&
+            l.contactEmail !== own
+          )
             senders.add(l.contactEmail.toLowerCase());
-        const linked = p.customerIds.map((id) => custById.get(id)).filter((c): c is NonNullable<typeof c> => !!c);
+        const linked = p.customerIds
+          .map((id) => custById.get(id))
+          .filter((c): c is NonNullable<typeof c> => !!c);
         const evidence = {
           status: r?.status ?? p.status,
           source: p.source,
@@ -659,54 +840,103 @@ export async function reconcile(opts: {
           customerEmail: p.customerEmail,
           customerName: p.customerName,
           linkedCustomers: linked.map((c) => ({ email: c.email, name: c.name })),
-          submissionEmails: (r?.submissionIds ?? []).map((id) => subById.get(id)?.email).filter((e): e is string => !!e),
+          submissionEmails: (r?.submissionIds ?? [])
+            .map((id) => subById.get(id)?.email)
+            .filter((e): e is string => !!e),
           incomingSenders: [...senders],
         };
         let v = checkOrder(evidence);
         // Strong-evidence correction: linked to another person's card while a card with the
         // record's exact email exists -> relink to that card and note it on the record.
         const exact = p.customerEmail ? custByEmail.get(p.customerEmail.toLowerCase()) : undefined;
-        const wrong = linked.find((c) => c.email && p.customerEmail && c.email.toLowerCase() !== p.customerEmail.toLowerCase());
+        const wrong = linked.find(
+          (c) =>
+            c.email && p.customerEmail && c.email.toLowerCase() !== p.customerEmail.toLowerCase(),
+        );
         if (v.value === "Customer mismatch" && wrong && exact && exact.id !== wrong.id) {
           const note = `Διόρθωση ${new Date().toISOString().slice(0, 10)}: η σύνδεση πελάτη άλλαξε από «${wrong.name ?? wrong.email}» σε «${exact.name ?? exact.email}» (ίδιο email με το αίτημα).`;
           if (write) {
             await updatePage(p.pageId, {
               Customer: { relation: [{ id: exact.id }] },
-              "Internal Notes": { rich_text: [{ type: "text", text: { content: [p.internalNotes, note].filter(Boolean).join("\n").slice(0, 1900) } }] },
+              "Internal Notes": {
+                rich_text: [
+                  {
+                    type: "text",
+                    text: {
+                      content: [p.internalNotes, note].filter(Boolean).join("\n").slice(0, 1900),
+                    },
+                  },
+                ],
+              },
             });
             count("customer_links_fixed");
           } else count("customer_links_to_fix");
-          result.rows.push({ key: p.pageId, kind: "request", action: "correction", reason: note, order: p.orderId, domain: domainOf(p.customerEmail), date: p.lastContact ?? p.receivedAt ?? "" });
-          v = checkOrder({ ...evidence, linkedCustomers: [{ email: exact.email, name: exact.name }] });
+          result.rows.push({
+            key: p.pageId,
+            kind: "request",
+            action: "correction",
+            reason: note,
+            order: p.orderId,
+            domain: domainOf(p.customerEmail),
+            date: p.lastContact ?? p.receivedAt ?? "",
+          });
+          v = checkOrder({
+            ...evidence,
+            linkedCustomers: [{ email: exact.email, name: exact.name }],
+          });
         }
         checks.set(p.pageId, v.value);
         count(`check:${v.value}`);
         if (v.review)
-          result.rows.push({ key: p.pageId, kind: "review", action: v.value, reason: v.reason, order: p.orderId ?? websiteCodeOf(p), domain: domainOf(p.customerEmail), date: p.lastContact ?? p.receivedAt ?? "" });
+          result.rows.push({
+            key: p.pageId,
+            kind: "review",
+            action: v.value,
+            reason: v.reason,
+            order: p.orderId ?? websiteCodeOf(p),
+            domain: domainOf(p.customerEmail),
+            date: p.lastContact ?? p.receivedAt ?? "",
+          });
         const target = `order:${p.pageId}`;
-        if (write && p.orderCheck !== v.value && mayWriteLabel(p.orderCheck, lastAuto.get(target) ?? null)) {
+        if (
+          write &&
+          p.orderCheck !== v.value &&
+          mayWriteLabel(p.orderCheck, lastAuto.get(target) ?? null)
+        ) {
           await updatePage(p.pageId, {
             "Order Check": { select: { name: v.value } },
             "Check Reason": { rich_text: [{ type: "text", text: { content: v.reason } }] },
           });
           await remember(target, v.value, v.reason);
           count("checks_written");
-        } else if (write && !lastAuto.has(target) && p.orderCheck === v.value) await remember(target, v.value, v.reason);
+        } else if (write && !lastAuto.has(target) && p.orderCheck === v.value)
+          await remember(target, v.value, v.reason);
       }
 
       for (const c of customers) {
         if (write && outOfTime()) return;
         if (!c.email) continue;
         const email = c.email.toLowerCase();
-        const orders = [...pages.values()].filter((p) => p.customerIds.includes(c.id) || (p.customerEmail ?? "").toLowerCase() === email);
-        const inbound = messages.filter((m) => m.folder === "inbox" && (m.fromEmail ?? "").toLowerCase() === email).map((m) => ({ cls: m.cls, subject: m.subject }));
+        const orders = [...pages.values()].filter(
+          (p) => p.customerIds.includes(c.id) || (p.customerEmail ?? "").toLowerCase() === email,
+        );
+        const inbound = messages
+          .filter((m) => m.folder === "inbox" && (m.fromEmail ?? "").toLowerCase() === email)
+          .map((m) => ({ cls: m.cls, subject: m.subject }));
         const outbound = plan.attachments
-          .filter((a) => (a.role === "reply" || a.role === "forward") && byId.get(a.key)?.to.some((t) => t.email === email))
+          .filter(
+            (a) =>
+              (a.role === "reply" || a.role === "forward") &&
+              byId.get(a.key)?.to.some((t) => t.email === email),
+          )
           .map((a) => a.role as "reply" | "forward");
         const v = classifyContact({
           email,
           type: c.type,
-          orders: orders.map((p) => ({ status: planById.get(p.pageId)?.status ?? p.status, check: checks.get(p.pageId) ?? null })),
+          orders: orders.map((p) => ({
+            status: planById.get(p.pageId)?.status ?? p.status,
+            check: checks.get(p.pageId) ?? null,
+          })),
           inbound,
           outbound,
           website: submissions.some((s) => s.email.toLowerCase() === email),
@@ -714,9 +944,21 @@ export async function reconcile(opts: {
         });
         count(`contact:${v.value}`);
         if (v.review)
-          result.rows.push({ key: c.id, kind: "review", action: `Πελάτης: ${v.value}`, reason: v.reason, order: null, domain: domainOf(email), date: "" });
+          result.rows.push({
+            key: c.id,
+            kind: "review",
+            action: `Πελάτης: ${v.value}`,
+            reason: v.reason,
+            order: null,
+            domain: domainOf(email),
+            date: "",
+          });
         const target = `customer:${c.id}`;
-        if (write && (c.classification !== v.value || c.review !== v.review || c.reason !== v.reason) && mayWriteLabel(c.classification, lastAuto.get(target) ?? null)) {
+        if (
+          write &&
+          (c.classification !== v.value || c.review !== v.review || c.reason !== v.reason) &&
+          mayWriteLabel(c.classification, lastAuto.get(target) ?? null)
+        ) {
           await updatePage(c.id, {
             Classification: { select: { name: v.value } },
             "Classification Reason": { rich_text: [{ type: "text", text: { content: v.reason } }] },
@@ -739,7 +981,12 @@ export async function reconcile(opts: {
           ok: result.ok,
           counts: result.counts,
           error: result.error,
-          report: { rows: result.rows, duplicates: result.duplicates, remaining: result.remaining, schemaProblems: result.schemaProblems },
+          report: {
+            rows: result.rows,
+            duplicates: result.duplicates,
+            remaining: result.remaining,
+            schemaProblems: result.schemaProblems,
+          },
         })
         .eq("id", result.runId);
     await releaseLock(db);
@@ -748,13 +995,22 @@ export async function reconcile(opts: {
 
 /** Ledger row per message / submission (unique message_id), created or completed in place. */
 async function upsertLedger(db: any, key: string, patch: Record<string, unknown>) {
-  const { data } = await db.from("mail_sync_messages").select("id").eq("message_id", key).maybeSingle();
+  const { data } = await db
+    .from("mail_sync_messages")
+    .select("id")
+    .eq("message_id", key)
+    .maybeSingle();
   if (data?.id) {
-    const { error } = await db.from("mail_sync_messages").update({ ...patch, error: null, updated_at: new Date().toISOString() }).eq("id", data.id);
+    const { error } = await db
+      .from("mail_sync_messages")
+      .update({ ...patch, error: null, updated_at: new Date().toISOString() })
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
     return;
   }
-  const { error } = await db.from("mail_sync_messages").insert({ message_id: key, folder: "INBOX", direction: "incoming", ...patch });
+  const { error } = await db
+    .from("mail_sync_messages")
+    .insert({ message_id: key, folder: "INBOX", direction: "incoming", ...patch });
   if (error && error.code !== "23505") throw new Error(error.message);
   if (error) await db.from("mail_sync_messages").update(patch).eq("message_id", key);
 }

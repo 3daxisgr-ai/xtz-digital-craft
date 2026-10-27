@@ -19,7 +19,13 @@ export const DUPLICATE_WINDOW_DAYS = 14;
 export const SAME_REQUEST_WINDOW_MS = DAY;
 export const CLOSED_STATUSES = ["Delivered", "Lost / Cancelled"];
 /** Pipeline statuses that only describe "who has the ball"; the reply engine may move these. */
-export const REPLY_STATUSES = ["New", "Needs Review", "Awaiting TOREO Reply", "Replied", "Awaiting Customer"];
+export const REPLY_STATUSES = [
+  "New",
+  "Needs Review",
+  "Awaiting TOREO Reply",
+  "Replied",
+  "Awaiting Customer",
+];
 export const OPEN_TASK = ["Not Started", "In Progress", "Waiting"];
 export const AUTO_NEXT_ACTIONS = [
   "Απάντηση στον πελάτη",
@@ -38,7 +44,8 @@ const ORDER_CODE_RE = /\bTR-\d{4}-\d{4,6}\b/gi;
 /** TOREO Order IDs (TR-YYYY-NNNN) mentioned in a text, upper-cased and unique. */
 export function orderCodesIn(...texts: (string | null | undefined)[]): string[] {
   const out = new Set<string>();
-  for (const t of texts) for (const m of (t ?? "").matchAll(ORDER_CODE_RE)) out.add(m[0].toUpperCase());
+  for (const t of texts)
+    for (const m of (t ?? "").matchAll(ORDER_CODE_RE)) out.add(m[0].toUpperCase());
   return [...out];
 }
 
@@ -163,7 +170,9 @@ export interface CanonPlan {
 }
 
 /** Accidental double submissions: same email + same content within 30 minutes are one request. */
-export function mergeDoubleSubmissions(subs: CSubmission[]): { main: CSubmission; ids: string[] }[] {
+export function mergeDoubleSubmissions(
+  subs: CSubmission[],
+): { main: CSubmission; ids: string[] }[] {
   const sorted = [...subs].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   const out: { main: CSubmission; ids: string[]; last: number }[] = [];
   for (const s of sorted) {
@@ -186,9 +195,11 @@ export function mergeDoubleSubmissions(subs: CSubmission[]): { main: CSubmission
 }
 
 /** Last relevant event decides who has the ball (by timestamp, never by processing order). */
-export function replyStateOf(
-  events: { dir: "in" | "out"; date: string }[],
-): { state: ReplyState | null; lastIn: string | null; lastOut: string | null } {
+export function replyStateOf(events: { dir: "in" | "out"; date: string }[]): {
+  state: ReplyState | null;
+  lastIn: string | null;
+  lastOut: string | null;
+} {
   const sorted = [...events].sort((a, b) => a.date.localeCompare(b.date));
   const lastIn = [...sorted].reverse().find((e) => e.dir === "in")?.date ?? null;
   const lastOut = [...sorted].reverse().find((e) => e.dir === "out")?.date ?? null;
@@ -256,7 +267,10 @@ export function planReplyTasks(
   if (open.length) return { create: false, done: [], cancel: open.slice(1).map((t) => t.id) };
   const closed = reply.filter((t) => !OPEN_TASK.includes(t.status ?? ""));
   // A task someone closed after the latest customer message stays closed.
-  const lastClosed = closed.map((t) => t.lastEdited).sort().pop();
+  const lastClosed = closed
+    .map((t) => t.lastEdited)
+    .sort()
+    .pop();
   const create = !lastClosed || (!!lastCustomerAt && lastCustomerAt > lastClosed);
   return { create, done: [], cancel: [] };
 }
@@ -288,7 +302,8 @@ export function duplicateCandidates(
       if (lc(a.customerEmail) !== lc(b.customerEmail)) continue;
       const sa = subjectKey(a.subject);
       const same = !!sa && sa === subjectKey(b.subject);
-      const close = Math.abs(Date.parse(a.receivedAt) - Date.parse(b.receivedAt)) <= windowDays * DAY;
+      const close =
+        Math.abs(Date.parse(a.receivedAt) - Date.parse(b.receivedAt)) <= windowDays * DAY;
       if (!same && !close) continue;
       out.set(a.id, [...(out.get(a.id) ?? []), b.label]);
       out.set(b.id, [...(out.get(b.id) ?? []), a.label]);
@@ -353,19 +368,27 @@ export function planCanonical(input: CanonInput): CanonPlan {
   };
   const openFor = (email: string) =>
     [...work.values()].filter(
-      (w) => w.customerEmail === email && !CLOSED_STATUSES.includes(existingStatus.get(w.id) ?? w.status ?? ""),
+      (w) =>
+        w.customerEmail === email &&
+        !CLOSED_STATUSES.includes(existingStatus.get(w.id) ?? w.status ?? ""),
     );
   const statusMap = input.statusMap ?? {};
 
   // 1. Website requests (stable submission id + website Order ID).
   for (const { main: s, ids } of mergeDoubleSubmissions(input.submissions)) {
-    const ks = [...ids.map((id) => `submission:${id}`), ...(s.orderCode ? [`order:${s.orderCode.toUpperCase()}`] : [])];
+    const ks = [
+      ...ids.map((id) => `submission:${id}`),
+      ...(s.orderCode ? [`order:${s.orderCode.toUpperCase()}`] : []),
+    ];
     if (isInternal(s.email)) {
       skipped.push({ key: `website:${s.id}`, reason: "Δοκιμή / εσωτερικός αποστολέας TOREO" });
       continue;
     }
     if (ks.some((k) => input.removedKeys.has(k))) {
-      skipped.push({ key: `website:${s.id}`, reason: "Η εγγραφή διαγράφηκε στο Notion — δεν ξαναδημιουργείται" });
+      skipped.push({
+        key: `website:${s.id}`,
+        reason: "Η εγγραφή διαγράφηκε στο Notion — δεν ξαναδημιουργείται",
+      });
       continue;
     }
     const hits = new Set(ks.map((k) => keys.get(k)).filter((x): x is string => !!x));
@@ -414,7 +437,14 @@ export function planCanonical(input: CanonInput): CanonPlan {
     own_(w, ...ks);
     w.events.push({ dir: "in", date: s.createdAt });
     touch(w, s.createdAt);
-    attachments.push({ key: `website:${s.id}`, requestId: w.id, role: "website", date: s.createdAt, via: "submission", logStatus: null });
+    attachments.push({
+      key: `website:${s.id}`,
+      requestId: w.id,
+      role: "website",
+      date: s.createdAt,
+      via: "submission",
+      logStatus: null,
+    });
   }
 
   const subsByEmail = new Map<string, CSubmission[]>();
@@ -422,7 +452,8 @@ export function planCanonical(input: CanonInput): CanonPlan {
     const e = lc(s.email);
     subsByEmail.set(e, [...(subsByEmail.get(e) ?? []), s]);
   }
-  const threadIds = (m: CMsg) => [m.inReplyTo, ...[...m.refs].reverse()].filter((x): x is string => !!x);
+  const threadIds = (m: CMsg) =>
+    [m.inReplyTo, ...[...m.refs].reverse()].filter((x): x is string => !!x);
   const strongMatch = (
     m: CMsg,
   ): { id?: string; via?: string; removed?: boolean; conflict?: string[]; inReview?: boolean } => {
@@ -457,7 +488,10 @@ export function planCanonical(input: CanonInput): CanonPlan {
       key: m.messageId,
       kind,
       date: m.date,
-      email: kind === "outgoing" ? lc(m.toEmails.find((t) => !isInternal(t))) || null : lc(m.fromEmail) || null,
+      email:
+        kind === "outgoing"
+          ? lc(m.toEmails.find((t) => !isInternal(t))) || null
+          : lc(m.fromEmail) || null,
       reason,
       candidates: ids.map((id) => (work.get(id) ? label(work.get(id)!) : id)),
     });
@@ -482,8 +516,16 @@ export function planCanonical(input: CanonInput): CanonPlan {
       }
       if (id && work.get(id)) {
         own_(work.get(id)!, `msg:${m.messageId}`);
-        attachments.push({ key: m.messageId, requestId: id, role: "notification", date: m.date, via: "notification", logStatus: null });
-      } else skipped.push({ key: m.messageId, reason: "Ειδοποίηση φόρμας χωρίς αντίστοιχη υποβολή" });
+        attachments.push({
+          key: m.messageId,
+          requestId: id,
+          role: "notification",
+          date: m.date,
+          via: "notification",
+          logStatus: null,
+        });
+      } else
+        skipped.push({ key: m.messageId, reason: "Ειδοποίηση φόρμας χωρίς αντίστοιχη υποβολή" });
       continue;
     }
 
@@ -503,12 +545,22 @@ export function planCanonical(input: CanonInput): CanonPlan {
         continue;
       }
       if (s.conflict) {
-        toReview(m, "outgoing", "Email της TOREO που αντιστοιχεί σε περισσότερες εγγραφές", s.conflict);
+        toReview(
+          m,
+          "outgoing",
+          "Email της TOREO που αντιστοιχεί σε περισσότερες εγγραφές",
+          s.conflict,
+        );
         continue;
       }
       const w = s.id ? work.get(s.id) : undefined;
       if (!w) {
-        toReview(m, "outgoing", "Email της TOREO χωρίς σύνδεση με αίτημα (ούτε νήμα ούτε Order ID)", []);
+        toReview(
+          m,
+          "outgoing",
+          "Email της TOREO χωρίς σύνδεση με αίτημα (ούτε νήμα ούτε Order ID)",
+          [],
+        );
         continue;
       }
       // Counts as a reply only when it actually went to this record's customer.
@@ -518,7 +570,14 @@ export function planCanonical(input: CanonInput): CanonPlan {
         w.events.push({ dir: "out", date: m.date });
         touch(w, m.date);
       }
-      attachments.push({ key: m.messageId, requestId: w.id, role: reply ? "reply" : "forward", date: m.date, via: s.via ?? "thread", logStatus: null });
+      attachments.push({
+        key: m.messageId,
+        requestId: w.id,
+        role: reply ? "reply" : "forward",
+        date: m.date,
+        via: s.via ?? "thread",
+        logStatus: null,
+      });
       continue;
     }
 
@@ -553,11 +612,18 @@ export function planCanonical(input: CanonInput): CanonPlan {
       const sk = subjectKey(m.subject);
       const bySubject = sk
         ? open.filter(
-            (o) => subjectKey(o.subject) === sk && Math.abs(Date.parse(o.lastActivity) - t) <= SUBJECT_WINDOW_DAYS * DAY,
+            (o) =>
+              subjectKey(o.subject) === sk &&
+              Math.abs(Date.parse(o.lastActivity) - t) <= SUBJECT_WINDOW_DAYS * DAY,
           )
         : [];
       if (bySubject.length > 1) {
-        toReview(m, "incoming", "Ίδιος πελάτης και θέμα σε περισσότερες εγγραφές", bySubject.map((o) => o.id));
+        toReview(
+          m,
+          "incoming",
+          "Ίδιος πελάτης και θέμα σε περισσότερες εγγραφές",
+          bySubject.map((o) => o.id),
+        );
         continue;
       }
       if (bySubject.length === 1) {
@@ -573,7 +639,12 @@ export function planCanonical(input: CanonInput): CanonPlan {
             t <= Date.parse(o.lastActivity) + input.staleDays * DAY,
         );
         if (active.length > 1) {
-          toReview(m, "incoming", "Ο πελάτης έχει περισσότερες ανοιχτές εγγραφές", active.map((o) => o.id));
+          toReview(
+            m,
+            "incoming",
+            "Ο πελάτης έχει περισσότερες ανοιχτές εγγραφές",
+            active.map((o) => o.id),
+          );
           continue;
         }
         if (active.length === 1) {
@@ -581,7 +652,9 @@ export function planCanonical(input: CanonInput): CanonPlan {
             w = active[0];
             via = "same_day_as_request";
           } else {
-            toReview(m, "incoming", "Ίδιος πελάτης με ανοιχτό αίτημα — ίδια ή νέα παραγγελία;", [active[0].id]);
+            toReview(m, "incoming", "Ίδιος πελάτης με ανοιχτό αίτημα — ίδια ή νέα παραγγελία;", [
+              active[0].id,
+            ]);
             continue;
           }
         }
@@ -598,7 +671,9 @@ export function planCanonical(input: CanonInput): CanonPlan {
         customerEmail: from,
         customerName: m.fromName,
         customerPhone: null,
-        subject: m.subject.replace(/^\s*((re|fw|fwd|απ|σχετ|προωθ)\s*:\s*)+/i, "").trim() || "(χωρίς θέμα)",
+        subject:
+          m.subject.replace(/^\s*((re|fw|fwd|απ|σχετ|προωθ)\s*:\s*)+/i, "").trim() ||
+          "(χωρίς θέμα)",
         receivedAt: m.date,
         submissionIds: [],
         keys: [],
@@ -617,7 +692,14 @@ export function planCanonical(input: CanonInput): CanonPlan {
     own_(w, `msg:${m.messageId}`, ...threadIds(m).map((t) => `msg:${t}`));
     w.events.push({ dir: "in", date: m.date });
     touch(w, m.date);
-    attachments.push({ key: m.messageId, requestId: w.id, role: "customer", date: m.date, via, logStatus: null });
+    attachments.push({
+      key: m.messageId,
+      requestId: w.id,
+      role: "customer",
+      date: m.date,
+      via,
+      logStatus: null,
+    });
   }
 
   // 3. Reply state per request, then log statuses, statuses and duplicate candidates.
@@ -628,9 +710,22 @@ export function planCanonical(input: CanonInput): CanonPlan {
     w.lastCustomerAt = rs.lastIn;
     w.lastReplyAt = rs.lastOut;
     if (w.isNew) {
-      w.status = initialStatus(rs.state, w.source === "Website", w.status, w.lastActivity, input.now, input.staleDays);
+      w.status = initialStatus(
+        rs.state,
+        w.source === "Website",
+        w.status,
+        w.lastActivity,
+        input.now,
+        input.staleDays,
+      );
     } else {
-      w.status = nextStatus(existingStatus.get(w.id) ?? null, rs.state, w.lastActivity, input.now, input.staleDays);
+      w.status = nextStatus(
+        existingStatus.get(w.id) ?? null,
+        rs.state,
+        w.lastActivity,
+        input.now,
+        input.staleDays,
+      );
     }
   }
   for (const a of attachments) {
