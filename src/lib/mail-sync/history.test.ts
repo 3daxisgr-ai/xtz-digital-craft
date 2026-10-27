@@ -60,7 +60,12 @@ function input(p: Partial<PlanInput>): PlanInput {
 describe("historical import plan", () => {
   it("answered thread becomes one record with final status Replied, not Awaiting", () => {
     const u = planHistory(
-      input({ messages: [msg({ messageId: "<a@x>" }), reply("<b@t>", "c@client.gr", "<a@x>", "2026-10-21T09:00:00Z")] }),
+      input({
+        messages: [
+          msg({ messageId: "<a@x>" }),
+          reply("<b@t>", "c@client.gr", "<a@x>", "2026-10-21T09:00:00Z"),
+        ],
+      }),
     );
     expect(u).toHaveLength(1);
     expect(u[0].action).toBe("new_record");
@@ -82,7 +87,12 @@ describe("historical import plan", () => {
 
   it("forward to a supplier does not count as a reply to the customer", () => {
     const u = planHistory(
-      input({ messages: [msg({ messageId: "<a@x>" }), reply("<f@t>", "supplier@steel.gr", "<a@x>", "2026-10-21T09:00:00Z")] }),
+      input({
+        messages: [
+          msg({ messageId: "<a@x>" }),
+          reply("<f@t>", "supplier@steel.gr", "<a@x>", "2026-10-21T09:00:00Z"),
+        ],
+      }),
     );
     expect(u[0].status).toBe("Replied"); // last relevant message is outgoing
     expect(u[0].messages[0].logStatus).toBe("Needs Reply");
@@ -106,7 +116,9 @@ describe("historical import plan", () => {
   });
 
   it("already-logged messages are duplicates and a re-run creates nothing", () => {
-    const u = planHistory(input({ messages: [msg({ messageId: "<a@x>" })], done: new Set(["<a@x>"]) }));
+    const u = planHistory(
+      input({ messages: [msg({ messageId: "<a@x>" })], done: new Set(["<a@x>"]) }),
+    );
     expect(u[0].action).toBe("duplicate");
     expect(importable(u, new Map([[u[0].key, u[0].fingerprint]])).go).toHaveLength(0);
   });
@@ -121,7 +133,12 @@ describe("historical import plan", () => {
       orderCode: "TR-0042",
       orderStatus: "quote_sent",
     };
-    const u = planHistory(input({ messages: [msg({ messageId: "<a@x>", subject: "Re: TR-0042" })], submissions: [sub] }));
+    const u = planHistory(
+      input({
+        messages: [msg({ messageId: "<a@x>", subject: "Re: TR-0042" })],
+        submissions: [sub],
+      }),
+    );
     expect(u).toHaveLength(1);
     expect(u[0].kind).toBe("website");
     expect(u[0].status).toBe("Quote Sent");
@@ -129,15 +146,25 @@ describe("historical import plan", () => {
   });
 
   it("site notifications and newsletters are skipped", () => {
-    const u = planHistory(input({ messages: [msg({ messageId: "<n@x>", cls: "site_notification" })] }));
+    const u = planHistory(
+      input({ messages: [msg({ messageId: "<n@x>", cls: "site_notification" })] }),
+    );
     expect(u[0].action).toBe("skip");
   });
 
   it("two open records for the same customer go to manual review", () => {
     const p = (id: string): ExistingPage => ({
-      pageId: id, record: id, title: id, status: "Replied", customerEmail: "c@client.gr", threadUrl: null, websiteUrl: null,
+      pageId: id,
+      record: id,
+      title: id,
+      status: "Replied",
+      customerEmail: "c@client.gr",
+      threadUrl: null,
+      websiteUrl: null,
     });
-    const u = planHistory(input({ messages: [msg({ messageId: "<a@x>" })], pages: [p("1"), p("2")] }));
+    const u = planHistory(
+      input({ messages: [msg({ messageId: "<a@x>" })], pages: [p("1"), p("2")] }),
+    );
     expect(u[0].action).toBe("manual_review");
   });
 
