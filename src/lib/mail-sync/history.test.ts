@@ -132,6 +132,7 @@ describe("historical import plan", () => {
       createdAt: d("2026-10-20T08:30:00Z"),
       orderCode: "TR-0042",
       orderStatus: "quote_sent",
+      contentKey: "k",
     };
     const u = planHistory(
       input({
