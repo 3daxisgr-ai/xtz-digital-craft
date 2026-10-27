@@ -34,7 +34,8 @@ const QUEUES: { id: string; title: string; hint: string; match: (r: ReconcileRow
     id: "mismatch",
     title: "Λάθος σύνδεση πελάτη ↔ αιτήματος",
     hint: "Έλεγξε όνομα / email / κάρτα πελάτη στο αίτημα.",
-    match: (r) => r.action === "Customer mismatch" || r.action === "Needs review" || r.action === "correction",
+    match: (r) =>
+      r.action === "Customer mismatch" || r.action === "Needs review" || r.action === "correction",
   },
   {
     id: "nonorder",
@@ -59,10 +60,17 @@ const QUEUES: { id: string; title: string; hint: string; match: (r: ReconcileRow
 export function ReconcilePanel({ liveWrites }: { liveWrites: boolean }) {
   const run = useServerFn(mailSyncReconcile);
   const [busy, setBusy] = useState<"preview" | "apply" | null>(null);
-  const [res, setRes] = useState<(ReconcileResult & { error: string | null }) | { error: string } | null>(null);
+  const [res, setRes] = useState<
+    (ReconcileResult & { error: string | null }) | { error: string } | null
+  >(null);
 
   async function go(apply: boolean) {
-    if (apply && !confirm("Εφαρμογή στο Notion: Order ID, κατάσταση απάντησης, ιστορικό, tasks και ετικέτες ελέγχου. Δεν διαγράφεται και δεν συγχωνεύεται τίποτα. Συνέχεια;"))
+    if (
+      apply &&
+      !confirm(
+        "Εφαρμογή στο Notion: Order ID, κατάσταση απάντησης, ιστορικό, tasks και ετικέτες ελέγχου. Δεν διαγράφεται και δεν συγχωνεύεται τίποτα. Συνέχεια;",
+      )
+    )
       return;
     setBusy(apply ? "apply" : "preview");
     setRes(null);
