@@ -43,6 +43,41 @@ export const ORDERS_SCHEMA: SchemaRequirement = {
   },
 };
 
+/** Canonical-request fields on Orders & Quotes (added once, additively, by ensureOrderFields). */
+export const ORDERS_CANON_PROPS: Record<string, unknown> = {
+  "Order ID": { rich_text: {} },
+  "Reply State": {
+    select: {
+      options: [
+        { name: "Needs Reply", color: "red" },
+        { name: "Replied", color: "green" },
+      ],
+    },
+  },
+  "Duplicate Check": {
+    select: {
+      options: [
+        { name: "Possible duplicate", color: "orange" },
+        { name: "Not a duplicate", color: "gray" },
+      ],
+    },
+  },
+  "Possible Duplicates": { rich_text: {} },
+};
+export const ORDERS_CANON_SCHEMA: SchemaRequirement = {
+  props: {
+    "Order ID": "rich_text",
+    "Reply State": "select",
+    "Duplicate Check": "select",
+    "Possible Duplicates": "rich_text",
+    Tasks: "relation",
+  },
+  options: {
+    "Reply State": ["Needs Reply", "Replied"],
+    "Duplicate Check": ["Possible duplicate", "Not a duplicate"],
+  },
+};
+
 export const LOG_SCHEMA: SchemaRequirement = {
   props: {
     Activity: "title",
@@ -149,6 +184,10 @@ export interface NewOrderInput {
   lastContact?: string;
   customerPageId?: string | null;
   internalNotes?: string | null;
+  /** Permanent TOREO Order ID (TR-YYYY-NNNN). */
+  orderId?: string | null;
+  replyState?: "Needs Reply" | "Replied" | null;
+  duplicates?: string[];
 }
 
 export function orderCreateProps(i: NewOrderInput): Record<string, unknown> {
@@ -168,7 +207,84 @@ export function orderCreateProps(i: NewOrderInput): Record<string, unknown> {
   if (i.websiteUrl) props["Website Submission"] = url(i.websiteUrl);
   if (i.customerPageId) props.Customer = relation(i.customerPageId);
   if (i.internalNotes) props["Internal Notes"] = rich(i.internalNotes);
+  if (i.orderId) props["Order ID"] = rich(i.orderId);
+  if (i.replyState) props["Reply State"] = select(i.replyState);
+  if (i.duplicates?.length) {
+    props["Duplicate Check"] = select("Possible duplicate");
+    props["Possible Duplicates"] = rich(i.duplicates.join(", "));
+  }
   return props;
+}
+
+/** Patch for an existing record; only the given fields change. */
+export function canonPatchProps(p: {
+  orderId?: string;
+  replyState?: "Needs Reply" | "Replied";
+  status?: string;
+  lastContact?: string;
+  nextAction?: string;
+  threadUrl?: string;
+  customerPageId?: string;
+  duplicates?: string[];
+}): Record<string, unknown> {
+  const props: Record<string, unknown> = {};
+  if (p.orderId) props["Order ID"] = rich(p.orderId);
+  if (p.replyState) props["Reply State"] = select(p.replyState);
+  if (p.status) props.Status = select(p.status);
+  if (p.lastContact) props["Last Contact"] = date(p.lastContact);
+  if (p.nextAction) props["Next Action"] = rich(p.nextAction);
+  if (p.threadUrl) props["Email Thread"] = url(p.threadUrl);
+  if (p.customerPageId) props.Customer = relation(p.customerPageId);
+  if (p.duplicates) {
+    props["Duplicate Check"] = select("Possible duplicate");
+    props["Possible Duplicates"] = rich(p.duplicates.join(", "));
+  }
+  return props;
+}
+
+const plain = (v: any) =>
+  (v?.rich_text ?? v?.title ?? []).map((x: any) => x.plain_text ?? x.text?.content ?? "").join("");
+
+/** Everything the canonical reconcile reads from an Orders & Quotes page. */
+export function readCanonPage(page: any) {
+  const p = page?.properties ?? {};
+  return {
+    ...readExistingPage(page),
+    orderId: plain(p["Order ID"]).trim() || null,
+    replyState: (p["Reply State"]?.select?.name ?? null) as string | null,
+    duplicateCheck: (p["Duplicate Check"]?.select?.name ?? null) as string | null,
+    possibleDuplicates: plain(p["Possible Duplicates"]).trim() || null,
+    nextAction: plain(p["Next Action"]).trim() || null,
+    receivedAt: (p["Received At"]?.date?.start ?? page?.created_time ?? null) as string | null,
+    lastContact: (p["Last Contact"]?.date?.start ?? null) as string | null,
+    customerIds: (p.Customer?.relation ?? []).map((r: any) => r.id as string),
+    taskIds: (p.Tasks?.relation ?? []).map((r: any) => r.id as string),
+    source: (p.Source?.select?.name ?? null) as string | null,
+  };
+}
+export type CanonPage = ReturnType<typeof readCanonPage>;
+
+export function readLogPage(page: any) {
+  const p = page?.properties ?? {};
+  return {
+    id: page.id as string,
+    link: (p["Message / Submission Link"]?.url ?? null) as string | null,
+    status: (p.Status?.select?.name ?? null) as string | null,
+    orderIds: (p["Order / Request"]?.relation ?? []).map((r: any) => r.id as string),
+    related: plain(p["Related Record ID"]).trim() || null,
+  };
+}
+
+export function readTaskPage(page: any) {
+  const p = page?.properties ?? {};
+  return {
+    id: page.id as string,
+    status: (p.Status?.status?.name ?? null) as string | null,
+    category: (p.Category?.select?.name ?? null) as string | null,
+    orderIds: (p["Order / Request"]?.relation ?? []).map((r: any) => r.id as string),
+    related: plain(p["Related Record ID"]).trim() || null,
+    lastEdited: (page.last_edited_time ?? page.created_time) as string,
+  };
 }
 
 export function orderUpdateProps(opts: {

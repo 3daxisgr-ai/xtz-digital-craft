@@ -97,6 +97,9 @@ export interface Msg {
   snippet: string;
   attachments: string[];
   headers: Record<string, string>;
+  replyTo: string | null;
+  hdrOrderId: string | null;
+  hdrSubmissionId: string | null;
 }
 
 export function toMsg(rec: FetchRecord, folder: string, uidvalidity: number | null): Msg {
@@ -122,6 +125,11 @@ export function toMsg(rec: FetchRecord, folder: string, uidvalidity: number | nu
     snippet: cleanSnippet(rec.preview),
     attachments: rec.attachmentNames.map((n) => decodeWords(n)).slice(0, 20),
     headers,
+    replyTo: parseAddressList(headers["reply-to"])[0]?.email ?? null,
+    hdrOrderId: (headers["x-toreo-order-id"] ?? "").trim().toUpperCase() || null,
+    hdrSubmissionId: /^[0-9a-f-]{36}$/i.test((headers["x-toreo-submission-id"] ?? "").trim())
+      ? headers["x-toreo-submission-id"].trim().toLowerCase()
+      : null,
   };
 }
 
