@@ -250,7 +250,13 @@ export async function runHistory(opts: {
   if (!password) return { ...result, error: "Ο κωδικός του email δεν είναι ρυθμισμένος." };
 
   let approved: Map<string, string> | null = null;
-  if (opts.mode === "history") {
+  if (opts.mode === "history")
+    return {
+      ...result,
+      error:
+        "Η ιστορική εισαγωγή αντικαταστάθηκε από την «Ενοποίηση αιτημάτων» (ένα αίτημα = μία εγγραφή, ένα Order ID).",
+    };
+  if (opts.mode === ("history" as string)) {
     if (!settings.live_writes || !settings.history_import)
       return {
         ...result,
