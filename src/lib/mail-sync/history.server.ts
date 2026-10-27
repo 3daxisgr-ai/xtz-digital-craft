@@ -327,7 +327,10 @@ export async function runHistory(opts: {
         .map((u) => u.customerEmail!),
     );
     const { go, changed } = importable(plan.units, approved!);
-    const queue = go.filter((u) => !opts.only || u.kind === opts.only);
+    // Requests first (they create the customer cards), history-only entries after.
+    const queue = go
+      .filter((u) => !opts.only || u.kind === opts.only)
+      .sort((a, b) => Number(a.action === "log_only") - Number(b.action === "log_only"));
     const limit = Math.min(Math.max(opts.limit ?? 20, 1), 100);
     for (const u of changed)
       result.rows.push({
