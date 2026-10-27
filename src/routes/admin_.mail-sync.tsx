@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { ReportItem, FolderReport } from "@/lib/mail-sync/types";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { HistoryImport } from "@/components/admin/HistoryImport";
+import { ReconcilePanel } from "@/components/admin/ReconcilePanel";
 import {
   mailSyncOverview,
   mailSyncGetRun,
@@ -177,9 +177,7 @@ function MailSyncPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- load once on open
   }, []);
 
-  async function doRun(mode: "probe" | "dry" | "live") {
-    if (mode === "live" && !confirm("Ζωντανή εκτέλεση: θα γίνουν εγγραφές στο Notion. Συνέχεια;"))
-      return;
+  async function doRun(mode: "probe") {
     setBusy(mode);
     setResult(null);
     try {
@@ -270,31 +268,14 @@ function MailSyncPage() {
             >
               {busy === "probe" ? "…" : "Δοκιμή σύνδεσης"}
             </button>
-            <button
-              disabled={!!busy}
-              onClick={() => doRun("dry")}
-              className="rounded bg-amber-300 text-black px-3 py-2 text-xs font-mono font-bold uppercase tracking-widest hover:bg-amber-200 disabled:opacity-40"
-            >
-              {busy === "dry" ? "Εκτέλεση…" : "Εκτέλεση dry-run"}
-            </button>
-            <button
-              disabled={!!busy || !s?.live_writes}
-              onClick={() => doRun("live")}
-              title={s?.live_writes ? "" : "Ενεργοποίησε πρώτα τις ζωντανές εγγραφές"}
-              className="rounded border border-emerald-400/50 text-emerald-200 px-3 py-2 text-xs font-mono uppercase tracking-widest hover:bg-emerald-400/10 disabled:opacity-30"
-            >
-              {busy === "live" ? "Εκτέλεση…" : "Ζωντανή εκτέλεση"}
-            </button>
           </div>
           <p className="text-xs text-white/40">
-            Το dry-run διαβάζει email και Notion και δείχνει τι θα γινόταν, χωρίς καμία αλλαγή. Ανά
-            εκτέλεση: έως {s?.max_per_folder ?? "—"} μηνύματα ανά φάκελο· πρώτη εκτέλεση: τελευταίες{" "}
-            {s?.lookback_days ?? "—"} ημέρες.
+            Δοκιμή σύνδεσης: ανοίγει το mailbox μόνο για ανάγνωση και μετράει φακέλους.
           </p>
           {result && <Report r={result} />}
         </section>
 
-        <HistoryImport actor={actor} settings={s ?? null} onChange={reload} />
+        <ReconcilePanel liveWrites={!!s?.live_writes} />
 
         <section className="rounded border border-white/10 p-4 space-y-3">
           <h2 className="font-mono text-xs uppercase tracking-widest text-white/60">Ρυθμίσεις</h2>
