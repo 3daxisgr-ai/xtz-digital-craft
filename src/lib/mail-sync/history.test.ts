@@ -181,3 +181,92 @@ describe("historical import plan", () => {
     expect(ORDER_STATUS_TO_NOTION.production).toBe("In Production");
   });
 });
+
+describe("historical import — data quality", () => {
+  const sub = (id: string, at: string, p: Partial<HSubmission> = {}): HSubmission => ({
+    id,
+    email: "c@client.gr",
+    name: "Client",
+    service: "Laser",
+    createdAt: d(at),
+    orderCode: null,
+    orderStatus: null,
+    contentKey: "same",
+    ...p,
+  });
+
+  it("double website submissions within 30 minutes become one request", () => {
+    const u = planHistory(
+      input({
+        submissions: [sub("s1", "2026-10-20T08:00:00Z"), sub("s2", "2026-10-20T08:05:00Z")],
+      }),
+    );
+    const web = u.filter((x) => x.kind === "website");
+    expect(web).toHaveLength(1);
+    expect(web[0].submissionIds).toEqual(["s1", "s2"]);
+  });
+
+  it("submissions from TOREO internal/test addresses are skipped", () => {
+    const u = planHistory(
+      input({
+        submissions: [sub("s1", "2026-10-20T08:00:00Z", { email: "test@internal.gr" })],
+        internal: ["test@internal.gr"],
+      }),
+    );
+    expect(u[0].action).toBe("skip");
+  });
+
+  it("TOREO email to a customer with exactly one request joins that request", () => {
+    const out = msg({
+      messageId: "<o@t>",
+      folder: "sent",
+      fromEmail: OWN,
+      toEmails: ["c@client.gr"],
+      date: d("2026-10-22T09:00:00Z"),
+      cls: "outgoing",
+    });
+    const u = planHistory(input({ messages: [msg({ messageId: "<a@x>" }), out] }));
+    const rec = u.filter((x) => x.action === "new_record");
+    expect(rec).toHaveLength(1);
+    expect(rec[0].messages.map((m) => m.messageId)).toContain("<o@t>");
+    expect(rec[0].status).toBe("Replied");
+  });
+
+  it("TOREO email to an unknown contact is kept as history only, never a request", () => {
+    const out = msg({
+      messageId: "<o@t>",
+      folder: "sent",
+      fromEmail: OWN,
+      toEmails: ["sales@supplier.gr"],
+      cls: "outgoing",
+    });
+    const u = planHistory(input({ messages: [out] }));
+    expect(u[0].action).toBe("log_only");
+    expect(u[0].task).toBe(false);
+  });
+
+  it("email to an ignored platform domain is skipped", () => {
+    const out = msg({
+      messageId: "<o@t>",
+      folder: "sent",
+      fromEmail: OWN,
+      toEmails: ["service@pcbway.com"],
+      cls: "outgoing",
+    });
+    expect(planHistory(input({ messages: [out], ignore: ["pcbway.com"] }))[0].action).toBe("skip");
+  });
+
+  it("only records waiting for TOREO get a reply task", () => {
+    const waiting = planHistory(input({ messages: [msg({ messageId: "<a@x>" })] }))[0];
+    expect(waiting.task).toBe(true);
+    const replied = planHistory(
+      input({
+        messages: [
+          msg({ messageId: "<a@x>" }),
+          reply("<b@t>", "c@client.gr", "<a@x>", "2026-10-21T09:00:00Z"),
+        ],
+      }),
+    )[0];
+    expect(replied.task).toBe(false);
+  });
+});

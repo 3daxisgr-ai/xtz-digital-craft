@@ -17,6 +17,8 @@ import {
   type Classification,
 } from "./mime";
 import {
+  CUSTOMERS_SCHEMA,
+  TASKS_SCHEMA,
   LOG_SCHEMA,
   ORDERS_SCHEMA,
   customerCreateProps,
@@ -240,13 +242,17 @@ export async function runMailSync(opts: { mode: Mode; trigger: Trigger }): Promi
   try {
     // Notion schema check first (read-only) — refuse to write into a database that changed.
     if (opts.mode !== "probe" || process.env.NOTION_API_KEY) {
-      const [op, lp] = await Promise.all([
+      const [op, lp, cp, tp] = await Promise.all([
         getDataSourceProperties(DATA_SOURCES.orders),
         getDataSourceProperties(DATA_SOURCES.log),
+        getDataSourceProperties(DATA_SOURCES.customers),
+        getDataSourceProperties(DATA_SOURCES.tasks),
       ]);
       result.schemaProblems = [
         ...validateSchema(op, ORDERS_SCHEMA).map((p) => `Orders & Quotes: ${p}`),
         ...validateSchema(lp, LOG_SCHEMA).map((p) => `Communication Log: ${p}`),
+        ...validateSchema(cp, CUSTOMERS_SCHEMA).map((p) => `Customers: ${p}`),
+        ...validateSchema(tp, TASKS_SCHEMA).map((p) => `Tasks: ${p}`),
       ];
     }
 

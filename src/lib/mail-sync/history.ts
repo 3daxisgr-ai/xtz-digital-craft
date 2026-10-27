@@ -4,7 +4,12 @@ import { matchesSenderList, mid, normalizeSubject, type Classification } from ".
 
 export const CLOSED = ["Delivered", "Lost / Cancelled"];
 /** Statuses that mean the contact is a real client (not just a lead). */
-export const CLIENT_STATUSES = ["Confirmed Order", "In Production", "Ready for Dispatch", "Delivered"];
+export const CLIENT_STATUSES = [
+  "Confirmed Order",
+  "In Production",
+  "Ready for Dispatch",
+  "Delivered",
+];
 /** New records in these statuses get a "reply to customer" task (no owner/due date invented). */
 export const TASK_STATUSES = ["Awaiting TOREO Reply", "New"];
 
@@ -157,7 +162,9 @@ export function groupThreads(msgs: HMsg[]): HMsg[][] {
 }
 
 /** Double submissions: same email + same content within 30 minutes are one request. */
-export function mergeDuplicateSubmissions(subs: HSubmission[]): { main: HSubmission; ids: string[] }[] {
+export function mergeDuplicateSubmissions(
+  subs: HSubmission[],
+): { main: HSubmission; ids: string[] }[] {
   const sorted = [...subs].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   const out: { main: HSubmission; ids: string[]; last: number }[] = [];
   for (const s of sorted) {
@@ -314,7 +321,9 @@ export function planHistory(input: PlanInput): PlanUnit[] {
       customerEmail: null,
       customerName: customerMsgs[0]?.fromName ?? null,
       customerPhone: null,
-      subject: first.subject.replace(/^\s*((re|fw|fwd|απ|σχετ|προωθ)\s*:\s*)+/i, "").trim() || "(χωρίς θέμα)",
+      subject:
+        first.subject.replace(/^\s*((re|fw|fwd|απ|σχετ|προωθ)\s*:\s*)+/i, "").trim() ||
+        "(χωρίς θέμα)",
       firstDate: first.date,
       sub: null,
       submissionIds: [],
@@ -323,7 +332,11 @@ export function planHistory(input: PlanInput): PlanUnit[] {
       mapped: null,
     };
     if (!customerMsgs.length && !externalOut.length) {
-      skipped.push({ ...base, action: "skip", reason: "Ειδοποιήσεις / newsletter / εσωτερικά ή αυτόματα email" });
+      skipped.push({
+        ...base,
+        action: "skip",
+        reason: "Ειδοποιήσεις / newsletter / εσωτερικά ή αυτόματα email",
+      });
       continue;
     }
     const relevant = thread.filter((m) => m.cls === "customer" || externalOut.includes(m));
@@ -360,7 +373,11 @@ export function planHistory(input: PlanInput): PlanUnit[] {
       );
       if (near.length === 1) sub = near[0];
       else if (near.length > 1) {
-        drafts.push({ ...base, action: "manual_review", reason: "Ταιριάζει με περισσότερα από ένα αιτήματα του site" });
+        drafts.push({
+          ...base,
+          action: "manual_review",
+          reason: "Ταιριάζει με περισσότερα από ένα αιτήματα του site",
+        });
         continue;
       }
     }
@@ -385,7 +402,11 @@ export function planHistory(input: PlanInput): PlanUnit[] {
       continue;
     }
     if (open.length > 1) {
-      drafts.push({ ...base, action: "manual_review", reason: "Ο πελάτης έχει περισσότερες ανοιχτές εγγραφές" });
+      drafts.push({
+        ...base,
+        action: "manual_review",
+        reason: "Ο πελάτης έχει περισσότερες ανοιχτές εγγραφές",
+      });
       continue;
     }
     drafts.push(base);
@@ -394,7 +415,8 @@ export function planHistory(input: PlanInput): PlanUnit[] {
   // TOREO-initiated threads: attach to the customer's only request, else keep as history only.
   for (const o of outgoingOnly) {
     const mine = drafts.filter(
-      (d) => d.customerEmail === o.customer && ["new_record", "attach", "duplicate"].includes(d.action),
+      (d) =>
+        d.customerEmail === o.customer && ["new_record", "attach", "duplicate"].includes(d.action),
     );
     if (mine.length === 1 && mine[0].action !== "duplicate") {
       mine[0].msgs.push(...o.relevant);
@@ -457,7 +479,12 @@ function finalize(d: Draft, input: PlanInput, isDone: (id: string) => boolean): 
   ) {
     action = "duplicate";
     reason = "Έχει ήδη καταχωρηθεί";
-  } else if (d.kind === "thread" && action !== "skip" && messages.length && messages.every((m) => m.done)) {
+  } else if (
+    d.kind === "thread" &&
+    action !== "skip" &&
+    messages.length &&
+    messages.every((m) => m.done)
+  ) {
     action = "duplicate";
     reason = "Υπάρχει ήδη στο Notion";
   } else if (action === "attach" && messages.length && messages.every((m) => m.done)) {

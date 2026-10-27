@@ -135,7 +135,10 @@ async function selectIn(db: any, column: string, values: string[], extra: (q: an
   const rows: any[] = [];
   for (let i = 0; i < values.length; i += 150) {
     const { data, error } = await extra(
-      db.from("mail_sync_messages").select("message_id, notion_order_page_id, status").in(column, values.slice(i, i + 150)),
+      db
+        .from("mail_sync_messages")
+        .select("message_id, notion_order_page_id, status")
+        .in(column, values.slice(i, i + 150)),
     );
     if (error) throw new Error(error.message);
     rows.push(...(data ?? []));
@@ -574,7 +577,11 @@ async function importUnit(
   }
 
   if (u.task && pageId) {
-    const fresh = await db.from("mail_sync_messages").select("action").eq("id", unitRow.id).single();
+    const fresh = await db
+      .from("mail_sync_messages")
+      .select("action")
+      .eq("id", unitRow.id)
+      .single();
     if (fresh.data?.action !== "task_created") {
       await createPage(
         DATA_SOURCES.tasks,

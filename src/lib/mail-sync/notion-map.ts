@@ -76,7 +76,11 @@ export const CUSTOMERS_SCHEMA: SchemaRequirement = {
     Status: "select",
     Source: "select",
   },
-  options: { Type: ["Lead", "Client"], Status: ["Prospect", "Active"], Source: ["Email", "Website"] },
+  options: {
+    Type: ["Lead", "Client"],
+    Status: ["Prospect", "Active"],
+    Source: ["Email", "Website"],
+  },
 };
 
 export const TASKS_SCHEMA: SchemaRequirement = {

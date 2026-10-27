@@ -268,3 +268,27 @@ describe("Notion error redaction", async () => {
     expect(notionErrorCode('{"code":"c@x.gr leaked"}')).toBe("unknown_error");
   });
 });
+
+describe("sender classification", async () => {
+  const { classifyIncoming } = await import("./mime");
+  const c = (email: string, extra: Record<string, unknown> = {}) =>
+    classifyIncoming({
+      headers: {},
+      from: { email, name: null },
+      ownAddress: "info@toreo.gr",
+      siteSender: null,
+      internal: ["owner@gmail.com"],
+      ignore: ["xometry.de", "price4parts.com"],
+      ...extra,
+    });
+  it("skips platforms, bulk sending subdomains and internal senders", () => {
+    expect(c("oms@mg.xometry.de")).toBe("ignored");
+    expect(c("c.sales@price4parts.com")).toBe("ignored");
+    expect(c("notify@updates.notion.com")).toBe("bulk");
+    expect(c("owner@gmail.com")).toBe("internal");
+  });
+  it("keeps real customers", () => {
+    expect(c("panos@gmail.com")).toBe("customer");
+    expect(c("buyer@metlen.com")).toBe("customer");
+  });
+});
