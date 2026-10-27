@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- service-role client and ledger rows match the existing untyped admin-client pattern */
 // Email (info@toreo.gr, Papaki) -> Notion Business OS sync. Server-only.
 // Guarantees: mailbox opened read-only (EXAMINE + BODY.PEEK), nothing is sent, deleted or moved;
 // dry runs write nothing except their own run report; checkpoints never skip a failed message.
@@ -468,7 +469,9 @@ export async function runMailSync(opts: { mode: Mode; trigger: Trigger }): Promi
               outcomes.push({ uid: m.uid, ok: true });
               continue;
             }
-            let { target, pendingNew } = await threadTarget(m, false);
+            const found = await threadTarget(m, false);
+            let target = found.target;
+            const pendingNew = found.pendingNew;
             if (!target && !pendingNew && m.from) {
               const hit = pickEmailSubjectMatch(await ordersFor(m.from.email), m.subject);
               if (hit) target = { ...hit, via: "email_subject" };

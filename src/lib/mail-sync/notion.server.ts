@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Notion API responses are dynamic JSON, read through notion-map.ts */
 // Server-only Notion access for the mail sync (through the Lovable connector gateway).
 import { readOrderPage, type OrderPage } from "./notion-map";
 

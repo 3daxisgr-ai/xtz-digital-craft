@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import type { ReportItem, FolderReport } from "@/lib/mail-sync/types";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -46,9 +47,21 @@ function fmt(d: string | null | undefined) {
   return new Date(d).toLocaleString("el-GR", { dateStyle: "short", timeStyle: "short" });
 }
 
-function Report({ r }: { r: any }) {
-  const rep = r.report ?? r;
-  const items: any[] = rep.items ?? [];
+interface ReportView {
+  error?: string | null;
+  transport?: string | null;
+  items?: ReportItem[];
+  folders?: FolderReport[];
+  schemaProblems?: string[];
+  probe?: { folders: string[]; sentFolder: string | null } | null;
+}
+type RunView = ReportView & { report?: ReportView | null };
+type Overview = Awaited<ReturnType<typeof mailSyncOverview>>;
+const errMsg = (e: unknown) => (e instanceof Error ? e.message : String(e));
+
+function Report({ r }: { r: RunView }) {
+  const rep: ReportView = r.report ?? r;
+  const items: ReportItem[] = rep.items ?? [];
   return (
     <div className="space-y-3 text-sm">
       {r.error && (
@@ -74,7 +87,7 @@ function Report({ r }: { r: any }) {
       )}
       {(rep.folders ?? []).length > 0 && (
         <div className="grid sm:grid-cols-2 gap-2">
-          {rep.folders.map((f: any) => (
+          {(rep.folders ?? []).map((f) => (
             <div
               key={f.folder}
               className="rounded border border-white/10 px-3 py-2 text-white/70 text-xs font-mono"
@@ -144,22 +157,23 @@ function MailSyncPage() {
   const getRun = useServerFn(mailSyncGetRun);
   const run = useServerFn(mailSyncRun);
   const update = useServerFn(mailSyncUpdateSettings);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<Overview | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<RunView | null>(null);
   const [actor, setActor] = useState("");
 
   async function reload() {
     try {
       setData(await overview());
       setErr(null);
-    } catch (e: any) {
-      setErr(e.message);
+    } catch (e) {
+      setErr(errMsg(e));
     }
   }
   useEffect(() => {
     reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- load once on open
   }, []);
 
   async function doRun(mode: "probe" | "dry" | "live") {
@@ -169,8 +183,8 @@ function MailSyncPage() {
     setResult(null);
     try {
       setResult(await run({ data: { mode } }));
-    } catch (e: any) {
-      setResult({ error: e.message });
+    } catch (e) {
+      setResult({ error: errMsg(e) });
     } finally {
       setBusy(null);
       reload();
@@ -188,8 +202,8 @@ function MailSyncPage() {
     try {
       await update({ data: { actor: actor.trim(), [key]: value } });
       reload();
-    } catch (e: any) {
-      alert(e.message);
+    } catch (e) {
+      alert(errMsg(e));
     }
   }
 
@@ -337,7 +351,7 @@ function MailSyncPage() {
             <p className="text-sm text-white/40">Καμία εκκρεμότητα.</p>
           ) : (
             <ul className="divide-y divide-white/5 text-sm">
-              {data.review.map((m: any) => (
+              {data.review.map((m: Overview['review'][number]) => (
                 <li key={m.id} className="py-2">
                   <span
                     className={`mr-2 px-2 py-0.5 rounded font-mono text-[10px] uppercase ${m.status === "failed" ? "bg-red-500/20 text-red-200" : "bg-amber-400/20 text-amber-200"}`}
@@ -360,15 +374,15 @@ function MailSyncPage() {
           <h2 className="font-mono text-xs uppercase tracking-widest text-white/60">
             Ιστορικό εκτελέσεων
           </h2>
-          {(data?.runs ?? []).map((r: any) => (
+          {(data?.runs ?? []).map((r: Overview['runs'][number]) => (
             <button
               key={r.id}
               onClick={async () => {
                 try {
                   setResult(await getRun({ data: { id: r.id } }));
                   window.scrollTo({ top: 0, behavior: "smooth" });
-                } catch (e: any) {
-                  alert(e.message);
+                } catch (e) {
+                  alert(errMsg(e));
                 }
               }}
               className="w-full text-left flex flex-wrap items-center gap-3 rounded px-2 py-1.5 hover:bg-white/5 text-xs"
