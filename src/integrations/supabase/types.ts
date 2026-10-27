@@ -741,6 +741,74 @@ export type Database = {
         }
         Relationships: []
       }
+      mail_sync_request_keys: {
+        Row: {
+          created_at: string
+          key: string
+          request_id: string
+        }
+        Insert: {
+          created_at?: string
+          key: string
+          request_id: string
+        }
+        Update: {
+          created_at?: string
+          key?: string
+          request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mail_sync_request_keys_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "mail_sync_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mail_sync_requests: {
+        Row: {
+          created_at: string
+          customer_email: string | null
+          id: string
+          notion_claim_until: string | null
+          notion_page_id: string | null
+          order_code: string
+          order_id: string | null
+          removed_at: string | null
+          source: string
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_email?: string | null
+          id?: string
+          notion_claim_until?: string | null
+          notion_page_id?: string | null
+          order_code: string
+          order_id?: string | null
+          removed_at?: string | null
+          source: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string | null
+          id?: string
+          notion_claim_until?: string | null
+          notion_page_id?: string | null
+          order_code?: string
+          order_id?: string | null
+          removed_at?: string | null
+          source?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       mail_sync_runs: {
         Row: {
           approved_at: string | null
@@ -1044,6 +1112,24 @@ export type Database = {
           stock_kg?: number | null
           supplier?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      order_code_counters: {
+        Row: {
+          last_seq: number
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          last_seq: number
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          last_seq?: number
+          updated_at?: string
+          year?: number
         }
         Relationships: []
       }
@@ -2687,6 +2773,7 @@ export type Database = {
       }
     }
     Functions: {
+      allocate_order_code: { Args: never; Returns: string }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -2702,6 +2789,23 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      mail_sync_claim_request: {
+        Args: {
+          _email: string
+          _keys: string[]
+          _order_code?: string
+          _order_id?: string
+          _source: string
+          _subject: string
+        }
+        Returns: {
+          conflict: boolean
+          created: boolean
+          notion_page_id: string
+          order_code: string
+          request_id: string
+        }[]
       }
       move_to_dlq: {
         Args: {
