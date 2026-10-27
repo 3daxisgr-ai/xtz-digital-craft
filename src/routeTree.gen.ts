@@ -46,6 +46,7 @@ import { Route as PortalProjectsRouteImport } from './routes/portal_.projects'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as ApiPublicIngestEmailOrderRouteImport } from './routes/api/public/ingest-email-order'
+import { Route as ApiPublicMailSyncRouteImport } from './routes/api/public/mail-sync'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const IndexRoute = IndexRouteImport.update({
@@ -237,6 +238,11 @@ const ApiPublicIngestEmailOrderRoute =
     path: '/api/public/ingest-email-order',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicMailSyncRoute = ApiPublicMailSyncRouteImport.update({
+  id: '/api/public/mail-sync',
+  path: '/api/public/mail-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -282,6 +288,7 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/ingest-email-order': typeof ApiPublicIngestEmailOrderRoute
+  '/api/public/mail-sync': typeof ApiPublicMailSyncRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
@@ -322,6 +329,7 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/ingest-email-order': typeof ApiPublicIngestEmailOrderRoute
+  '/api/public/mail-sync': typeof ApiPublicMailSyncRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -363,6 +371,7 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/ingest-email-order': typeof ApiPublicIngestEmailOrderRoute
+  '/api/public/mail-sync': typeof ApiPublicMailSyncRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -405,6 +414,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/ingest-email-order'
+    | '/api/public/mail-sync'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -445,6 +455,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/ingest-email-order'
+    | '/api/public/mail-sync'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -485,6 +496,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/ingest-email-order'
+    | '/api/public/mail-sync'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -525,6 +537,7 @@ export interface RootRouteChildren {
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicIngestEmailOrderRoute: typeof ApiPublicIngestEmailOrderRoute
+  ApiPublicMailSyncRoute: typeof ApiPublicMailSyncRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -789,6 +802,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicIngestEmailOrderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mail-sync': {
+      id: '/api/public/mail-sync'
+      path: '/api/public/mail-sync'
+      fullPath: '/api/public/mail-sync'
+      preLoaderRoute: typeof ApiPublicMailSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -848,6 +868,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicIngestEmailOrderRoute: ApiPublicIngestEmailOrderRoute,
+  ApiPublicMailSyncRoute: ApiPublicMailSyncRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
