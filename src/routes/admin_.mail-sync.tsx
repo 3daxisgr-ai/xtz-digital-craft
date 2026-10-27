@@ -351,7 +351,7 @@ function MailSyncPage() {
             <p className="text-sm text-white/40">Καμία εκκρεμότητα.</p>
           ) : (
             <ul className="divide-y divide-white/5 text-sm">
-              {data.review.map((m: Overview["review"][number]) => (
+              {(data?.review ?? []).map((m: Overview["review"][number]) => (
                 <li key={m.id} className="py-2">
                   <span
                     className={`mr-2 px-2 py-0.5 rounded font-mono text-[10px] uppercase ${m.status === "failed" ? "bg-red-500/20 text-red-200" : "bg-amber-400/20 text-amber-200"}`}
