@@ -124,3 +124,13 @@ export async function updatePage(
 ): Promise<any> {
   return notionFetch(`/pages/${pageId}`, { method: "PATCH", body: { properties } });
 }
+
+/** Extract only Notion's machine error code (e.g. "validation_error"); never the message. */
+export function notionErrorCode(body: string): string {
+  try {
+    const code = (JSON.parse(body) as { code?: unknown }).code;
+    return typeof code === "string" && /^[a-z_]{1,64}$/.test(code) ? code : "unknown_error";
+  } catch {
+    return "unknown_error";
+  }
+}
