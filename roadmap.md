@@ -8,7 +8,7 @@
 - [x] Email → Notion: read Notion schema, field mapping built in (user to confirm)
 - [x] Email → Notion: read-only mailbox probe on hosted build
 - [x] Email → Notion: dry-run sync (inbox + sent), admin page, tests
-- [ ] Email → Notion: website form hook built (off) and schedule not created — waiting for user approval
+- [x] Email → Notion: always-on — 5-minute schedule, website form hook and live writes on (owner-approved); outbound email never sent by the sync
 - [x] Email → Notion: scoped lint fix, redact Notion logs, verify mail_sync grants
 - [x] Historical import (preview/approve/pilot/batches) built; actual import waits on owner approval
 - [x] Notion Business OS: links, views, dashboard page; historical backfill done (23 requests, 92 log entries, 17 customers, 5 tasks); switches off
