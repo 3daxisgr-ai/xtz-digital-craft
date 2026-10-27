@@ -152,6 +152,11 @@ export class ImapSession {
     } catch (e) {
       throw new ImapError(`Δεν ήταν δυνατή η σύνδεση στον mail server: ${(e as Error).message}`, "network");
     }
+    return ImapSession.fromTransport(t, cmdTimeoutMs);
+  }
+
+  /** Start a session over an already-open transport (also used by tests with a fake server). */
+  static async fromTransport(t: Transport, cmdTimeoutMs = 15_000): Promise<ImapSession> {
     const s = new ImapSession(t, cmdTimeoutMs);
     const greet = await s.nextUnit();
     if (!/^\* (OK|PREAUTH)/i.test(greet.text)) {
