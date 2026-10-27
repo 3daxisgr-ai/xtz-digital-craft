@@ -35,6 +35,7 @@ import { Route as AdminConfigRouteImport } from './routes/admin_.config'
 import { Route as AdminDocumentsRouteImport } from './routes/admin_.documents'
 import { Route as AdminFactoryRouteImport } from './routes/admin_.factory'
 import { Route as AdminLiveRouteImport } from './routes/admin_.live'
+import { Route as AdminMailSyncRouteImport } from './routes/admin_.mail-sync'
 import { Route as AdminReviewsRouteImport } from './routes/admin_.reviews'
 import { Route as AdminSchedulerRouteImport } from './routes/admin_.scheduler'
 import { Route as AdminShippingRouteImport } from './routes/admin_.shipping'
@@ -181,6 +182,11 @@ const AdminLiveRoute = AdminLiveRouteImport.update({
   path: '/admin/live',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMailSyncRoute = AdminMailSyncRouteImport.update({
+  id: '/admin_/mail-sync',
+  path: '/admin/mail-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminReviewsRoute = AdminReviewsRouteImport.update({
   id: '/admin_/reviews',
   path: '/admin/reviews',
@@ -277,6 +283,7 @@ export interface FileRoutesByFullPath {
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/factory': typeof AdminFactoryRoute
   '/admin/live': typeof AdminLiveRoute
+  '/admin/mail-sync': typeof AdminMailSyncRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/scheduler': typeof AdminSchedulerRoute
   '/admin/shipping': typeof AdminShippingRoute
@@ -318,6 +325,7 @@ export interface FileRoutesByTo {
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/factory': typeof AdminFactoryRoute
   '/admin/live': typeof AdminLiveRoute
+  '/admin/mail-sync': typeof AdminMailSyncRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/scheduler': typeof AdminSchedulerRoute
   '/admin/shipping': typeof AdminShippingRoute
@@ -360,6 +368,7 @@ export interface FileRoutesById {
   '/admin_/documents': typeof AdminDocumentsRoute
   '/admin_/factory': typeof AdminFactoryRoute
   '/admin_/live': typeof AdminLiveRoute
+  '/admin_/mail-sync': typeof AdminMailSyncRoute
   '/admin_/reviews': typeof AdminReviewsRoute
   '/admin_/scheduler': typeof AdminSchedulerRoute
   '/admin_/shipping': typeof AdminShippingRoute
@@ -403,6 +412,7 @@ export interface FileRouteTypes {
     | '/admin/documents'
     | '/admin/factory'
     | '/admin/live'
+    | '/admin/mail-sync'
     | '/admin/reviews'
     | '/admin/scheduler'
     | '/admin/shipping'
@@ -444,6 +454,7 @@ export interface FileRouteTypes {
     | '/admin/documents'
     | '/admin/factory'
     | '/admin/live'
+    | '/admin/mail-sync'
     | '/admin/reviews'
     | '/admin/scheduler'
     | '/admin/shipping'
@@ -485,6 +496,7 @@ export interface FileRouteTypes {
     | '/admin_/documents'
     | '/admin_/factory'
     | '/admin_/live'
+    | '/admin_/mail-sync'
     | '/admin_/reviews'
     | '/admin_/scheduler'
     | '/admin_/shipping'
@@ -527,6 +539,7 @@ export interface RootRouteChildren {
   AdminDocumentsRoute: typeof AdminDocumentsRoute
   AdminFactoryRoute: typeof AdminFactoryRoute
   AdminLiveRoute: typeof AdminLiveRoute
+  AdminMailSyncRoute: typeof AdminMailSyncRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSchedulerRoute: typeof AdminSchedulerRoute
   AdminShippingRoute: typeof AdminShippingRoute
@@ -725,6 +738,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/mail-sync': {
+      id: '/admin_/mail-sync'
+      path: '/admin/mail-sync'
+      fullPath: '/admin/mail-sync'
+      preLoaderRoute: typeof AdminMailSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/reviews': {
       id: '/admin_/reviews'
       path: '/admin/reviews'
@@ -858,6 +878,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminDocumentsRoute: AdminDocumentsRoute,
   AdminFactoryRoute: AdminFactoryRoute,
   AdminLiveRoute: AdminLiveRoute,
+  AdminMailSyncRoute: AdminMailSyncRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSchedulerRoute: AdminSchedulerRoute,
   AdminShippingRoute: AdminShippingRoute,
