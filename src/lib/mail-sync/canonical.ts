@@ -423,7 +423,7 @@ export function planCanonical(input: CanonInput): CanonPlan {
   const threadIds = (m: CMsg) => [m.inReplyTo, ...[...m.refs].reverse()].filter((x): x is string => !!x);
   const strongMatch = (
     m: CMsg,
-  ): { id?: string; via?: string; removed?: boolean; conflict?: string[] } => {
+  ): { id?: string; via?: string; removed?: boolean; conflict?: string[]; inReview?: boolean } => {
     const self = lookup(`msg:${m.messageId}`);
     if (self.removed) return { removed: true };
     if (self.id) return { id: self.id, via: "already" };
@@ -442,7 +442,7 @@ export function planCanonical(input: CanonInput): CanonPlan {
     if (byCode.size > 1) return { conflict: [...byCode] };
     if (byCode.size === 1) return { id: [...byCode][0], via: "order_id" };
     for (const t of threadIds(m)) {
-      if (reviewKeys.has(t)) return { conflict: [] };
+      if (reviewKeys.has(t)) return { inReview: true };
       const r = lookup(`msg:${t}`);
       if (r.removed) return { removed: true };
       if (r.id) return { id: r.id, via: "thread" };
@@ -496,6 +496,10 @@ export function planCanonical(input: CanonInput): CanonPlan {
         skipped.push({ key: m.messageId, reason: "Η σχετική εγγραφή διαγράφηκε στο Notion" });
         continue;
       }
+      if (s.inReview) {
+        toReview(m, "outgoing", "Ίδιο νήμα με email που περιμένει χειροκίνητο έλεγχο", []);
+        continue;
+      }
       if (s.conflict) {
         toReview(m, "outgoing", "Email της TOREO που αντιστοιχεί σε περισσότερες εγγραφές", s.conflict);
         continue;
@@ -524,6 +528,10 @@ export function planCanonical(input: CanonInput): CanonPlan {
     const s = strongMatch(m);
     if (s.removed) {
       toReview(m, "incoming", "Το αίτημα αυτού του νήματος διαγράφηκε στο Notion", []);
+      continue;
+    }
+    if (s.inReview) {
+      toReview(m, "incoming", "Ίδιο νήμα με email που περιμένει χειροκίνητο έλεγχο", []);
       continue;
     }
     if (s.conflict) {
@@ -571,11 +579,6 @@ export function planCanonical(input: CanonInput): CanonPlan {
       }
     }
     if (!w) {
-      const removedNear = [...input.removedKeys].some((k) => k === `email:${from}`);
-      if (removedNear) {
-        toReview(m, "incoming", "Ο πελάτης είχε εγγραφή που διαγράφηκε στο Notion", []);
-        continue;
-      }
       const id = `new:email:${m.messageId}`;
       w = {
         id,
