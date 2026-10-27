@@ -1,0 +1,1 @@
+REVOKE ALL ON public.mail_sync_settings, public.mail_sync_state, public.mail_sync_runs, public.mail_sync_messages FROM anon, authenticated;

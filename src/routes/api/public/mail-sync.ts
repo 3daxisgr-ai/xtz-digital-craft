@@ -19,7 +19,10 @@ async function safeEqual(a: string, b: string) {
   return diff === 0;
 }
 const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+  });
 
 export const Route = createFileRoute("/api/public/mail-sync")({
   server: {
@@ -28,7 +31,8 @@ export const Route = createFileRoute("/api/public/mail-sync")({
         const expected = process.env.MAIL_SYNC_TOKEN;
         if (!expected) return json({ error: "not_configured" }, 503);
         const token = (request.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
-        if (!token || !(await safeEqual(token, expected))) return json({ error: "unauthorized" }, 401);
+        if (!token || !(await safeEqual(token, expected)))
+          return json({ error: "unauthorized" }, 401);
 
         let parsed: z.infer<typeof bodySchema>;
         try {
@@ -50,7 +54,12 @@ export const Route = createFileRoute("/api/public/mail-sync")({
             runId: r.runId,
             transport: r.transport,
             counts: r.counts,
-            folders: r.folders.map((f) => ({ kind: f.kind, exists: f.exists, pending: f.pending, taken: f.taken })),
+            folders: r.folders.map((f) => ({
+              kind: f.kind,
+              exists: f.exists,
+              pending: f.pending,
+              taken: f.taken,
+            })),
             schemaOk: r.schemaProblems.length === 0,
             error: r.error,
           },

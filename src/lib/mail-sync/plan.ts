@@ -6,7 +6,14 @@ import type { OrderPage } from "./notion-map";
 export const CLOSED_STATUSES = ["Delivered", "Lost / Cancelled"];
 
 /** A customer email moves the record to "Awaiting TOREO Reply" only from these statuses. */
-export const AWAITING_FROM = ["New", "Needs Review", "Replied", "Awaiting Customer", "Quote Sent", "Awaiting TOREO Reply"];
+export const AWAITING_FROM = [
+  "New",
+  "Needs Review",
+  "Replied",
+  "Awaiting Customer",
+  "Quote Sent",
+  "Awaiting TOREO Reply",
+];
 
 /** A TOREO reply marks the record "Replied" only from these statuses. */
 export const REPLIED_FROM = ["New", "Needs Review", "Awaiting TOREO Reply"];
@@ -24,9 +31,17 @@ export interface IncomingDecision {
   reason: string;
 }
 
-export function decideIncoming(target: Target | null, pendingNewFrom: string | null = null): IncomingDecision {
+export function decideIncoming(
+  target: Target | null,
+  pendingNewFrom: string | null = null,
+): IncomingDecision {
   if (!target && pendingNewFrom) {
-    return { action: "join_new", setStatus: null, nextAction: null, reason: `Ίδιο νήμα με νέο αίτημα (${pendingNewFrom})` };
+    return {
+      action: "join_new",
+      setStatus: null,
+      nextAction: null,
+      reason: `Ίδιο νήμα με νέο αίτημα (${pendingNewFrom})`,
+    };
   }
   if (!target) {
     return {
@@ -78,7 +93,9 @@ export function decideOutgoing(
     return {
       action: "manual_review",
       setStatus: null,
-      reason: hint ? `${why}. Πιθανή εγγραφή: ${hint.record ?? hint.title} — χρειάζεται έλεγχο.` : `${why} — χρειάζεται έλεγχο.`,
+      reason: hint
+        ? `${why}. Πιθανή εγγραφή: ${hint.record ?? hint.title} — χρειάζεται έλεγχο.`
+        : `${why} — χρειάζεται έλεγχο.`,
     };
   }
   const label = target.record ?? target.title;
@@ -109,7 +126,10 @@ export function decideOutgoing(
 }
 
 /** Exactly one open record from the same customer with the same subject, else null. */
-export function pickEmailSubjectMatch(pages: OrderPage[], subject: string | null): OrderPage | null {
+export function pickEmailSubjectMatch(
+  pages: OrderPage[],
+  subject: string | null,
+): OrderPage | null {
   const want = normalizeSubject(subject);
   if (!want) return null;
   const hits = pages.filter(

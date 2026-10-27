@@ -1,6 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Notion API property JSON is dynamic; shapes are checked by validateSchema */
 // Pure Notion property mapping + schema checks for the TOREO Business OS. Unit-tested.
 
-export type PropType = "title" | "rich_text" | "select" | "email" | "date" | "url" | "unique_id" | "phone_number";
+export type PropType =
+  | "title"
+  | "rich_text"
+  | "select"
+  | "email"
+  | "date"
+  | "url"
+  | "unique_id"
+  | "phone_number";
 
 export interface SchemaRequirement {
   props: Record<string, PropType>;
@@ -57,19 +66,23 @@ export function validateSchema(properties: Record<string, any>, req: SchemaRequi
   for (const [name, type] of Object.entries(req.props)) {
     const p = properties?.[name];
     if (!p) problems.push(`Λείπει το πεδίο «${name}»`);
-    else if (p.type !== type) problems.push(`Το πεδίο «${name}» είναι ${p.type}, αναμενόταν ${type}`);
+    else if (p.type !== type)
+      problems.push(`Το πεδίο «${name}» είναι ${p.type}, αναμενόταν ${type}`);
   }
   for (const [name, opts] of Object.entries(req.options)) {
     const p = properties?.[name];
     if (!p || p.type !== "select") continue;
     const have = new Set((p.select?.options ?? []).map((o: any) => o.name));
-    for (const o of opts) if (!have.has(o)) problems.push(`Το πεδίο «${name}» δεν έχει την επιλογή «${o}»`);
+    for (const o of opts)
+      if (!have.has(o)) problems.push(`Το πεδίο «${name}» δεν έχει την επιλογή «${o}»`);
   }
   return problems;
 }
 
 const MAX_TEXT = 1900;
-const text = (s: string | null | undefined) => [{ type: "text", text: { content: (s ?? "").slice(0, MAX_TEXT) } }];
+const text = (s: string | null | undefined) => [
+  { type: "text", text: { content: (s ?? "").slice(0, MAX_TEXT) } },
+];
 const title = (s: string) => ({ title: text(s || "(χωρίς θέμα)") });
 const rich = (s: string | null | undefined) => ({ rich_text: s ? text(s) : [] });
 const select = (name: string) => ({ select: { name } });
@@ -107,7 +120,11 @@ export function orderCreateProps(i: NewOrderInput): Record<string, unknown> {
   return props;
 }
 
-export function orderUpdateProps(opts: { status: string | null; lastContact: string; nextAction?: string | null }) {
+export function orderUpdateProps(opts: {
+  status: string | null;
+  lastContact: string;
+  nextAction?: string | null;
+}) {
   const props: Record<string, unknown> = { "Last Contact": date(opts.lastContact) };
   if (opts.status) props.Status = select(opts.status);
   if (opts.nextAction) props["Next Action"] = rich(opts.nextAction);
@@ -155,8 +172,15 @@ export interface OrderPage {
 export function readOrderPage(page: any): OrderPage {
   const p = page?.properties ?? {};
   const uid = p["Record ID"]?.unique_id;
-  const record = uid && uid.number != null ? (uid.prefix ? `${uid.prefix}-${uid.number}` : String(uid.number)) : null;
-  const t = (p["Request / Order"]?.title ?? []).map((x: any) => x.plain_text ?? x.text?.content ?? "").join("");
+  const record =
+    uid && uid.number != null
+      ? uid.prefix
+        ? `${uid.prefix}-${uid.number}`
+        : String(uid.number)
+      : null;
+  const t = (p["Request / Order"]?.title ?? [])
+    .map((x: any) => x.plain_text ?? x.text?.content ?? "")
+    .join("");
   return {
     pageId: page.id,
     record,

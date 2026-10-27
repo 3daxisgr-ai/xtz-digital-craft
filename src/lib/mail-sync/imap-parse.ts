@@ -16,7 +16,8 @@ function concat(a: Uint8Array, b: Uint8Array): Uint8Array {
 }
 
 function indexOfCrlf(buf: Uint8Array, from: number): number {
-  for (let i = from; i < buf.length - 1; i++) if (buf[i] === CRLF[0] && buf[i + 1] === CRLF[1]) return i;
+  for (let i = from; i < buf.length - 1; i++)
+    if (buf[i] === CRLF[0] && buf[i + 1] === CRLF[1]) return i;
   return -1;
 }
 
@@ -173,7 +174,14 @@ export function parseFetch(unit: Unit): FetchRecord | null {
   const toks = tokenize(unit, m[0].length);
   const list = toks[0];
   if (!list || list.t !== "list") return null;
-  const rec: FetchRecord = { seq: parseInt(m[1], 10), uid: null, internalDate: null, preview: null, headerRaw: null, attachmentNames: [] };
+  const rec: FetchRecord = {
+    seq: parseInt(m[1], 10),
+    uid: null,
+    internalDate: null,
+    preview: null,
+    headerRaw: null,
+    attachmentNames: [],
+  };
   for (let k = 0; k + 1 < list.v.length; k += 2) {
     const key = (tokText(list.v[k]) ?? "").toUpperCase();
     const val = list.v[k + 1];
@@ -215,7 +223,11 @@ export function parseList(units: Unit[]): ListEntry[] {
   return out;
 }
 
-export function parseExamine(units: Unit[]): { exists: number; uidvalidity: number | null; uidnext: number | null } {
+export function parseExamine(units: Unit[]): {
+  exists: number;
+  uidvalidity: number | null;
+  uidnext: number | null;
+} {
   let exists = 0;
   let uidvalidity: number | null = null;
   let uidnext: number | null = null;

@@ -1,8 +1,19 @@
 // Pure helpers for reading email headers (no network, no secrets). Unit-tested.
 
 const GREEK_8859_7_EXTRA: Record<number, number> = {
-  0xa1: 0x2018, 0xa2: 0x2019, 0xa3: 0xa3, 0xaf: 0x2015, 0xb4: 0x384, 0xb5: 0x385, 0xb6: 0x386,
-  0xb8: 0x388, 0xb9: 0x389, 0xba: 0x38a, 0xbc: 0x38c, 0xbe: 0x38e, 0xbf: 0x38f,
+  0xa1: 0x2018,
+  0xa2: 0x2019,
+  0xa3: 0xa3,
+  0xaf: 0x2015,
+  0xb4: 0x384,
+  0xb5: 0x385,
+  0xb6: 0x386,
+  0xb8: 0x388,
+  0xb9: 0x389,
+  0xba: 0x38a,
+  0xbc: 0x38c,
+  0xbe: 0x38e,
+  0xbf: 0x38f,
 };
 
 /** Manual Greek single-byte decoding fallback (ISO-8859-7 / Windows-1253). */
@@ -24,7 +35,8 @@ export function decodeBytes(bytes: Uint8Array, charset: string): string {
   try {
     return new TextDecoder(cs || "utf-8").decode(bytes);
   } catch {
-    if (cs === "iso-8859-7" || cs === "iso8859-7" || cs === "greek") return decodeGreekSingleByte(bytes, false);
+    if (cs === "iso-8859-7" || cs === "iso8859-7" || cs === "greek")
+      return decodeGreekSingleByte(bytes, false);
     if (cs === "windows-1253" || cs === "cp1253") return decodeGreekSingleByte(bytes, true);
     return new TextDecoder("utf-8").decode(bytes);
   }
@@ -56,15 +68,18 @@ export function decodeWords(input: string): string {
   if (!input) return "";
   // Whitespace between two adjacent encoded words is ignored (RFC 2047 §6.2).
   const joined = input.replace(/(=\?[^?]+\?[BbQq]\?[^?]*\?=)\s+(?==\?[^?]+\?[BbQq]\?)/g, "$1");
-  return joined.replace(/=\?([^?]+)\?([BbQq])\?([^?]*)\?=/g, (_m, cs: string, enc: string, text: string) => {
-    try {
-      const charset = cs.split("*")[0];
-      const bytes = enc.toUpperCase() === "B" ? base64ToBytes(text) : qToBytes(text);
-      return decodeBytes(bytes, charset);
-    } catch {
-      return text;
-    }
-  });
+  return joined.replace(
+    /=\?([^?]+)\?([BbQq])\?([^?]*)\?=/g,
+    (_m, cs: string, enc: string, text: string) => {
+      try {
+        const charset = cs.split("*")[0];
+        const bytes = enc.toUpperCase() === "B" ? base64ToBytes(text) : qToBytes(text);
+        return decodeBytes(bytes, charset);
+      } catch {
+        return text;
+      }
+    },
+  );
 }
 
 /** Parse a raw header block into lower-cased keys (unfolded, encoded words decoded). */
@@ -111,7 +126,11 @@ export function parseAddressList(value: string | undefined | null): Address[] {
     const m = p.match(EMAIL_RE);
     if (!m) continue;
     const email = m[0].toLowerCase();
-    let name: string | null = p.replace(/<[^>]*>/, "").replace(m[0], "").replace(/["']/g, "").trim();
+    let name: string | null = p
+      .replace(/<[^>]*>/, "")
+      .replace(m[0], "")
+      .replace(/["']/g, "")
+      .trim();
     name = name ? decodeWords(name).trim() || null : null;
     out.push({ name, email });
   }
@@ -124,7 +143,8 @@ export function parseMessageIds(value: string | undefined | null): string[] {
   return Array.from(value.matchAll(/<[^<>\s]+>/g)).map((m) => m[0]);
 }
 
-const SUBJECT_PREFIX = /^\s*(?:(?:re|fw|fwd|aw|wg|sv|vs|απ|σχετ|πρθ|προωθ)\s*(?:\[\d+\])?\s*[:：]\s*)+/i;
+const SUBJECT_PREFIX =
+  /^\s*(?:(?:re|fw|fwd|aw|wg|sv|vs|απ|σχετ|πρθ|προωθ)\s*(?:\[\d+\])?\s*[:：]\s*)+/i;
 
 /** Lower-cased subject without Re:/Fwd:/ΑΠ: prefixes, for comparison only. */
 export function normalizeSubject(s: string | null | undefined): string {
@@ -147,7 +167,12 @@ export interface ClassifyInput {
 }
 
 /** Decide whether an incoming email is a real customer message. */
-export function classifyIncoming({ headers, from, ownAddress, siteSender }: ClassifyInput): Classification {
+export function classifyIncoming({
+  headers,
+  from,
+  ownAddress,
+  siteSender,
+}: ClassifyInput): Classification {
   const email = from?.email ?? "";
   if (!email) return "auto";
   if (email === ownAddress.toLowerCase()) return "own";

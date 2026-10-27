@@ -43,6 +43,13 @@
       "when": 1793095633062,
       "tag": "0005_mail_sync_notion",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793097008316,
+      "tag": "0006_mail_sync_revoke_client_roles",
+      "breakpoints": true
     }
   ]
 }
