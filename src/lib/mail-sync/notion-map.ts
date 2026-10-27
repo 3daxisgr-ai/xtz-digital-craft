@@ -289,8 +289,8 @@ export function readCanonPage(page: any) {
     nextAction: plain(p["Next Action"]).trim() || null,
     receivedAt: (p["Received At"]?.date?.start ?? page?.created_time ?? null) as string | null,
     lastContact: (p["Last Contact"]?.date?.start ?? null) as string | null,
-    customerIds: (p.Customer?.relation ?? []).map((r: any) => r.id as string),
-    taskIds: (p.Tasks?.relation ?? []).map((r: any) => r.id as string),
+    customerIds: (p.Customer?.relation ?? []).map((r: any) => r.id as string) as string[],
+    taskIds: (p.Tasks?.relation ?? []).map((r: any) => r.id as string) as string[],
     source: (p.Source?.select?.name ?? null) as string | null,
     customerName: plain(p["Customer Name"]).trim() || null,
     orderCheck: (p["Order Check"]?.select?.name ?? null) as string | null,
@@ -306,7 +306,7 @@ export function readLogPage(page: any) {
     id: page.id as string,
     link: (p["Message / Submission Link"]?.url ?? null) as string | null,
     status: (p.Status?.select?.name ?? null) as string | null,
-    orderIds: (p["Order / Request"]?.relation ?? []).map((r: any) => r.id as string),
+    orderIds: (p["Order / Request"]?.relation ?? []).map((r: any) => r.id as string) as string[],
     related: plain(p["Related Record ID"]).trim() || null,
     direction: (p.Direction?.select?.name ?? null) as string | null,
     contactEmail: (p["Contact Email"]?.email ?? null) as string | null,
@@ -323,7 +323,7 @@ export function readCustomerPage(page: any) {
     classification: (p.Classification?.select?.name ?? null) as string | null,
     reason: plain(p["Classification Reason"]).trim() || null,
     review: !!p["Classification Review"]?.checkbox,
-    orderIds: (p["Orders & Quotes"]?.relation ?? []).map((r: any) => r.id as string),
+    orderIds: (p["Orders & Quotes"]?.relation ?? []).map((r: any) => r.id as string) as string[],
   };
 }
 
@@ -333,7 +333,7 @@ export function readTaskPage(page: any) {
     id: page.id as string,
     status: (p.Status?.status?.name ?? null) as string | null,
     category: (p.Category?.select?.name ?? null) as string | null,
-    orderIds: (p["Order / Request"]?.relation ?? []).map((r: any) => r.id as string),
+    orderIds: (p["Order / Request"]?.relation ?? []).map((r: any) => r.id as string) as string[],
     related: plain(p["Related Record ID"]).trim() || null,
     lastEdited: (page.last_edited_time ?? page.created_time) as string,
   };

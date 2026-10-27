@@ -240,10 +240,6 @@ export async function runMailSync(opts: { mode: Mode; trigger: Trigger }): Promi
     counts: {},
     error: null,
   };
-  if (opts.mode === "live" && !settings.live_writes) {
-    result.error = "Οι ζωντανές εγγραφές είναι απενεργοποιημένες.";
-    return result;
-  }
   const password = process.env.PAPAKI_EMAIL_PASSWORD;
   if (!password) {
     result.error = "Ο κωδικός του email δεν είναι ρυθμισμένος.";
