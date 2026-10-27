@@ -47,12 +47,18 @@ export const mailSyncOverview = createServerFn({ method: "GET" }).handler(async 
       .limit(50),
     db.from("mail_sync_state").select("*"),
   ]);
+  const sched = await db.rpc("mail_sync_scheduler_status");
+  const scheduler = (sched.data ?? { jobs: [], recent: [] }) as {
+    jobs: { name: string; schedule: string; active: boolean }[];
+    recent: { start: string; status: string }[];
+  };
   if (settings.error) throw new Error(settings.error.message);
   return {
     settings: settings.data,
     runs: runs.data ?? [],
     review: review.data ?? [],
     state: state.data ?? [],
+    scheduler,
     configured: {
       email: !!process.env.PAPAKI_EMAIL_PASSWORD,
       notion: !!process.env.NOTION_API_KEY,

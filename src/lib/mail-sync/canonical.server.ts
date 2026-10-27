@@ -184,12 +184,17 @@ export async function reconcile(opts: {
       busy: true,
       error: "Τρέχει ήδη άλλη εκτέλεση ή η προηγούμενη έγινε πολύ πρόσφατα.",
     };
-  const { data: run } = await db
+  const { data: run, error: runErr } = await db
     .from("mail_sync_runs")
     .insert({ mode, trigger: opts.trigger })
     .select("id")
     .single();
-  result.runId = run?.id ?? null;
+  if (runErr || !run) {
+    // No silent runs: every run must be visible in the run history.
+    await releaseLock(db);
+    return { ...result, error: `Δεν καταγράφηκε η εκτέλεση: ${runErr?.message ?? "άγνωστο"}` };
+  }
+  result.runId = run.id;
   const started = Date.now();
   const budget = Math.min(Math.max(opts.budgetMs ?? DEFAULT_BUDGET_MS, 10_000), 600_000);
   const outOfTime = () => Date.now() - started > budget - RESERVE_MS;
@@ -996,7 +1001,8 @@ export async function reconcile(opts: {
           counts: result.counts,
           error: result.error,
           report: {
-            rows: result.rows,
+            // Unchanged rows are omitted so frequent scheduled runs stay small.
+            rows: result.rows.filter((r) => r.action !== "unchanged"),
             duplicates: result.duplicates,
             remaining: result.remaining,
             schemaProblems: result.schemaProblems,
