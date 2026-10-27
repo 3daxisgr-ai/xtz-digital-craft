@@ -99,11 +99,17 @@ describe("incoming decisions", () => {
 });
 
 describe("outgoing decisions", () => {
-  it("marks Replied only through a known thread", () => {
-    expect(decideOutgoing(target("Awaiting TOREO Reply"), true)).toMatchObject({ action: "mark_replied", setStatus: "Replied" });
+  it("marks Replied only through a known thread and to the record's customer", () => {
+    expect(decideOutgoing(target("Awaiting TOREO Reply"), true, null, ["C@x.gr"])).toMatchObject({ action: "mark_replied", setStatus: "Replied" });
   });
   it("logs without changing a later status", () => {
-    expect(decideOutgoing(target("In Production"), true)).toMatchObject({ action: "log_only", setStatus: null });
+    expect(decideOutgoing(target("In Production"), true, null, ["c@x.gr"])).toMatchObject({ action: "log_only", setStatus: null });
+  });
+  it("treats a forward to a third party (e.g. a supplier) as not a reply", () => {
+    expect(decideOutgoing(target("Awaiting TOREO Reply"), true, null, ["info@saridis.gr"])).toMatchObject({ action: "forward_logged", setStatus: null });
+  });
+  it("sends a reply to manual review when the record has no customer email", () => {
+    expect(decideOutgoing({ ...target("Awaiting TOREO Reply"), customerEmail: null }, true, null, ["c@x.gr"]).action).toBe("manual_review");
   });
   it("sends unsafe matches to manual review, even with a likely record", () => {
     const hint = { pageId: "h", record: "ORD-9", title: "x", status: "Awaiting TOREO Reply", customerEmail: "c@x.gr" };
