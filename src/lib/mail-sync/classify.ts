@@ -1,7 +1,8 @@
 // Pure, evidence-based classification of contacts (Customers) and requests (Orders & Quotes).
 // Nothing here deletes, merges or renames: it only proposes a label + a reason, and says when a
 // person should look. Unit-tested.
-import { matchesSenderList } from "./mime";
+import { PERSONAL_DOMAINS, isSystemSender, matchesSenderList } from "./mime";
+export { PERSONAL_DOMAINS, SYSTEM_DOMAINS, isSystemSender } from "./mime";
 
 export const CONTACT_CLASSES = [
   "Confirmed customer",
@@ -38,64 +39,10 @@ export const INQUIRY_STATUSES = [
 
 const lc = (s: string | null | undefined) => (s ?? "").trim().toLowerCase();
 
-/** Platform / notification domains: an email from them is never a customer by itself. */
-export const SYSTEM_DOMAINS = [
-  "microsoft.com",
-  "microsoftonline.com",
-  "office365.com",
-  "office.com",
-  "sharepointonline.com",
-  "google.com",
-  "facebookmail.com",
-  "instagram.com",
-  "linkedin.com",
-  "notion.so",
-  "resend.dev",
-  "resend.com",
-  "github.com",
-  "apple.com",
-  "paypal.com",
-  "stripe.com",
-  "amazonses.com",
-  "sendgrid.net",
-  "mailchimp.com",
-  "mcsv.net",
-  "papaki.com",
-  "papaki.gr",
-];
-/** Personal mailbox domains: different addresses there are different people. */
-export const PERSONAL_DOMAINS = [
-  "gmail.com",
-  "googlemail.com",
-  "yahoo.com",
-  "yahoo.gr",
-  "hotmail.com",
-  "hotmail.gr",
-  "outlook.com",
-  "outlook.com.gr",
-  "live.com",
-  "icloud.com",
-  "me.com",
-  "otenet.gr",
-  "windowslive.com",
-  "mail.ru",
-  "yandex.com",
-];
-
-const AUTOMATED_LOCAL =
-  /(^|[._+-])(no-?reply|do-?not-?reply|donotreply|notifications?|notify|alerts?|mailer-daemon|mailer|postmaster|bounces?|automated|auto-?confirm|system|security|account-?security|billing)([._+-]|$)/i;
 const SYSTEM_SUBJECT =
   /(verification code|security (alert|code|info)|sign[- ]?in|password|one-time code|your account|κωδικ(ός|ού) (επαλήθευσης|πρόσβασης)|successfully submitted|registration (form|confirmed)|account (created|verified)|delivery status notification|undeliverable|out of office|automatic reply|αυτόματη απάντηση)/i;
 const MARKETING_SUBJECT = /(newsletter|webinar|unsubscribe|special offer|% off|promo|black friday|προσφορ(ά|ές) (μόνο|έως)|εκπτώσ)/i;
 
-/** True for no-reply, notification and platform senders (Microsoft 365, Google, Notion, ...). */
-export function isSystemSender(email: string | null | undefined): boolean {
-  const e = lc(email);
-  if (!e.includes("@")) return false;
-  const [local, domain] = e.split("@");
-  if (AUTOMATED_LOCAL.test(local)) return true;
-  return matchesSenderList(e, SYSTEM_DOMAINS) && !PERSONAL_DOMAINS.includes(domain);
-}
 export const isSystemSubject = (s: string | null | undefined) => SYSTEM_SUBJECT.test(s ?? "");
 export const isMarketingSubject = (s: string | null | undefined) => MARKETING_SUBJECT.test(s ?? "");
 

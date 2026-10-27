@@ -189,6 +189,61 @@ export function matchesSenderList(email: string, list: string[] = []): boolean {
   });
 }
 
+/** Platform / notification domains: an email from them is never a customer by itself. */
+export const SYSTEM_DOMAINS = [
+  "microsoft.com",
+  "microsoftonline.com",
+  "office365.com",
+  "office.com",
+  "sharepointonline.com",
+  "google.com",
+  "facebookmail.com",
+  "instagram.com",
+  "linkedin.com",
+  "notion.so",
+  "resend.dev",
+  "resend.com",
+  "github.com",
+  "apple.com",
+  "paypal.com",
+  "stripe.com",
+  "amazonses.com",
+  "sendgrid.net",
+  "mailchimp.com",
+  "mcsv.net",
+  "papaki.com",
+  "papaki.gr",
+];
+/** Personal mailbox domains: different addresses there are different people. */
+export const PERSONAL_DOMAINS = [
+  "gmail.com",
+  "googlemail.com",
+  "yahoo.com",
+  "yahoo.gr",
+  "hotmail.com",
+  "hotmail.gr",
+  "outlook.com",
+  "outlook.com.gr",
+  "live.com",
+  "icloud.com",
+  "me.com",
+  "otenet.gr",
+  "windowslive.com",
+  "mail.ru",
+  "yandex.com",
+];
+
+const AUTOMATED_LOCAL =
+  /(^|[._+-])(no-?reply|do-?not-?reply|donotreply|notifications?|notify|alerts?|mailer-daemon|mailer|postmaster|bounces?|automated|auto-?confirm|system|security|account-?security|billing)([._+-]|$)/i;
+/** True for no-reply, notification and platform senders (Microsoft 365, Google, Notion, ...). */
+export function isSystemSender(email: string | null | undefined): boolean {
+  const e = lc(email);
+  if (!e.includes("@")) return false;
+  const [local, domain] = e.split("@");
+  if (AUTOMATED_LOCAL.test(local)) return true;
+  return matchesSenderList(e, SYSTEM_DOMAINS) && !PERSONAL_DOMAINS.includes(domain);
+}
+
 /** Bulk-mail sending subdomains (mg.example.com, updates.example.com, ...). */
 const SENDING_SUBDOMAIN =
   /^(mg|mail|mail-notify|mailer|updates?|notifications?|notify|news(letter)?|email|em\d*|bounce|marketing|info-noreply)\./i;
@@ -211,6 +266,8 @@ export function classifyIncoming({
   if (autoSubmitted && autoSubmitted !== "no") return "auto";
   if (headers["x-autoreply"] || headers["x-autorespond"]) return "auto";
   if (/^(mailer-daemon|postmaster|no-?reply|do-?not-?reply|bounce)/i.test(email)) return "auto";
+  // Microsoft 365 / platform notifications and *-noreply senders are never customer requests.
+  if (isSystemSender(email)) return "auto";
   const prec = (headers["precedence"] ?? "").toLowerCase();
   if (prec === "bulk" || prec === "list" || prec === "junk") return "bulk";
   if (headers["list-id"] || headers["list-unsubscribe"]) return "bulk";
