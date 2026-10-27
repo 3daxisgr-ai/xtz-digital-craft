@@ -6,13 +6,13 @@
 - [x] Two-template PDF editor (Offer + Order Form) with draft/approve/send at /admin/documents
 - [x] Email info@toreo.gr → Notion: connect Notion + Papaki password
 - [x] Email → Notion: read Notion schema, field mapping built in (user to confirm)
-- [ ] Email → Notion: read-only mailbox probe on hosted build (hosted preview copy not rebuilt yet; verify next turn)
+- [x] Email → Notion: read-only mailbox probe on hosted build
 - [x] Email → Notion: dry-run sync (inbox + sent), admin page, tests
 - [ ] Email → Notion: website form hook built (off) and schedule not created — waiting for user approval
 - [x] Email → Notion: scoped lint fix, redact Notion logs, verify mail_sync grants
 - [x] Historical import (preview/approve/pilot/batches) built; actual import waits on owner approval
 - [x] Notion Business OS: links, views, dashboard page; historical backfill done (23 requests, 92 log entries, 17 customers, 5 tasks); switches off
-- [ ] Canonical requests: one record per real request (site + notification + customer email + replies), atomic TR-YYYY-NNNN Order IDs, reply-state recompute from INBOX+Sent, duplicate review queue, calm Notion dashboard, tests + backfill
-- [ ] Customer classification (confirmed / prospect / supplier / automated / spam / uncertain) with review queue; never delete or silently relabel
-- [ ] Order authenticity + order↔customer name/email check (genuine / inquiry / not an order / review) with reasons; strong mislinks only, logged
-- [ ] Dashboard: separate customers vs prospects/suppliers/automated; queues for suspected non-order, wrong association, duplicates, uncertain customers
+- [x] Canonical requests: one record per real request (site + notification + customer email + replies), atomic TR-YYYY-NNNN Order IDs, reply-state recompute from INBOX+Sent, duplicate review queue, calm Notion dashboard, tests + backfill
+- [x] Customer classification (confirmed / prospect / supplier / automated / spam / uncertain) with review queue; never delete or silently relabel
+- [x] Order authenticity + order↔customer name/email check (genuine / inquiry / not an order / review) with reasons; strong mislinks only, logged
+- [x] Dashboard: separate customers vs prospects/suppliers/automated; queues for suspected non-order, wrong association, duplicates, uncertain customers
