@@ -78,6 +78,13 @@
       "when": 1793102435866,
       "tag": "0010_mail_sync_auto_labels",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793104156110,
+      "tag": "0011_mail_sync_scheduler",
+      "breakpoints": true
     }
   ]
 }

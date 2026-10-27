@@ -678,6 +678,24 @@ export type Database = {
         }
         Relationships: []
       }
+      mail_sync_cron_auth: {
+        Row: {
+          created_at: string
+          id: number
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          token_hash?: string
+        }
+        Relationships: []
+      }
       mail_sync_messages: {
         Row: {
           action: string | null
@@ -2828,6 +2846,7 @@ export type Database = {
           request_id: string
         }[]
       }
+      mail_sync_scheduler_status: { Args: never; Returns: Json }
       move_to_dlq: {
         Args: {
           dlq_name: string
