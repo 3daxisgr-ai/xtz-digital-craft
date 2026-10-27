@@ -502,7 +502,7 @@ export function planCanonical(input: CanonInput): CanonPlan {
     ids: string[],
     queue: ReviewItem["queue"] = "match",
   ) => {
-    reviewKeys.add(m.messageId);
+    if (queue === "match") reviewKeys.add(m.messageId);
     review.push({
       key: m.messageId,
       queue,
@@ -575,12 +575,21 @@ export function planCanonical(input: CanonInput): CanonPlan {
       }
       const w = s.id ? work.get(s.id) : undefined;
       if (!w) {
-        toReview(
-          m,
-          "outgoing",
-          "Email της TOREO χωρίς σύνδεση με αίτημα (ούτε νήμα ούτε Order ID)",
-          [],
-        );
+        if (recipients.some((r) => openFor(r).length > 0)) {
+          toReview(
+            m,
+            "outgoing",
+            "Email της TOREO σε πελάτη με ανοιχτό αίτημα, χωρίς νήμα ή Order ID",
+            [],
+          );
+        } else {
+          // TOREO-initiated mail to someone with no customer request (supplier, partner, outreach).
+          outreach.add(m.messageId);
+          skipped.push({
+            key: m.messageId,
+            reason: "Email της TOREO χωρίς αίτημα πελάτη (π.χ. προμηθευτής) — μόνο στο mailbox",
+          });
+        }
         continue;
       }
       // Counts as a reply only when it actually went to this record's customer.
@@ -608,7 +617,19 @@ export function planCanonical(input: CanonInput): CanonPlan {
     const from = lc(m.fromEmail);
     const s = strongMatch(m);
     if (s.removed) {
-      toReview(m, "incoming", "Το αίτημα αυτού του νήματος διαγράφηκε στο Notion", []);
+      // The owner deleted that record in Notion on purpose: never recreate it.
+      skipped.push({ key: m.messageId, reason: "Η εγγραφή αυτού του νήματος διαγράφηκε στο Notion" });
+      continue;
+    }
+    if (s.outreach) {
+      outreach.add(m.messageId);
+      toReview(
+        m,
+        "incoming",
+        "Απάντηση σε email της TOREO προς τρίτο (πιθανός προμηθευτής) — όχι αίτημα πελάτη",
+        [],
+        "supplier",
+      );
       continue;
     }
     if (s.inReview) {
