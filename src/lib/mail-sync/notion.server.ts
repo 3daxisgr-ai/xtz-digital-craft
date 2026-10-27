@@ -93,6 +93,21 @@ export async function getOrder(pageId: string): Promise<OrderPage> {
   return readOrderPage(await notionFetch(`/pages/${pageId}`));
 }
 
+/** Every page of a data source (read-only, paginated, capped). */
+export async function listAllPages(dataSourceId: string, cap = 2000): Promise<any[]> {
+  const out: any[] = [];
+  let cursor: string | undefined;
+  do {
+    const r = await notionFetch(`/data_sources/${dataSourceId}/query`, {
+      method: "POST",
+      body: { page_size: 100, ...(cursor ? { start_cursor: cursor } : {}) },
+    });
+    out.push(...(r.results ?? []));
+    cursor = r.has_more ? r.next_cursor : undefined;
+  } while (cursor && out.length < cap);
+  return out;
+}
+
 export async function createPage(
   dataSourceId: string,
   properties: Record<string, unknown>,

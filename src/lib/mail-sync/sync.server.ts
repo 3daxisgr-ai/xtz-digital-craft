@@ -52,7 +52,7 @@ export type Trigger = "admin" | "cron";
 const RUN_BUDGET_MS = 22_000;
 const LOCK_MS = 90_000;
 
-async function admin() {
+export async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   return supabaseAdmin as any;
 }
@@ -76,7 +76,7 @@ export async function getSettings(): Promise<Settings> {
   return data as Settings;
 }
 
-interface Msg {
+export interface Msg {
   folder: string;
   uid: number;
   messageId: string;
@@ -92,7 +92,7 @@ interface Msg {
   headers: Record<string, string>;
 }
 
-function toMsg(rec: FetchRecord, folder: string, uidvalidity: number | null): Msg {
+export function toMsg(rec: FetchRecord, folder: string, uidvalidity: number | null): Msg {
   const headers = parseHeaders(rec.headerRaw ?? "");
   const messageId =
     parseMessageIds(headers["message-id"])[0] ??
@@ -132,12 +132,12 @@ export interface RunResult {
   error: string | null;
 }
 
-function siteSender(): string | null {
+export function siteSender(): string | null {
   const raw = process.env.EMAIL_FROM ?? "";
   return parseAddressList(raw)[0]?.email ?? null;
 }
 
-async function claimLock(db: any, trigger: Trigger, s: Settings): Promise<boolean> {
+export async function claimLock(db: any, trigger: Trigger, s: Settings): Promise<boolean> {
   const now = new Date();
   const iso = now.toISOString();
   let q = db
@@ -154,7 +154,7 @@ async function claimLock(db: any, trigger: Trigger, s: Settings): Promise<boolea
   return Array.isArray(data) && data.length === 1;
 }
 
-async function releaseLock(db: any) {
+export async function releaseLock(db: any) {
   await db.from("mail_sync_settings").update({ lock_until: null }).eq("id", 1);
 }
 
