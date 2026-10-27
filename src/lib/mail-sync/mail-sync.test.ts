@@ -255,3 +255,16 @@ describe("Notion mapping", () => {
     expect(page).toMatchObject({ record: "ORD-7", status: "New", title: "T" });
   });
 });
+
+describe("Notion error redaction", async () => {
+  const { notionErrorCode } = await import("./notion.server");
+  it("keeps only the error code, never the message with values", () => {
+    expect(
+      notionErrorCode(
+        '{"object":"error","code":"validation_error","message":"Customer Email c@x.gr invalid"}',
+      ),
+    ).toBe("validation_error");
+    expect(notionErrorCode("<html>secret c@x.gr</html>")).toBe("unknown_error");
+    expect(notionErrorCode('{"code":"c@x.gr leaked"}')).toBe("unknown_error");
+  });
+});

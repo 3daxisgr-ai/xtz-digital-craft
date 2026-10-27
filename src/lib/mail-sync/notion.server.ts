@@ -48,11 +48,10 @@ export async function notionFetch(
       continue;
     }
     if (!res.ok) {
-      const body = await res.text();
-      console.error(
-        `[mail-sync] Notion ${init.method ?? "GET"} ${path} failed [${res.status}]: ${body.slice(0, 500)}`,
-      );
-      throw new NotionError(`Notion [${res.status}]: ${body.slice(0, 300)}`, res.status);
+      // Redacted: keep only Notion's error code. The raw body/message can echo property values.
+      const code = notionErrorCode(await res.text().catch(() => ""));
+      console.error(`[mail-sync] Notion ${init.method ?? "GET"} failed [${res.status}] ${code}`);
+      throw new NotionError(`Notion [${res.status}] ${code}`, res.status);
     }
     return res.json();
   }
