@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import toreoLogo from "@/assets/toreo-white-logo.png.asset.json";
 import heroLaser from "@/assets/hero-laser.jpg.asset.json";
 import { useI18n } from "./i18n";
+import { HERO_START_KEY, hasConsent } from "@/lib/consent";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,21 +14,26 @@ export function IntroScene() {
   const { t } = useI18n();
 
   // Start the hero video at a random point on every page load, so returning
-  // visitors don't see the same opening each time. Avoids the last start used
-  // in this browser and the final seconds before the loop point.
+  // visitors don't see the same opening each time. With "functional" consent it
+  // also avoids the last start used in this browser; always skips the final seconds.
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    const KEY = "toreo:hero-start";
+    const KEY = HERO_START_KEY;
     const seekRandom = () => {
       const d = v.duration;
       if (!Number.isFinite(d) || d < 6) return;
       const max = d - 4;
+      const remember = hasConsent("functional");
       let last = NaN;
-      try { last = Number(localStorage.getItem(KEY)); } catch { /* storage blocked */ }
+      if (remember) {
+        try { last = Number(localStorage.getItem(KEY)); } catch { /* storage blocked */ }
+      }
       let t = Math.random() * max;
       for (let i = 0; i < 6 && Number.isFinite(last) && Math.abs(t - last) < d * 0.2; i++) t = Math.random() * max;
-      try { localStorage.setItem(KEY, t.toFixed(2)); } catch { /* storage blocked */ }
+      if (remember) {
+        try { localStorage.setItem(KEY, t.toFixed(2)); } catch { /* storage blocked */ }
+      }
       v.currentTime = t;
     };
     if (v.readyState >= 1) seekRandom();

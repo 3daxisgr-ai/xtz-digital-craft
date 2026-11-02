@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Instagram } from "lucide-react";
 import toreoLogo from "@/assets/toreo-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
+import { openConsentSettings } from "@/lib/consent";
 
 export function Footer() {
   const { lang, setLang, t } = useI18n();
@@ -137,6 +138,10 @@ export function Footer() {
             <Link to="/track" className="hover:text-primary transition-colors text-xs">TRACK ORDER</Link>
             <Link to="/portal" className="hover:text-primary transition-colors text-xs">PORTAL</Link>
             <Link to="/ai" className="hover:text-primary transition-colors text-xs">AI REFERENCE</Link>
+            <Link to="/cookie-policy" className="hover:text-primary transition-colors text-xs">{lang === "GR" ? "Πολιτική cookies" : "Cookie policy"}</Link>
+            <button type="button" onClick={openConsentSettings} className="hover:text-primary transition-colors text-xs uppercase tracking-[0.35em]">
+              {lang === "GR" ? "Ρυθμίσεις cookies" : "Cookie settings"}
+            </button>
           </nav>
 
           <div className="flex items-center font-mono text-xs border border-border/60">

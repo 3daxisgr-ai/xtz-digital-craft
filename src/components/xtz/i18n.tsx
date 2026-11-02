@@ -389,16 +389,18 @@ const Ctx = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: (k: strin
 });
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("GR");
+  const [lang, setLangState] = useState<Lang>("GR");
   useEffect(() => {
     try {
       const saved = localStorage.getItem("axis-lang") as Lang | null;
-      if (saved === "EN" || saved === "GR") setLang(saved);
+      if (saved === "EN" || saved === "GR") setLangState(saved);
     } catch {}
   }, []);
-  useEffect(() => {
-    try { localStorage.setItem("axis-lang", lang); } catch {}
-  }, [lang]);
+  // Saved only when the visitor actually picks a language (a necessary, user-requested preference).
+  const setLang = (l: Lang) => {
+    setLangState(l);
+    try { localStorage.setItem("axis-lang", l); } catch {}
+  };
   const t = (k: string) => dicts[lang][k] ?? k;
   return <Ctx.Provider value={{ lang, setLang, t }}>{children}</Ctx.Provider>;
 }
