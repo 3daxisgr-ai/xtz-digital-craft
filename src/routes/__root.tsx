@@ -14,6 +14,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "@/components/xtz/i18n";
 import { Toaster } from "@/components/ui/sonner";
+import { CookieConsent } from "@/components/xtz/CookieConsent";
+import { CONSENT_GUARD_SCRIPT } from "@/lib/consent-guard";
 
 function NotFoundComponent() {
   return (
@@ -106,6 +108,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
     ],
     scripts: [
+      // Must run before the hosting's deferred analytics script: blocks it until consent.
+      { children: CONSENT_GUARD_SCRIPT },
       {
         type: "application/ld+json",
         children: JSON.stringify({
@@ -184,6 +188,7 @@ function RootComponent() {
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <Toaster position="bottom-right" />
+        <CookieConsent />
       </I18nProvider>
     </QueryClientProvider>
   );

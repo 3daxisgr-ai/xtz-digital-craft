@@ -15,6 +15,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AiRouteImport } from './routes/ai'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CompanyRouteImport } from './routes/company'
+import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
 import { Route as CustomMetalPartsRouteImport } from './routes/custom-metal-parts'
 import { Route as EquipmentRouteImport } from './routes/equipment'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -78,6 +79,11 @@ const AuthRoute = AuthRouteImport.update({
 const CompanyRoute = CompanyRouteImport.update({
   id: '/company',
   path: '/company',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiePolicyRoute = CookiePolicyRouteImport.update({
+  id: '/cookie-policy',
+  path: '/cookie-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CustomMetalPartsRoute = CustomMetalPartsRouteImport.update({
@@ -263,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/ai': typeof AiRoute
   '/auth': typeof AuthRoute
   '/company': typeof CompanyRoute
+  '/cookie-policy': typeof CookiePolicyRoute
   '/custom-metal-parts': typeof CustomMetalPartsRoute
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
@@ -305,6 +312,7 @@ export interface FileRoutesByTo {
   '/ai': typeof AiRoute
   '/auth': typeof AuthRoute
   '/company': typeof CompanyRoute
+  '/cookie-policy': typeof CookiePolicyRoute
   '/custom-metal-parts': typeof CustomMetalPartsRoute
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
@@ -348,6 +356,7 @@ export interface FileRoutesById {
   '/ai': typeof AiRoute
   '/auth': typeof AuthRoute
   '/company': typeof CompanyRoute
+  '/cookie-policy': typeof CookiePolicyRoute
   '/custom-metal-parts': typeof CustomMetalPartsRoute
   '/equipment': typeof EquipmentRoute
   '/faq': typeof FaqRoute
@@ -392,6 +401,7 @@ export interface FileRouteTypes {
     | '/ai'
     | '/auth'
     | '/company'
+    | '/cookie-policy'
     | '/custom-metal-parts'
     | '/equipment'
     | '/faq'
@@ -434,6 +444,7 @@ export interface FileRouteTypes {
     | '/ai'
     | '/auth'
     | '/company'
+    | '/cookie-policy'
     | '/custom-metal-parts'
     | '/equipment'
     | '/faq'
@@ -476,6 +487,7 @@ export interface FileRouteTypes {
     | '/ai'
     | '/auth'
     | '/company'
+    | '/cookie-policy'
     | '/custom-metal-parts'
     | '/equipment'
     | '/faq'
@@ -519,6 +531,7 @@ export interface RootRouteChildren {
   AiRoute: typeof AiRoute
   AuthRoute: typeof AuthRoute
   CompanyRoute: typeof CompanyRoute
+  CookiePolicyRoute: typeof CookiePolicyRoute
   CustomMetalPartsRoute: typeof CustomMetalPartsRoute
   EquipmentRoute: typeof EquipmentRoute
   FaqRoute: typeof FaqRoute
@@ -596,6 +609,13 @@ declare module '@tanstack/react-router' {
       path: '/company'
       fullPath: '/company'
       preLoaderRoute: typeof CompanyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookie-policy': {
+      id: '/cookie-policy'
+      path: '/cookie-policy'
+      fullPath: '/cookie-policy'
+      preLoaderRoute: typeof CookiePolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/custom-metal-parts': {
@@ -857,6 +877,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiRoute: AiRoute,
   AuthRoute: AuthRoute,
   CompanyRoute: CompanyRoute,
+  CookiePolicyRoute: CookiePolicyRoute,
   CustomMetalPartsRoute: CustomMetalPartsRoute,
   EquipmentRoute: EquipmentRoute,
   FaqRoute: FaqRoute,
