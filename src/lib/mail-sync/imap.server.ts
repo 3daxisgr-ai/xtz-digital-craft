@@ -233,6 +233,12 @@ export class ImapSession {
     return parseList(await this.command('LIST "" "*" RETURN (SPECIAL-USE)'));
   }
 
+  async capability(): Promise<string[]> {
+    const units = await this.command("CAPABILITY");
+    const line = units.find((u) => /^\* CAPABILITY /i.test(u.text));
+    return line ? line.text.replace(/^\* CAPABILITY /i, "").split(/\s+/).filter(Boolean) : [];
+  }
+
   /** Read-only open: never changes flags or contents. */
   async examine(folder: string) {
     return parseExamine(await this.command(`EXAMINE ${quote(folder)}`));
