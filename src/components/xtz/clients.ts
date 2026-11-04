@@ -12,6 +12,7 @@ import cosmos1559 from "@/assets/hotemedia-cosmos-1559.jpg.asset.json";
 import kartvolanLogo from "@/assets/kartvolan-logo.png.asset.json";
 import kartvolanImage from "@/assets/kartvolan-karts-track.jpg.asset.json";
 import thecutmanLogo from "@/assets/thecutman-logo.png.asset.json";
+import thecutmanImage from "@/assets/thecutman-barber-chair.jpg";
 
 export type Bi = { EN: string; GR: string };
 
@@ -183,9 +184,13 @@ export const CLIENTS: Client[] = [
     // Clean redraw of the white lettering on The Cutman's own shop sign (owner-supplied photo).
     logo: thecutmanLogo.url,
     plate: "dark",
-    // No photo asset available — the card shows the logo on a neutral dark panel instead.
-    image: null,
-    imageCredit: "",
+    // Illustrative barbershop scene (owner-requested) — not The Cutman's shop and not TOREO's shelves.
+    image: thecutmanImage,
+    imageAlt: {
+      EN: "Illustrative image: a barber cutting a client's hair in a barber chair",
+      GR: "Ενδεικτική εικόνα: κουρέας κουρεύει πελάτη σε καρέκλα κουρείου",
+    },
+    imageCredit: "Illustrative image",
     website: "",
     category: { EN: "Retail", GR: "Εμπορικό κατάστημα" },
     label: { EN: "Design & Fabrication Collaboration", GR: "Συνεργασία σχεδιασμού & κατασκευής" },
