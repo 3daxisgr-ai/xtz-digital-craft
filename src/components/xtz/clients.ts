@@ -161,8 +161,8 @@ export const CLIENTS: Client[] = [
     category: { EN: "Karting & Motorsport", GR: "Karting & Μηχανοκίνητος αθλητισμός" },
     label: { EN: "Custom Production Collaboration", GR: "Συνεργασία εξατομικευμένης παραγωγής" },
     description: {
-      EN: "We collaborated with Kart Volan on the production of more than 50 custom karting Nassau Panels (front number plates), combining practical functionality with a clean, purpose-built finish.",
-      GR: "Συνεργαστήκαμε με την Kart Volan στην παραγωγή περισσότερων από 50 εξατομικευμένων Nassau Panels (μπροστινές πινακίδες αριθμού) για καρτ, συνδυάζοντας πρακτική λειτουργικότητα με καθαρό φινίρισμα, φτιαγμένο ειδικά για τη χρήση τους.",
+      EN: "We collaborated with Kart Volan on the production of more than 50 custom karting Nassau Panels (front number plates), the panels mounted on karts that display the racing numbers.",
+      GR: "Συνεργαστήκαμε με την Kart Volan στην παραγωγή περισσότερων από 50 εξατομικευμένων Nassau Panels για καρτ (μπροστινές πινακίδες αριθμού), δηλαδή των πάνελ που τοποθετούνται στα καρτ και εμφανίζουν τον αριθμό αγώνα.",
     },
     delivered: {
       EN: "More than 50 custom Nassau Panels — the front panels mounted on the karts that display the racing numbers.",
