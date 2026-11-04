@@ -1,27 +1,18 @@
 import type { Client } from "./clients";
 
 /**
- * Partner logo on a neutral white plate so original colours are preserved.
+ * Partner logo on a neutral white plate so original colours are preserved
+ * (white-on-black logos use a dark plate instead).
  * Without an authentic logo, a clean typographic wordmark is shown instead of a fabricated one.
- * A partner with a `wordmark` (based on its own sign lettering) gets bold white type on a dark plate.
  */
 export function LogoPlate({ client, className = "" }: { client: Client; className?: string }) {
-  if (!client.logo && client.wordmark) {
-    return (
-      <div
-        role="img"
-        aria-label={`${client.name} logo`}
-        className={`flex items-center justify-center rounded-md bg-neutral-950 px-5 py-3 ring-1 ring-white/10 ${className}`}
-      >
-        <span className="flex items-baseline gap-[0.4em] whitespace-nowrap font-display text-xl md:text-2xl uppercase leading-none text-white">
-          <span className="text-[0.55em] font-semibold tracking-[0.3em] text-white/75">{client.wordmark.lead}</span>
-          <span className="font-black tracking-[0.08em]">{client.wordmark.main}</span>
-        </span>
-      </div>
-    );
-  }
+  const dark = client.plate === "dark";
   return (
-    <div className={`flex items-center justify-center rounded-md bg-white px-5 py-3 ${className}`}>
+    <div
+      className={`flex items-center justify-center rounded-md px-5 py-3 ${
+        dark ? "bg-neutral-950 ring-1 ring-white/10" : "bg-white"
+      } ${className}`}
+    >
       {client.logo ? (
         <img
           src={client.logo}
