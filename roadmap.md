@@ -16,3 +16,4 @@
 - [x] Customer classification (confirmed / prospect / supplier / automated / spam / uncertain) with review queue; never delete or silently relabel
 - [x] Order authenticity + order↔customer name/email check (genuine / inquiry / not an order / review) with reasons; strong mislinks only, logged
 - [x] Dashboard: separate customers vs prospects/suppliers/automated; queues for suspected non-order, wrong association, duplicates, uncertain customers
+- [ ] Partners: add THE CUTMAN (logo from shop sign, card with three-shelves description), verify strip + card
