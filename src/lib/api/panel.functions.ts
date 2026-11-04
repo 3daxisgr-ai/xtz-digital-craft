@@ -231,7 +231,7 @@ export const panelCreateOrder = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("orders")
-      .insert({ ...data, source: "manual" as any, status: "quote_received" as any })
+      .insert({ ...data, source: "admin", status: "quote_received" })
       .select("*")
       .single();
     if (error) throw error;
