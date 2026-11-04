@@ -41,6 +41,8 @@ export interface Client {
   id: string;
   name: string;
   logo: string | null; // null → typographic wordmark (no fabricated logo)
+  /** Two-part typographic logo (small lead word + bold main word) used when there is no logo file. */
+  wordmark?: { lead: string; main: string };
   location?: Bi;
   image: string | null; // null → clean logo placeholder
   imageAlt?: Bi; // describes what the partner photo shows (never imply it is TOREO's work)
@@ -171,6 +173,32 @@ export const CLIENTS: Client[] = [
     services: [
       { EN: "Custom manufacturing", GR: "Εξατομικευμένη κατασκευή" },
       { EN: "Karting number panels", GR: "Πινακίδες αριθμού για καρτ" },
+    ],
+    status: null,
+  },
+  {
+    id: "thecutman",
+    name: "THE CUTMAN",
+    // No logo file on record: typographic logo based on the bold white lettering of the shop sign.
+    logo: null,
+    wordmark: { lead: "THE", main: "CUTMAN" },
+    // No photo asset available — the card shows the logo on a neutral dark panel instead.
+    image: null,
+    imageCredit: "",
+    website: "",
+    category: { EN: "Retail", GR: "Εμπορικό κατάστημα" },
+    label: { EN: "Design & Fabrication Collaboration", GR: "Συνεργασία σχεδιασμού & κατασκευής" },
+    description: {
+      EN: "We collaborated with The Cutman on the design and fabrication of three custom metal shelves.",
+      GR: "Συνεργαστήκαμε με το The Cutman στον σχεδιασμό και την κατασκευή τριών εξατομικευμένων μεταλλικών ραφιών.",
+    },
+    delivered: {
+      EN: "Three custom metal shelves, designed and fabricated by TOREO.",
+      GR: "Τρία εξατομικευμένα μεταλλικά ράφια, σχεδιασμένα και κατασκευασμένα από την TOREO.",
+    },
+    services: [
+      { EN: "Design", GR: "Σχεδιασμός" },
+      { EN: "Custom metal fabrication", GR: "Εξατομικευμένη μεταλλική κατασκευή" },
     ],
     status: null,
   },
