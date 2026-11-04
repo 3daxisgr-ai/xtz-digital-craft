@@ -9,6 +9,8 @@ import cosmos1562 from "@/assets/hotemedia-cosmos-1562.jpg.asset.json";
 import cosmos1561 from "@/assets/hotemedia-cosmos-1561.jpg.asset.json";
 import cosmos1560 from "@/assets/hotemedia-cosmos-1560.jpg.asset.json";
 import cosmos1559 from "@/assets/hotemedia-cosmos-1559.jpg.asset.json";
+import kartvolanLogo from "@/assets/kartvolan-logo.png.asset.json";
+import kartvolanImage from "@/assets/kartvolan-karts-track.jpg.asset.json";
 
 export type Bi = { EN: string; GR: string };
 
@@ -41,6 +43,7 @@ export interface Client {
   logo: string | null; // null → typographic wordmark (no fabricated logo)
   location?: Bi;
   image: string | null; // null → clean logo placeholder
+  imageAlt?: Bi; // describes what the partner photo shows (never imply it is TOREO's work)
   imageCredit: string; // official source of the photograph
   website: string;
   category: Bi;
@@ -139,6 +142,35 @@ export const CLIENTS: Client[] = [
     services: [
       { EN: "Component design", GR: "Σχεδιασμός εξαρτημάτων" },
       { EN: "3D printing", GR: "Τρισδιάστατη εκτύπωση" },
+    ],
+    status: null,
+  },
+  {
+    id: "kartvolan",
+    name: "Kart Volan",
+    logo: kartvolanLogo.url,
+    // Partner photo from kartvolan.gr — their karts at the track, not TOREO-made parts.
+    image: kartvolanImage.url,
+    imageAlt: {
+      EN: "Kart Volan karts at the track (photo: kartvolan.gr)",
+      GR: "Καρτ της Kart Volan στην πίστα (φωτογραφία: kartvolan.gr)",
+    },
+    imageCredit: "Photo: kartvolan.gr",
+    website: "https://kartvolan.gr/",
+    location: { EN: "Lagadas, Thessaloniki, Greece", GR: "Λαγκαδάς, Θεσσαλονίκη, Ελλάδα" },
+    category: { EN: "Karting & Motorsport", GR: "Karting & Μηχανοκίνητος αθλητισμός" },
+    label: { EN: "Custom Production Collaboration", GR: "Συνεργασία εξατομικευμένης παραγωγής" },
+    description: {
+      EN: "We collaborated with Kart Volan on the production of more than 50 custom karting Nassau Panels (front number plates), combining practical functionality with a clean, purpose-built finish.",
+      GR: "Συνεργαστήκαμε με την Kart Volan στην παραγωγή περισσότερων από 50 εξατομικευμένων Nassau Panels (μπροστινές πινακίδες αριθμού) για καρτ, συνδυάζοντας πρακτική λειτουργικότητα με καθαρό φινίρισμα, φτιαγμένο ειδικά για τη χρήση τους.",
+    },
+    delivered: {
+      EN: "More than 50 custom Nassau Panels — the front panels mounted on the karts that display the racing numbers.",
+      GR: "Περισσότερα από 50 εξατομικευμένα Nassau Panels — τα μπροστινά πάνελ των καρτ όπου εμφανίζεται ο αριθμός αγώνα.",
+    },
+    services: [
+      { EN: "Custom manufacturing", GR: "Εξατομικευμένη κατασκευή" },
+      { EN: "Karting number panels", GR: "Πινακίδες αριθμού για καρτ" },
     ],
     status: null,
   },
