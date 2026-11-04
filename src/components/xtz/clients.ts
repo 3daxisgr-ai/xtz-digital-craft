@@ -11,6 +11,7 @@ import cosmos1560 from "@/assets/hotemedia-cosmos-1560.jpg.asset.json";
 import cosmos1559 from "@/assets/hotemedia-cosmos-1559.jpg.asset.json";
 import kartvolanLogo from "@/assets/kartvolan-logo.png.asset.json";
 import kartvolanImage from "@/assets/kartvolan-karts-track.jpg.asset.json";
+import thecutmanLogo from "@/assets/thecutman-logo.png.asset.json";
 
 export type Bi = { EN: string; GR: string };
 
@@ -41,8 +42,8 @@ export interface Client {
   id: string;
   name: string;
   logo: string | null; // null → typographic wordmark (no fabricated logo)
-  /** Two-part typographic logo (small lead word + bold main word) used when there is no logo file. */
-  wordmark?: { lead: string; main: string };
+  /** "dark" for white-on-black logos (keeps their original look instead of a white plate). */
+  plate?: "dark";
   location?: Bi;
   image: string | null; // null → clean logo placeholder
   imageAlt?: Bi; // describes what the partner photo shows (never imply it is TOREO's work)
@@ -179,9 +180,9 @@ export const CLIENTS: Client[] = [
   {
     id: "thecutman",
     name: "THE CUTMAN",
-    // No logo file on record: typographic logo based on the bold white lettering of the shop sign.
-    logo: null,
-    wordmark: { lead: "THE", main: "CUTMAN" },
+    // Clean redraw of the white lettering on The Cutman's own shop sign (owner-supplied photo).
+    logo: thecutmanLogo.url,
+    plate: "dark",
     // No photo asset available — the card shows the logo on a neutral dark panel instead.
     image: null,
     imageCredit: "",
