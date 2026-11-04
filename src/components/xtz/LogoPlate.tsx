@@ -10,7 +10,7 @@ export function LogoPlate({ client, className = "" }: { client: Client; classNam
   return (
     <div
       className={`flex items-center justify-center rounded-md px-5 py-3 ${
-        dark ? "bg-neutral-950 ring-1 ring-white/10" : "bg-white"
+        dark ? "bg-black ring-1 ring-white/10" : "bg-white"
       } ${className}`}
     >
       {client.logo ? (
