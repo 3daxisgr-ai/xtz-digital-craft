@@ -12,6 +12,7 @@ const PROOF: { GR: string; EN: string; partner: string }[] = [
   { partner: "METLEN", GR: "Γαλβανιζέ γωνίες για τη στήριξη φωτοβολταϊκών πάνελ", EN: "Galvanized angle brackets for mounting solar panels" },
   { partner: "HOTEMEDIA", GR: "Μεταλλικός σκελετός για τις βάσεις τηλεοράσεων του Cosmos", EN: "Metal frames for the TV stands at the Cosmos shopping center" },
   { partner: "SARIDIS", GR: "Σχεδιασμός και 3D εκτύπωση εξαρτημάτων για ψυκτικές μονάδες", EN: "Design and 3D printing of components for refrigeration units" },
+  { partner: "KART VOLAN", GR: "Πάνω από 50 εξατομικευμένα Nassau Panels (μπροστινές πινακίδες αριθμού) για καρτ", EN: "More than 50 custom Nassau Panels (front number plates) for karts" },
 ];
 
 export function Collaborations() {
@@ -105,7 +106,7 @@ export function Collaborations() {
             <article>
               <div className="relative aspect-[16/9] bg-muted">
                 {active.image ? (
-                  <img src={active.image} alt={`${active.name} — TOREO collaboration`} className="h-full w-full object-cover" />
+                  <img src={active.image} alt={active.imageAlt?.[L] ?? `${active.name} — TOREO collaboration`} className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full items-center justify-center"><LogoPlate client={active} className="h-24" /></div>
                 )}
