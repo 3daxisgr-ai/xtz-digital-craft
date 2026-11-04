@@ -13,6 +13,7 @@ const PROOF: { GR: string; EN: string; partner: string }[] = [
   { partner: "HOTEMEDIA", GR: "Μεταλλικός σκελετός για τις βάσεις τηλεοράσεων του Cosmos", EN: "Metal frames for the TV stands at the Cosmos shopping center" },
   { partner: "SARIDIS", GR: "Σχεδιασμός και 3D εκτύπωση εξαρτημάτων για ψυκτικές μονάδες", EN: "Design and 3D printing of components for refrigeration units" },
   { partner: "KART VOLAN", GR: "Πάνω από 50 εξατομικευμένα Nassau Panels (μπροστινές πινακίδες αριθμού) για καρτ", EN: "More than 50 custom Nassau Panels (front number plates) for karts" },
+  { partner: "THE CUTMAN", GR: "Σχεδιασμός και κατασκευή τριών εξατομικευμένων μεταλλικών ραφιών", EN: "Design and fabrication of three custom metal shelves" },
 ];
 
 export function Collaborations() {
