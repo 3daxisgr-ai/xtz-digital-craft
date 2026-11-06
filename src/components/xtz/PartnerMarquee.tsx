@@ -33,6 +33,7 @@ export function PartnerMarquee({
   const setRef = useRef<HTMLUListElement>(null);
   const [copies, setCopies] = useState(2);
   const [stopped, setStopped] = useState(false); // drives the hint text only
+  const [tappedId, setTappedId] = useState<string | null>(null); // touch: card that stopped the strip gets the hover grow
   const st = useRef({
     x: 0,
     setW: 0,
@@ -161,6 +162,7 @@ export function PartnerMarquee({
     const dx = e.clientX - s.startX;
     if (!s.dragging && Math.abs(dx) > DRAG_THRESHOLD) {
       s.dragging = true;
+      setTappedId(null);
       viewportRef.current?.setPointerCapture(e.pointerId);
     }
     if (s.dragging) {
