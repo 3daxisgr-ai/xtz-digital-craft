@@ -14,6 +14,8 @@ type Lang = "EN" | "GR";
 const SPEED = 28; // px per second
 const STEP = 260; // px per arrow press
 const DRAG_THRESHOLD = 6;
+// Only these partners' original logos enlarge on hover (~15%).
+const GROW_ON_HOVER = new Set(["metlen", "saridis", "hotemedia"]);
 
 export function PartnerMarquee({
   clients,
