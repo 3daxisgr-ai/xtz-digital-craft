@@ -204,7 +204,15 @@ export function PartnerMarquee({
                 : "opacity-60 hover:opacity-100"
             }`}
           >
-            <LogoPlate client={c} className="h-12 md:h-14" />
+            <span
+              className={`block ${
+                GROW_ON_HOVER.has(c.id)
+                  ? "transition-transform duration-300 ease-out group-hover:scale-[1.15] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  : ""
+              }`}
+            >
+              <LogoPlate client={c} className="h-12 md:h-14" />
+            </span>
           </button>
         </li>
       ))}
@@ -226,7 +234,7 @@ export function PartnerMarquee({
           ref={viewportRef}
           role="region"
           aria-label={L === "GR" ? "Συνεργάτες" : "Partners"}
-          className="relative min-w-0 flex-1 cursor-grab touch-pan-y select-none overflow-hidden py-1 active:cursor-grabbing [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]"
+          className="relative min-w-0 flex-1 cursor-grab touch-pan-y select-none overflow-hidden py-2 active:cursor-grabbing [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]"
           onPointerEnter={(e) => {
             if (e.pointerType === "mouse") st.current.hover = true;
           }}
