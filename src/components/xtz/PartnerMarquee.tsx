@@ -33,6 +33,7 @@ export function PartnerMarquee({
   const setRef = useRef<HTMLUListElement>(null);
   const [copies, setCopies] = useState(2);
   const [stopped, setStopped] = useState(false); // drives the hint text only
+  const [tappedId, setTappedId] = useState<string | null>(null); // touch: card that stopped the strip gets the hover grow
   const st = useRef({
     x: 0,
     setW: 0,
@@ -161,6 +162,7 @@ export function PartnerMarquee({
     const dx = e.clientX - s.startX;
     if (!s.dragging && Math.abs(dx) > DRAG_THRESHOLD) {
       s.dragging = true;
+      setTappedId(null);
       viewportRef.current?.setPointerCapture(e.pointerId);
     }
     if (s.dragging) {
@@ -192,10 +194,12 @@ export function PartnerMarquee({
             type="button"
             tabIndex={copy > 0 ? -1 : undefined}
             aria-label={`${c.name} — ${L === "GR" ? "δείτε τη συνεργασία" : "view collaboration"}`}
+            data-partner={c.id}
             onClick={() => {
               // Opening resumes the strip, so it is moving again when the card closes.
               st.current.tapPaused = false;
               setStopped(false);
+              setTappedId(null);
               onPartner(c);
             }}
             className={`group block rounded-lg p-1 transition-[opacity,box-shadow] duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none ${
@@ -207,7 +211,9 @@ export function PartnerMarquee({
             <span
               className={`block ${
                 GROW_ON_HOVER.has(c.id)
-                  ? "transition-transform duration-300 ease-out group-hover:scale-[1.15] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  ? `transition-transform duration-300 ease-out group-hover:scale-[1.15] motion-reduce:transition-none motion-reduce:group-hover:scale-100${
+                      tappedId === c.id ? " scale-[1.15] motion-reduce:scale-100" : ""
+                    }`
                   : ""
               }`}
             >
@@ -265,12 +271,15 @@ export function PartnerMarquee({
               // First click/tap: stop right here, open nothing.
               s.tapPaused = true;
               setStopped(true);
+              const btn = (e.target as HTMLElement).closest("button");
+              setTappedId(btn?.getAttribute("data-partner") ?? null);
               e.preventDefault();
               e.stopPropagation();
             } else if (!(e.target as HTMLElement).closest("button")) {
               // Second click on empty space: just restart.
               s.tapPaused = false;
               setStopped(false);
+              setTappedId(null);
             }
             // Second click on a logo: the button's own handler opens the partner.
           }}
